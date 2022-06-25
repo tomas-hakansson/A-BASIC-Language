@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "A BASIC Language": {
+      "commandName": "Project",
+      "commandLineArgs": "..\\..\\..\\testPrograms\\test.abl"
+    }
+  }
+}

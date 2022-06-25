@@ -1,0 +1,7 @@
+﻿rem this is a simple ABL program
+20 input n
+25 i=sqr(sqr(n))
+30 j=(i^2)^2
+35 print n
+38 print j
+40 goto 20

@@ -1,0 +1,11 @@
+﻿According to the book "BASIC Computer Games (1978)" the language version is "Microsoft (Altair) BASIC".
+get proper specification for said language.
+I'm gonna assume that the language will be case insensitive.
+I will temporarily use abl as the program file extension because it amuses me.
+todo:
+parse.
+see if different control structures can be derived from various forms of goto and if so start with the goto versions.
+, (comma) and ; (semicolon) act in very specific ways that requires further study.
+do the arithmetic 'functions' have different orders of operation and if so what are they?
+I will for the moment work under the assumption that non-letter tokens can only be one character long.
+Can variables not be longer than one character?
