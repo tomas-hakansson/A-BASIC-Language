@@ -38,16 +38,28 @@ public class Tokenizer2
 
     private void Line(List<string> line)
     {
-        List<Token> tokens = new();
-        Program.Add(Label(), new global::Line(tokens));
+        if (line.Count == 0 || line.Count == 1)
+        {
+            //Ponder: should this be handled here or should we assume all lines to be correct?
+            return;
+        }
 
-        int Label()
+        List<Token> tokens = new();
+        Label();
+        Body();
+
+        void Label()
         {
             if (int.TryParse(line[0], out var parsedInt))
             {
-                return parsedInt;
+                Program.Add(parsedInt, new global::Line(tokens));
             }
-            throw new ArgumentException("todo: proper error handling here.");
+            throw new ArgumentException("todo: proper error handling here.");//todo: error handling.
+        }
+
+        void Body()
+        {
+            //todo: handle the rest of the line here.
         }
     }
 
