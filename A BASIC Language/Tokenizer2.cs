@@ -1,65 +1,109 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 
-public class Tokenizer2
+namespace StageTwo
 {
-    public ParsedProgram Program { get; private set; }
-
-    List<List<string>> _tokenizedLines;
-
-    public Tokenizer2(List<List<string>> tokenizedLines)
+    public class Result//todo: come up with better name.
     {
-        //_lines = new List<Line>
-        //{
-        //    new Line(new List<Token>() { new Procedure("INPUT"), new Assignment("N") }),
-        //    new Line(new List<Token>() { new Variable("N"), new Procedure("SQR"), new Procedure("SQR"), new Assignment("I") }),
-        //    new Line(new List<Token>() { new Variable("I"), new Number(2), new Procedure("^"), 
-        //                                                    new Number(2), new Procedure("^"), new Assignment("J") }),
-        //    new Line(new List<Token>() { new Variable("N"), new Procedure("PRINT") }),
-        //    new Line(new List<Token>() { new Variable("J"), new Procedure("PRINT") }),
-        //    new Line(new List<Token>() { new Number(20), new Procedure("GOTO") }),
-        //};
-        //_labelIndex = new Dictionary<int, int>
-        //{
-        //    { 20, 0 },
-        //    { 25, 1 },
-        //    { 30, 2 },
-        //    { 35, 3 },
-        //    { 38, 4 },
-        //    { 40, 5 },
-        //};
-        Program = new ParsedProgram();
-        _tokenizedLines = tokenizedLines;
-        foreach (var line in _tokenizedLines)
+        public List<Line> Tokens { get; set; }
+
+        public Result()
         {
-            Line(line);
+            Tokens = new List<Line>();
+        }
+
+        public void Add(Line line)
+        {
+            if (line.Tokens != null && line.Tokens.Count >= 2 &&
+               line.TextValue != null && line.TextValue.Count >= 2)
+                Tokens.Add(line);
         }
     }
 
-    private void Line(List<string> line)
+    public class Line
     {
-        if (line.Count == 0 || line.Count == 1)
+        public List<string> TextValue { get; set; }
+        public List<Token> Tokens { get; set; }
+
+        public Line()
         {
-            //Ponder: should this be handled here or should we assume all lines to be correct?
-            return;
+            TextValue = new List<string>();
+            Tokens = new List<Token>();
         }
 
-        List<Token> tokens = new();
-        var label = Label();
-        Body();
-        Program.Add(label, new global::Line(tokens));
-
-        int Label()
+        public void Add(string textValue, Token token)
         {
-            if (int.TryParse(line[0], out var parsedInt))
-                return parsedInt;
-            throw new ArgumentException("todo: proper error handling here.");//todo: error handling.
-        }
-
-        void Body()
-        {
-            //todo: handle the rest of the line here.
+            if (textValue != null && Enum.IsDefined<Token>(token))
+            {
+                TextValue.Add(textValue);
+                Tokens.Add(token);
+            }
         }
     }
 
+    public enum Token
+    {
+        Label,
+        OpeningParenthesis,
+        ClosingParenthesis,
+        Statement,
+        StandardFunction,
+        Number,
+        Other,//Note: variables, user defined functions etc.
+    }
+    public class Tokenizer2
+    {
+        public Result Result { get; private set; }
+
+        List<List<string>> _tokenizedLines;
+        List<string> _statements;
+        List<string> _standardFunctions;
+
+        public Tokenizer2(List<List<string>> tokenizedLines)
+        {
+            Result = new();
+            _tokenizedLines = tokenizedLines;
+            _statements = new List<string>() { "INPUT", "=", "PRINT", "GOTO" };
+            _standardFunctions = new List<string>() { "SQR", "^" };
+            foreach (var line in _tokenizedLines)
+            {
+                Result.Add(Line(line));
+            }
+        }
+
+        private Line Line(List<string> line)
+        {
+            Line result = new();
+            var first = line.First();
+            if (int.TryParse(first, out _))
+            {
+                //todo: use a different data structure in the future to not waste the parsed result.
+                result.Add(first, Token.Label);
+            }
+            else
+            {
+                //todo:error handling.
+            }
+
+            foreach (string token in line.Skip(1))//skips the first because it's already handled above.
+            {
+                Token currentToken;
+                if (token == "(")
+                    currentToken = Token.OpeningParenthesis;
+                else if (token == ")")
+                    currentToken = Token.ClosingParenthesis;
+                else if (_statements.Contains(token))
+                    currentToken = Token.Statement;
+                else if (_standardFunctions.Contains(token))
+                    currentToken = Token.StandardFunction;
+                else if (double.TryParse(token, out _))//Ponder: we might want our own number parser.
+                    currentToken = Token.Number;
+                else
+                    currentToken = Token.Other;
+                result.Add(token, currentToken);
+            }
+            return result;
+        }
+
+    }
 }
