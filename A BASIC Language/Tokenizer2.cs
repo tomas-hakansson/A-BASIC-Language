@@ -45,15 +45,14 @@ public class Tokenizer2
         }
 
         List<Token> tokens = new();
-        Label();
+        var label = Label();
         Body();
+        Program.Add(label, new global::Line(tokens));
 
-        void Label()
+        int Label()
         {
             if (int.TryParse(line[0], out var parsedInt))
-            {
-                Program.Add(parsedInt, new global::Line(tokens));
-            }
+                return parsedInt;
             throw new ArgumentException("todo: proper error handling here.");//todo: error handling.
         }
 
