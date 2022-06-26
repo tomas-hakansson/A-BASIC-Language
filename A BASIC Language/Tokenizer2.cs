@@ -47,24 +47,35 @@ namespace StageTwo
         OpeningParenthesis,
         ClosingParenthesis,
         Statement,
+        EqualityOrAssignment,
+        Comma,
+        Colon,
+        Semicolon,
+        Operator,
         StandardFunction,
+        UserDefinedFunction,//syntax seems to be FNx where x is user optional.
         Number,
-        Other,//Note: variables, user defined functions etc.
+        Other,//Ponder: By now maybe the only thing this could be are variables.
     }
+
     public class Tokenizer2
     {
         public Result Result { get; private set; }
 
         List<List<string>> _tokenizedLines;
-        List<string> _statements;
+        List<string> _statementTokens;
+        List<string> _Operators;
         List<string> _standardFunctions;
 
         public Tokenizer2(List<List<string>> tokenizedLines)
         {
             Result = new();
             _tokenizedLines = tokenizedLines;
-            _statements = new List<string>() { "INPUT", "=", "PRINT", "GOTO" };
-            _standardFunctions = new List<string>() { "SQR", "^" };
+            _statementTokens = new List<string>() { "INPUT", "PRINT", "GOTO", "DEF", 
+                "DATA", "DIM", "END", "FOR", "TO", "STEP", "GOSUB", "IF", "THEN", 
+                "ELSE", "LET", "NEXT", "ON", "READ", "REM", "RESTORE", "RETURN", "STOP" };
+            _Operators = new List<string>() { "^", "+", "*" };
+            _standardFunctions = new List<string>() { "SQR" };
             foreach (var line in _tokenizedLines)
             {
                 Result.Add(Line(line));
@@ -92,8 +103,20 @@ namespace StageTwo
                     currentToken = Token.OpeningParenthesis;
                 else if (token == ")")
                     currentToken = Token.ClosingParenthesis;
-                else if (_statements.Contains(token))
+                else if (token == "=")
+                    currentToken = Token.EqualityOrAssignment;
+                else if (token == ",")
+                    currentToken = Token.Comma;
+                else if (token == ":")
+                    currentToken = Token.Colon;
+                else if (token == ";")
+                    currentToken = Token.Semicolon;
+                else if (token.StartsWith("FN"))
+                    currentToken = Token.UserDefinedFunction;
+                else if (_statementTokens.Contains(token))
                     currentToken = Token.Statement;
+                else if (_Operators.Contains(token))
+                    currentToken = Token.Operator;
                 else if (_standardFunctions.Contains(token))
                     currentToken = Token.StandardFunction;
                 else if (double.TryParse(token, out _))//Ponder: we might want our own number parser.
