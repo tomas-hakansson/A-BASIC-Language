@@ -9,8 +9,4 @@
 		<UseWindowsForms>true</UseWindowsForms>
 	</PropertyGroup>
 
-	<ItemGroup>
-	  <Folder Include="Gui\WinForms\" />
-	</ItemGroup>
-
 </Project>
