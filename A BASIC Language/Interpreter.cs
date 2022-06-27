@@ -41,6 +41,7 @@ j print
 
     public Interpreter(string pathToMain)
     {
+        return;
         Parser parser = new(pathToMain);
         var program = parser.Program;
         _lines = program.Lines;

@@ -8,7 +8,7 @@ public partial class TerminalEmulator : Form
     private const int PixelsHeight = 200;
     private const int CharacterWidth = 8;
     private const int CharacterHeight = 8;
-    private char[,] Characters;
+    private readonly char[,] _characters;
     private int CursorX { get; set; }
     private int CursorY { get; set; }
     private bool CursorBlink { get; set; }
@@ -17,7 +17,7 @@ public partial class TerminalEmulator : Form
     public TerminalEmulator()
     {
         InitializeComponent();
-        Characters = new char[ColumnCount, RowCount];
+        _characters = new char[ColumnCount, RowCount];
         CursorX = 0;
         CursorY = 0;
         LineInputMode = false;
@@ -91,7 +91,7 @@ public partial class TerminalEmulator : Form
 
     private void WriteCharAndProgress(char c)
     {
-        Characters[CursorX, CursorY] = c;
+        _characters[CursorX, CursorY] = c;
 
         CursorX++;
 
@@ -114,7 +114,7 @@ public partial class TerminalEmulator : Form
         {
             for (var x = 0; x < ColumnCount; x++)
             {
-                Characters[x, y - 1] = Characters[x, y];
+                _characters[x, y - 1] = _characters[x, y];
             }
         }
 
@@ -123,7 +123,7 @@ public partial class TerminalEmulator : Form
 
         for (var x = 0; x < ColumnCount; x++)
         {
-            Characters[x, lastRow] = zeroChar;
+            _characters[x, lastRow] = zeroChar;
         }
     }
 
@@ -172,13 +172,13 @@ public partial class TerminalEmulator : Form
                 {
                     e.Graphics.FillRectangle(Brushes.Green, pixelX, pixelY, CharacterWidth, CharacterHeight);
 
-                    if (Characters[x, y] > 0)
-                        e.Graphics.DrawString(Characters[x, y].ToString(), Font, Brushes.Black, pixelX, pixelY);
+                    if (_characters[x, y] > 0)
+                        e.Graphics.DrawString(_characters[x, y].ToString(), Font, Brushes.Black, pixelX, pixelY);
                 }
                 else
                 {
-                    if (Characters[x, y] > 0)
-                        e.Graphics.DrawString(Characters[x, y].ToString(), Font, Brushes.Green, pixelX, pixelY);
+                    if (_characters[x, y] > 0)
+                        e.Graphics.DrawString(_characters[x, y].ToString(), Font, Brushes.Green, pixelX, pixelY);
                 }
                 pixelX += CharacterWidth;
             }

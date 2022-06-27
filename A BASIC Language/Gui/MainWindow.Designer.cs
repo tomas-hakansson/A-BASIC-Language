@@ -1,6 +1,6 @@
-﻿namespace A_BASIC_Language.Gui.WinForms
+﻿namespace A_BASIC_Language.Gui
 {
-    partial class TerminalEmulator
+    partial class MainWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -28,35 +28,24 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TerminalEmulator));
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.SuspendLayout();
             // 
-            // timer1
-            // 
-            this.timer1.Interval = 500;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // TerminalEmulator
+            // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(454, 40);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimizeBox = false;
-            this.Name = "TerminalEmulator";
-            this.Shown += new System.EventHandler(this.TerminalEmulator_Shown);
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.TerminalEmulator_Paint);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TerminalEmulator_KeyDown);
-            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TerminalEmulator_KeyPress);
-            this.Resize += new System.EventHandler(this.TerminalEmulator_Resize);
+            this.MaximizeBox = false;
+            this.Name = "MainWindow";
+            this.Text = "A BASIC Language";
+            this.Shown += new System.EventHandler(this.MainWindow_Shown);
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Timer timer1;
     }
 }
