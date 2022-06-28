@@ -1,64 +1,6 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-
-namespace StageTwo
+﻿namespace StageTwo
 {
-    public class Result//todo: come up with better name.
-    {
-        public List<Line> Tokens { get; set; }
-
-        public Result()
-        {
-            Tokens = new List<Line>();
-        }
-
-        public void Add(Line line)
-        {
-            if (line.Tokens != null && line.Tokens.Count >= 2 &&
-               line.TextValue != null && line.TextValue.Count >= 2)
-                Tokens.Add(line);
-        }
-    }
-
-    public class Line
-    {
-        public List<string> TextValue { get; set; }
-        public List<Token> Tokens { get; set; }
-
-        public Line()
-        {
-            TextValue = new List<string>();
-            Tokens = new List<Token>();
-        }
-
-        public void Add(string textValue, Token token)
-        {
-            if (textValue != null && Enum.IsDefined<Token>(token))
-            {
-                TextValue.Add(textValue);
-                Tokens.Add(token);
-            }
-        }
-    }
-
-    public enum Token
-    {
-        Label,
-        OpeningParenthesis,
-        ClosingParenthesis,
-        Statement,
-        EqualityOrAssignment,
-        Comma,
-        Colon,
-        Semicolon,
-        Operator,
-        StandardFunction,
-        UserDefinedFunction,//syntax seems to be FNx where x is user optional.
-        Number,
-        Other,//Ponder: By now maybe the only thing this could be are variables.
-    }
-
-    public class Tokenizer2
+    internal class Tokenizer
     {
         public Result Result { get; private set; }
 
@@ -67,15 +9,15 @@ namespace StageTwo
         List<string> _Operators;
         List<string> _standardFunctions;
 
-        public Tokenizer2(List<List<string>> tokenizedLines)
+        public Tokenizer(List<List<string>> tokenizedLines)
         {
             Result = new();
             _tokenizedLines = tokenizedLines;
             _statementTokens = new List<string>() { "INPUT", "PRINT", "GOTO", "DEF", 
                 "DATA", "DIM", "END", "FOR", "TO", "STEP", "GOSUB", "IF", "THEN", 
                 "ELSE", "LET", "NEXT", "ON", "READ", "REM", "RESTORE", "RETURN", "STOP" };
-            _Operators = new List<string>() { "^", "+", "*" };
-            _standardFunctions = new List<string>() { "SQR" };
+            _Operators = new List<string>() { "^", "+", "-", "*", "/" };
+            _standardFunctions = new List<string>() { "SQR", "INT" };
             foreach (var line in _tokenizedLines)
             {
                 Result.Add(Line(line));
@@ -127,6 +69,5 @@ namespace StageTwo
             }
             return result;
         }
-
     }
 }

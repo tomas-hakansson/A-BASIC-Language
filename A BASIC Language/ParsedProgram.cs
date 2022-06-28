@@ -1,8 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using System.Collections.Generic;
-
-public class ParsedProgram
+internal class ParsedProgram
 {
     public Dictionary<int, int> LabelIndex { get; set; }
     public List<Line> Lines { get; private set; }

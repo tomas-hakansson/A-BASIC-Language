@@ -1,7 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 
-public class Line
+internal class Line
 {
     readonly List<Token> _tokens;
     public int Count { get; private set; }

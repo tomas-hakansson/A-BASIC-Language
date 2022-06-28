@@ -1,11 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 
-public class Token
+internal class Token
 {
 }
 
-public class Number : Token
+internal class Number : Token
 {
     public double Value { get; private set; }
 
@@ -13,9 +13,14 @@ public class Number : Token
     {
         Value = value;
     }
+
+    public Number(string value)
+    {
+        Value = double.Parse(value);
+    }
 }
 
-public class Variable : Token
+internal class Variable : Token
 {
     public string Symbol { get; private set; }
 
@@ -25,7 +30,7 @@ public class Variable : Token
     }
 }
 
-public class Assignment : Token
+internal class Assignment : Token
 {
     public string Symbol { get; private set; }
     public Assignment(string symbol)
@@ -34,7 +39,7 @@ public class Assignment : Token
     }
 }
 
-public class Procedure : Token
+internal class Procedure : Token
 {
     public string Name { get; private set; }
 

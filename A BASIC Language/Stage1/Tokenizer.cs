@@ -1,11 +1,9 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-namespace StageOne
+﻿namespace StageOne
 {
-    internal class Tokenizer1
+    internal class Tokenizer
     {
         public List<List<string>> TokenizedLines { get; private set; }
-        public Tokenizer1(List<string> lines)
+        public Tokenizer(List<string> lines)
         {
             TokenizedLines = new List<List<string>>();
 
