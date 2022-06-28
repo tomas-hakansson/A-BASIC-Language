@@ -7,10 +7,11 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<UseWindowsForms>true</UseWindowsForms>
+		<ApplicationIcon>exe.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Folder Include="Gui\WinForms\" />
+	  <Content Include="exe.ico" />
 	</ItemGroup>
 
 </Project>
