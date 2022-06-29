@@ -1,4 +1,4 @@
-﻿namespace A_BASIC_Language.Gui;
+namespace A_BASIC_Language.Gui;
 
 public partial class MainWindow : Form
 {
@@ -22,6 +22,6 @@ public partial class MainWindow : Form
 
         var pathToMain = Path.GetFullPath(ProgramFilename);
         Interpreter eval = new(pathToMain);
-        eval.Run();
+        eval.Run(Terminal);
     }
 }
