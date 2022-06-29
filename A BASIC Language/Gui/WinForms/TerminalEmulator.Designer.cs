@@ -1,4 +1,4 @@
-﻿namespace A_BASIC_Language.Gui.WinForms
+namespace A_BASIC_Language.Gui.WinForms
 {
     partial class TerminalEmulator
     {
@@ -43,6 +43,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimizeBox = false;
             this.Name = "TerminalEmulator";
