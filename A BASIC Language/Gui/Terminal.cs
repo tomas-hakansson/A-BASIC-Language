@@ -34,7 +34,7 @@ public class Terminal : IDisposable
             Application.DoEvents();
         } while (Emu.LineInputMode);
 
-        return "45";
+        return Emu.LineInputResult;
     }
 
     public void Dispose()
