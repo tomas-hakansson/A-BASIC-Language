@@ -1,4 +1,5 @@
 using A_BASIC_Language.Gui;
+using System.Diagnostics;
 
 internal class Interpreter
 {
@@ -88,7 +89,7 @@ j print
         Application.DoEvents();
 
         var line = _lines[_index];
-        System.Diagnostics.Debug.WriteLine($"Eval {_index}: {line}");
+        Debug.WriteLine($"Eval {_index}: {line}");
 
         for (int i = 0; i < line.Count; i++)
         {
@@ -108,6 +109,7 @@ j print
                         }
                         else
                         {
+                            Debug.Fail("Something was wrong with the value");//fixme: really bad text.
                             //todo: error handling.
                         }
                     }
@@ -116,9 +118,14 @@ j print
                     {
                         //pop value from stack
                         //set variable to value
-                        var value = _data.Pop();
-                        var symbol = a.Symbol;
-                        _variables[symbol] = value;
+                        if (_data.Count > 0)
+                        {
+                            var value = _data.Pop();
+                            var symbol = a.Symbol;
+                            _variables[symbol] = value;
+                        }
+                        else
+                            Debug.Fail("The stack is empty");
                     }
                     break;
                 case Procedure p:
@@ -129,17 +136,27 @@ j print
                     {
                         case "^":
                             {
-                                var x = _data.Pop();
-                                var y = _data.Pop();
-                                var result = Math.Pow(y, x);
-                                _data.Push(result);
+                                if (_data.Count >= 2)
+                                {
+                                    var x = _data.Pop();
+                                    var y = _data.Pop();
+                                    var result = Math.Pow(y, x);
+                                    _data.Push(result);
+                                }
+                                else
+                                    Debug.Fail("Insufficient items on the stack");
                             }
                             break;
                         case "SQR":
                             {
-                                var x = _data.Pop();
-                                var result = Math.Sqrt(x);
-                                _data.Push(result);
+                                if (_data.Count > 0)
+                                {
+                                    var x = _data.Pop();
+                                    var result = Math.Sqrt(x);
+                                    _data.Push(result);
+                                }
+                                else
+                                    Debug.Fail("The stack is empty");
                             }
                             break;
                         case "INPUT":
@@ -158,8 +175,13 @@ j print
                             {
                                 //pop value
                                 //print
-                                var value = _data.Pop();
-                                _terminal.WriteLine(value.ToString());
+                                if (_data.Count > 0)
+                                {
+                                    var value = _data.Pop();
+                                    _terminal.WriteLine(value.ToString());
+                                }
+                                else
+                                    Debug.Fail("The stack is empty");
                             }
                             break;
                         case "GOTO":
@@ -169,19 +191,26 @@ j print
                                 //set _index to new value
                                 //decrement _index to account for loop incrementation.
                                 //return
-                                var label = _data.Pop();
-                                if (_labelIndex.TryGetValue((int)label, out var newIndex))
+                                if (_data.Count > 0)
                                 {
-                                    _index = (int)newIndex;
-                                    _index--;//HACK: come up with something better.
-                                    return;
+                                    var label = _data.Pop();
+                                    if (_labelIndex.TryGetValue((int)label, out var newIndex))
+                                    {
+                                        _index = (int)newIndex;
+                                        _index--;//HACK: come up with something better.
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        Debug.Fail("Something was wrong with the value");//fixme; really bad text.
+                                        //todo: error handling.
+                                        throw new InvalidOperationException("this is only to get the c# to stop complaining.");
+                                    }
                                 }
                                 else
-                                {
-                                    //todo: error handling.
-                                    throw new InvalidOperationException("this is only to get the c# to stop complaining.");
-                                }
+                                    Debug.Fail("The stack is empty");
                             }
+                            break;
                         default:
                             //todo :error handling.
                             break;
