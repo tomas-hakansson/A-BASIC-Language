@@ -6,6 +6,7 @@ public partial class TerminalEmulator : Form
 {
     private Brush OutputBrush { get; }
     private Brush InputBrush { get; }
+    private Brush InputBackgroundBrush { get; }
     private const int RowCount = 25;
     private const int ColumnCount = 40;
     private const int PixelsWidth = 320;
@@ -29,6 +30,7 @@ public partial class TerminalEmulator : Form
         LineInputResult = "";
         OutputBrush = new SolidBrush(Color.FromArgb(0, 255, 0));
         InputBrush = new SolidBrush(Color.FromArgb(0, 255, 255));
+        InputBackgroundBrush = new SolidBrush(Color.FromArgb(0, 42, 0));
         _characters = new char[ColumnCount, RowCount];
         CursorX = 0;
         CursorY = 0;
@@ -184,7 +186,8 @@ public partial class TerminalEmulator : Form
             {
                 for (var x = 0; x < ColumnCount; x++)
                 {
-                    var b = IsInsideInputZone(x, y) ? InputBrush : OutputBrush;
+                    var isInsideInputZone = IsInsideInputZone(x, y);
+                    var b = isInsideInputZone ? InputBrush : OutputBrush;
 
                     if (CursorBlink && CursorX == x && CursorY == y)
                     {
@@ -195,6 +198,9 @@ public partial class TerminalEmulator : Form
                     }
                     else
                     {
+                        if (isInsideInputZone)
+                            e.Graphics.FillRectangle(InputBackgroundBrush, pixelX, pixelY, CharacterWidth, CharacterHeight);
+
                         if (_characters[x, y] > 0)
                             e.Graphics.DrawString(_characters[x, y].ToString(), Font, b, pixelX, pixelY);
                     }

@@ -1,5 +1,7 @@
-using A_BASIC_Language.Gui;
 using System.Diagnostics;
+using A_BASIC_Language.Gui;
+
+namespace A_BASIC_Language;
 
 internal class Interpreter
 {
@@ -100,33 +102,33 @@ j print
                     _data.Push(n.Value);
                     break;
                 case Variable v:
+                {
+                    //extract value.
+                    //put on stack.
+                    if (_variables.TryGetValue(v.Symbol, out var value) && value.HasValue)
                     {
-                        //extract value.
-                        //put on stack.
-                        if (_variables.TryGetValue(v.Symbol, out var value) && value.HasValue)
-                        {
-                            _data.Push(value.Value);
-                        }
-                        else
-                        {
-                            Debug.Fail("Something was wrong with the value");//fixme: really bad text.
-                            //todo: error handling.
-                        }
+                        _data.Push(value.Value);
                     }
+                    else
+                    {
+                        Debug.Fail("Something was wrong with the value");//fixme: really bad text.
+                        //todo: error handling.
+                    }
+                }
                     break;
                 case Assignment a:
+                {
+                    //pop value from stack
+                    //set variable to value
+                    if (_data.Count > 0)
                     {
-                        //pop value from stack
-                        //set variable to value
-                        if (_data.Count > 0)
-                        {
-                            var value = _data.Pop();
-                            var symbol = a.Symbol;
-                            _variables[symbol] = value;
-                        }
-                        else
-                            Debug.Fail("The stack is empty");
+                        var value = _data.Pop();
+                        var symbol = a.Symbol;
+                        _variables[symbol] = value;
                     }
+                    else
+                        Debug.Fail("The stack is empty");
+                }
                     break;
                 case Procedure p:
                     //pop requisite number of arguments.
@@ -135,81 +137,81 @@ j print
                     switch (p.Name)
                     {
                         case "^":
+                        {
+                            if (_data.Count >= 2)
                             {
-                                if (_data.Count >= 2)
-                                {
-                                    var x = _data.Pop();
-                                    var y = _data.Pop();
-                                    var result = Math.Pow(y, x);
-                                    _data.Push(result);
-                                }
-                                else
-                                    Debug.Fail("Insufficient items on the stack");
+                                var x = _data.Pop();
+                                var y = _data.Pop();
+                                var result = Math.Pow(y, x);
+                                _data.Push(result);
                             }
+                            else
+                                Debug.Fail("Insufficient items on the stack");
+                        }
                             break;
                         case "SQR":
+                        {
+                            if (_data.Count > 0)
                             {
-                                if (_data.Count > 0)
-                                {
-                                    var x = _data.Pop();
-                                    var result = Math.Sqrt(x);
-                                    _data.Push(result);
-                                }
-                                else
-                                    Debug.Fail("The stack is empty");
+                                var x = _data.Pop();
+                                var result = Math.Sqrt(x);
+                                _data.Push(result);
                             }
+                            else
+                                Debug.Fail("The stack is empty");
+                        }
                             break;
                         case "INPUT":
+                        {
+                            //get numeric value from console
+                            //convert value to double
+                            //push to data
+                            var value = _terminal.ReadLine();
+                            if (value != null && double.TryParse(value, out var numericValue))
                             {
-                                //get numeric value from console
-                                //convert value to double
-                                //push to data
-                                var value = _terminal.ReadLine();
-                                if (value != null && double.TryParse(value, out var numericValue))
-                                {
-                                    _data.Push(numericValue);
-                                }
+                                _data.Push(numericValue);
                             }
+                        }
                             break;
                         case "PRINT":
+                        {
+                            //pop value
+                            //print
+                            if (_data.Count > 0)
                             {
-                                //pop value
-                                //print
-                                if (_data.Count > 0)
-                                {
-                                    var value = _data.Pop();
-                                    _terminal.WriteLine(value.ToString());
-                                }
-                                else
-                                    Debug.Fail("The stack is empty");
+                                var value = _data.Pop();
+                                _terminal.WriteLine(value.ToString());
                             }
+                            else
+                                Debug.Fail("The stack is empty");
+                        }
                             break;
                         case "GOTO":
+                        {
+                            //pop label
+                            //get new index from dict.
+                            //set _index to new value
+                            //decrement _index to account for loop incrementation.
+                            //return
+                            if (_data.Count > 0)
                             {
-                                //pop label
-                                //get new index from dict.
-                                //set _index to new value
-                                //decrement _index to account for loop incrementation.
-                                //return
-                                if (_data.Count > 0)
+                                var label = _data.Pop();
+                                if (_labelIndex.TryGetValue((int)label, out var newIndex))
                                 {
-                                    var label = _data.Pop();
-                                    if (_labelIndex.TryGetValue((int)label, out var newIndex))
-                                    {
-                                        _index = (int)newIndex;
-                                        _index--;//HACK: come up with something better.
-                                        return;
-                                    }
-                                    else
-                                    {
-                                        Debug.Fail("Something was wrong with the value");//fixme; really bad text.
-                                        //todo: error handling.
-                                        throw new InvalidOperationException("this is only to get the c# to stop complaining.");
-                                    }
+                                    _index = (int)newIndex;
+                                    _index--;//HACK: come up with something better.
+                                    return;
                                 }
                                 else
-                                    Debug.Fail("The stack is empty");
+                                {
+                                    Debug.Fail("Something was wrong with the value");//fixme; really bad text.
+                                    //todo: error handling.
+                                    throw new InvalidOperationException("this is only to get the c# to stop complaining.");
+                                }
                             }
+                            else
+                                Debug.Fail("The stack is empty");
+                        }
                             break;
                         default:
                             //todo :error handling.
