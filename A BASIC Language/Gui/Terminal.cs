@@ -1,4 +1,4 @@
-﻿using A_BASIC_Language.Gui.WinForms;
+using A_BASIC_Language.Gui.WinForms;
 
 namespace A_BASIC_Language.Gui;
 
@@ -24,6 +24,18 @@ public class Terminal : IDisposable
 
     public void WriteLine(string s) =>
         Emu.WriteLine(s);
+
+    public string ReadLine()
+    {
+        Emu.BeginLineInput();
+
+        do
+        {
+            Application.DoEvents();
+        } while (Emu.LineInputMode);
+
+        return "45";
+    }
 
     public void Dispose()
     {
