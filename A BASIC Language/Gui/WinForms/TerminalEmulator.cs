@@ -1,7 +1,9 @@
-﻿namespace A_BASIC_Language.Gui.WinForms;
+namespace A_BASIC_Language.Gui.WinForms;
 
 public partial class TerminalEmulator : Form
 {
+    private Brush OutputBrush { get; }
+    private Brush InputBrush { get; }
     private const int RowCount = 25;
     private const int ColumnCount = 40;
     private const int PixelsWidth = 320;
@@ -12,11 +14,19 @@ public partial class TerminalEmulator : Form
     private int CursorX { get; set; }
     private int CursorY { get; set; }
     private bool CursorBlink { get; set; }
-    private bool LineInputMode { get; set; }
+    private int LineInputX { get; set; }
+    private int LineInputY { get; set; }
+    public bool LineInputMode { get; set; }
+    public string LineInputResult { get; private set; }
 
     public TerminalEmulator()
     {
         InitializeComponent();
+        LineInputX = 0;
+        LineInputY = 0;
+        LineInputResult = "";
+        OutputBrush = new SolidBrush(Color.FromArgb(0, 255, 0));
+        InputBrush = new SolidBrush(Color.FromArgb(0, 255, 255));
         _characters = new char[ColumnCount, RowCount];
         CursorX = 0;
         CursorY = 0;
@@ -68,6 +78,8 @@ public partial class TerminalEmulator : Form
 
     public void BeginLineInput()
     {
+        LineInputX = CursorX;
+        LineInputY = CursorY;
         LineInputMode = true;
     }
 
@@ -164,27 +176,73 @@ public partial class TerminalEmulator : Form
         var pixelX = 0;
         var pixelY = 0;
 
-        for (var y = 0; y < RowCount; y++)
+        if (LineInputMode)
         {
-            for (var x = 0; x < ColumnCount; x++)
+            for (var y = 0; y < RowCount; y++)
             {
-                if (CursorBlink && CursorX == x && CursorY == y)
+                for (var x = 0; x < ColumnCount; x++)
                 {
-                    e.Graphics.FillRectangle(Brushes.Green, pixelX, pixelY, CharacterWidth, CharacterHeight);
+                    var b = IsInsideInputZone(x, y) ? InputBrush : OutputBrush;
 
-                    if (_characters[x, y] > 0)
-                        e.Graphics.DrawString(_characters[x, y].ToString(), Font, Brushes.Black, pixelX, pixelY);
+                    if (CursorBlink && CursorX == x && CursorY == y)
+                    {
+                        e.Graphics.FillRectangle(b, pixelX, pixelY, CharacterWidth, CharacterHeight);
+
+                        if (_characters[x, y] > 0)
+                            e.Graphics.DrawString(_characters[x, y].ToString(), Font, Brushes.Black, pixelX, pixelY);
+                    }
+                    else
+                    {
+                        if (_characters[x, y] > 0)
+                            e.Graphics.DrawString(_characters[x, y].ToString(), Font, b, pixelX, pixelY);
+                    }
+                    pixelX += CharacterWidth;
                 }
-                else
-                {
-                    if (_characters[x, y] > 0)
-                        e.Graphics.DrawString(_characters[x, y].ToString(), Font, Brushes.Green, pixelX, pixelY);
-                }
-                pixelX += CharacterWidth;
+                pixelX = 0;
+                pixelY += CharacterHeight;
             }
-            pixelX = 0;
-            pixelY += CharacterHeight;
         }
+        else
+        {
+            for (var y = 0; y < RowCount; y++)
+            {
+                for (var x = 0; x < ColumnCount; x++)
+                {
+                    if (CursorBlink && CursorX == x && CursorY == y)
+                    {
+                        e.Graphics.FillRectangle(OutputBrush, pixelX, pixelY, CharacterWidth, CharacterHeight);
+
+                        if (_characters[x, y] > 0)
+                            e.Graphics.DrawString(_characters[x, y].ToString(), Font, Brushes.Black, pixelX, pixelY);
+                    }
+                    else
+                    {
+                        if (_characters[x, y] > 0)
+                            e.Graphics.DrawString(_characters[x, y].ToString(), Font, OutputBrush, pixelX, pixelY);
+                    }
+                    pixelX += CharacterWidth;
+                }
+                pixelX = 0;
+                pixelY += CharacterHeight;
+            }
+        }
+    }
+
+    private bool IsInsideInputZone(int x, int y)
+    {
+        if (y < LineInputY)
+            return false;
+
+        if (y == LineInputY && x < LineInputX)
+            return false;
+
+        if (y > CursorY)
+            return false;
+
+        if (y == CursorY && x > CursorX)
+            return false;
+
+        return true;
     }
 
     private void TerminalEmulator_Resize(object sender, EventArgs e)
@@ -197,6 +255,26 @@ public partial class TerminalEmulator : Form
         System.Diagnostics.Debug.WriteLine(e.KeyCode);
         switch (e.KeyCode)
         {
+            case Keys.Enter:
+                if (LineInputMode)
+                    SaveLineInput();
+
+                CursorY++;
+
+                if (CursorY >= RowCount)
+                {
+                    CursorY = RowCount - 1;
+                    ScrollUp();
+                }
+
+                CursorX = 0;
+
+                KeyDownOperationCompleted(ref e);
+
+                if (LineInputMode)
+                    LineInputMode = false;
+
+                break;
             case Keys.Up:
                 CursorY--;
 
@@ -248,6 +326,11 @@ public partial class TerminalEmulator : Form
                 KeyDownOperationCompleted(ref e);
                 break;
         }
+    }
+
+    private void SaveLineInput()
+    {
+        LineInputResult = "45";
     }
 
     private void TerminalEmulator_KeyPress(object sender, KeyPressEventArgs e)
