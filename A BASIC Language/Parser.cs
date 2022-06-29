@@ -10,7 +10,7 @@ internal class Parser
     {
         var lines = File.ReadAllLines(pathToMain).Where(l => !string.IsNullOrWhiteSpace(l)).ToList();
         Tokenizer t1 = new(lines);
-        StageTwo.Tokenizer t2 = new(t1.TokenizedLines);
+        Stage2.Tokenizer t2 = new(t1.TokenizedLines);
         Stage3.Parser p1 = new(t2.Result);
         Program = p1.Program;
     }

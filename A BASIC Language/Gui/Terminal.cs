@@ -25,6 +25,12 @@ public class Terminal : IDisposable
     public void WriteLine(string s) =>
         Emu.WriteLine(s);
 
+    public string ReadLine(string prompt)
+    {
+        Write(prompt);
+        return ReadLine();
+    }
+
     public string ReadLine()
     {
         Emu.BeginLineInput();

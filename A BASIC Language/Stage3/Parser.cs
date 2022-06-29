@@ -1,22 +1,19 @@
-﻿using StageTwo;
+﻿using A_BASIC_Language.Stage2;
 
-namespace A_BASIC_Language.Stage3
+namespace A_BASIC_Language.Stage3;
+
+internal class Parser
 {
-    internal class Parser
+    public ParsedProgram Program { get; set; }
+
+    public Parser(Result result)
     {
-        public ParsedProgram Program { get; set; }
+        Program = new();
 
-        public Parser(Result result)
+        foreach (Stage2.Line line in result.Tokens)
         {
-            Program = new();
-
-            foreach (Stage2.Line line in result.Tokens)
-            {
-                LineParser lp = new(line);
-                Program.Add(lp.Label, lp.Line);
-            }
+            LineParser lp = new(line);
+            Program.Add(lp.Label, lp.Line);
         }
-
-        
     }
 }
