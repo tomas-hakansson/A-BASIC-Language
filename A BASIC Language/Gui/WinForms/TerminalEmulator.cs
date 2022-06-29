@@ -338,7 +338,10 @@ public partial class TerminalEmulator : Form
         {
             if (y == LineInputY && y == CursorY) // Only one row
             {
-                
+                for (var x = 0; x < CursorX; x++)
+                {
+                    result.Append(_characters[x, y] == (char)0 ? " " : _characters[x, y]);
+                }
             }
             else if (y == LineInputY) // First row
             {
