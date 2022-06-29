@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace A_BASIC_Language.Gui.WinForms;
 
 public partial class TerminalEmulator : Form
@@ -239,7 +241,7 @@ public partial class TerminalEmulator : Form
         if (y > CursorY)
             return false;
 
-        if (y == CursorY && x > CursorX)
+        if (y == CursorY && x >= CursorX)
             return false;
 
         return true;
@@ -330,11 +332,57 @@ public partial class TerminalEmulator : Form
 
     private void SaveLineInput()
     {
-        LineInputResult = "45";
+        var result = new StringBuilder();
+
+        for (var y = LineInputY; y <= CursorY; y++)
+        {
+            if (y == LineInputY && y == CursorY) // Only one row
+            {
+                
+            }
+            else if (y == LineInputY) // First row
+            {
+
+            }
+            else if (y == CursorY) // Last row
+            {
+
+            }
+            else // Row between
+            {
+                
+            }
+        }
+
+        LineInputResult = result.ToString();
     }
 
     private void TerminalEmulator_KeyPress(object sender, KeyPressEventArgs e)
     {
         System.Diagnostics.Debug.WriteLine((int)e.KeyChar);
+
+        if ("abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:,;-*+-/!#$€&()=".IndexOf(e.KeyChar) < 0)
+            return;
+
+        _characters[CursorX, CursorY] = e.KeyChar;
+
+        CursorX++;
+
+        if (CursorX >= ColumnCount && CursorY < RowCount - 1)
+        {
+            CursorX = 0;
+            CursorY++;
+        }
+        else if (CursorX >= ColumnCount)
+        {
+            CursorX = 0;
+            CursorY = RowCount - 1;
+        }
+
+        e.Handled = true;
+        timer1.Enabled = false;
+        CursorBlink = true;
+        timer1.Enabled = true;
+        Invalidate();
     }
 }
