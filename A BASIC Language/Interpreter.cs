@@ -1,5 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
+using A_BASIC_Language.Gui;
 
 internal class Interpreter
 {
@@ -32,6 +31,7 @@ n print
 j print
 20 goto]
 */
+    private Terminal? _terminal;
     readonly List<Line> _lines;//todo: replace with ParsedProgram.
     readonly Dictionary<int, int> _labelIndex;//todo: replace with ParsedProgram.
     readonly Dictionary<string, double?> _variables;//Ponder: do the value need to be nullable?
@@ -71,8 +71,9 @@ j print
         _index = 0;
     }
 
-    public void Run()
+    public void Run(Terminal terminal)
     {
+        _terminal = terminal;
         for (; _index < _lines.Count; _index++)
         {
             EvalLine();
@@ -81,7 +82,14 @@ j print
 
     private void EvalLine()
     {
+        if (_terminal == null)
+            throw new SystemException("Terminal not initialized.");
+
+        Application.DoEvents();
+
         var line = _lines[_index];
+        System.Diagnostics.Debug.WriteLine($"Eval {_index}: {line}");
+
         for (int i = 0; i < line.Count; i++)
         {
             switch (line[i])
@@ -139,7 +147,7 @@ j print
                                 //get numeric value from console
                                 //convert value to double
                                 //push to data
-                                var value = Console.ReadLine();
+                                var value = _terminal.ReadLine();
                                 if (value != null && double.TryParse(value, out var numericValue))
                                 {
                                     _data.Push(numericValue);
@@ -151,7 +159,7 @@ j print
                                 //pop value
                                 //print
                                 var value = _data.Pop();
-                                Console.WriteLine(value);
+                                _terminal.WriteLine(value.ToString());
                             }
                             break;
                         case "GOTO":
