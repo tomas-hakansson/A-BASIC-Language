@@ -166,7 +166,7 @@ j print
                             //get numeric value from console
                             //convert value to double
                             //push to data
-                            var value = _terminal.ReadLine("1234567890123456789012345678901234567890Prompt: ");
+                            var value = _terminal.ReadLine();
                             if (value != null && double.TryParse(value, out var numericValue))
                             {
                                 _data.Push(numericValue);
