@@ -1,6 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 
+using A_BASIC_Language.Stage2;
+
 namespace StageTwo
 {
     internal class Result//todo: come up with better name.

@@ -1,7 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-
-namespace StageTwo
+﻿namespace A_BASIC_Language.Stage2
 {
     internal class Line
     {

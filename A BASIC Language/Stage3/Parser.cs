@@ -1,6 +1,6 @@
 ﻿using StageTwo;
 
-namespace StageThree
+namespace A_BASIC_Language.Stage3
 {
     internal class Parser
     {
@@ -10,7 +10,7 @@ namespace StageThree
         {
             Program = new();
 
-            foreach (StageTwo.Line line in result.Tokens)
+            foreach (Stage2.Line line in result.Tokens)
             {
                 LineParser lp = new(line);
                 Program.Add(lp.Label, lp.Line);

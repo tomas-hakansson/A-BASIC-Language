@@ -1,19 +1,19 @@
-﻿namespace StageThree
+﻿namespace A_BASIC_Language.Stage3
 {
     internal class LineParser
     {
         public int Label { get; private set; }
         public Line Line { get; private set; }
 
-        List<StageTwo.Token> _tokens;
+        List<Stage2.Token> _tokens;
         List<string> _values;
         int _index;
-        StageTwo.Token _currentToken;
+        Stage2.Token _currentToken;
         string _currentValue;
 
         List<Token> _expression;
 
-        public LineParser(StageTwo.Line tokenizedLine)
+        public LineParser(Stage2.Line tokenizedLine)
         {
             /*
             What is a line?
@@ -34,7 +34,7 @@
         int LineNumber()
         {
             int result;
-            if (_currentToken == StageTwo.Token.Label)
+            if (_currentToken == Stage2.Token.Label)
             {
                 result = int.Parse(_currentValue);
                 Next();
@@ -60,7 +60,7 @@
             //there are two possibilities: beginning with a statement or a variable to be set.
             //assume the program is correct.
             //the first step is to identify the statement and then act accordingly
-            if (_currentToken == StageTwo.Token.Statement)
+            if (_currentToken == Stage2.Token.Statement)
             {
                 return _currentValue switch
                 {
@@ -70,7 +70,7 @@
                     _ => throw new NotImplementedException()//todo: proper error handling.
                 };
             }
-            else if (_currentToken == StageTwo.Token.Other)//let's ignore assignment for now and look at the others.
+            else if (_currentToken == Stage2.Token.Other)//let's ignore assignment for now and look at the others.
                 return Assignment();
             else
                 throw new Exception("placeholder");//todo: proper error handling.
@@ -123,7 +123,7 @@
         {//Note: This method is Expression in Crenshaw's book.
             PrecedenceTwoOperator();
             var temp = IsOneOf(_currentValue, "+ -");
-            while (_currentToken == StageTwo.Token.Operator && IsOneOf(_currentValue, "+ -"))
+            while (_currentToken == Stage2.Token.Operator && IsOneOf(_currentValue, "+ -"))
             {
                 switch (_currentValue)
                 {
@@ -154,7 +154,7 @@
         private void PrecedenceTwoOperator()
         {//Note: This method is Term in Crenshaw's book.
             PrecedenceOneOperator();
-            while (_currentToken == StageTwo.Token.Operator && IsOneOf(_currentValue, "* /"))//todo: confirm that "/" is divide in Basic.
+            while (_currentToken == Stage2.Token.Operator && IsOneOf(_currentValue, "* /"))//todo: confirm that "/" is divide in Basic.
             {
                 switch (_currentValue)
                 {
@@ -185,7 +185,7 @@
         private void PrecedenceOneOperator()
         {
             Atom();
-            while (_currentToken == StageTwo.Token.Operator && _currentValue == "^")
+            while (_currentToken == Stage2.Token.Operator && _currentValue == "^")
             {
                 //exponentiate
                 Next();
@@ -204,28 +204,28 @@
         {//Note: This method is Factor in Crenshaw's book.
             switch (_currentToken)
             {
-                case StageTwo.Token.OpeningParenthesis:
+                case Stage2.Token.OpeningParenthesis:
                     Next();
                     Expression();
-                    Match(StageTwo.Token.ClosingParenthesis);
+                    Match(Stage2.Token.ClosingParenthesis);
                     break;
-                case StageTwo.Token.StandardFunction:
+                case Stage2.Token.StandardFunction:
                     //e.g. sqr(n)
                     //get name of function then next.
                     var functionName = _currentValue;
                     Next();
-                    Match(StageTwo.Token.OpeningParenthesis);
+                    Match(Stage2.Token.OpeningParenthesis);
                     Expression();
-                    Match(StageTwo.Token.ClosingParenthesis);
+                    Match(Stage2.Token.ClosingParenthesis);
                     _expression.Add(new Procedure(functionName));
                     break;
-                case StageTwo.Token.UserDefinedFunction:
+                case Stage2.Token.UserDefinedFunction:
                     break;
-                case StageTwo.Token.Number:
+                case Stage2.Token.Number:
                     _expression.Add(new Number(_currentValue));
                     Next();
                     break;
-                case StageTwo.Token.Other:
+                case Stage2.Token.Other:
                     _expression.Add(new Variable(_currentValue));
                     Next();
                     break;
@@ -234,7 +234,7 @@
             }
         }
 
-        void Match(StageTwo.Token token)
+        void Match(Stage2.Token token)
         {
             if (token == _currentToken)
                 Next();

@@ -1,5 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
+﻿namespace A_BASIC_Language;
 
 internal class Token
 {

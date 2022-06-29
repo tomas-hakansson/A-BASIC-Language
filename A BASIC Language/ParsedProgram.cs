@@ -1,5 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using A_BASIC_Language;
+
 internal class ParsedProgram
 {
     public Dictionary<int, int> LabelIndex { get; set; }

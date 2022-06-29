@@ -1,4 +1,6 @@
-﻿namespace StageTwo
+﻿using A_BASIC_Language.Stage2;
+
+namespace StageTwo
 {
     internal class Tokenizer
     {
