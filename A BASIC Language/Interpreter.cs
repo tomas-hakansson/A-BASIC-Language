@@ -5,35 +5,6 @@ namespace A_BASIC_Language;
 
 internal class Interpreter
 {
-    /*
-20 input n
-25 i=sqr(sqr(n))
-30 j=(i^2)^2
-35 print n
-38 print j
-40 goto 20
-
-[input n
-i=sqr(sqr(n))
-j=(i^2)^2
-print n
-print j
-goto 20]
-
-[20 -> 0
-25 -> 1
-30 -> 2
-35 -> 3
-38 -> 4
-40 -> 5]
-
-[input setvariable n
-n sqr sqr setvariable i
-i 2 ^ 2 ^ setvariable j
-n print
-j print
-20 goto]
-*/
     private Terminal? _terminal;
     readonly List<Line> _lines;//todo: replace with ParsedProgram.
     readonly Dictionary<int, int> _labelIndex;//todo: replace with ParsedProgram.
@@ -98,13 +69,10 @@ j print
             switch (line[i])
             {
                 case Number n:
-                    //put on stack.
                     _data.Push(n.Value);
                     break;
                 case Variable v:
                 {
-                    //extract value.
-                    //put on stack.
                     if (_variables.TryGetValue(v.Symbol, out var value) && value.HasValue)
                     {
                         _data.Push(value.Value);
@@ -118,8 +86,6 @@ j print
                     break;
                 case Assignment a:
                 {
-                    //pop value from stack
-                    //set variable to value
                     if (_data.Count > 0)
                     {
                         var value = _data.Pop();
@@ -131,9 +97,6 @@ j print
                 }
                     break;
                 case Procedure p:
-                    //pop requisite number of arguments.
-                    //evaluate.
-                    //set stack if needed.
                     switch (p.Name)
                     {
                         case "^":
@@ -163,9 +126,6 @@ j print
                             break;
                         case "INPUT":
                         {
-                            //get numeric value from console
-                            //convert value to double
-                            //push to data
                             var value = _terminal.ReadLine();
                             if (value != null && double.TryParse(value, out var numericValue))
                             {
@@ -175,8 +135,6 @@ j print
                             break;
                         case "PRINT":
                         {
-                            //pop value
-                            //print
                             if (_data.Count > 0)
                             {
                                 var value = _data.Pop();
@@ -188,11 +146,6 @@ j print
                             break;
                         case "GOTO":
                         {
-                            //pop label
-                            //get new index from dict.
-                            //set _index to new value
-                            //decrement _index to account for loop incrementation.
-                            //return
                             if (_data.Count > 0)
                             {
                                 var label = _data.Pop();
