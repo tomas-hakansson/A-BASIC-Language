@@ -6,9 +6,8 @@ internal class Parser
 {
     public ParsedProgram Program { get; }
 
-    public Parser(string pathToMain)
+    public Parser(List<string> lines)
     {
-        var lines = File.ReadAllLines(pathToMain).Where(l => !string.IsNullOrWhiteSpace(l)).ToList();
         Tokenizer t1 = new(lines);
         Stage2.Tokenizer t2 = new(t1.TokenizedLines);
         Stage3.Parser p1 = new(t2.Result);

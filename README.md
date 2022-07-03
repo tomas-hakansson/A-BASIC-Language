@@ -1,4 +1,4 @@
-# A-BASIC-Language
+# A BASIC Language
 ABL (A BASIC Language) is (will be) an implementation of Microsoft Altair BASIC
 
 It's currently an interpreter but compilation is a possibility in the future.

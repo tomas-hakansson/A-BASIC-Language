@@ -42,9 +42,9 @@ j print
 
     int _index;
 
-    public Interpreter(string pathToMain)
+    public Interpreter(List<string> lines)
     {
-        Parser parser = new(pathToMain);
+        Parser parser = new(lines);
         var program = parser.Program;
         _lines = program.Lines;
         _labelIndex = program.LabelIndex;
