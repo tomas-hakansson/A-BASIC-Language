@@ -1,4 +1,6 @@
-﻿namespace A_BASIC_Language.IO;
+﻿using System.Net;
+
+namespace A_BASIC_Language.IO;
 
 public class NetIO : IOBase
 {
@@ -8,6 +10,15 @@ public class NetIO : IOBase
 
     public override LoadResult Load()
     {
-        return new LoadResult(false, "");
+        try
+        {
+            using var wc = new WebClient(); // todo
+            var source = wc.DownloadString(Filename);
+            return LoadResult.Success(source);
+        }
+        catch
+        {
+            return LoadResult.Fail();
+        }
     }
 }
