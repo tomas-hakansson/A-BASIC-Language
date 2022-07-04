@@ -8,7 +8,7 @@ One consequence of this is that code can be indented for effect:
 
 Code begins with a number followed by a statement or variable.
 
-35 print n
+35printn
 
 Everything else is a comment.
 
