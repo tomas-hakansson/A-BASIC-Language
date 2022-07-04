@@ -12,7 +12,7 @@ internal enum Token
     Semicolon,
     Operator,
     StandardFunction,
-    UserDefinedFunction,//syntax seems to be FNx where x is user optional.
+    UserDefinedFunction,
     Number,
     Other,//Ponder: By now maybe the only thing this could be are variables.
 }

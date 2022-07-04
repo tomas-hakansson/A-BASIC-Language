@@ -19,10 +19,12 @@ public class Tokenizer
 
         _source = source;
         _currentCharacter = _source[_index];
-        //todo: get the standard tokens from somewhere else.
-        List<string> standardTokens = new()
-        { "=", "^", "(", ")", "GOTO", "INPUT", "PRINT", "REM", "SQR" };
-        _tokenizationHelper = new TokenizeStandard(_source, standardTokens);
+        ReservedWords rw = new();
+        var reservedWords = rw.Operators;
+        reservedWords.AddRange(rw.Punctuation);
+        reservedWords.AddRange(rw.Functions);
+        reservedWords.AddRange(rw.Statements);
+        _tokenizationHelper = new TokenizeStandard(_source, reservedWords);
 
         Tokenize();
         List<string> tokenizedLine = new();
@@ -200,7 +202,7 @@ public class Tokenizer
 
     private void SetCurrentCharacter()
     {
-        if (_index < _source.Length)
+        if (_index < _source.Length && _index >= 0)
             _currentCharacter = _source[_index];
     }
 }

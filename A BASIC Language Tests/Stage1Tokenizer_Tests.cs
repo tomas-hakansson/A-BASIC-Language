@@ -79,7 +79,7 @@ public class Stage1Tokenizer_Tests
 ";
         Tokenizer tokenizer = new(source);
         var tokenizedSource = tokenizer.TokenizedSource;
-        List<string> ts_expected = new() { "10", "INPUT", "N", "\n", "20", "PRINT", "N", "\n" };
+        List<string> ts_expected = new() { "10", "INPUT", "N", "\n", "20", "PRINT", "N" };
         CollectionAssert.AreEqual(ts_expected, tokenizedSource);
         var tokenizedLines = tokenizer.TokenizedLines;
         List<List<string>> tl_expected = new()

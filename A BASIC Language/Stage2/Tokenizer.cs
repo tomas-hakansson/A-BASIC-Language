@@ -13,11 +13,17 @@ internal class Tokenizer
     {
         Result = new();
         _tokenizedLines = tokenizedLines;
-        _statementTokens = new List<string>() { "INPUT", "PRINT", "GOTO", "DEF", 
-            "DATA", "DIM", "END", "FOR", "TO", "STEP", "GOSUB", "IF", "THEN", 
-            "ELSE", "LET", "NEXT", "ON", "READ", "REM", "RESTORE", "RETURN", "STOP" };
-        _Operators = new List<string>() { "^", "+", "-", "*", "/" };
-        _standardFunctions = new List<string>() { "SQR", "INT" };
+        ReservedWords rw = new();
+        _statementTokens = rw.Statements;
+        _Operators = rw.Operators;
+        _standardFunctions = rw.Functions;
+        //Note: I'm leaving the previous hard-coded values below until I'm sure that
+        // my change works properly.
+        //_statementTokens = new List<string>() { "INPUT", "PRINT", "GOTO", "DEF", 
+        //    "FN", "DATA", "DIM", "END", "FOR", "TO", "STEP", "GOSUB", "IF", "THEN", 
+        //    "ELSE", "LET", "NEXT", "ON", "READ", "REM", "RESTORE", "RETURN", "STOP" };
+        //_Operators = new List<string>() { "^", "+", "-", "*", "/" };
+        //_standardFunctions = new List<string>() { "SQR", "INT" };
         foreach (var line in _tokenizedLines)
         {
             Result.Add(Line(line));
@@ -53,7 +59,7 @@ internal class Tokenizer
                 currentToken = Token.Colon;
             else if (token == ";")
                 currentToken = Token.Semicolon;
-            else if (token.StartsWith("FN"))
+            else if (token == "FN")//Ponder: I don't know if I want special handling for this.
                 currentToken = Token.UserDefinedFunction;
             else if (_statementTokens.Contains(token))
                 currentToken = Token.Statement;
