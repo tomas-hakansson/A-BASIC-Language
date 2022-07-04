@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace A_BASIC_Language_Tests;
 
 [TestClass]
-public class TokenizeStandard_Tests
+public class Stage1TokenizeStandard_Tests
 {
     [TestMethod]
     public void CanTokenizeOneInTheMiddle()

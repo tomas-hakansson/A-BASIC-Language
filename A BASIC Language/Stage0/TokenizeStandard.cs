@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace A_BASIC_Language.Stage0;
+﻿namespace A_BASIC_Language.Stage0;
 
 public class TokenizeStandard
 {
