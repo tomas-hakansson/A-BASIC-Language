@@ -1,11 +1,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using A_BASIC_Language.Stage0;
+using A_BASIC_Language.Stage1;
 using System.Collections.Generic;
 
 namespace A_BASIC_Language_Tests;
 
 [TestClass]
-public class TokenizeStandard_Tests
+public class Stage1TokenizeStandard_Tests
 {
     [TestMethod]
     public void CanTokenizeOneInTheMiddle()

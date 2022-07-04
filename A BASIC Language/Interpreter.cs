@@ -13,9 +13,9 @@ internal class Interpreter
 
     int _index;
 
-    public Interpreter(List<string> lines)
+    public Interpreter(string source)
     {
-        Parser parser = new(lines);
+        Parser parser = new(source);
         var program = parser.Program;
         _lines = program.Lines;
         _labelIndex = program.LabelIndex;
