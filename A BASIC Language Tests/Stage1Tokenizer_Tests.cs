@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using A_BASIC_Language.Stage0;
+using A_BASIC_Language.Stage1;
 using System.Collections.Generic;
 
 namespace A_BASIC_Language_Tests;
@@ -17,7 +17,7 @@ public class Stage1Tokenizer_Tests
         List<string> ts_expected = new() { "10", "INPUT", "N" };
         CollectionAssert.AreEqual(ts_expected, tokenizedSource);
         var tokenizedLines = tokenizer.TokenizedLines;
-        List<List<string>> tl_expected = new List<List<string>>()
+        List<List<string>> tl_expected = new()
         { new List<string>() { "10", "INPUT", "N" } };
         Assert.AreEqual(tl_expected.Count, tokenizedLines.Count);
         for (int i = 0; i < tl_expected.Count; i++)
@@ -37,7 +37,7 @@ public class Stage1Tokenizer_Tests
         List<string> ts_expected = new() { "10", "INPUT", "N", "\n", "20", "PRINT", "N" };
         CollectionAssert.AreEqual(ts_expected, tokenizedSource);
         var tokenizedLines = tokenizer.TokenizedLines;
-        List<List<string>> tl_expected = new List<List<string>>()
+        List<List<string>> tl_expected = new()
         { new List<string>() { "10", "INPUT", "N" },
           new List<string>() { "20", "PRINT", "N" } };
         Assert.AreEqual(tl_expected.Count, tokenizedLines.Count);
@@ -57,9 +57,8 @@ public class Stage1Tokenizer_Tests
         var tokenizedSource = tokenizer.TokenizedSource;
         List<string> ts_expected = new() { "10", "INPUT", "N", "\n", "20", "PRINT", "N" };
         CollectionAssert.AreEqual(ts_expected, tokenizedSource);
-        var lines = tokenizer.TokenizedLines;
         var tokenizedLines = tokenizer.TokenizedLines;
-        List<List<string>> tl_expected = new List<List<string>>()
+        List<List<string>> tl_expected = new()
         { new List<string>() { "10", "INPUT", "N" },
           new List<string>() { "20", "PRINT", "N" } };
         Assert.AreEqual(tl_expected.Count, tokenizedLines.Count);
@@ -83,7 +82,7 @@ public class Stage1Tokenizer_Tests
         List<string> ts_expected = new() { "10", "INPUT", "N", "\n", "20", "PRINT", "N", "\n" };
         CollectionAssert.AreEqual(ts_expected, tokenizedSource);
         var tokenizedLines = tokenizer.TokenizedLines;
-        List<List<string>> tl_expected = new List<List<string>>()
+        List<List<string>> tl_expected = new()
         { new List<string>() { "10", "INPUT", "N" },
           new List<string>() { "20", "PRINT", "N" } };
         Assert.AreEqual(tl_expected.Count, tokenizedLines.Count);
@@ -129,7 +128,7 @@ public class Stage1Tokenizer_Tests
         };
         CollectionAssert.AreEqual(ts_expected, tokenizedSource);
         var tokenizedLines = tokenizer.TokenizedLines;
-        List<List<string>> tl_expected = new List<List<string>>()
+        List<List<string>> tl_expected = new()
         { new List<string>() { "10", "I", "=", "SQR", "(", "SQR", "(", "N", ")", ")" },
           new List<string>() {  "20", "J", "=", "(", "I", "^", "2", ")", "^", "2" } };
         Assert.AreEqual(tl_expected.Count, tokenizedLines.Count);
@@ -149,7 +148,7 @@ public class Stage1Tokenizer_Tests
         List<string> ts_expected = new() { "10", "REM", "\n" };
         CollectionAssert.AreEqual(ts_expected, tokenizedSource);
         var tokenizedLines = tokenizer.TokenizedLines;
-        List<List<string>> tl_expected = new List<List<string>>()
+        List<List<string>> tl_expected = new()
         { new List<string>() { "10", "REM" } };
         Assert.AreEqual(tl_expected.Count, tokenizedLines.Count);
         for (int i = 0; i < tl_expected.Count; i++)
@@ -172,7 +171,7 @@ public class Stage1Tokenizer_Tests
         List<string> ts_expected = new() { "10", "REM", "\n", "20", "INPUT", "N", "\n", "30", "PRINT", "N" };
         CollectionAssert.AreEqual(ts_expected, tokenizedSource);
         var tokenizedLines = tokenizer.TokenizedLines;
-        List<List<string>> tl_expected = new List<List<string>>()
+        List<List<string>> tl_expected = new()
         { new List<string>() { "10", "REM" },
           new List<string>() { "20", "INPUT", "N" },
           new List<string>() { "30", "PRINT", "N" } };

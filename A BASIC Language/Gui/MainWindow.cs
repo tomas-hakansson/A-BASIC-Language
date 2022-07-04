@@ -40,7 +40,7 @@ public partial class MainWindow : Form
             // TODO: Handle empty code
         }
 
-        Interpreter eval = new(source.DataAsList());
+        Interpreter eval = new(source.Data);
         eval.Run(Terminal);
     }
 

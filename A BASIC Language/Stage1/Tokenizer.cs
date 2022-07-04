@@ -1,93 +1,208 @@
 ﻿namespace A_BASIC_Language.Stage1;
 
-internal class Tokenizer
+public class Tokenizer
 {
-    public List<List<string>> TokenizedLines { get; private set; }
-    public Tokenizer(List<string> lines)
+    public List<List<string>> TokenizedLines { get; set; }
+    public List<string> TokenizedSource { get; set; }
+
+    readonly string _source;
+    int _index = 0;
+    bool _isNewLine = true;
+    private bool _eof = false;
+    private char _currentCharacter;
+    readonly TokenizeStandard _tokenizationHelper;
+
+    public Tokenizer(string source)
     {
         TokenizedLines = new List<List<string>>();
+        TokenizedSource = new List<string>();
 
-        foreach (var line in lines)
+        _source = source;
+        _currentCharacter = _source[_index];
+        //todo: get the standard tokens from somewhere else.
+        List<string> standardTokens = new()
+        { "=", "^", "(", ")", "GOTO", "INPUT", "PRINT", "REM", "SQR" };
+        _tokenizationHelper = new TokenizeStandard(_source, standardTokens);
+
+        Tokenize();
+        List<string> tokenizedLine = new();
+        foreach (var token in TokenizedSource)
         {
-            BasicLine(line);
-        }
-    }
-
-    private void BasicLine(string line)
-    {
-        var tokens = Tokenize(line);
-        if (tokens.Count > 0)
-            TokenizedLines.Add(tokens);
-    }
-    enum TokenType
-    {
-        Letter,
-        Number,
-        Other,
-    }
-
-    private List<string> Tokenize(string line)
-    {
-        List<string> result = new();
-        int index = 0;
-        char cc;
-        for (; index < line.Length;)
-        {
-            cc = line[index];
-            if (char.IsWhiteSpace(cc))
+            if (token == "\n")
             {
-                index++;
+                TokenizedLines.Add(tokenizedLine.ToList());
+                tokenizedLine.Clear();
                 continue;
             }
-
-            if (!TokenSpecialiser()) break;
+            tokenizedLine.Add(token);
         }
-        return result;
+        if (tokenizedLine.Count > 0)
+            TokenizedLines.Add(tokenizedLine);
+    }
 
-        bool TokenSpecialiser()
+    private void Tokenize()
+    {
+        SkipWhitespace();
+        while (!_eof)
         {
-            if (cc == '"')
-                return String();
-            else
-                return Token();
-        }
-
-        bool String()
-        {
-            throw new NotImplementedException();
-        }
-
-        bool Token()
-        {//Returns false if comment token is found.
-            string token = string.Empty;
-
-            TokenType type;
-            if (char.IsLetter(cc))
-                type = TokenType.Letter;
-            else if (char.IsDigit(cc))
-                type = TokenType.Number;
-            else
-                type = TokenType.Other;
-
-            for (; index < line.Length; index++)
-            {
-                cc = line[index];
-                if (cc == ' ') break;
-                if (type == TokenType.Letter && !char.IsLetter(cc)) break;
-                if (type == TokenType.Number && !char.IsDigit(cc)) break;//todo: only works for ints.
-                token += cc;
-                //Note: working under the assumption that non alphanumerics can only be one character long.
-                if (type == TokenType.Other)
-                {
-                    index++;
-                    break;
-                }
-            }
-            token = token.ToUpper();//Note: this is for case insensitivity.
-            if (token == "REM")//todo: This may not be how comments work, consult with colleague.
-                return false;
-            result.Add(token);
-            return true;
+            Line();
         }
     }
+
+    private void Line()
+    {
+        if (char.IsDigit(_currentCharacter))
+        {
+            //this is probably a label but if the full number
+            // is followed by a dot (.) then it's a comment.
+            var initialIndex = _index;
+            Label();
+            if (_currentCharacter != '.')
+            {
+                _isNewLine = false;
+                TheRest();//FixMe: poorly named method.
+            }
+            else
+            {
+                _index = initialIndex;
+                TokenizedSource.RemoveAt(TokenizedSource.Count - 1);
+                SkipLine();
+            }
+        }
+        else
+            SkipLine();
+    }
+
+    private void TheRest()
+    {
+        while (!_isNewLine && !_eof)
+        {
+            if (_currentCharacter == '"')
+            {
+                //todo: string tokenization.
+            }
+            //Note: I will for now assume that everything else is an other.
+            else
+            {
+                Others();
+            }
+        }
+    }
+
+    private void Others()
+    {
+        var token = string.Empty;
+        for (; _index < _source.Length; _index++)
+        {
+            var cc = char.ToUpper(_source[_index]);
+
+            if (cc == Environment.NewLine[0])
+            {
+                _isNewLine = true;
+                AddNewToken();
+                TokenizedSource.Add("\n");
+                break;
+            }
+
+            if (char.IsWhiteSpace(cc))
+            {
+                AddNewToken();
+                break;
+            }
+
+            var readResult = _tokenizationHelper.Read(_index);
+            if (readResult.Success)
+            {
+                _eof = readResult.EOF;
+                AddNewToken();
+                _isNewLine = readResult.IsNewLine;
+                var standardToken = readResult.Token;
+                if (standardToken == "REM")
+                    SkipLine();
+                TokenizedSource.Add(standardToken);
+                if (_isNewLine)
+                    TokenizedSource.Add("\n");
+                _index = readResult.NewIndex;
+                break;
+            }
+            else
+                token += cc;
+        }
+
+        AddNewToken();
+        SetCurrentCharacter();
+        SkipWhitespace();
+
+        void AddNewToken()
+        {
+            if (token!.Length > 0)
+            {
+                TokenizedSource.Add(token);
+                token = string.Empty;
+            }
+        }
+    }
+
+    private void Label()
+    {
+        string label = string.Empty;
+        var done = false;
+        for (; _index < _source.Length; _index++)
+        {
+            var cc = _source[_index];
+            if (!done)
+            {
+                if (char.IsDigit(cc))
+                {
+                    label += cc;
+                    continue;
+                }
+                else
+                {
+                    done = true;
+                    TokenizedSource.Add(label);
+                }
+            }
+
+            if (cc == Environment.NewLine[0])
+            {
+                throw new ArgumentException("Invalid syntax: A label must be followed by something");
+            }
+            if (char.IsWhiteSpace(cc)) continue;
+            if (done) break;
+        }
+        SetCurrentCharacter();
+    }
+
+    private void SkipLine()
+    {
+        for (; _index < _source.Length; _index++)
+        {
+            var cc = (_source[_index]);
+            if (Environment.NewLine.Contains(cc))
+                break;
+        }
+        _isNewLine = true;
+        SkipWhitespace();
+    }
+
+    private void SkipWhitespace()
+    {
+        for (; _index < _source.Length; _index++)
+        {
+            SetCurrentCharacter();
+            if (!char.IsWhiteSpace(_currentCharacter))
+                break;
+        }
+        if (_index == _source.Length)
+            _eof = true;
+    }
+
+    private void SetCurrentCharacter()
+    {
+        if (_index < _source.Length)
+            _currentCharacter = _source[_index];
+    }
 }
+
+
