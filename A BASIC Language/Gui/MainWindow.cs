@@ -1,4 +1,3 @@
-using System.Diagnostics.Tracing;
 using A_BASIC_Language.IO;
 
 namespace A_BASIC_Language.Gui;
@@ -20,11 +19,19 @@ public partial class MainWindow : Form
         Refresh();
 
         if (string.IsNullOrWhiteSpace(ProgramFilename))
-            throw new SystemException();
+        {
+            using var x = new LoadProgramDialog();
 
-        Terminal.Run(ProgramFilename);
+            if (x.ShowDialog(this) != DialogResult.OK)
+            {
+                btnQuit_Click(this, EventArgs.Empty);
+                return;
+            }
 
-        Run(Path.GetFullPath(ProgramFilename));
+            ProgramFilename = x.Filename;
+        }
+
+        Run(Path.GetFullPath(ProgramFilename!));
     }
 
     private void btnLoad_Click(object sender, EventArgs e)
@@ -34,11 +41,13 @@ public partial class MainWindow : Form
         if (x.ShowDialog(this) != DialogResult.OK)
             return;
 
-        Run(x.Filename);
+        Run(x.Filename!);
     }
 
     private void Run(string fullPath)
     {
+        Terminal.Run(ProgramFilename!);
+
         var ioDispatcher = new Dispatcher();
         var io = ioDispatcher.GetIo(fullPath);
         var source = io.Load();
@@ -74,6 +83,28 @@ public partial class MainWindow : Form
 
     private void btnQuit_Click(object sender, EventArgs e)
     {
+        Terminal.Running = false;
 
+        var formsToClose = Application.OpenForms.Cast<Form>().ToList();
+
+        foreach (var x in formsToClose)
+        {
+            try
+            {
+                x.Close();
+            }
+            catch
+            {
+                // ignored
+            }
+            try
+            {
+                x.Dispose();
+            }
+            catch
+            {
+                // ignored
+            }
+        }
     }
 }

@@ -18,6 +18,7 @@ public partial class LoadProgramDialog : Form
         Add("animal.bas"); //     5
         Add("awari.bas"); //      6
         Add("bagels.bas"); //     7
+        Add("banner.bas"); //     8
     }
 
     private void Add(string filename)

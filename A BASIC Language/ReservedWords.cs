@@ -9,7 +9,7 @@ internal class ReservedWords
 
     public ReservedWords()
     {
-        Statements = new List<string> { "DATA", "DEF","DIM", "ELSE", "END", "FN",
+        Statements = new List<string> { "DATA", "DEF", "DIM", "ELSE", "END", "FN",
             "FOR", "GOSUB", "GOTO", "IF", "INPUT", "LET", "NEXT", "ON", "PRINT",
             "READ", "REM", "RESTORE", "RETURN", "STEP", "STOP","THEN","TO" };
         Operators = new List<string> { "^", "+", "-", "*", "/" , "<", ">", "<=", ">=", "NOT", "AND", "OR", "XOR"};

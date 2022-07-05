@@ -6,6 +6,7 @@ public class Terminal : IDisposable
 {
     private TerminalEmulator Emu { get; }
     private Thread? Thread { get; set; }
+    public bool Running { get; set; }
 
     public Terminal()
     {
@@ -17,6 +18,7 @@ public class Terminal : IDisposable
         Emu.Text = title;
         Emu.Show();
         Emu.BringToFront();
+        Running = true;
     }
     
     public void Write(string s) =>

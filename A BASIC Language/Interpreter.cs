@@ -66,6 +66,9 @@ internal class Interpreter
 
         for (int i = 0; i < line.Count; i++)
         {
+            if (!_terminal.Running)
+                return;
+
             switch (line[i])
             {
                 case Number n:
