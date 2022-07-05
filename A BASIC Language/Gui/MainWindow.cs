@@ -24,10 +24,23 @@ public partial class MainWindow : Form
 
         Terminal.Run(ProgramFilename);
 
-        var pathToMain = Path.GetFullPath(ProgramFilename);
+        Run(Path.GetFullPath(ProgramFilename));
+    }
 
+    private void btnLoad_Click(object sender, EventArgs e)
+    {
+        using var x = new LoadProgramDialog();
+
+        if (x.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        Run(x.Filename);
+    }
+
+    private void Run(string fullPath)
+    {
         var ioDispatcher = new Dispatcher();
-        var io = ioDispatcher.GetIo(pathToMain);
+        var io = ioDispatcher.GetIo(fullPath);
         var source = io.Load();
 
         if (!source.Result)
@@ -42,16 +55,6 @@ public partial class MainWindow : Form
 
         Interpreter eval = new(source.Data);
         eval.Run(Terminal);
-    }
-
-    private void btnLoad_Click(object sender, EventArgs e)
-    {
-
-    }
-
-    private void Run()
-    {
-
     }
 
     private void btnPause_Click(object sender, EventArgs e)
