@@ -5,7 +5,6 @@ namespace A_BASIC_Language.Gui;
 public class Terminal : IDisposable
 {
     private TerminalEmulator Emu { get; }
-    private Thread? Thread { get; set; }
     public bool Running { get; set; }
 
     public Terminal()
@@ -40,6 +39,10 @@ public class Terminal : IDisposable
         do
         {
             Application.DoEvents();
+
+            if (!Running)
+                return "";
+
         } while (Emu.LineInputMode);
 
         return Emu.LineInputResult;

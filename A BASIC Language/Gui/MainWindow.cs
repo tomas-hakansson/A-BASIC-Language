@@ -91,11 +91,13 @@ public partial class MainWindow : Form
     private void btnQuit_Click(object sender, EventArgs e)
     {
         Terminal.Running = false;
+        Application.DoEvents();
 
         var formsToClose = Application.OpenForms.Cast<Form>().ToList();
 
         foreach (var x in formsToClose)
         {
+            Application.DoEvents();
             try
             {
                 x.Close();
@@ -113,5 +115,6 @@ public partial class MainWindow : Form
                 // ignored
             }
         }
+        Application.Exit();
     }
 }
