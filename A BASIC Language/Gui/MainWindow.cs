@@ -4,13 +4,15 @@ namespace A_BASIC_Language.Gui;
 
 public partial class MainWindow : Form
 {
+    private string SourceCode { get; set; }
     private Terminal Terminal { get; }
-    private Interpreter? Interpreter { get; }
-    public string? ProgramFilename { get; set; }
+    public string ProgramFilename { get; set; }
 
     public MainWindow()
     {
         InitializeComponent();
+        SourceCode = "";
+        ProgramFilename = "";
         Terminal = new Terminal();
     }
 
@@ -28,10 +30,10 @@ public partial class MainWindow : Form
                 return;
             }
 
-            ProgramFilename = x.Filename;
+            ProgramFilename = x.Filename ?? "";
         }
 
-        Run(Path.GetFullPath(ProgramFilename!));
+        Run(Path.GetFullPath(ProgramFilename));
     }
 
     private void btnLoad_Click(object sender, EventArgs e)
@@ -46,7 +48,7 @@ public partial class MainWindow : Form
 
     private void Run(string fullPath)
     {
-        Terminal.Run(ProgramFilename!);
+        Terminal.Run(ProgramFilename);
 
         var ioDispatcher = new Dispatcher();
         var io = ioDispatcher.GetIo(fullPath);
@@ -57,12 +59,14 @@ public partial class MainWindow : Form
             // TODO: Warn and quit
         }
 
+        SourceCode = source.Data;
+
         if (source.IsEmpty)
         {
             // TODO: Handle empty code
         }
 
-        Interpreter eval = new(source.Data);
+        Interpreter eval = new(SourceCode);
         eval.Run(Terminal);
     }
 
@@ -78,7 +82,10 @@ public partial class MainWindow : Form
 
     private void btnSource_Click(object sender, EventArgs e)
     {
-
+        using var x = new SourceDialog();
+        x.Filename = ProgramFilename;
+        x.SourceCode = SourceCode;
+        x.ShowDialog(this);
     }
 
     private void btnQuit_Click(object sender, EventArgs e)

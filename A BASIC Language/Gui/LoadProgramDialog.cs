@@ -11,14 +11,22 @@ public partial class LoadProgramDialog : Form
 
     private void LoadProgramDialog_Load(object sender, EventArgs e)
     {
-        Add("23matches.bas"); //  1
-        Add("3dplot.bas"); //     2
-        Add("aceyducey.bas"); //  3
-        Add("amazing.bas"); //    4
-        Add("animal.bas"); //     5
-        Add("awari.bas"); //      6
-        Add("bagels.bas"); //     7
-        Add("banner.bas"); //     8
+        Add("23matches.bas"); //   1
+        Add("3dplot.bas"); //      2
+        Add("aceyducey.bas"); //   3
+        Add("amazing.bas"); //     4
+        Add("animal.bas"); //      5
+        Add("awari.bas"); //       6
+        Add("bagels.bas"); //      7
+        Add("banner.bas"); //      8
+        Add("basketball.bas"); //  9
+        Add("batnum.bas"); //      10
+        Add("battle.bas"); //      11
+        Add("blackjack.bas"); //   12
+        Add("bombardment.bas"); // 13
+        Add("bombsaway.bas"); //   14
+        Add("bounce.bas"); //      15
+        Add("bowling.bas"); //     16
     }
 
     private void Add(string filename)
