@@ -323,6 +323,13 @@ public partial class TerminalEmulator : Form
             case Keys.Insert:
                 break;
             case Keys.Delete:
+                if (CursorX == ColumnCount - 1 && CursorY == RowCount - 1)
+                {
+                    _characters[CursorX, CursorY] = ' ';
+                    return;
+                }
+                DeleteCharacterAt(CursorX, CursorY);
+                KeyDownOperationCompleted(ref e);
                 break;
             case Keys.Home:
                 while (CursorX > 0)
