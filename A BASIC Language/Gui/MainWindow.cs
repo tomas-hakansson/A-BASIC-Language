@@ -30,10 +30,10 @@ public partial class MainWindow : Form
                 return;
             }
 
-            ProgramFilename = x.Filename ?? "";
+            ProgramFilename = Path.GetFullPath(x.Filename ?? "");
         }
 
-        Run(Path.GetFullPath(ProgramFilename));
+        Run();
     }
 
     private void btnLoad_Click(object sender, EventArgs e)
@@ -43,41 +43,47 @@ public partial class MainWindow : Form
         if (x.ShowDialog(this) != DialogResult.OK)
             return;
 
-        Run(x.Filename!);
+        ProgramFilename = Path.GetFullPath(x.Filename!);
+
+        Run();
     }
 
-    private void Run(string fullPath)
+    private void Run()
     {
+        Cursor = Cursors.WaitCursor;
         Terminal.Run(ProgramFilename);
 
         var ioDispatcher = new Dispatcher();
-        var io = ioDispatcher.GetIo(fullPath);
+        var io = ioDispatcher.GetIo(ProgramFilename);
         var source = io.Load();
 
         if (!source.Result)
         {
-            // TODO: Warn and quit
+            Cursor = Cursors.Default;
+            MessageBox.Show(@"Failed to load source code.", @"Run failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
         }
 
         SourceCode = source.Data;
 
         if (source.IsEmpty)
         {
-            // TODO: Handle empty code
+            Cursor = Cursors.Default;
+            MessageBox.Show(@"Empty file loaded.", @"Run failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
         }
 
         Interpreter eval = new(SourceCode);
+        Cursor = Cursors.Default;
         eval.Run(Terminal);
-    }
-
-    private void btnPause_Click(object sender, EventArgs e)
-    {
-
     }
 
     private void btnRestart_Click(object sender, EventArgs e)
     {
+        Terminal.Running = false;
+        Application.DoEvents();
 
+        Run();
     }
 
     private void btnSource_Click(object sender, EventArgs e)
@@ -89,6 +95,11 @@ public partial class MainWindow : Form
     }
 
     private void btnQuit_Click(object sender, EventArgs e)
+    {
+        Quit();
+    }
+
+    public void Quit()
     {
         Terminal.Running = false;
         Application.DoEvents();
@@ -116,5 +127,10 @@ public partial class MainWindow : Form
             }
         }
         Application.Exit();
+    }
+
+    private void MainWindow_FormClosed(object sender, FormClosedEventArgs e)
+    {
+        Quit();
     }
 }

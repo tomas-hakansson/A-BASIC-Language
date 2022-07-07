@@ -27,6 +27,10 @@ public partial class LoadProgramDialog : Form
         Add("bombsaway.bas"); //   14
         Add("bounce.bas"); //      15
         Add("bowling.bas"); //     16
+        Add("boxing.bas"); //      17
+        Add("bug.bas"); //         18
+        Add("bullfight.bas"); //   19
+        Add("bullseye.bas"); //    20
     }
 
     private void Add(string filename)

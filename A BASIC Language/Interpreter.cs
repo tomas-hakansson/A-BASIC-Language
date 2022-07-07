@@ -48,8 +48,14 @@ internal class Interpreter
     public void Run(Terminal terminal)
     {
         _terminal = terminal;
+
         for (; _index < _lines.Count; _index++)
         {
+            Application.DoEvents();
+            
+            if (!_terminal.Running)
+                return;
+
             EvalLine();
         }
     }

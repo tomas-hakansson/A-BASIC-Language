@@ -395,4 +395,14 @@ public partial class TerminalEmulator : Form
         timer1.Enabled = true;
         Invalidate();
     }
+
+    private void TerminalEmulator_FormClosed(object sender, FormClosedEventArgs e)
+    {
+        var forms = Application.OpenForms.Cast<Form>().ToList();
+        
+        MainWindow? m = forms.OfType<MainWindow>().FirstOrDefault();
+
+        if (m != null)
+            m.Quit();
+    }
 }
