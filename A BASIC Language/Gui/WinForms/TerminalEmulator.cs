@@ -303,34 +303,11 @@ public partial class TerminalEmulator : Form
                 KeyDownOperationCompleted(ref e);
                 break;
             case Keys.Left:
-                CursorX--;
-
-                if (CursorX < 0 && CursorY > 0)
-                {
-                    CursorX = ColumnCount - 1;
-                    CursorY--;
-                }
-                else if (CursorX < 0)
-                {
-                    CursorX = 0;
-                }
-
+                CursorLeft();
                 KeyDownOperationCompleted(ref e);
                 break;
             case Keys.Right:
-                CursorX++;
-
-                if (CursorX >= ColumnCount && CursorY < RowCount - 1)
-                {
-                    CursorX = 0;
-                    CursorY++;
-                }
-                else if (CursorX >= ColumnCount)
-                {
-                    CursorX = 0;
-                    CursorY = RowCount - 1;
-                }
-
+                CursorRight();
                 KeyDownOperationCompleted(ref e);
                 break;
             case Keys.Insert:
@@ -342,7 +319,105 @@ public partial class TerminalEmulator : Form
             case Keys.End:
                 break;
             case Keys.Back:
+                if (CursorX <= 0 && CursorY <= 0)
+                    return;
+
+                if (LineInputMode)
+                    if (LineInputY > CursorY || (LineInputY == CursorY && LineInputX >= CursorX))
+                        MoveLineInputLeft();
+
+                CursorLeft();
+                DeleteCharacterAt(CursorX, CursorY);
+                KeyDownOperationCompleted(ref e);
                 break;
+        }
+    }
+
+    private void DeleteCharacterAt(int posX, int posY)
+    {
+        for (var x = posX; x < ColumnCount; x++)
+        {
+            _characters[x, posY] = GetNextCharacter(x, posY);
+        }
+
+        posY++;
+
+        if (posY >= RowCount - 1)
+            return;
+
+        for (var y = posY; y < RowCount; y++)
+        {
+            for (var x = 0; x < ColumnCount; x++)
+            {
+                _characters[x, y] = GetNextCharacter(x, y);
+            }
+        }
+    }
+
+    private char GetNextCharacter(int x, int y)
+    {
+        if (x >= ColumnCount - 1 && y >= RowCount - 1)
+            return ' ';
+
+        x++;
+
+        if (x >= ColumnCount && y < RowCount - 1)
+        {
+            x = 0;
+            y++;
+        }
+        else if (x >= ColumnCount)
+        {
+            x = 0;
+            y = RowCount - 1;
+        }
+
+        return _characters[x, y];
+    }
+
+    private void CursorLeft()
+    {
+        CursorX--;
+
+        if (CursorX < 0 && CursorY > 0)
+        {
+            CursorX = ColumnCount - 1;
+            CursorY--;
+        }
+        else if (CursorX < 0)
+        {
+            CursorX = 0;
+        }
+    }
+
+    private void CursorRight()
+    {
+        CursorX++;
+
+        if (CursorX >= ColumnCount && CursorY < RowCount - 1)
+        {
+            CursorX = 0;
+            CursorY++;
+        }
+        else if (CursorX >= ColumnCount)
+        {
+            CursorX = 0;
+            CursorY = RowCount - 1;
+        }
+    }
+
+    private void MoveLineInputLeft()
+    {
+        LineInputX--;
+
+        if (LineInputX < 0 && LineInputY > 0)
+        {
+            LineInputX = ColumnCount - 1;
+            LineInputY--;
+        }
+        else if (LineInputX < 0)
+        {
+            LineInputX = 0;
         }
     }
 
