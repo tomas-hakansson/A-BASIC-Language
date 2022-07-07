@@ -206,5 +206,3 @@ public class Tokenizer
             _currentCharacter = _source[_index];
     }
 }
-
-

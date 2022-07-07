@@ -43,7 +43,12 @@ public partial class MainWindow : Form
         if (x.ShowDialog(this) != DialogResult.OK)
             return;
 
-        ProgramFilename = Path.GetFullPath(x.Filename!);
+        var f = x.Filename ?? "";
+
+        if (f.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase) || f.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase))
+            ProgramFilename = f;
+        else
+            ProgramFilename = Path.GetFullPath(x.Filename!);
 
         Run();
     }

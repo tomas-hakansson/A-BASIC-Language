@@ -31,6 +31,22 @@ public partial class LoadProgramDialog : Form
         Add("bug.bas"); //         18
         Add("bullfight.bas"); //   19
         Add("bullseye.bas"); //    20
+        Add("bunny.bas"); //       21
+        Add("buzzword.bas"); //    22
+        Add("calendar.bas"); //    23
+        Add("change.bas"); //      24
+        Add("checkers.bas"); //    25
+        Add("chemist.bas"); //     26
+        Add("chief.bas"); //       27
+        Add("chomp.bas"); //       28
+        Add("civilwar.bas"); //    29
+        Add("combat.bas"); //      30
+        Add("craps.bas"); //       31
+        Add("cube.bas"); //        32
+        Add("depthcharge.bas"); // 33
+        Add("diamond.bas"); //     34
+        Add("dice.bas"); //        35
+        Add("digits.bas"); //      36
     }
 
     private void Add(string filename)
