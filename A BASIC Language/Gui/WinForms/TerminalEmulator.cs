@@ -260,7 +260,6 @@ public partial class TerminalEmulator : Form
 
     private void TerminalEmulator_KeyDown(object sender, KeyEventArgs e)
     {
-        System.Diagnostics.Debug.WriteLine(e.KeyCode);
         switch (e.KeyCode)
         {
             case Keys.Enter:
@@ -310,13 +309,30 @@ public partial class TerminalEmulator : Form
                 CursorRight();
                 KeyDownOperationCompleted(ref e);
                 break;
+            case Keys.PageUp:
+                CursorY = 0;
+                KeyDownOperationCompleted(ref e);
+                break;
+            case Keys.PageDown:
+                if (CursorY == RowCount - 1)
+                    ScrollUp();
+                else
+                    CursorY = RowCount - 1;
+                KeyDownOperationCompleted(ref e);
+                break;
             case Keys.Insert:
                 break;
             case Keys.Delete:
                 break;
             case Keys.Home:
+                while (CursorX > 0)
+                    CursorLeft();
+                KeyDownOperationCompleted(ref e);
                 break;
             case Keys.End:
+                while (CursorX < ColumnCount - 1)
+                    CursorRight();
+                KeyDownOperationCompleted(ref e);
                 break;
             case Keys.Back:
                 if (CursorX <= 0 && CursorY <= 0)
@@ -454,8 +470,6 @@ public partial class TerminalEmulator : Form
 
     private void TerminalEmulator_KeyPress(object sender, KeyPressEventArgs e)
     {
-        System.Diagnostics.Debug.WriteLine((int)e.KeyChar);
-
         if ("abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:,;-*+-/!#$€&()=".IndexOf(e.KeyChar) < 0)
             return;
 
