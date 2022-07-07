@@ -126,7 +126,7 @@ public partial class TerminalEmulator : Form
 
     private void ScrollUp()
     {
-        for (var y = RowCount - 1; y > 0; y--)
+        for (var y = 1; y < RowCount; y++)
         {
             for (var x = 0; x < ColumnCount; x++)
             {
@@ -332,6 +332,16 @@ public partial class TerminalEmulator : Form
                 }
 
                 KeyDownOperationCompleted(ref e);
+                break;
+            case Keys.Insert:
+                break;
+            case Keys.Delete:
+                break;
+            case Keys.Home:
+                break;
+            case Keys.End:
+                break;
+            case Keys.Back:
                 break;
         }
     }
