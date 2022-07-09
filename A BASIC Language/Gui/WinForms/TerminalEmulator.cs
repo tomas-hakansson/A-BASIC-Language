@@ -321,6 +321,13 @@ public partial class TerminalEmulator : Form
                 KeyDownOperationCompleted(ref e);
                 break;
             case Keys.Insert:
+                if (CursorX == ColumnCount - 1 && CursorY == RowCount - 1)
+                {
+                    _characters[CursorX, CursorY] = ' ';
+                    return;
+                }
+                InsertCharacterAt(CursorX, CursorY);
+                KeyDownOperationCompleted(ref e);
                 break;
             case Keys.Delete:
                 if (CursorX == ColumnCount - 1 && CursorY == RowCount - 1)
@@ -354,6 +361,24 @@ public partial class TerminalEmulator : Form
                 KeyDownOperationCompleted(ref e);
                 break;
         }
+    }
+
+    public void InsertCharacterAt(int posX, int posY)
+    {
+        for (var y = RowCount - 1; y > posY; y--)
+        {
+            for (var x = ColumnCount - 1; x >= 0; x--)
+            {
+                _characters[x, y] = GetPreviousCharacter(x, y);
+            }
+        }
+
+        for (var x = ColumnCount - 1; x > posX; x--)
+        {
+            _characters[x, posY] = GetPreviousCharacter(x, posY);
+        }
+
+        _characters[posX, posY] = ' ';
     }
 
     private void DeleteCharacterAt(int posX, int posY)
@@ -393,6 +418,26 @@ public partial class TerminalEmulator : Form
         {
             x = 0;
             y = RowCount - 1;
+        }
+
+        return _characters[x, y];
+    }
+
+    private char GetPreviousCharacter(int x, int y)
+    {
+        if (x <= 0 && y <= 0)
+            return ' ';
+
+        x--;
+
+        if (x < 0 && y > 0)
+        {
+            x = ColumnCount - 1;
+            y--;
+        }
+        else if (x < 0)
+        {
+            x = 0;
         }
 
         return _characters[x, y];
