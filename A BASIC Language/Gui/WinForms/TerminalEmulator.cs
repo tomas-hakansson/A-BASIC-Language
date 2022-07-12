@@ -522,7 +522,7 @@ public partial class TerminalEmulator : Form
 
     private void TerminalEmulator_KeyPress(object sender, KeyPressEventArgs e)
     {
-        if ("abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:,;-*+-/!#$€&()=".IndexOf(e.KeyChar) < 0)
+        if (!"abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:,;-*+-/!#$€&()=".Contains(e.KeyChar.ToString()))
             return;
 
         _characters[CursorX, CursorY] = e.KeyChar;
