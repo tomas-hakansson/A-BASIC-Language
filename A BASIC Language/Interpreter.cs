@@ -15,6 +15,16 @@ internal class Interpreter
 
     public Interpreter(string source)
     {
+        //10 PRINT "HEJ":PRINT "OJ"
+        //"hej" print "nl" print "oj" print "nl" print
+        //    new Line(new List<Token>() { new String("hej"), new Procedure("print"), new String("\n"), new Procedure("print"), new Assignment("N") }),...
+        // 11 print a + b
+        // a b + print
+        // a + (4 * 3) / sqrt(b)
+        //4 3 * b sqrt / 4 +
+        //a + (b * ((c - d) ^ 4))
+        // c d - 4 ^ b * a +
+        // c d 4 b a - ^ * +
         Parser parser = new(source);
         var program = parser.Program;
         _lines = program.Lines;
