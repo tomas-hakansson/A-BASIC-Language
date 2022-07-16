@@ -143,19 +143,19 @@ public class Tokenizer
         tokenTypes.AddRange(Enumerable.Repeat(TokenType.Statement, statementIndices.Count).ToList());
         tokenIndices.AddRange(statementIndices);
         tokenLengths.AddRange(statementLengths);
-        tokenValues.AddRange(statements);
+        tokenValues.AddRange(statements.Select(s => s.ToUpper()));
 
         var (operatorIndices, operatorLengths, operators) = GetReservedWords(rw.Operators);
         tokenTypes.AddRange(Enumerable.Repeat(TokenType.Operator, operatorIndices.Count).ToList());
         tokenIndices.AddRange(operatorIndices);
         tokenLengths.AddRange(operatorLengths);
-        tokenValues.AddRange(operators);
+        tokenValues.AddRange(operators.Select(o => o.ToUpper()));
 
         var (functionIndices, functionLengths, functions) = GetReservedWords(rw.Functions);
         tokenTypes.AddRange(Enumerable.Repeat(TokenType.Function, functionIndices.Count).ToList());
         tokenIndices.AddRange(functionIndices);
         tokenLengths.AddRange(functionLengths);
-        tokenValues.AddRange(functions);
+        tokenValues.AddRange(functions.Select(f => f.ToUpper()));
 
         var (punctuationIndices, punctuationLengths, punctuations) = GetReservedWords(rw.Punctuation);
         foreach (string punctuation in punctuations)
@@ -203,7 +203,7 @@ public class Tokenizer
         tokenTypes.AddRange(Enumerable.Repeat(TokenType.UserDefinedName, nameIndices.Count).ToList());
         tokenIndices.AddRange(nameIndices);
         tokenLengths.AddRange(nameLengths);
-        tokenValues.AddRange(names);
+        tokenValues.AddRange(names.Select(n => n.ToUpper()));
 
         //Note: Get (and remove) the floats.
         var floatPattern = @"\d+ \. \d+ | \.\d+";
