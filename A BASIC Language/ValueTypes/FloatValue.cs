@@ -2,7 +2,7 @@
 
 namespace A_BASIC_Language.ValueTypes;
 
-public class FloatValue : Value
+public class FloatValue : ValueBase
 {
     public double Value { get; set; }
 

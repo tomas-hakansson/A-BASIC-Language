@@ -2,7 +2,7 @@
 
 namespace A_BASIC_Language.ValueTypes;
 
-public class IntValue : Value
+public class IntValue : ValueBase
 {
     public int Value { get; set; }
 
