@@ -15,7 +15,7 @@ internal class ReservedWords
         Statements = new List<string>() { "DATA", "DEF", "DIM", "ELSE", "END", "FN",
             "FOR", "GOSUB", "GOTO", "GO", "IF", "INPUT", "LET", "NEXT", "ON", "PRINT",
             "READ", "REM", "RESTORE", "RETURN", "STEP", "STOP","THEN","TO" };
-        Operators = new List<string> { "^", "+", "-", "*", "/" , "<", ">", "<=", ">=", "NOT", "AND", "OR", "XOR"};
+        Operators = new List<string> { "^", "+", "-", "*", "/" , "<", ">", "<=", ">=", "<>", "!=", "NOT", "AND", "OR", "XOR"};
         Functions = new List<string> { "SQR", "INT" };
         Punctuation = new List<string> { "(", ")", "=", ",", ":", ";", "$", "%" };
     }
