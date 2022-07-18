@@ -20,7 +20,7 @@ public class StringValue : ValueBase
             return true;
 
         if (typeof(T) == typeof(IntValue))
-            return int.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out _);
+            return int.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out _) || double.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out _);
 
         if (typeof(T) == typeof(FloatValue))
             return double.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out _);
@@ -30,14 +30,20 @@ public class StringValue : ValueBase
 
     public override object GetValueAsType<T>()
     {
-        if (typeof(T) is StringValue)
-            return true;
+        if (typeof(T) == typeof(StringValue))
+            return Value;
 
-        if (typeof(T) is IntValue)
-            return int.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out _);
+        if (typeof(T) == typeof(IntValue))
+        {
+            if (int.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var i))
+                return i;
 
-        if (typeof(T) is FloatValue)
-            return double.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out _);
+            if (double.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var d1))
+                return (int)d1;
+        }
+
+        if (typeof(T) == typeof(FloatValue) && double.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var d2))
+            return d2;
 
         throw new SystemException("What?!");
     }

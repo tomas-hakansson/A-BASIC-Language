@@ -54,4 +54,36 @@ public class Value_Tests
         Assert.IsTrue(f.GetValueAsType<StringValue>() is string);
         Assert.IsTrue((string)f.GetValueAsType<StringValue>() == "40.5");
     }
+
+    [TestMethod]
+    public void CanCastFromString()
+    {
+        var s = new StringValue("40.5");
+
+        Assert.IsTrue(s.CanGetAsType<IntValue>());
+        Assert.IsTrue(s.GetValueAsType<IntValue>() is int);
+        Assert.IsTrue((int)s.GetValueAsType<IntValue>() == 40);
+
+        Assert.IsTrue(s.CanGetAsType<FloatValue>());
+        Assert.IsTrue(s.GetValueAsType<FloatValue>() is double);
+        Assert.IsTrue((double)s.GetValueAsType<FloatValue>() == 40.5);
+
+        Assert.IsTrue(s.CanGetAsType<StringValue>());
+        Assert.IsTrue(s.GetValueAsType<StringValue>() is string);
+        Assert.IsTrue((string)s.GetValueAsType<StringValue>() == "40.5");
+    }
+
+    [TestMethod]
+    public void CanNotCastFromString()
+    {
+        var s = new StringValue("Hello");
+
+        Assert.IsFalse(s.CanGetAsType<IntValue>());
+
+        Assert.IsFalse(s.CanGetAsType<FloatValue>());
+
+        Assert.IsTrue(s.CanGetAsType<StringValue>());
+        Assert.IsTrue(s.GetValueAsType<StringValue>() is string);
+        Assert.IsTrue((string)s.GetValueAsType<StringValue>() == "Hello");
+    }
 }
