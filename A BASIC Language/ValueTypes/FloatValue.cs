@@ -12,20 +12,20 @@ public class FloatValue : ValueBase
     }
 
     public override bool IsOfType<T>() =>
-        typeof(T) is FloatValue;
+        typeof(T) == typeof(FloatValue);
 
     public override bool CanGetAsType<T>() =>
         true;
 
     public override object GetValueAsType<T>()
     {
-        if (typeof(T) is IntValue)
+        if (typeof(T) == typeof(IntValue))
             return (int)Value;
 
-        if (typeof(T) is FloatValue)
+        if (typeof(T) == typeof(FloatValue))
             return Value;
 
-        if (typeof(T) is StringValue)
+        if (typeof(T) == typeof(StringValue))
             return Value.ToString(CultureInfo.InvariantCulture);
 
         throw new SystemException("What?!");

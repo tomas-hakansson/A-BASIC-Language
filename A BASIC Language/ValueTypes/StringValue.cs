@@ -12,17 +12,17 @@ public class StringValue : ValueBase
     }
 
     public override bool IsOfType<T>() =>
-        typeof(T) is StringValue;
+        typeof(T) == typeof(StringValue);
 
     public override bool CanGetAsType<T>()
     {
-        if (typeof(T) is StringValue)
+        if (typeof(T) == typeof(StringValue))
             return true;
 
-        if (typeof(T) is IntValue)
+        if (typeof(T) == typeof(IntValue))
             return int.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out _);
 
-        if (typeof(T) is FloatValue)
+        if (typeof(T) == typeof(FloatValue))
             return double.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out _);
 
         throw new SystemException("What?!");
