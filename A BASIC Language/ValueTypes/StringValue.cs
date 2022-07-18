@@ -11,6 +11,20 @@ public class StringValue : ValueBase
         Value = value;
     }
 
+    public override bool FitsInVariable(string symbol)
+    {
+        if (VariableIsDeclaredAsString(symbol))
+            return true;
+
+        if (VariableIsDeclaredAsInt(symbol) && CanGetAsType<IntValue>())
+            return true;
+
+        if (CanGetAsType<FloatValue>())
+            return true;
+
+        return false;
+    }
+
     public override bool IsOfType<T>() =>
         typeof(T) == typeof(StringValue);
 

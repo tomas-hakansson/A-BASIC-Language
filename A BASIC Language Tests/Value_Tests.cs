@@ -7,16 +7,15 @@ namespace A_BASIC_Language_Tests;
 public class Value_Tests
 {
     [TestMethod]
-    public void CanCreateValueType()
+    public void CanCreateValueTypes()
     {
-        var f = ValueBase.GetValueType("5.5");
-        Assert.IsTrue(f.GetType() == typeof(FloatValue));
-
-        var i = ValueBase.GetValueType("6");
-        Assert.IsTrue(i.GetType() == typeof(IntValue));
-
-        var s = ValueBase.GetValueType("Fish");
-        Assert.IsTrue(s.GetType() == typeof(StringValue));
+        Assert.IsTrue(ValueBase.GetValueType("Hej") is StringValue);
+        Assert.IsTrue(ValueBase.GetValueType("5") is IntValue);
+        Assert.IsTrue(ValueBase.GetValueType("5.0") is IntValue);
+        Assert.IsTrue(ValueBase.GetValueType("5.1") is FloatValue);
+        Assert.IsTrue(ValueBase.GetValueType(5) is IntValue);
+        Assert.IsTrue(ValueBase.GetValueType(5.0) is IntValue);
+        Assert.IsTrue(ValueBase.GetValueType(5.1) is FloatValue);
     }
 
     [TestMethod]
@@ -85,11 +84,5 @@ public class Value_Tests
         Assert.IsTrue(s.CanGetAsType<StringValue>());
         Assert.IsTrue(s.GetValueAsType<StringValue>() is string);
         Assert.IsTrue((string)s.GetValueAsType<StringValue>() == "Hello");
-    }
-
-    [TestMethod]
-    public void CanCreateValueTypes()
-    {
-
     }
 }

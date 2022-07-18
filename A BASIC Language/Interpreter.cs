@@ -1,4 +1,3 @@
-using System.Data;
 using System.Diagnostics;
 using A_BASIC_Language.Gui;
 using A_BASIC_Language.ValueTypes;
@@ -7,6 +6,7 @@ namespace A_BASIC_Language;
 
 internal class Interpreter
 {
+    private const string TheProgramHasEnded = "The program has ended";
     private Terminal? _terminal;
     readonly List<Line> _lines;//todo: replace with ParsedProgram.
     readonly Dictionary<int, int> _labelIndex;//todo: replace with ParsedProgram.
@@ -111,6 +111,10 @@ internal class Interpreter
                         {
                             var value = _data.Pop();
                             var symbol = a.Symbol;
+
+                            if (!value.FitsInVariable(symbol))
+                                End("Type mismatch."); // TODO: Better error message and also line number.
+
                             _variables[symbol] = value;
                         }
                         else
@@ -150,7 +154,7 @@ internal class Interpreter
                             break;
                         case "INPUT":
                             {
-                                var value = ValueBase.GetValueType(_terminal.ReadLine());
+                                var value = ValueBase.GetValueType(_terminal.ReadLine()); // TODO: Must support "redo from start".
                                 _data.Push(value);
                             }
                             break;
@@ -198,5 +202,13 @@ internal class Interpreter
                     break;
             }
         }
+    }
+
+    private void End(string message)
+    {
+        _terminal.WriteLine("");
+        _terminal.Write(TheProgramHasEnded);
+        _terminal.End();
+        MessageBox.Show(message, TheProgramHasEnded);
     }
 }

@@ -19,7 +19,13 @@ public class Terminal : IDisposable
         Emu.BringToFront();
         Running = true;
     }
-    
+
+    public void End()
+    {
+        Emu.EndLineInput();
+        Running = false;
+    }
+
     public void Write(string s) =>
         Emu.Write(s);
 

@@ -37,6 +37,11 @@ public partial class TerminalEmulator : Form
         LineInputMode = false;
     }
 
+    public void EndLineInput()
+    {
+        LineInputMode = false;
+    }
+
     private void TerminalEmulator_Shown(object sender, EventArgs e)
     {
         Font = new Font("Courier New", 6.0f);

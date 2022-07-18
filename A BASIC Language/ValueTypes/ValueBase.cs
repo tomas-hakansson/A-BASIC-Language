@@ -13,10 +13,10 @@ public abstract class ValueBase
     public static ValueBase GetValueType(string value)
     {
         if (value.Contains(".") && double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var f))
-            return new FloatValue(f);
+            return GetValueType(f);
 
         if (int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var i))
-            return new IntValue(i);
+            return GetValueType(i);
 
         return new StringValue(value);
     }
@@ -25,6 +25,14 @@ public abstract class ValueBase
         value % 1 == 0
             ? new IntValue((int)value)
             : new FloatValue(value);
+
+    public abstract bool FitsInVariable(string symbol);
+
+    internal bool VariableIsDeclaredAsString(string symbol) =>
+        symbol.EndsWith("$");
+
+    internal bool VariableIsDeclaredAsInt(string symbol) =>
+        symbol.EndsWith("%");
 
     public abstract bool IsOfType<T>() where T : ValueBase;
 

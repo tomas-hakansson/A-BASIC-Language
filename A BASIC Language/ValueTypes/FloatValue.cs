@@ -11,6 +11,9 @@ public class FloatValue : ValueBase
         Value = value;
     }
 
+    public override bool FitsInVariable(string symbol) =>
+        true;
+
     public override bool IsOfType<T>() =>
         typeof(T) == typeof(FloatValue);
 
