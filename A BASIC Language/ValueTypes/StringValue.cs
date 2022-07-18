@@ -53,4 +53,7 @@ public class StringValue : ValueBase
 
     public override bool GetBoolValue() =>
         false;
+
+    public override string ToString() =>
+        Value;
 }

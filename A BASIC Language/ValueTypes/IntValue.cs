@@ -36,4 +36,7 @@ public class IntValue : ValueBase
 
     public override bool GetBoolValue() =>
         Value != 0;
+
+    public override string ToString() =>
+        Value.ToString();
 }

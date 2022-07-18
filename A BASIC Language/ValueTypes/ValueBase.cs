@@ -21,6 +21,11 @@ public abstract class ValueBase
         return new StringValue(value);
     }
 
+    public static ValueBase GetValueType(double value) =>
+        value % 1 == 0
+            ? new IntValue((int)value)
+            : new FloatValue(value);
+
     public abstract bool IsOfType<T>() where T : ValueBase;
 
     public abstract bool CanGetAsType<T>() where T : ValueBase;

@@ -86,4 +86,10 @@ public class Value_Tests
         Assert.IsTrue(s.GetValueAsType<StringValue>() is string);
         Assert.IsTrue((string)s.GetValueAsType<StringValue>() == "Hello");
     }
+
+    [TestMethod]
+    public void CanCreateValueTypes()
+    {
+
+    }
 }

@@ -1,5 +1,7 @@
+using System.Data;
 using System.Diagnostics;
 using A_BASIC_Language.Gui;
+using A_BASIC_Language.ValueTypes;
 
 namespace A_BASIC_Language;
 
@@ -8,8 +10,8 @@ internal class Interpreter
     private Terminal? _terminal;
     readonly List<Line> _lines;//todo: replace with ParsedProgram.
     readonly Dictionary<int, int> _labelIndex;//todo: replace with ParsedProgram.
-    readonly Dictionary<string, double?> _variables;//Ponder: do the value need to be nullable?
-    readonly Stack<double> _data;
+    readonly Dictionary<string, ValueBase?> _variables;//Ponder: do the value need to be nullable?
+    readonly Stack<ValueBase> _data;
 
     int _index;
 
@@ -49,8 +51,8 @@ internal class Interpreter
         //    { 38, 4 },
         //    { 40, 5 },
         //};
-        _variables = new Dictionary<string, double?>();
-        _data = new Stack<double>();
+        _variables = new Dictionary<string, ValueBase?>();
+        _data = new Stack<ValueBase>();
 
         _index = 0;
     }
@@ -62,7 +64,7 @@ internal class Interpreter
         for (; _index < _lines.Count; _index++)
         {
             Application.DoEvents();
-            
+
             if (!_terminal.Running)
                 return;
 
@@ -88,102 +90,103 @@ internal class Interpreter
             switch (line[i])
             {
                 case Number n:
-                    _data.Push(n.Value);
+                    _data.Push(ValueBase.GetValueType(n.Value));
                     break;
                 case Variable v:
-                {
-                    if (_variables.TryGetValue(v.Symbol, out var value) && value.HasValue)
                     {
-                        _data.Push(value.Value);
+                        if (_variables.TryGetValue(v.Symbol, out var value) && value != null)
+                        {
+                            _data.Push(value);
+                        }
+                        else
+                        {
+                            Debug.Fail("Something was wrong with the value");//fixme: really bad text.
+                                                                             //todo: error handling.
+                        }
                     }
-                    else
-                    {
-                        Debug.Fail("Something was wrong with the value");//fixme: really bad text.
-                        //todo: error handling.
-                    }
-                }
                     break;
                 case Assignment a:
-                {
-                    if (_data.Count > 0)
                     {
-                        var value = _data.Pop();
-                        var symbol = a.Symbol;
-                        _variables[symbol] = value;
+                        if (_data.Count > 0)
+                        {
+                            var value = _data.Pop();
+                            var symbol = a.Symbol;
+                            _variables[symbol] = value;
+                        }
+                        else
+                            Debug.Fail("The stack is empty");
                     }
-                    else
-                        Debug.Fail("The stack is empty");
-                }
                     break;
                 case Procedure p:
                     switch (p.Name)
                     {
                         case "^":
-                        {
-                            if (_data.Count >= 2)
                             {
-                                var x = _data.Pop();
-                                var y = _data.Pop();
-                                var result = Math.Pow(y, x);
-                                _data.Push(result);
-                            }
-                            else
-                                Debug.Fail("Insufficient items on the stack");
-                        }
-                            break;
-                        case "SQR":
-                        {
-                            if (_data.Count > 0)
-                            {
-                                var x = _data.Pop();
-                                var result = Math.Sqrt(x);
-                                _data.Push(result);
-                            }
-                            else
-                                Debug.Fail("The stack is empty");
-                        }
-                            break;
-                        case "INPUT":
-                        {
-                            var value = _terminal.ReadLine();
-                            if (value != null && double.TryParse(value, out var numericValue))
-                            {
-                                _data.Push(numericValue);
-                            }
-                        }
-                            break;
-                        case "PRINT":
-                        {
-                            if (_data.Count > 0)
-                            {
-                                var value = _data.Pop();
-                                _terminal.WriteLine(value.ToString());
-                            }
-                            else
-                                Debug.Fail("The stack is empty");
-                        }
-                            break;
-                        case "GOTO":
-                        {
-                            if (_data.Count > 0)
-                            {
-                                var label = _data.Pop();
-                                if (_labelIndex.TryGetValue((int)label, out var newIndex))
+                                if (_data.Count >= 2)
                                 {
-                                    _index = (int)newIndex;
-                                    _index--;//HACK: come up with something better.
-                                    return;
+                                    var x = _data.Pop();
+                                    var y = _data.Pop();
+
+                                    //TODO: Type checking
+                                    var result = Math.Pow((double)y.GetValueAsType<FloatValue>(), (double)x.GetValueAsType<FloatValue>());
+                                    _data.Push(new FloatValue(result));
                                 }
                                 else
-                                {
-                                    Debug.Fail("Something was wrong with the value");//fixme; really bad text.
-                                    //todo: error handling.
-                                    throw new InvalidOperationException("this is only to get the c# to stop complaining.");
-                                }
+                                    Debug.Fail("Insufficient items on the stack");
                             }
-                            else
-                                Debug.Fail("The stack is empty");
-                        }
+                            break;
+                        case "SQR":
+                            {
+                                if (_data.Count > 0)
+                                {
+                                    var x = _data.Pop();
+                                    //TODO: Type checking
+                                    var result = Math.Sqrt((double)x.GetValueAsType<FloatValue>());
+                                    _data.Push(new FloatValue(result));
+                                }
+                                else
+                                    Debug.Fail("The stack is empty");
+                            }
+                            break;
+                        case "INPUT":
+                            {
+                                var value = ValueBase.GetValueType(_terminal.ReadLine());
+                                _data.Push(value);
+                            }
+                            break;
+                        case "PRINT":
+                            {
+                                if (_data.Count > 0)
+                                {
+                                    var value = _data.Pop();
+                                    _terminal.WriteLine(value.ToString());
+                                }
+                                else
+                                    Debug.Fail("The stack is empty");
+                            }
+                            break;
+                        case "GOTO":
+                            {
+                                if (_data.Count > 0)
+                                {
+                                    var label = _data.Pop();
+                                    //TODO: Type checking
+                                    if (_labelIndex.TryGetValue((int)label.GetValueAsType<IntValue>(), out var newIndex))
+                                    {
+                                        _index = (int)newIndex;
+                                        _index--;//HACK: come up with something better.
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        Debug.Fail("Something was wrong with the value");//fixme; really bad text.
+                                                                                         //todo: error handling.
+                                        throw new InvalidOperationException("this is only to get the c# to stop complaining.");
+                                    }
+                                }
+                                else
+                                    Debug.Fail("The stack is empty");
+                            }
                             break;
                         default:
                             //todo :error handling.
