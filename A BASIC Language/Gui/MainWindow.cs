@@ -56,7 +56,20 @@ public partial class MainWindow : Form
     private void Run()
     {
         Cursor = Cursors.WaitCursor;
-        Terminal.Run(ProgramFilename);
+
+        string filenameOnly;
+
+        try
+        {
+            var fi = new FileInfo(ProgramFilename);
+            filenameOnly = fi.Name;
+        }
+        catch
+        {
+            filenameOnly = ProgramFilename;
+        }
+
+        Terminal.Run(ProgramFilename, filenameOnly);
 
         var ioDispatcher = new Dispatcher();
         var io = ioDispatcher.GetIo(ProgramFilename);

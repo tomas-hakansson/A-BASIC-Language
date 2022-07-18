@@ -47,6 +47,14 @@ public partial class LoadProgramDialog : Form
         Add("diamond.bas"); //     34
         Add("dice.bas"); //        35
         Add("digits.bas"); //      36
+        Add("evenwins.bas"); //    37
+        Add("flipflop.bas"); //    38
+        Add("football.bas"); //    39
+        Add("ftball.bas"); //      40
+        Add("furtrader.bas"); //   41
+        Add("gameofevenwins.bas"); // 42
+        Add("golf.bas"); //        43
+        Add("gomoko.bas"); //      44
     }
 
     private void Add(string filename)

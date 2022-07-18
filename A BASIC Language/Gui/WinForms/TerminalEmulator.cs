@@ -22,19 +22,16 @@ public partial class TerminalEmulator : Form
     public bool LineInputMode { get; set; }
     public string LineInputResult { get; private set; }
 
+#pragma warning disable CS8618 // Initializes from method.
     public TerminalEmulator()
+#pragma warning restore CS8618
     {
         InitializeComponent();
-        LineInputX = 0;
-        LineInputY = 0;
-        LineInputResult = "";
         OutputBrush = new SolidBrush(Color.FromArgb(0, 255, 0));
         InputBrush = new SolidBrush(Color.FromArgb(0, 255, 255));
         InputBackgroundBrush = new SolidBrush(Color.FromArgb(0, 42, 0));
         _characters = new char[ColumnCount, RowCount];
-        CursorX = 0;
-        CursorY = 0;
-        LineInputMode = false;
+        Clear();
     }
 
     public void EndLineInput()
@@ -42,10 +39,50 @@ public partial class TerminalEmulator : Form
         LineInputMode = false;
     }
 
+    public void Clear()
+    {
+        LineInputX = 0;
+        LineInputY = 0;
+        LineInputResult = "";
+        CursorX = 0;
+        CursorY = 0;
+        LineInputMode = false;
+
+        for (var y = 0; y < RowCount; y++)
+            for (var x = 0; x < ColumnCount; x++)
+                _characters[x, y] = ' ';
+    }
+
+    public void ShowWelcome(string program)
+    {
+        WriteLine("        *** A BASIC LANGUAGE ***");
+        WriteLine("");
+        WriteLine("          Altair BASIC Emlator");
+
+        if (string.IsNullOrWhiteSpace(program))
+        {
+            WriteLine("       written by Tomas Hakansson");
+            WriteLine("          and Anders Hesselbom");
+            WriteLine("");
+        }
+        else
+        {
+            WriteLine("");
+        }
+        
+        WriteLine("Ready.");
+        
+        if (!string.IsNullOrWhiteSpace(program))
+        {
+            WriteLine("");
+            WriteLine("Loaded program:");
+            WriteLine(program);
+        }
+    }
+
     private void TerminalEmulator_Shown(object sender, EventArgs e)
     {
         Font = new Font("Courier New", 6.0f);
-
         Width = (int)(Screen.PrimaryScreen.WorkingArea.Width / 2.1);
         Height = (int)(Screen.PrimaryScreen.WorkingArea.Height / 1.8);
         CenterToScreen();

@@ -12,11 +12,13 @@ public class Terminal : IDisposable
         Emu = new TerminalEmulator();
     }
 
-    public void Run(string title)
+    public void Run(string title, string programName)
     {
         Emu.Text = title;
         Emu.Show();
         Emu.BringToFront();
+        Emu.Clear();
+        Emu.ShowWelcome(programName);
         Running = true;
     }
 
