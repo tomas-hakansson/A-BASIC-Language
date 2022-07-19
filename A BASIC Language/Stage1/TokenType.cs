@@ -19,4 +19,5 @@ public enum TokenType
     Float,
     Number,
     Space,
+    EOF,
 }

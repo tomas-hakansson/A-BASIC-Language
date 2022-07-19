@@ -301,6 +301,11 @@ public class Tokenizer
             TokenValues.AddRange(values);
             TokenTypes.AddRange(types);
         }
+
+        //Note: add end of line token for parsing:
+
+        TokenTypes.Add(TokenType.EOF);
+        TokenValues.Add("");//Note: to match lengths;
         return result;
     }
 
