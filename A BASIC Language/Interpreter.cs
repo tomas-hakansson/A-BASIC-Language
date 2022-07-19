@@ -206,9 +206,12 @@ internal class Interpreter
 
     private void End(string message)
     {
-        _terminal.WriteLine("");
-        _terminal.Write(TheProgramHasEnded);
-        _terminal.End();
+        if (_terminal != null)
+        {
+            _terminal.WriteLine("");
+            _terminal.Write(TheProgramHasEnded);
+            _terminal.End();
+        }
         MessageBox.Show(message, TheProgramHasEnded);
     }
 }

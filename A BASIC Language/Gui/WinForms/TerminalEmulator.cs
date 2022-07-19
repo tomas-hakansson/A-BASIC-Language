@@ -55,26 +55,27 @@ public partial class TerminalEmulator : Form
 
     public void ShowWelcome(string program)
     {
+        WriteLine();
         WriteLine("        *** A BASIC LANGUAGE ***");
-        WriteLine("");
-        WriteLine("          Altair BASIC Emlator");
+        WriteLine();
+        WriteLine("         Altair BASIC Emulator.");
 
         if (string.IsNullOrWhiteSpace(program))
         {
             WriteLine("       written by Tomas Hakansson");
             WriteLine("          and Anders Hesselbom");
-            WriteLine("");
+            WriteLine();
         }
         else
         {
-            WriteLine("");
+            WriteLine();
         }
         
         WriteLine("Ready.");
         
         if (!string.IsNullOrWhiteSpace(program))
         {
-            WriteLine("");
+            WriteLine();
             WriteLine("Loaded program:");
             WriteLine(program);
         }
@@ -101,6 +102,9 @@ public partial class TerminalEmulator : Form
 
         OperationCompleted();
     }
+
+    public void WriteLine() =>
+        WriteLine("");
 
     public void WriteLine(string text)
     {
