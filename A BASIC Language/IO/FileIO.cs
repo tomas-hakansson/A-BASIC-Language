@@ -8,6 +8,23 @@ public class FileIO : IOBase
     {
     }
 
+    public override string GetNameOnly()
+    {
+        string nameOnly;
+
+        try
+        {
+            var fi = new FileInfo(Filename);
+            nameOnly = fi.Name;
+        }
+        catch
+        {
+            nameOnly = Filename;
+        }
+
+        return nameOnly;
+    }
+
     public override LoadResult Load()
     {
         try

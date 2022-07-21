@@ -8,6 +8,11 @@ public class NetIO : IOBase
     {
     }
 
+    public override string GetNameOnly() =>
+        Filename.Contains('/')
+            ? Filename.Split("/").LastOrDefault() ?? ""
+            : Filename;
+
     public override LoadResult Load()
     {
         try
