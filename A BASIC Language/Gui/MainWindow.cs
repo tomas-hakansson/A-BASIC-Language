@@ -4,9 +4,15 @@ namespace A_BASIC_Language.Gui;
 
 public partial class MainWindow : Form
 {
+    public static ProgramRepository ProgramRepository { get; }
     private string SourceCode { get; set; }
     private Terminal Terminal { get; }
     public string ProgramFilename { get; set; }
+
+    static MainWindow()
+    {
+        ProgramRepository = new ProgramRepository();
+    }
 
     public MainWindow()
     {
@@ -57,39 +63,15 @@ public partial class MainWindow : Form
     {
         Cursor = Cursors.WaitCursor;
 
-        string filenameOnly;
+        var source = ProgramRepository.GetProgram(this, ProgramFilename);
 
-        try
+        if (string.IsNullOrWhiteSpace(source))
         {
-            var fi = new FileInfo(ProgramFilename);
-            filenameOnly = fi.Name;
-        }
-        catch
-        {
-            filenameOnly = ProgramFilename;
-        }
-
-        Terminal.Run(ProgramFilename, filenameOnly);
-
-        var ioDispatcher = new Dispatcher();
-        var io = ioDispatcher.GetIo(ProgramFilename);
-        var source = io.Load();
-
-        if (!source.Result)
-        {
-            Cursor = Cursors.Default;
-            MessageBox.Show(@"Failed to load source code.", @"Run failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Terminal.WriteLine("Load failed.");
             return;
         }
 
-        SourceCode = source.Data;
-
-        if (source.IsEmpty)
-        {
-            Cursor = Cursors.Default;
-            MessageBox.Show(@"Empty file loaded.", @"Run failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return;
-        }
+        SourceCode = source;
 
         Interpreter eval = new(SourceCode);
         Cursor = Cursors.Default;

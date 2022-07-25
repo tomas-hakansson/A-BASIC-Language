@@ -9,5 +9,7 @@ public abstract class IOBase
         Filename = filename;
     }
 
+    public abstract string GetNameOnly();
+
     public abstract LoadResult Load();
 }

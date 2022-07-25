@@ -62,6 +62,8 @@ public partial class LoadProgramDialog : Form
         Add("hello.bas"); //          49
         Add("hexapawn.bas"); //       50
         Add("hi-lo.bas"); //          51
+        Add("highiq.bas"); //         52
+        Add("hockey.bas"); //         53
     }
 
     private void Add(string filename)
@@ -70,7 +72,7 @@ public partial class LoadProgramDialog : Form
         li.ImageIndex = 0;
         li.Tag = $@"https://raw.githubusercontent.com/GReaperEx/bcg/master/{filename}";
     }
-
+    
     private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
     {
         var li = listView1.GetItemAt(e.X, e.Y);
@@ -112,11 +114,19 @@ public partial class LoadProgramDialog : Form
 
     private void viewSourceToolStripMenuItem_Click(object sender, EventArgs e)
     {
+        if (listView1.SelectedItems.Count <= 0)
+            return;
 
+        var n = (string)listView1.SelectedItems[0].Tag;
+
+        var source = MainWindow.ProgramRepository.GetProgram(this, n);
+
+        using var x = new SourceDialog();
+        x.Filename = listView1.SelectedItems[0].Text;
+        x.SourceCode = source;
+        x.ShowDialog(this);
     }
 
-    private void runToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-
-    }
+    private void runToolStripMenuItem_Click(object sender, EventArgs e) =>
+        btnOk_Click(sender, e);
 }
