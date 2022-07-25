@@ -4,6 +4,9 @@ namespace A_BASIC_Language.StageN;
 
 public class Parser
 {
+    public Dictionary<int, int> LabelIndex { get; set; } = new Dictionary<int, int>();
+    public List<string> TempResult { get; set; } = new List<string>();
+
     readonly List<string> _tokenValues = new();
     readonly List<TokenType> _tokenTypes = new();
     int _index = 0;
@@ -18,10 +21,11 @@ public class Parser
         /* todo: initialisation:
          *  rpn program
          */
-        ;
 
         //Note: Initialisation:
-        Next();
+        _tokenValues = values;
+        _tokenTypes = types;
+        Next_wws();
 
         //Note: The parsing begins:
         try
@@ -66,79 +70,462 @@ public class Parser
          *   
          */
 
-        //I'm gonna start with input, let, print and goto. In that order.
+        //Ponder: long term we probably want to keep parsing even if a line is erroneous and simply
+        // collect the errors so that we can maximise the error information we can give the user.
         bool more;
-        do
-        {
-            more = ALine();
-        }
+        do more = ALine();
         while (more);
     }
 
     bool ALine()
     {
         //aLabel aStatementWithParts (: aStatementWithParts)*
-        bool result = default;
+
         if (!ALabel())
             return false;
 
         AStatementPlusParts();
 
-        while (MightMatch(TokenType.Comma))
-        {
+        while (MightMatch(TokenType.Colon))
             AStatementPlusParts();
-        }
+
         //Ponder: should these checks be done in AStatementPlusParts?
         if (_currentTokenType == TokenType.Label)
-            result = true;
-        if (_currentTokenType == TokenType.EOF)
-            result = false;
-        return result;
+            return true;
+        else if (_currentTokenType == TokenType.EOF)
+            return false;
+        else
+            return true;
     }
 
-    private bool ALabel()
+    bool ALabel()
     {
         if (_currentTokenType != TokenType.Label)
             return false;
-        var currentValue = _currentTokenValue;
-        //todo: set a parsed result with this value.
-        SkipWhiteSpace();
+        Generate($"label({_currentTokenValue})");
+        LabelIndex.Add(int.Parse(_currentTokenValue), _index);
+        Next();
         return true;
     }
 
     void AStatementPlusParts()
     {
         //This is the tricky part.
-
-    }
-
-    private void SkipWhiteSpace()
-    {
-        while (_currentTokenType != TokenType.Space)
-            Next();
-    }
-
-    void MustMatch(TokenType tokenType)
-    {
-        if (tokenType == _currentTokenType)
+        if (_currentTokenType == TokenType.UserDefinedName)
+            Let();
+        else if (_currentTokenType == TokenType.Statement)
         {
-            Next();
+            switch (_currentTokenValue)
+            {
+                case "GOTO":
+                    Goto();
+                    break;
+                case "GO":
+                    Next();
+                    MustMatch("TO");
+                    Goto();
+                    break;
+                case "IF"://todo
+                    //IF F(N)*6+K=INT(F(I)/6^(7-C)+.1) THEN Q=Q-2
+                    break;
+                case "INPUT":
+                    Input();
+                    break;
+                case "LET":
+                    Let();
+                    break;
+                case "PRINT":
+                    Print();
+                    break;
+                case "REM":
+                    SkipLine();
+                    break;
+                default:
+                    throw new NotImplementedException("the given statement has not been implemented yet.");
+            }
         }
         else
-            throw new Exception("placeholder");//todo: proper error handling.
+            throw new InvalidOperationException("Syntax error");
     }
 
-    bool MightMatch(TokenType tokenType)
+    private void Print()
+    {
+        //print => PRINT (value | ; | ,)*
+        //value => literal | variable | expression
+
+        /* Examples:
+         * PRINT "IS IT A ";RIGHT$(A$(K),LEN(A$(K))-2);
+         * PRINT "I WIN BY";-D;"POINTS"
+         * PRINT 4 2: REM returns 42
+         * PRINT 4;2: REM returns 4  2 (note two spaces, first from 4 the second from potential minus).
+         */
+        Next();
+        bool shouldPrintNewline = true;
+        while (_currentTokenType != TokenType.Comma &&
+            _currentTokenType != TokenType.Label &&
+            _currentTokenType != TokenType.EOF)
+        {
+            switch (_currentTokenType)
+            {
+                case TokenType.Comma:
+                    Generate("procedure(next-tab)");
+                    shouldPrintNewline = false;
+                    Next();
+                    continue;
+                case TokenType.Semicolon:
+                    shouldPrintNewline = false;
+                    Next();
+                    continue;
+            }
+            Expression();
+            Generate("procedure(write)");
+            shouldPrintNewline = true;
+        }
+        if (shouldPrintNewline)
+            Generate("procedure(newline)");
+    }
+
+    private void Input()
+    {
+        //input      => INPUT (prompt-string [;])? assignable (, assignable)*
+        //assignable => user-defined-name (type-specifier  ('(' index ')')? )?
+
+        Next();
+        Prompt();
+        Generate("string(? )", "procedure(write)");
+        Variable();
+        while (MightMatch(TokenType.Comma))
+            Variable();
+
+        void Prompt()
+        {
+            if (MightMatch(TokenType.String, out var prompt))
+            {
+                MustMatch(TokenType.Semicolon);
+                Generate($"string({prompt})", "procedure(write)");
+            }
+        }
+
+        void Variable()
+        {
+            MustMatch(TokenType.UserDefinedName, out var newVariable);
+            if (MightMatch(TokenType.TypeSpecifier, out var typeSpecifier))
+            {
+                switch (typeSpecifier)
+                {
+                    case "$":
+                        Generate("input-string", $"assignment({newVariable})");
+                        break;
+                    case "%":
+                        Generate("input-int", $"assignment({newVariable})");
+                        break;
+                }
+            }
+            else
+                Generate("input-float", $"assignment({newVariable})");
+
+            //todo: check for dim accessing (e.g. a(i)).
+        }
+    }
+
+    void Goto()
+    {
+        Next();
+        Expression();
+        Generate("procedure(goto)");
+        SkipLine();
+    }
+
+    void Let()
+    {
+        //let => 'LET'? N = Expr
+        MightMatch("LET");
+        MustMatch(TokenType.UserDefinedName, out var name);
+        MustMatch(TokenType.EqualityOrAssignment);
+        Expression();
+        Generate($"assignment({name})");
+    }
+
+    /// <summary>
+    /// Calls the operator of the lowest precedence.
+    /// </summary>
+    void Expression() => PrecedenceThreeOperator();
+
+    void PrecedenceThreeOperator()
+    {//Note: This method is Expression in Crenshaw's book.
+        PrecedenceTwoOperator();
+        while (_currentTokenType == TokenType.Operator && IsOneOf(_currentTokenValue, "+ -"))
+        {
+            switch (_currentTokenValue)
+            {
+                case "+":
+                    Add();
+                    break;
+                case "-":
+                    Subtract();
+                    break;
+            }
+        }
+    }
+
+    void Add()
+    {
+        Next();
+        PrecedenceTwoOperator();
+        Generate("procedure(+)");
+    }
+
+    void Subtract()
+    {
+        Next();
+        PrecedenceTwoOperator();
+        Generate("procedure(-)");
+    }
+
+    void PrecedenceTwoOperator()
+    {//Note: This method is Term in Crenshaw's book.
+        PrecedenceOneOperator();
+        while (_currentTokenType == TokenType.Operator && IsOneOf(_currentTokenValue, "* /"))
+        {
+            switch (_currentTokenValue)
+            {
+                case "*":
+                    Multiply();
+                    break;
+                case "/":
+                    Divide();
+                    break;
+            }
+        }
+    }
+
+    void Multiply()
+    {
+        Next();
+        PrecedenceOneOperator();
+        Generate("procedure(*)");
+    }
+
+    void Divide()
+    {
+        Next();
+        PrecedenceOneOperator();
+        Generate("procedure(/)");
+    }
+
+    void PrecedenceOneOperator()
+    {
+        Atom();
+        while (_currentTokenType == TokenType.Operator && _currentTokenValue == "^")
+        {
+            //exponentiate
+            Next();
+            Atom();
+            Generate("procedure(^)");
+        }
+    }
+
+    void Atom()
+    {//Note: This method is Factor in Crenshaw's book.
+        switch (_currentTokenType)
+        {
+            case TokenType.OpeningParenthesis:
+                Next();
+                Expression();
+                MustMatch(TokenType.ClosingParenthesis);
+                break;
+            case TokenType.Function:
+                //e.g. sqr(n)
+                var functionName = _currentTokenValue;
+                Next();
+                MustMatch(TokenType.OpeningParenthesis);
+                Expression();
+                MustMatch(TokenType.ClosingParenthesis);
+                Generate($"procedure({functionName})");
+                break;
+            case TokenType.Float:
+                Generate($"float({_currentTokenValue})");
+                Next();
+                break;
+            case TokenType.Number:
+                Generate($"number({_currentTokenValue})");
+                Next();
+                break;
+            case TokenType.String:
+                Generate($"string({_currentTokenValue})");
+                Next();
+                break;
+            case TokenType.UserDefinedName:
+                Generate($"variable({_currentTokenValue})");
+                Next();
+                break;
+            case TokenType.Statement://Note: user defined function.
+                if (MightMatch("FN"))//todo: test.
+                {
+                    Next();
+                    MustMatch(TokenType.UserDefinedName);
+                    var name = _currentTokenValue;
+                    MustMatch(TokenType.OpeningParenthesis);
+                    Expression();
+                    MustMatch(TokenType.ClosingParenthesis);
+                    Generate($"userDefinedFunction({name})");
+                }
+                break;
+            default:
+                return;
+        }
+    }
+
+
+    private void Generate(params string[] values)
+    {
+        foreach (var value in values)
+            TempResult.Add(value);
+    }
+
+    static bool IsOneOf(string value, string values)
+    {
+        string[] vs = values.Split();
+        return vs.Contains(value);
+    }
+
+    //deletme: if never used.
+    static bool IsOneOf(TokenType type, params TokenType[] types) => types.Contains(type);
+
+
+    void MustMatch_wws(TokenType tokenType)//deleteMe: if not in use once parser is finished.
     {
         if (tokenType == _currentTokenType)
         {
-            Next();
+            Next_wws();
+        }
+        else
+        {
+            throw new Exception("placeholder #2");//todo: proper error handling.
+        }
+    }
+
+    void MustMatch(TokenType tokenType)//deleteMe: if not in use once parser is finished.
+    {
+        MustMatch_wws(tokenType);
+        SkipWhiteSpace();
+    }
+
+    void MustMatch_wws(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
+    {
+        if (tokenType == _currentTokenType)
+        {
+            tokenValue = _currentTokenValue;
+            Next_wws();
+        }
+        else
+            throw new Exception("placeholder #3");//todo: proper error handling.
+    }
+
+    void MustMatch(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
+    {
+        MustMatch_wws(tokenType, out tokenValue);
+        SkipWhiteSpace();
+    }
+
+    void MustMatch_wws(string tokenValue)//deleteMe: if not in use once parser is finished.
+    {
+        if (tokenValue == _currentTokenValue)
+        {
+            Next_wws();
+        }
+        else
+            throw new Exception("placeholder #1");//todo: proper error handling.
+    }
+
+    void MustMatch(string tokenValue)//deleteMe: if not in use once parser is finished.
+    {
+        MustMatch_wws(tokenValue);
+        SkipWhiteSpace();
+    }
+
+    bool MightMatch_wws(TokenType tokenType)//deleteMe: if not in use once parser is finished.
+    {
+        if (tokenType == _currentTokenType)
+        {
+            Next_wws();
+            return true;
+        }
+        return false;
+    }
+
+    bool MightMatch(TokenType tokenType)//deleteMe: if not in use once parser is finished.
+    {
+        if (MightMatch_wws(tokenType))
+        {
+            SkipWhiteSpace();
+            return true;
+        }
+        return false;
+    }
+
+    bool MightMatch_wws(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
+    {
+        tokenValue = string.Empty;
+        if (tokenType == _currentTokenType)
+        {
+            tokenValue = _currentTokenValue;
+            Next_wws();
+            return true;
+        }
+        return false;
+    }
+
+    bool MightMatch(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
+    {
+        if (MightMatch_wws(tokenType, out tokenValue))
+        {
+            SkipWhiteSpace();
+            return true;
+        }
+        return false;
+    }
+
+    bool MightMatch_wws(string tokenValue)//deleteMe: if not in use once parser is finished.
+    {
+        if (tokenValue == _currentTokenValue)
+        {
+            Next_wws();
+            return true;
+        }
+        return false;
+    }
+
+    bool MightMatch(string tokenValue)//deleteMe: if not in use once parser is finished.
+    {
+        if (MightMatch_wws(tokenValue))
+        {
+            SkipWhiteSpace();
             return true;
         }
         return false;
     }
 
     void Next()
+    {
+        Next_wws();
+        SkipWhiteSpace();
+    }
+
+    void SkipWhiteSpace()
+    {
+        while (_currentTokenType == TokenType.Space)
+            Next_wws();
+    }
+
+    void SkipLine()
+    {
+        while (_currentTokenType != TokenType.Label &&
+            _currentTokenType != TokenType.EOF)
+            Next_wws();
+    }
+
+    void Next_wws()
     {
         if (_currentTokenType == TokenType.EOF)
             return;

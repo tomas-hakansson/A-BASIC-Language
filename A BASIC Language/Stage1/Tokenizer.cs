@@ -37,7 +37,7 @@ public class Tokenizer
         reservedWords.AddRange(rw.Functions);
         reservedWords.AddRange(rw.Statements);
 
-        Result = RegexTokenizer();
+        //Result = RegexTokenizer();
 
         _tokenizationHelper = new TokenizeStandard(_source, reservedWords);
 
@@ -70,6 +70,7 @@ public class Tokenizer
          */
 
         //Note: Remove non rem comments.
+        //todo: modify to allow for correct line and column numbers.
         var nonRemComments = @"^ (?! \s* (\d+) \s* [A-Z]) .*";
         _mutableSource = Regex.Replace(_mutableSource, nonRemComments, string.Empty,
             RegexOptions.CultureInvariant |
@@ -181,10 +182,10 @@ public class Tokenizer
                     tokenTypes.Add(TokenType.Semicolon);
                     break;
                 case "$":
-                    tokenTypes.Add(TokenType.StringSpecifier);
+                    tokenTypes.Add(TokenType.TypeSpecifier);
                     break;
                 case "%":
-                    tokenTypes.Add(TokenType.IntegerSpecifier);
+                    tokenTypes.Add(TokenType.TypeSpecifier);
                     break;
                 default:
                     throw new Exception("Unpecified token type");
@@ -226,6 +227,14 @@ public class Tokenizer
         tokenLengths.AddRange(intLengths);
         tokenValues.AddRange(ints);
 
+        /* todo: if the numbers are seperated solely by spaces then merge them (examples below):
+             4 2 == 42
+             4.3 3 == 4.33
+            not these ones:
+             4.3 2.9 != 4.32.9
+             (can't think of other examples)
+            3 .2, 3. 2 and 3 . 2 should also be merged but that would require more changes.
+         */
 
         //Note: Get (and remove) space characters.
         var spacePattern = @$"\s+";
@@ -259,8 +268,9 @@ public class Tokenizer
         }
 
         //Note: Put the lines in the correct order.
+        //Note: Label is parsed to int for correct ordering.
         var isBeginning = true;
-        SortedDictionary<string, (List<string>, List<TokenType>)> sortedLines = new();
+        SortedDictionary<int, (List<string>, List<TokenType>)> sortedLines = new();
         List<string> lineValues = new();
         List<TokenType> lineTypes = new();
         foreach ((_, (TokenType type, _, string value)) in sortedTokens)
@@ -276,7 +286,7 @@ public class Tokenizer
             if (type == TokenType.Label)
             {
                 if (lineValues.Count > 0)
-                    sortedLines.Add(lineValues.First(), (lineValues, lineTypes));
+                    sortedLines.Add(int.Parse(lineValues.First()), (lineValues, lineTypes));
                 lineValues = new();
                 lineTypes = new();
             }
@@ -285,7 +295,7 @@ public class Tokenizer
         }
         if (lineValues.Count > 0)
         {
-            sortedLines.Add(lineValues.First(), (lineValues, lineTypes));
+            sortedLines.Add(int.Parse(lineValues.First()), (lineValues, lineTypes));
         }
 
         //Note: Put the lime in the coconut/ Populate the result.
