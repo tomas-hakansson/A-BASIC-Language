@@ -1,14 +1,14 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using A_BASIC_Language.Gui;
 using A_BASIC_Language.ValueTypes;
 
-namespace A_BASIC_Language;
+namespace A_BASIC_Language.StageN;
 
 public class Interpreter
 {
     private const string TheProgramHasEnded = "The program has ended";
     private Terminal? _terminal;
-    readonly List<Line> _lines;//todo: replace with ParsedProgram.
+    readonly List<ABL_EvalValue> _evalValues;
     readonly Dictionary<int, int> _labelIndex;//todo: replace with ParsedProgram.
     readonly Dictionary<string, ValueBase?> _variables;//Ponder: do the value need to be nullable?
     readonly Stack<ValueBase> _data;
@@ -17,40 +17,10 @@ public class Interpreter
 
     public Interpreter(string source)
     {
-        //10 PRINT "HEJ":PRINT "OJ"
-        //"hej" print "nl" print "oj" print "nl" print
-        //    new Line(new List<Token>() { new String("hej"), new Procedure("print"), new String("\n"), new Procedure("print"), new Assignment("N") }),...
-        // 11 print a + b
-        // a b + print
-        // a + (4 * 3) / sqrt(b)
-        //4 3 * b sqrt / 4 +
-        //a + (b * ((c - d) ^ 4))
-        // c d - 4 ^ b * a +
-        // c d 4 b a - ^ * +
-        Parser parser = new(source);
-        var program = parser.Program;
-        _lines = program.Lines;
-        _labelIndex = program.LabelIndex;
-
-        //_lines = new List<Line>
-        //{
-        //    new Line(new List<Token>() { new Procedure("INPUT"), new Assignment("N") }),
-        //    new Line(new List<Token>() { new Variable("N"), new Procedure("SQR"), new Procedure("SQR"), new Assignment("I") }),
-        //    new Line(new List<Token>() { new Variable("I"), new Number(2), new Procedure("^"), 
-        //                                                    new Number(2), new Procedure("^"), new Assignment("J") }),
-        //    new Line(new List<Token>() { new Variable("N"), new Procedure("PRINT") }),
-        //    new Line(new List<Token>() { new Variable("J"), new Procedure("PRINT") }),
-        //    new Line(new List<Token>() { new Number(20), new Procedure("GOTO") }),
-        //};
-        //_labelIndex = new Dictionary<int, int>
-        //{
-        //    { 20, 0 },
-        //    { 25, 1 },
-        //    { 30, 2 },
-        //    { 35, 3 },
-        //    { 38, 4 },
-        //    { 40, 5 },
-        //};
+        Stage1.Tokenizer t1 = new(source);
+        StageN.Parser testParser = new(t1.TokenValues, t1.TokenTypes);
+        _evalValues = testParser.ABL_EvalValues;
+        _labelIndex = testParser.LabelIndex;
         _variables = new Dictionary<string, ValueBase?>();
         _data = new Stack<ValueBase>();
 
@@ -61,36 +31,41 @@ public class Interpreter
     {
         _terminal = terminal;
 
-        for (; _index < _lines.Count; _index++)
+        //for (; _index < _lines.Count; _index++)
         {
-            Application.DoEvents();
+          //  Application.DoEvents();
 
-            if (!_terminal.Running)
-                return;
+            //if (!_terminal.Running)
+            //    return;
 
-            EvalLine();
+            Eval();
         }
     }
 
-    private void EvalLine()
+    private void Eval()
     {
         if (_terminal == null)
             throw new SystemException("Terminal not initialized.");
 
         Application.DoEvents();
 
-        var line = _lines[_index];
-        Debug.WriteLine($"Eval {_index}: {line}");
+        //todo: Debug.WriteLine($"Eval {_index}: {line}");
 
-        for (int i = 0; i < line.Count; i++)
+        for (int i = 0; i < _evalValues.Count; i++)
         {
             if (!_terminal.Running)
                 return;
 
-            switch (line[i])
+            switch (_evalValues[i])
             {
+                case ABL_Label:
+                    //Note: NOP.
+                    break;
                 case ABL_Number n:
                     _data.Push(ValueBase.GetValueType(n.Value));
+                    break;
+                case ABL_String s:
+                    _data.Push(ValueBase.GetValueType(s.Value));
                     break;
                 case ABL_Variable v:
                     {

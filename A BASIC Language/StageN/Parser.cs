@@ -1,11 +1,12 @@
-﻿using A_BASIC_Language.Stage1;
+﻿using A_BASIC_Language;
+using A_BASIC_Language.Stage1;
 
 namespace A_BASIC_Language.StageN;
 
 public class Parser
 {
     public Dictionary<int, int> LabelIndex { get; set; } = new Dictionary<int, int>();
-    public List<string> TempResult { get; set; } = new List<string>();
+    public List<ABL_EvalValue> ABL_EvalValues { get; set; } = new List<ABL_EvalValue>();
 
     readonly List<string> _tokenValues = new();
     readonly List<TokenType> _tokenTypes = new();
@@ -18,9 +19,6 @@ public class Parser
         //Todo: This logic should be in a tokenized object created by the tokenizer.
         if (values.Count != types.Count)
             throw new ArgumentException("Values and types must have the same length");
-        /* todo: initialisation:
-         *  rpn program
-         */
 
         //Note: Initialisation:
         _tokenValues = values;
@@ -102,7 +100,7 @@ public class Parser
     {
         if (_currentTokenType != TokenType.Label)
             return false;
-        Generate($"label({_currentTokenValue})");
+        Generate(new ABL_Label(_currentTokenValue));
         LabelIndex.Add(int.Parse(_currentTokenValue), _index);
         Next();
         return true;
@@ -148,7 +146,7 @@ public class Parser
             throw new InvalidOperationException("Syntax error");
     }
 
-    private void Print()
+    void Print()
     {
         //print => PRINT (value | ; | ,)*
         //value => literal | variable | expression
@@ -168,7 +166,7 @@ public class Parser
             switch (_currentTokenType)
             {
                 case TokenType.Comma:
-                    Generate("procedure(next-tab)");
+                    Generate(new ABL_Procedure("next-tab"));
                     shouldPrintNewline = false;
                     Next();
                     continue;
@@ -178,21 +176,21 @@ public class Parser
                     continue;
             }
             Expression();
-            Generate("procedure(write)");
+            Generate(new ABL_Procedure("write"));
             shouldPrintNewline = true;
         }
         if (shouldPrintNewline)
-            Generate("procedure(newline)");
+            Generate(new ABL_Procedure("newline"));
     }
 
-    private void Input()
+    void Input()
     {
         //input      => INPUT (prompt-string [;])? assignable (, assignable)*
         //assignable => user-defined-name (type-specifier  ('(' index ')')? )?
 
         Next();
         Prompt();
-        Generate("string(? )", "procedure(write)");
+        Generate(new ABL_String("? "), new ABL_Procedure("write"));
         Variable();
         while (MightMatch(TokenType.Comma))
             Variable();
@@ -202,7 +200,7 @@ public class Parser
             if (MightMatch(TokenType.String, out var prompt))
             {
                 MustMatch(TokenType.Semicolon);
-                Generate($"string({prompt})", "procedure(write)");
+                Generate(new ABL_String(prompt), new ABL_Procedure("write"));
             }
         }
 
@@ -214,15 +212,15 @@ public class Parser
                 switch (typeSpecifier)
                 {
                     case "$":
-                        Generate("input-string", $"assignment({newVariable})");
+                        Generate(new ABL_Procedure("input-string"), new ABL_Assignment(newVariable));
                         break;
                     case "%":
-                        Generate("input-int", $"assignment({newVariable})");
+                        Generate(new ABL_Procedure("input-int"), new ABL_Assignment(newVariable));
                         break;
                 }
             }
             else
-                Generate("input-float", $"assignment({newVariable})");
+                Generate(new ABL_Procedure("input-float"), new ABL_Assignment(newVariable));
 
             //todo: check for dim accessing (e.g. a(i)).
         }
@@ -232,7 +230,7 @@ public class Parser
     {
         Next();
         Expression();
-        Generate("procedure(goto)");
+        Generate(new ABL_Procedure("goto"));
         SkipLine();
     }
 
@@ -243,7 +241,7 @@ public class Parser
         MustMatch(TokenType.UserDefinedName, out var name);
         MustMatch(TokenType.EqualityOrAssignment);
         Expression();
-        Generate($"assignment({name})");
+        Generate(new ABL_Assignment(name));
     }
 
     /// <summary>
@@ -272,14 +270,14 @@ public class Parser
     {
         Next();
         PrecedenceTwoOperator();
-        Generate("procedure(+)");
+        Generate(new ABL_Procedure("+"));
     }
 
     void Subtract()
     {
         Next();
         PrecedenceTwoOperator();
-        Generate("procedure(-)");
+        Generate(new ABL_Procedure("-"));
     }
 
     void PrecedenceTwoOperator()
@@ -303,14 +301,14 @@ public class Parser
     {
         Next();
         PrecedenceOneOperator();
-        Generate("procedure(*)");
+        Generate(new ABL_Procedure("*"));
     }
 
     void Divide()
     {
         Next();
         PrecedenceOneOperator();
-        Generate("procedure(/)");
+        Generate(new ABL_Procedure("/"));
     }
 
     void PrecedenceOneOperator()
@@ -321,7 +319,7 @@ public class Parser
             //exponentiate
             Next();
             Atom();
-            Generate("procedure(^)");
+            Generate(new ABL_Procedure("^"));
         }
     }
 
@@ -341,22 +339,22 @@ public class Parser
                 MustMatch(TokenType.OpeningParenthesis);
                 Expression();
                 MustMatch(TokenType.ClosingParenthesis);
-                Generate($"procedure({functionName})");
+                Generate(new ABL_Procedure(functionName));
                 break;
             case TokenType.Float:
-                Generate($"float({_currentTokenValue})");
+                Generate(new ABL_Number(_currentTokenValue));//todo: float tokens.
                 Next();
                 break;
             case TokenType.Number:
-                Generate($"number({_currentTokenValue})");
+                Generate(new ABL_Number(_currentTokenValue));
                 Next();
                 break;
             case TokenType.String:
-                Generate($"string({_currentTokenValue})");
+                Generate(new ABL_String(_currentTokenValue));
                 Next();
                 break;
             case TokenType.UserDefinedName:
-                Generate($"variable({_currentTokenValue})");
+                Generate(new ABL_Variable(_currentTokenValue));
                 Next();
                 break;
             case TokenType.Statement://Note: user defined function.
@@ -368,7 +366,8 @@ public class Parser
                     MustMatch(TokenType.OpeningParenthesis);
                     Expression();
                     MustMatch(TokenType.ClosingParenthesis);
-                    Generate($"userDefinedFunction({name})");
+                    //todo: generate for user defined functions.
+                    //Generate($"userDefinedFunction({name})");
                 }
                 break;
             default:
@@ -377,10 +376,10 @@ public class Parser
     }
 
 
-    private void Generate(params string[] values)
+    void Generate(params ABL_EvalValue[] values)
     {
-        foreach (var value in values)
-            TempResult.Add(value);
+        foreach (ABL_EvalValue value in values)
+            ABL_EvalValues.Add(value);
     }
 
     static bool IsOneOf(string value, string values)
@@ -388,10 +387,6 @@ public class Parser
         string[] vs = values.Split();
         return vs.Contains(value);
     }
-
-    //deletme: if never used.
-    static bool IsOneOf(TokenType type, params TokenType[] types) => types.Contains(type);
-
 
     void MustMatch_wws(TokenType tokenType)//deleteMe: if not in use once parser is finished.
     {
@@ -529,8 +524,6 @@ public class Parser
     {
         if (_currentTokenType == TokenType.EOF)
             return;
-        //if (_index >= _tokenValues.Count)//Note: End of file.
-        //    return;
         _currentTokenType = _tokenTypes[_index];
         _currentTokenValue = _tokenValues[_index];
         _index++;

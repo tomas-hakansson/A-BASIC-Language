@@ -11,7 +11,7 @@ internal class LineParser
     Stage2.Token _currentToken;
     string _currentValue;
 
-    List<Token> _expression;
+    List<ABL_EvalValue> _expression;
 
     public LineParser(Stage2.Line tokenizedLine)
     {
@@ -26,7 +26,7 @@ internal class LineParser
         _index = 0;
         Next();
 
-        _expression = new List<Token>();
+        _expression = new List<ABL_EvalValue>();
         Label = LineNumber();
         Line = Statement();
     }
@@ -82,7 +82,7 @@ internal class LineParser
             throw new NotImplementedException("The current implementation of goto can't do that.");
         Next();
         //todo: validate the token types.
-        return new Line(new List<Token>() { new Number(int.Parse(_currentValue)), new Procedure("GOTO") });
+        return new Line(new List<ABL_EvalValue>() { new ABL_Number(int.Parse(_currentValue)), new ABL_Procedure("GOTO") });
     }
 
     private Line Input()
@@ -91,7 +91,7 @@ internal class LineParser
             throw new NotImplementedException("The current implementation of input can't do that.");
         Next();
         //todo: validate the token types.
-        return new Line(new List<Token>() { new Procedure("INPUT"), new Assignment(_currentValue) });
+        return new Line(new List<ABL_EvalValue>() { new ABL_Procedure("INPUT"), new ABL_Assignment(_currentValue) });
     }
 
     private Line Print()
@@ -100,7 +100,7 @@ internal class LineParser
             throw new NotImplementedException("The current implementation of print can't do that.");
         Next();
         //todo: validate the token types.
-        return new Line(new List<Token>() { new Variable(_currentValue), new Procedure("PRINT") });
+        return new Line(new List<ABL_EvalValue>() { new ABL_Variable(_currentValue), new ABL_Procedure("PRINT") });
     }
 
     Line Assignment()
@@ -110,7 +110,7 @@ internal class LineParser
         Next();//Note: I call Next() twice to skip '='.
         /*var tokens = */
         Expression();
-        _expression.Add(new Assignment(variableName));
+        _expression.Add(new ABL_Assignment(variableName));
         return new Line(_expression);
     }
 
@@ -141,14 +141,14 @@ internal class LineParser
     {
         Next();
         PrecedenceTwoOperator();
-        _expression.Add(new Procedure("+"));
+        _expression.Add(new ABL_Procedure("+"));
     }
 
     private void Subtract()
     {
         Next();
         PrecedenceTwoOperator();
-        _expression.Add(new Procedure("-"));
+        _expression.Add(new ABL_Procedure("-"));
     }
 
     private void PrecedenceTwoOperator()
@@ -172,14 +172,14 @@ internal class LineParser
     {
         Next();
         PrecedenceOneOperator();
-        _expression.Add(new Procedure("*"));
+        _expression.Add(new ABL_Procedure("*"));
     }
 
     private void Divide()
     {
         Next();
         PrecedenceOneOperator();
-        _expression.Add(new Procedure("/"));
+        _expression.Add(new ABL_Procedure("/"));
     }
 
     private void PrecedenceOneOperator()
@@ -190,7 +190,7 @@ internal class LineParser
             //exponentiate
             Next();
             Atom();
-            _expression.Add(new Procedure("^"));
+            _expression.Add(new ABL_Procedure("^"));
         }
     }
 
@@ -217,16 +217,16 @@ internal class LineParser
                 Match(Stage2.Token.OpeningParenthesis);
                 Expression();
                 Match(Stage2.Token.ClosingParenthesis);
-                _expression.Add(new Procedure(functionName));
+                _expression.Add(new ABL_Procedure(functionName));
                 break;
             case Stage2.Token.UserDefinedFunction:
                 break;
             case Stage2.Token.Number:
-                _expression.Add(new Number(_currentValue));
+                _expression.Add(new ABL_Number(_currentValue));
                 Next();
                 break;
             case Stage2.Token.Other:
-                _expression.Add(new Variable(_currentValue));
+                _expression.Add(new ABL_Variable(_currentValue));
                 Next();
                 break;
             default:
