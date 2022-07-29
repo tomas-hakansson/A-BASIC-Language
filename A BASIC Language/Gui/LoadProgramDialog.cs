@@ -119,7 +119,7 @@ public partial class LoadProgramDialog : Form
 
         var n = (string)listView1.SelectedItems[0].Tag;
 
-        var source = MainWindow.ProgramRepository.GetProgram(this, n);
+        var source = MainWindow.ProgramRepository.GetProgram(this, n, out _);
 
         using var x = new SourceDialog();
         x.Filename = listView1.SelectedItems[0].Text;

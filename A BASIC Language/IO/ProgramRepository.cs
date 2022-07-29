@@ -9,11 +9,11 @@ public class ProgramRepository
         ProgramCache = new Dictionary<string, string>();
     }
 
-    public string GetProgram(IWin32Window owner, string pathAndName)
+    public string GetProgram(IWin32Window owner, string pathAndName, out string name)
     {
         var ioDispatcher = new Dispatcher();
         var io = ioDispatcher.GetIo(pathAndName);
-        var name = io.GetNameOnly();
+        name = io.GetNameOnly();
 
         if (ProgramCache.ContainsKey(name))
             return ProgramCache.GetValueOrDefault(name) ?? "";

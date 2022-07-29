@@ -63,7 +63,7 @@ public partial class MainWindow : Form
     {
         Cursor = Cursors.WaitCursor;
 
-        var source = ProgramRepository.GetProgram(this, ProgramFilename);
+        var source = ProgramRepository.GetProgram(this, ProgramFilename, out var nameOnly);
 
         if (string.IsNullOrWhiteSpace(source))
         {
@@ -76,6 +76,7 @@ public partial class MainWindow : Form
         Interpreter eval = new(SourceCode);
         Cursor = Cursors.Default;
         eval.Run(Terminal);
+        Terminal.Run(nameOnly, ProgramFilename);
     }
 
     private void btnRestart_Click(object sender, EventArgs e)
