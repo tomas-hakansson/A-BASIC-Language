@@ -242,15 +242,31 @@ public class Parser
         Generate(new ABL_Assignment(name));
     }
 
+    bool isNegative = false;
     /// <summary>
     /// Calls the operator of the lowest precedence.
     /// </summary>
-    void Expression() => PrecedenceThreeOperator();
+    void Expression()
+    {
+        //if (_currentTokenType == TokenType.Operator)
+        //{
+        //    switch(_currentTokenValue)
+        //    {
+        //        case "+":
+        //            //Note: do nothing.
+        //            break;
+        //        case "-":
+        //            isNegative = true;
+        //            break;
+        //    }
+        //}
+        PrecedenceThreeOperator();
+    }
 
     void PrecedenceThreeOperator()
     {//Note: This method is Expression in Crenshaw's book.
         PrecedenceTwoOperator();
-        while (_currentTokenType == TokenType.Operator && IsOneOf(_currentTokenValue, "+ -"))
+        while (_currentTokenType == TokenType.Operator)
         {
             switch (_currentTokenValue)
             {
@@ -260,8 +276,11 @@ public class Parser
                 case "-":
                     Subtract();
                     break;
+                default:
+                    goto END;
             }
         }
+    END:;
     }
 
     void Add()
@@ -281,7 +300,7 @@ public class Parser
     void PrecedenceTwoOperator()
     {//Note: This method is Term in Crenshaw's book.
         PrecedenceOneOperator();
-        while (_currentTokenType == TokenType.Operator && IsOneOf(_currentTokenValue, "* /"))
+        while (_currentTokenType == TokenType.Operator)
         {
             switch (_currentTokenValue)
             {
@@ -291,8 +310,11 @@ public class Parser
                 case "/":
                     Divide();
                     break;
+                default:
+                    goto END;
             }
         }
+    END:;
     }
 
     void Multiply()
