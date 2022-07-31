@@ -4,12 +4,11 @@ namespace A_BASIC_Language.Stage2;
 
 public class Parser
 {
-    public Dictionary<int, int> LabelIndex { get; set; } = new Dictionary<int, int>();
-    public List<ABL_EvalValue> ABL_EvalValues { get; set; } = new List<ABL_EvalValue>();
     public ParseResult Result { get; set; } = new ParseResult();
 
     readonly TokenizeResult _tokenizeResult;
-
+    readonly List<ABL_EvalValue> _evalValues;
+    readonly Dictionary<int, int> _labelIndex;
     int _index = 0;
     string _currentTokenValue = string.Empty;
     TokenType _currentTokenType = default;
@@ -18,14 +17,16 @@ public class Parser
     {
         //Note: Initialisation:
         _tokenizeResult = tokenizeResult;
+        _evalValues = new List<ABL_EvalValue>();
+        _labelIndex = new Dictionary<int, int>();
         Next_wws();
 
         //Note: The parsing begins:
         try
         {
             AProgram();
-            Result.EvalValues = ABL_EvalValues;
-            Result.LabelIndex = LabelIndex;
+            Result.EvalValues = _evalValues;
+            Result.LabelIndex = _labelIndex;
         }
         catch (Exception ex)
         {
@@ -98,7 +99,7 @@ public class Parser
         if (_currentTokenType != TokenType.Label)
             return false;
         Generate(new ABL_Label(_currentTokenValue));
-        LabelIndex.Add(int.Parse(_currentTokenValue), _index);
+        _labelIndex.Add(int.Parse(_currentTokenValue), _evalValues.Count - 1);
         Next();
         return true;
     }
@@ -376,7 +377,7 @@ public class Parser
     void Generate(params ABL_EvalValue[] values)
     {
         foreach (ABL_EvalValue value in values)
-            ABL_EvalValues.Add(value);
+            _evalValues.Add(value);
     }
 
     static bool IsOneOf(string value, string values)
