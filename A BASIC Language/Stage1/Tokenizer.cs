@@ -4,60 +4,19 @@ namespace A_BASIC_Language.Stage1;
 
 public class Tokenizer
 {
-    public List<List<string>> TokenizedLines { get; set; }
-    public List<string> TokenizedSource { get; set; }
+    public TokenizeResult Result { get; set; }
 
-    public List<string> TokenValues { get; set; }
-    public List<TokenType> TokenTypes { get; set; }
-    public Result Result { get; set; }
-
-    readonly string _source;
-    string _mutableSource;
-    int _index = 0;
-    bool _isNewLine = true;
-    private bool _eof = false;
-    private char _currentCharacter;
-    readonly TokenizeStandard _tokenizationHelper;
+    string _source;
 
     public Tokenizer(string source)
     {
-        TokenizedLines = new List<List<string>>();
-        TokenizedSource = new List<string>();
-
-        TokenValues = new List<string>();
-        TokenTypes = new List<TokenType>();
-
-
+        Result = new TokenizeResult();
         _source = source;
-        _mutableSource = _source;
-        _currentCharacter = _source[_index];
-        ReservedWords rw = new();
-        var reservedWords = rw.Operators;
-        reservedWords.AddRange(rw.Punctuation);
-        reservedWords.AddRange(rw.Functions);
-        reservedWords.AddRange(rw.Statements);
 
-        //Result = RegexTokenizer();
-
-        _tokenizationHelper = new TokenizeStandard(_source, reservedWords);
-
-        Tokenize();
-        List<string> tokenizedLine = new();
-        foreach (var token in TokenizedSource)
-        {
-            if (token == "\n")
-            {
-                TokenizedLines.Add(tokenizedLine.ToList());
-                tokenizedLine.Clear();
-                continue;
-            }
-            tokenizedLine.Add(token);
-        }
-        if (tokenizedLine.Count > 0)
-            TokenizedLines.Add(tokenizedLine);
+        RegexTokenizer();
     }
 
-    private Result RegexTokenizer()
+    private void RegexTokenizer()
     {
         /* The algorirthm here is:
          * Handle each case in turn.
@@ -72,7 +31,7 @@ public class Tokenizer
         //Note: Remove non rem comments.
         //todo: modify to allow for correct line and column numbers.
         var nonRemComments = @"^ (?! \s* (\d+) \s* [A-Z]) .*";
-        _mutableSource = Regex.Replace(_mutableSource, nonRemComments, string.Empty,
+        _source = Regex.Replace(_source, nonRemComments, string.Empty,
             RegexOptions.CultureInvariant |
             RegexOptions.IgnoreCase |
             RegexOptions.IgnorePatternWhitespace |
@@ -86,7 +45,7 @@ public class Tokenizer
 
         //Note: Get (and remove) the labels.
         var labelPattern = @"^ \s* (?<label>\d+) \s* [A-Z] .*";
-        var labelMatches = Regex.Matches(_mutableSource, labelPattern,
+        var labelMatches = Regex.Matches(_source, labelPattern,
             RegexOptions.CultureInvariant |
             RegexOptions.IgnoreCase |
             RegexOptions.IgnorePatternWhitespace |
@@ -106,14 +65,14 @@ public class Tokenizer
                     // BASIC code. If we ever decide that it should be allowed in ABL code the
                     // choosen placeholder character must be replaced or the logic changed.
                     string placeholders = new('¤', g.Value.Length);
-                    _mutableSource = _mutableSource.Remove(g.Index, g.Length).Insert(g.Index, placeholders);
+                    _source = _source.Remove(g.Index, g.Length).Insert(g.Index, placeholders);
                 }
             }
         }
 
         //Note: Get (and remove) the strings.
         var stringPattern = "\" (?<string>.*?) \"";
-        var stringMatches = Regex.Matches(_mutableSource, stringPattern,
+        var stringMatches = Regex.Matches(_source, stringPattern,
             RegexOptions.CultureInvariant |
             RegexOptions.IgnorePatternWhitespace);
         foreach (Match ms in stringMatches)
@@ -132,7 +91,7 @@ public class Tokenizer
                     else
                     {
                         string placeholders = new('¤', g.Value.Length);
-                        _mutableSource = _mutableSource.Remove(g.Index, g.Length).Insert(g.Index, placeholders);
+                        _source = _source.Remove(g.Index, g.Length).Insert(g.Index, placeholders);
                     }
                 }
             }
@@ -239,7 +198,7 @@ public class Tokenizer
         //Note: Get (and remove) space characters.
         var spacePattern = @$"\s+";
 
-        var spaceMatches = Regex.Matches(_mutableSource, spacePattern,
+        var spaceMatches = Regex.Matches(_source, spacePattern,
             RegexOptions.CultureInvariant |
             RegexOptions.IgnorePatternWhitespace);
         foreach (Match mi in spaceMatches)
@@ -255,7 +214,7 @@ public class Tokenizer
                 }
 
                 string placeholders = new('¤', mi.Value.Length);
-                _mutableSource = _mutableSource.Remove(mi.Index, mi.Length).Insert(mi.Index, placeholders);
+                _source = _source.Remove(mi.Index, mi.Length).Insert(mi.Index, placeholders);
             }
         }
 
@@ -299,29 +258,18 @@ public class Tokenizer
         }
 
         //Note: Put the lime in the coconut/ Populate the result.
-        Result result = new();
         foreach ((_, (List<string> values, List<TokenType> types)) in sortedLines)
         {
-            Line line = new()
-            {
-                TokenValues = values,
-                TokenTypes = types
-            };
-            result.Add(line);
-            TokenValues.AddRange(values);
-            TokenTypes.AddRange(types);
+            Result.AddMany(values, types);
         }
 
         //Note: add end of line token for parsing:
-
-        TokenTypes.Add(TokenType.EOF);
-        TokenValues.Add("");//Note: to match lengths;
-        return result;
+        Result.Add(string.Empty, TokenType.EOF);
     }
 
     private (List<int> indices, List<int> lengths, List<string> values) GetSimpleMatch(string pattern, RegexOptions regexOption)
     {
-        var matches = Regex.Matches(_mutableSource, pattern, regexOption);
+        var matches = Regex.Matches(_source, pattern, regexOption);
         List<int> indices = new();
         List<int> lengths = new();
         List<string> values = new();
@@ -337,7 +285,7 @@ public class Tokenizer
                 // BASIC code. If we ever decide that it should be allowed in ABL code the
                 // choosen placeholder character must be replaced or the logic changed.
                 string placeholders = new('¤', m.Value.Length);
-                _mutableSource = _mutableSource.Remove(m.Index, m.Length).Insert(m.Index, placeholders);
+                _source = _source.Remove(m.Index, m.Length).Insert(m.Index, placeholders);
             }
         }
         return (indices, lengths, values);
@@ -345,7 +293,7 @@ public class Tokenizer
 
     private void RemoveBlankLines()
     {
-        using StringReader reader = new(_mutableSource);
+        using StringReader reader = new(_source);
         using StringWriter writer = new();
         string line;
         while ((line = reader.ReadLine()!) != null)
@@ -353,7 +301,7 @@ public class Tokenizer
             if (line.Trim().Length > 0)
                 writer.WriteLine(line);
         }
-        _mutableSource = writer.ToString().Trim();
+        _source = writer.ToString().Trim();
     }
 
     private (List<int> indices, List<int> lengths, List<string> values) GetReservedWords(List<string> words)
@@ -369,7 +317,7 @@ public class Tokenizer
             aWord += word + "|";
         }
         aWord = aWord.Remove(aWord.Length - 1);
-        var matches = Regex.Matches(_mutableSource, aWord,
+        var matches = Regex.Matches(_source, aWord,
             RegexOptions.CultureInvariant |
             RegexOptions.IgnoreCase);
         List<int> indices = new();
@@ -387,172 +335,8 @@ public class Tokenizer
             // BASIC code. If we ever decide that it should be allowed in ABL code the
             // choosen placeholder character must be replaced or the logic changed.
             string placeholders = new('¤', m.Value.Length);
-            _mutableSource = _mutableSource.Remove(m.Index, m.Length).Insert(m.Index, placeholders);
+            _source = _source.Remove(m.Index, m.Length).Insert(m.Index, placeholders);
         }
         return (indices, lengths, values);
-    }
-
-    private void Tokenize()
-    {
-        SkipWhitespace();
-        while (!_eof)
-        {
-            Line();
-        }
-    }
-
-    private void Line()
-    {
-        if (char.IsDigit(_currentCharacter))
-        {
-            //this is probably a label but if the full number
-            // is followed by a dot (.) then it's a comment.
-            var initialIndex = _index;
-            Label();
-            if (_currentCharacter != '.')
-            {
-                _isNewLine = false;
-                TheRest();//FixMe: poorly named method.
-            }
-            else
-            {
-                _index = initialIndex;
-                TokenizedSource.RemoveAt(TokenizedSource.Count - 1);
-                SkipLine();
-            }
-        }
-        else
-            SkipLine();
-    }
-
-    private void TheRest()
-    {
-        while (!_isNewLine && !_eof)
-        {
-            if (_currentCharacter == '"')
-            {
-                //todo: string tokenization.
-            }
-            //Note: I will for now assume that everything else is an other.
-            else
-            {
-                Others();
-            }
-        }
-    }
-
-    private void Others()
-    {
-        var token = string.Empty;
-        for (; _index < _source.Length; _index++)
-        {
-            var cc = char.ToUpper(_source[_index]);
-
-            if (cc == Environment.NewLine[0])
-            {
-                _isNewLine = true;
-                AddNewToken();
-                TokenizedSource.Add("\n");
-                break;
-            }
-
-            if (char.IsWhiteSpace(cc))
-            {
-                AddNewToken();
-                break;
-            }
-
-            var readResult = _tokenizationHelper.Read(_index);
-            if (readResult.Success)
-            {
-                _eof = readResult.EOF;
-                AddNewToken();
-                _isNewLine = readResult.IsNewLine;
-                var standardToken = readResult.Token;
-                if (standardToken == "REM")
-                    SkipLine();
-                TokenizedSource.Add(standardToken);
-                if (_isNewLine)
-                    TokenizedSource.Add("\n");
-                _index = readResult.NewIndex;
-                break;
-            }
-            else
-                token += cc;
-        }
-
-        AddNewToken();
-        SetCurrentCharacter();
-        SkipWhitespace();
-
-        void AddNewToken()
-        {
-            if (token!.Length > 0)
-            {
-                TokenizedSource.Add(token);
-                token = string.Empty;
-            }
-        }
-    }
-
-    private void Label()
-    {
-        string label = string.Empty;
-        var done = false;
-        for (; _index < _source.Length; _index++)
-        {
-            var cc = _source[_index];
-            if (!done)
-            {
-                if (char.IsDigit(cc))
-                {
-                    label += cc;
-                    continue;
-                }
-                else
-                {
-                    done = true;
-                    TokenizedSource.Add(label);
-                }
-            }
-
-            if (cc == Environment.NewLine[0])
-            {
-                throw new ArgumentException("Invalid syntax: A label must be followed by something");
-            }
-            if (char.IsWhiteSpace(cc)) continue;
-            if (done) break;
-        }
-        SetCurrentCharacter();
-    }
-
-    private void SkipLine()
-    {
-        for (; _index < _source.Length; _index++)
-        {
-            var cc = (_source[_index]);
-            if (Environment.NewLine.Contains(cc))
-                break;
-        }
-        _isNewLine = true;
-        SkipWhitespace();
-    }
-
-    private void SkipWhitespace()
-    {
-        for (; _index < _source.Length; _index++)
-        {
-            SetCurrentCharacter();
-            if (!char.IsWhiteSpace(_currentCharacter))
-                break;
-        }
-        if (_index == _source.Length)
-            _eof = true;
-    }
-
-    private void SetCurrentCharacter()
-    {
-        if (_index < _source.Length && _index >= 0)
-            _currentCharacter = _source[_index];
     }
 }

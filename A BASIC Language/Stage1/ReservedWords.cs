@@ -1,4 +1,4 @@
-﻿namespace A_BASIC_Language;
+﻿namespace A_BASIC_Language.Stage1;
 
 internal class ReservedWords
 {

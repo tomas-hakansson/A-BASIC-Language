@@ -1,34 +1,31 @@
-﻿using A_BASIC_Language;
-using A_BASIC_Language.Stage1;
+﻿using A_BASIC_Language.Stage1;
 
-namespace A_BASIC_Language.StageN;
+namespace A_BASIC_Language.Stage2;
 
 public class Parser
 {
     public Dictionary<int, int> LabelIndex { get; set; } = new Dictionary<int, int>();
     public List<ABL_EvalValue> ABL_EvalValues { get; set; } = new List<ABL_EvalValue>();
+    public ParseResult Result { get; set; } = new ParseResult();
 
-    readonly List<string> _tokenValues = new();
-    readonly List<TokenType> _tokenTypes = new();
+    readonly TokenizeResult _tokenizeResult;
+
     int _index = 0;
     string _currentTokenValue = string.Empty;
     TokenType _currentTokenType = default;
 
-    public Parser(List<string> values, List<Stage1.TokenType> types)//todo: tokenizer return type?
+    public Parser(TokenizeResult tokenizeResult)
     {
-        //Todo: This logic should be in a tokenized object created by the tokenizer.
-        if (values.Count != types.Count)
-            throw new ArgumentException("Values and types must have the same length");
-
         //Note: Initialisation:
-        _tokenValues = values;
-        _tokenTypes = types;
+        _tokenizeResult = tokenizeResult;
         Next_wws();
 
         //Note: The parsing begins:
         try
         {
             AProgram();
+            Result.EvalValues = ABL_EvalValues;
+            Result.LabelIndex = LabelIndex;
         }
         catch (Exception ex)
         {
@@ -166,7 +163,7 @@ public class Parser
             switch (_currentTokenType)
             {
                 case TokenType.Comma:
-                    Generate(new ABL_Procedure("next-tab"));
+                    Generate(new ABL_Procedure("NEXT-TAB-POSITION"));
                     shouldPrintNewline = false;
                     Next();
                     continue;
@@ -176,11 +173,11 @@ public class Parser
                     continue;
             }
             Expression();
-            Generate(new ABL_Procedure("write"));
+            Generate(new ABL_Procedure("WRITE"));
             shouldPrintNewline = true;
         }
         if (shouldPrintNewline)
-            Generate(new ABL_Procedure("newline"));
+            Generate(new ABL_Procedure("NEXT-LINE"));
     }
 
     void Input()
@@ -190,7 +187,7 @@ public class Parser
 
         Next();
         Prompt();
-        Generate(new ABL_String("? "), new ABL_Procedure("write"));
+        Generate(new ABL_String("? "), new ABL_Procedure("WRITE"));
         Variable();
         while (MightMatch(TokenType.Comma))
             Variable();
@@ -200,7 +197,7 @@ public class Parser
             if (MightMatch(TokenType.String, out var prompt))
             {
                 MustMatch(TokenType.Semicolon);
-                Generate(new ABL_String(prompt), new ABL_Procedure("write"));
+                Generate(new ABL_String(prompt), new ABL_Procedure("WRITE"));
             }
         }
 
@@ -212,15 +209,15 @@ public class Parser
                 switch (typeSpecifier)
                 {
                     case "$":
-                        Generate(new ABL_Procedure("input-string"), new ABL_Assignment(newVariable));
+                        Generate(new ABL_Procedure("INPUT-STRING"), new ABL_Assignment(newVariable));
                         break;
                     case "%":
-                        Generate(new ABL_Procedure("input-int"), new ABL_Assignment(newVariable));
+                        Generate(new ABL_Procedure("INPUT-INT"), new ABL_Assignment(newVariable));
                         break;
                 }
             }
             else
-                Generate(new ABL_Procedure("input-float"), new ABL_Assignment(newVariable));
+                Generate(new ABL_Procedure("INPUT-FLOAT"), new ABL_Assignment(newVariable));
 
             //todo: check for dim accessing (e.g. a(i)).
         }
@@ -230,7 +227,7 @@ public class Parser
     {
         Next();
         Expression();
-        Generate(new ABL_Procedure("goto"));
+        Generate(new ABL_Procedure("GOTO"));
         SkipLine();
     }
 
@@ -403,7 +400,7 @@ public class Parser
     void MustMatch(TokenType tokenType)//deleteMe: if not in use once parser is finished.
     {
         MustMatch_wws(tokenType);
-        SkipWhiteSpace();
+        SkipWhitespace();
     }
 
     void MustMatch_wws(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
@@ -420,7 +417,7 @@ public class Parser
     void MustMatch(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
     {
         MustMatch_wws(tokenType, out tokenValue);
-        SkipWhiteSpace();
+        SkipWhitespace();
     }
 
     void MustMatch_wws(string tokenValue)//deleteMe: if not in use once parser is finished.
@@ -436,7 +433,7 @@ public class Parser
     void MustMatch(string tokenValue)//deleteMe: if not in use once parser is finished.
     {
         MustMatch_wws(tokenValue);
-        SkipWhiteSpace();
+        SkipWhitespace();
     }
 
     bool MightMatch_wws(TokenType tokenType)//deleteMe: if not in use once parser is finished.
@@ -453,7 +450,7 @@ public class Parser
     {
         if (MightMatch_wws(tokenType))
         {
-            SkipWhiteSpace();
+            SkipWhitespace();
             return true;
         }
         return false;
@@ -475,7 +472,7 @@ public class Parser
     {
         if (MightMatch_wws(tokenType, out tokenValue))
         {
-            SkipWhiteSpace();
+            SkipWhitespace();
             return true;
         }
         return false;
@@ -495,7 +492,7 @@ public class Parser
     {
         if (MightMatch_wws(tokenValue))
         {
-            SkipWhiteSpace();
+            SkipWhitespace();
             return true;
         }
         return false;
@@ -504,10 +501,10 @@ public class Parser
     void Next()
     {
         Next_wws();
-        SkipWhiteSpace();
+        SkipWhitespace();
     }
 
-    void SkipWhiteSpace()
+    void SkipWhitespace()
     {
         while (_currentTokenType == TokenType.Space)
             Next_wws();
@@ -524,8 +521,8 @@ public class Parser
     {
         if (_currentTokenType == TokenType.EOF)
             return;
-        _currentTokenType = _tokenTypes[_index];
-        _currentTokenValue = _tokenValues[_index];
+        _currentTokenType = _tokenizeResult.TokenTypes[_index];
+        _currentTokenValue = _tokenizeResult.TokenValues[_index];
         _index++;
     }
 }
