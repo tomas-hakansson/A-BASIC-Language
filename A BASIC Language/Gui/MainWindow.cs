@@ -75,8 +75,8 @@ public partial class MainWindow : Form
 
         Interpreter eval = new(SourceCode);
         Cursor = Cursors.Default;
-        eval.Run(Terminal);
         Terminal.Run(nameOnly, ProgramFilename);
+        eval.Run(Terminal);
     }
 
     private void btnRestart_Click(object sender, EventArgs e)
