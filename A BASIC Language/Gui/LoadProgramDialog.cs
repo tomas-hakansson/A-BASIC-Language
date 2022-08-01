@@ -64,6 +64,14 @@ public partial class LoadProgramDialog : Form
         Add("hi-lo.bas"); //          51
         Add("highiq.bas"); //         52
         Add("hockey.bas"); //         53
+        Add("horserace.bas"); //      54
+        Add("hurkle.bas"); //         55
+        Add("kinema.bas"); //         56
+        Add("king.bas"); //           57
+        Add("lem.bas"); //            58
+        Add("letter.bas"); //         59
+        Add("life.bas"); //           60
+        Add("lifefortwo.bas"); //     61
     }
 
     private void Add(string filename)
