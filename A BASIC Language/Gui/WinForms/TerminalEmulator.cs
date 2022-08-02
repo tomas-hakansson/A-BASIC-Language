@@ -1,4 +1,5 @@
 using System.Text;
+using A_BASIC_Language.Gui.WinForms.PseudoGraphics;
 
 namespace A_BASIC_Language.Gui.WinForms;
 
@@ -7,20 +8,27 @@ public partial class TerminalEmulator : Form
     private Brush OutputBrush { get; }
     private Brush InputBrush { get; }
     private Brush InputBackgroundBrush { get; }
-    private const int RowCount = 25;
-    private const int ColumnCount = 40;
     private const int PixelsWidth = 320;
     private const int PixelsHeight = 200;
     private const int CharacterWidth = 8;
     private const int CharacterHeight = 8;
     private readonly char[,] _characters;
+    private readonly List<GraphicalElement> _graphicalElements;
     private int CursorX { get; set; }
     private int CursorY { get; set; }
     private bool CursorBlink { get; set; }
     private int LineInputX { get; set; }
     private int LineInputY { get; set; }
+    public static Pen VectorGraphicsPen { get; }
     public bool LineInputMode { get; set; }
+    public const int RowCount = 25;
+    public const int ColumnCount = 40;
     public string LineInputResult { get; private set; }
+
+    static TerminalEmulator()
+    {
+        VectorGraphicsPen = new Pen(Color.FromArgb(100, 100, 0));
+    }
 
 #pragma warning disable CS8618 // Initializes from method.
     public TerminalEmulator()
@@ -31,6 +39,7 @@ public partial class TerminalEmulator : Form
         InputBrush = new SolidBrush(Color.FromArgb(0, 255, 255));
         InputBackgroundBrush = new SolidBrush(Color.FromArgb(0, 42, 0));
         _characters = new char[ColumnCount, RowCount];
+        _graphicalElements = new List<GraphicalElement>();
         Clear();
     }
 
@@ -38,7 +47,7 @@ public partial class TerminalEmulator : Form
     {
         LineInputMode = false;
     }
-
+    
     public void Clear()
     {
         LineInputX = 0;
@@ -47,6 +56,7 @@ public partial class TerminalEmulator : Form
         CursorX = 0;
         CursorY = 0;
         LineInputMode = false;
+        _graphicalElements.Clear();
 
         for (var y = 0; y < RowCount; y++)
             for (var x = 0; x < ColumnCount; x++)
@@ -78,6 +88,7 @@ public partial class TerminalEmulator : Form
             WriteLine();
             WriteLine("Loaded program:");
             WriteLine(program);
+            WriteSeparator();
         }
     }
 
@@ -124,6 +135,12 @@ public partial class TerminalEmulator : Form
         }
 
         OperationCompleted();
+    }
+
+    public void WriteSeparator()
+    {
+        _graphicalElements.Add(new SeparatorGraphicalElement(CursorY));
+        WriteLine();
     }
 
     public void BeginLineInput()
@@ -187,6 +204,23 @@ public partial class TerminalEmulator : Form
         {
             _characters[x, lastRow] = zeroChar;
         }
+
+        foreach (var graphicalElement in _graphicalElements)
+            graphicalElement.ScrollUp();
+
+        bool again;
+
+        do
+        {
+            again = false;
+
+            foreach (var graphicalElement in _graphicalElements.Where(graphicalElement => !graphicalElement.Visible))
+            {
+                _graphicalElements.Remove(graphicalElement);
+                again = true;
+                break;
+            }
+        } while (again);
     }
 
     private void timer1_Tick(object sender, EventArgs e)
@@ -222,6 +256,9 @@ public partial class TerminalEmulator : Form
         }
 
         e.Graphics.FillRectangle(Brushes.Black, ClientRectangle);
+
+        foreach (var graphicalElement in _graphicalElements)
+            graphicalElement.Draw(e.Graphics, CharacterWidth, CharacterHeight, ClientRectangle.Width, ClientRectangle.Height);
 
         var pixelX = 0;
         var pixelY = 0;

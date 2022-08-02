@@ -39,7 +39,7 @@
             // 
             this.btnLoad.Location = new System.Drawing.Point(8, 8);
             this.btnLoad.Name = "btnLoad";
-            this.btnLoad.Size = new System.Drawing.Size(88, 23);
+            this.btnLoad.Size = new System.Drawing.Size(96, 23);
             this.btnLoad.TabIndex = 0;
             this.btnLoad.Text = "Load...";
             this.btnLoad.UseVisualStyleBackColor = true;
@@ -47,9 +47,9 @@
             // 
             // btnRestart
             // 
-            this.btnRestart.Location = new System.Drawing.Point(100, 8);
+            this.btnRestart.Location = new System.Drawing.Point(108, 8);
             this.btnRestart.Name = "btnRestart";
-            this.btnRestart.Size = new System.Drawing.Size(88, 23);
+            this.btnRestart.Size = new System.Drawing.Size(96, 23);
             this.btnRestart.TabIndex = 1;
             this.btnRestart.Text = "Restart";
             this.btnRestart.UseVisualStyleBackColor = true;
@@ -57,9 +57,9 @@
             // 
             // btnQuit
             // 
-            this.btnQuit.Location = new System.Drawing.Point(284, 8);
+            this.btnQuit.Location = new System.Drawing.Point(308, 8);
             this.btnQuit.Name = "btnQuit";
-            this.btnQuit.Size = new System.Drawing.Size(88, 23);
+            this.btnQuit.Size = new System.Drawing.Size(96, 23);
             this.btnQuit.TabIndex = 3;
             this.btnQuit.Text = "Quit";
             this.btnQuit.UseVisualStyleBackColor = true;
@@ -67,9 +67,9 @@
             // 
             // btnSource
             // 
-            this.btnSource.Location = new System.Drawing.Point(192, 8);
+            this.btnSource.Location = new System.Drawing.Point(208, 8);
             this.btnSource.Name = "btnSource";
-            this.btnSource.Size = new System.Drawing.Size(88, 23);
+            this.btnSource.Size = new System.Drawing.Size(96, 23);
             this.btnSource.TabIndex = 2;
             this.btnSource.Text = "Source...";
             this.btnSource.UseVisualStyleBackColor = true;
@@ -79,7 +79,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(378, 40);
+            this.ClientSize = new System.Drawing.Size(411, 40);
             this.Controls.Add(this.btnSource);
             this.Controls.Add(this.btnQuit);
             this.Controls.Add(this.btnRestart);

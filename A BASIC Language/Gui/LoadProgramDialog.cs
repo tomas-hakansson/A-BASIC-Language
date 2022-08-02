@@ -11,6 +11,13 @@ public partial class LoadProgramDialog : Form
 
     private void LoadProgramDialog_Load(object sender, EventArgs e)
     {
+#if DEBUG
+        var d = new DirectoryInfo(@"..\..\..\testPrograms\");
+        foreach (var f in d.GetFiles())
+            if (f.Name.ToLower().EndsWith(".abl"))
+                Add(f.Name, 1);
+#endif
+
         Add("23matches.bas"); //      1
         Add("3dplot.bas"); //         2
         Add("aceyducey.bas"); //      3
@@ -64,13 +71,24 @@ public partial class LoadProgramDialog : Form
         Add("hi-lo.bas"); //          51
         Add("highiq.bas"); //         52
         Add("hockey.bas"); //         53
+        Add("horserace.bas"); //      54
+        Add("hurkle.bas"); //         55
+        Add("kinema.bas"); //         56
+        Add("king.bas"); //           57
+        Add("lem.bas"); //            58
+        Add("letter.bas"); //         59
+        Add("life.bas"); //           60
+        Add("lifefortwo.bas"); //     61
     }
 
-    private void Add(string filename)
+    private void Add(string filename, int iconIndex = 0)
     {
         var li = listView1.Items.Add(filename);
-        li.ImageIndex = 0;
-        li.Tag = $@"https://raw.githubusercontent.com/GReaperEx/bcg/master/{filename}";
+        li.ImageIndex = iconIndex;
+        if (iconIndex == 1)
+            li.Tag = $@"..\..\..\testPrograms\{filename}";
+        else
+            li.Tag = $@"https://raw.githubusercontent.com/GReaperEx/bcg/master/{filename}";
     }
     
     private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
