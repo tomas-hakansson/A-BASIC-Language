@@ -75,15 +75,12 @@ public class Parser
 
     bool ALine()
     {
-        //aLabel aStatementWithParts (: aStatementWithParts)*
+        //line => aLabel oneOrMoreStatements
 
         if (!ALabel())
             return false;
 
-        AStatementPlusParts();
-
-        while (MightMatch(TokenType.Colon))
-            AStatementPlusParts();
+        OneOrMoreStatements();
 
         //Ponder: should these checks be done in AStatementPlusParts?
         if (_currentTokenType == TokenType.Label)
@@ -98,8 +95,7 @@ public class Parser
     {
         if (_currentTokenType != TokenType.Label)
             return false;
-        Generate(new ABL_Label(_currentTokenValue));
-        _labelIndex.Add(int.Parse(_currentTokenValue), _evalValues.Count - 1);
+        GenerateLabel();
         Next();
         return true;
     }
@@ -121,8 +117,8 @@ public class Parser
                     MustMatch("TO");
                     Goto();
                     break;
-                case "IF"://todo
-                    //IF F(N)*6+K=INT(F(I)/6^(7-C)+.1) THEN Q=Q-2
+                case "IF":
+                    If();
                     break;
                 case "INPUT":
                     Input();
@@ -144,8 +140,94 @@ public class Parser
             throw new InvalidOperationException("Syntax error");
     }
 
-    void Print()
+    void If()
     {
+        //if         => IF boolean-expr THEN body (ELSE body)?
+        //body       => numeric-expr | statements
+        //statements => statement (: statement)*
+
+
+        /*
+            if expr then this else that
+            expr 10# if-false-goto this 20# goto 10 that 20
+         */
+        var falseBranchLabel = -_index;//Note: Made negative because all valid BASIC labels are positive so there won't be a conflict.
+        Next();
+        Expression();
+        Generate(new ABL_Number(falseBranchLabel), new ABL_Procedure("IF-FALSE-GOTO"));
+        MustMatch("THEN");
+        Body();
+        var endBranchLabel = -_index;//Note: Se above.
+        Generate(new ABL_Number(endBranchLabel), new ABL_Procedure("GOTO"));
+        GenerateLabel(falseBranchLabel);
+        if (MightMatch("ELSE"))
+            Body();
+        GenerateLabel(endBranchLabel);
+
+        void Body()
+        {
+            if (_currentTokenType == TokenType.Statement)
+                OneOrMoreStatements();
+            else if (_currentTokenType == TokenType.UserDefinedName)
+            {
+                //Note: if the value after the user defined name is an equal then this is a statement.
+                (_, TokenType type) = LookAhead();
+                if (type == TokenType.EqualityOrAssignment)
+                    OneOrMoreStatements();
+                else
+                {
+                    Expression();
+                    Generate(new ABL_Procedure("GOTO"));
+                }
+            }
+            else
+            {
+                Expression();
+                Generate(new ABL_Procedure("GOTO"));
+            }
+        }
+
+        (string value, TokenType type) LookAhead()
+        {
+            if (_currentTokenType == TokenType.EOF)//Note: just in case we're at the end.
+                return ("", TokenType.EOF);
+            var result = ("", TokenType.Space);
+            for (int i = _index + 1; i < _tokenizeResult.TokenValues.Count; i++)
+            {
+                var ctt = _tokenizeResult.TokenTypes[i];
+                if (ctt == TokenType.EOF)
+                    return ("", TokenType.EOF);
+                if (ctt == TokenType.Space) continue;
+                result = (_tokenizeResult.TokenValues[i], ctt);
+                break;
+            }
+            return result;
+        }
+    }
+
+    private void OneOrMoreStatements()
+    {
+        //OneOrMoreStatements => aStatementWithParts (: aStatementWithParts)*
+        AStatementPlusParts();
+        while (MightMatch(TokenType.Colon))
+            AStatementPlusParts();
+    }
+
+    private void GenerateLabel(int? value = null)
+    {
+        if (value == null)
+        {
+            Generate(new ABL_Label(_currentTokenValue));
+            value = int.Parse(_currentTokenValue);
+            //_labelIndex.Add(int.Parse(_currentTokenValue), _evalValues.Count - 1);
+        }
+        else
+            Generate(new ABL_Label(value.Value));
+        _labelIndex.Add(value.Value, _evalValues.Count - 1);
+    }
+
+    void Print()
+    {//todo: not completely tested.
         //print => PRINT (value | ; | ,)*
         //value => literal | variable | expression
 
@@ -157,9 +239,9 @@ public class Parser
          */
         Next();
         bool shouldPrintNewline = true;
-        while (_currentTokenType != TokenType.Comma &&
-            _currentTokenType != TokenType.Label &&
-            _currentTokenType != TokenType.EOF)
+        while (_currentTokenType != TokenType.Label &&
+            _currentTokenType != TokenType.EOF &&
+            _currentTokenType != TokenType.Statement)//Note: checks for statement in case of ELSE statement in IF.
         {
             switch (_currentTokenType)
             {
@@ -242,30 +324,91 @@ public class Parser
         Generate(new ABL_Assignment(name));
     }
 
-    bool isNegative = false;
     /// <summary>
     /// Calls the operator of the lowest precedence.
     /// </summary>
-    void Expression()
-    {
-        //if (_currentTokenType == TokenType.Operator)
-        //{
-        //    switch(_currentTokenValue)
-        //    {
-        //        case "+":
-        //            //Note: do nothing.
-        //            break;
-        //        case "-":
-        //            isNegative = true;
-        //            break;
-        //    }
-        //}
-        PrecedenceThreeOperator();
+    void Expression() => Precedence_5_Operator();
+
+    void Precedence_5_Operator()
+    {//Note: This method is Expression in Crenshaw's book.
+        Precedence_4_Operator();
+        while (_currentTokenType == TokenType.Operator || _currentTokenType == TokenType.EqualityOrAssignment)
+        {
+            switch (_currentTokenValue)
+            {
+                case "=":
+                    Equal();
+                    break;
+                case "<>":
+                    NotEqual();
+                    break;
+                case "!=":
+                    NotEqual();
+                    break;
+                case "<":
+                    LessThan();
+                    break;
+                case ">":
+                    GreaterThan();
+                    break;
+                case "<=":
+                    LessThanOrEqual();
+                    break;
+                case ">=":
+                    GreaterThanOrEqual();
+                    break;
+                default:
+                    goto END;
+            }
+        }
+    END:;
     }
 
-    void PrecedenceThreeOperator()
+    private void Equal()
+    {
+        Next();
+        Precedence_4_Operator();
+        Generate(new ABL_Procedure("="));
+    }
+
+    private void NotEqual()
+    {
+        Next();
+        Precedence_4_Operator();
+        Generate(new ABL_Procedure("<>"));
+    }
+
+    private void LessThan()
+    {
+        Next();
+        Precedence_4_Operator();
+        Generate(new ABL_Procedure("<"));
+    }
+
+    private void GreaterThan()
+    {
+        Next();
+        Precedence_4_Operator();
+        Generate(new ABL_Procedure(">"));
+    }
+
+    private void LessThanOrEqual()
+    {
+        Next();
+        Precedence_4_Operator();
+        Generate(new ABL_Procedure("<="));
+    }
+
+    private void GreaterThanOrEqual()
+    {
+        Next();
+        Precedence_4_Operator();
+        Generate(new ABL_Procedure(">="));
+    }
+
+    void Precedence_4_Operator()
     {//Note: This method is Expression in Crenshaw's book.
-        PrecedenceTwoOperator();
+        Precedence_3_Operator();
         while (_currentTokenType == TokenType.Operator)
         {
             switch (_currentTokenValue)
@@ -286,20 +429,20 @@ public class Parser
     void Add()
     {
         Next();
-        PrecedenceTwoOperator();
+        Precedence_3_Operator();
         Generate(new ABL_Procedure("+"));
     }
 
     void Subtract()
     {
         Next();
-        PrecedenceTwoOperator();
+        Precedence_3_Operator();
         Generate(new ABL_Procedure("-"));
     }
 
-    void PrecedenceTwoOperator()
+    void Precedence_3_Operator()
     {//Note: This method is Term in Crenshaw's book.
-        PrecedenceOneOperator();
+        Precedence_1_Operator();
         while (_currentTokenType == TokenType.Operator)
         {
             switch (_currentTokenValue)
@@ -320,18 +463,23 @@ public class Parser
     void Multiply()
     {
         Next();
-        PrecedenceOneOperator();
+        Precedence_2_Operator();
         Generate(new ABL_Procedure("*"));
     }
 
     void Divide()
     {
         Next();
-        PrecedenceOneOperator();
+        Precedence_2_Operator();
         Generate(new ABL_Procedure("/"));
     }
 
-    void PrecedenceOneOperator()
+    void Precedence_2_Operator()
+    {//todo: negation
+        Precedence_1_Operator();
+    }
+
+    void Precedence_1_Operator()
     {
         Atom();
         while (_currentTokenType == TokenType.Operator && _currentTokenValue == "^")

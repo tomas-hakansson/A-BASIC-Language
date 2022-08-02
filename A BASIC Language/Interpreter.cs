@@ -133,6 +133,23 @@ public class Interpreter
                                     Debug.Fail("Insufficient items on the stack");
                             }
                             break;
+                        case "=":
+                            {
+                                if (_data.Count >= 2)
+                                {
+                                    var x = _data.Pop();
+                                    var y = _data.Pop();
+
+                                    //TODO: Type checking
+                                    if ((double)y.GetValueAsType<FloatValue>() == (double)x.GetValueAsType<FloatValue>())
+                                        _data.Push(new FloatValue(-1));//Note: Canonical True value.
+                                    else
+                                        _data.Push(new FloatValue(0));//Note: Canonical False value.
+                                }
+                                else
+                                    Debug.Fail("Insufficient items on the stack");
+                            }
+                            break;
                         case "SQR":
                             {
                                 if (_data.Count > 0)
@@ -179,7 +196,34 @@ public class Interpreter
                                     {
                                         Debug.Fail("Something was wrong with the value");//fixme; really bad text.
                                                                                          //todo: error handling.
-                                        throw new InvalidOperationException("this is only to get the c# to stop complaining.");
+                                        throw new InvalidOperationException("this is only to get c# to stop complaining.");
+                                    }
+                                }
+                                else
+                                    Debug.Fail("The stack is empty");
+                            }
+                            break;
+                        case "IF-FALSE-GOTO":
+                            {
+                                if (_data.Count >= 2)
+                                {
+                                    var label = _data.Pop();
+                                    var boolean = _data.Pop();
+                                    //TODO: Type checking
+                                    if ((double)boolean.GetValueAsType<FloatValue>() == 0)//Note: if it's false.
+                                    {
+                                        if (_parseResult.LabelIndex.TryGetValue((int)label.GetValueAsType<IntValue>(), out var newIndex))
+                                        {
+                                            i = (int)newIndex;
+                                            i--;//HACK: come up with something better.
+                                            continue;
+                                        }
+                                        else
+                                        {
+                                            Debug.Fail("Something was wrong with the value");//fixme; really bad text.
+                                                                                             //todo: error handling.
+                                            throw new InvalidOperationException("this is only to get c# to stop complaining.");
+                                        }
                                     }
                                 }
                                 else
