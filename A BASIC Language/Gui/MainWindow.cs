@@ -81,7 +81,7 @@ public partial class MainWindow : Form
 
     private void btnRestart_Click(object sender, EventArgs e)
     {
-        Terminal.Running = false;
+        Terminal.State = TerminalState.Ended;
         Application.DoEvents();
 
         Run();
@@ -102,7 +102,7 @@ public partial class MainWindow : Form
 
     public void Quit()
     {
-        Terminal.Running = false;
+        Terminal.State = TerminalState.Ended;
         Application.DoEvents();
 
         var formsToClose = Application.OpenForms.Cast<Form>().ToList();

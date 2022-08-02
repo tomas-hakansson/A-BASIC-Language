@@ -14,7 +14,7 @@ public class Interpreter
 
     public Interpreter(string source)
     {
-        A_BASIC_Language.Parser parser = new(source);
+        Parser parser = new(source);
         _parseResult = parser.Result;
         _variables = new Dictionary<string, ValueBase?>();
         _data = new Stack<ValueBase>();
@@ -25,7 +25,7 @@ public class Interpreter
         _terminal = terminal;
 
 
-        if (!_terminal.Running)
+        if (_terminal.State != TerminalState.Running)
             return;
 
         Eval();
@@ -42,7 +42,7 @@ public class Interpreter
 
         for (int i = 0; i < _parseResult.EvalValues.Count; i++)
         {
-            if (!_terminal.Running)
+            if (_terminal.State != TerminalState.Running)
                 return;
 
             switch (_parseResult.EvalValues[i])

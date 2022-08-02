@@ -5,7 +5,7 @@ namespace A_BASIC_Language.Gui;
 public class Terminal : IDisposable
 {
     private TerminalEmulator Emu { get; }
-    public bool Running { get; set; }
+    public TerminalState State { get; set; }
 
     public Terminal()
     {
@@ -19,13 +19,13 @@ public class Terminal : IDisposable
         Emu.BringToFront();
         Emu.Clear();
         Emu.ShowWelcome(programName);
-        Running = true;
+        State = TerminalState.Running;
     }
 
     public void End()
     {
         Emu.EndLineInput();
-        Running = false;
+        State = TerminalState.Ended;
     }
 
     public void Write(string s) =>
@@ -48,7 +48,7 @@ public class Terminal : IDisposable
         {
             Application.DoEvents();
 
-            if (!Running)
+            if (State != TerminalState.Running)
                 return "";
 
         } while (Emu.LineInputMode);
