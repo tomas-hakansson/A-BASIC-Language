@@ -148,9 +148,11 @@ public class Parser
 
 
         /*
-            if expr then this else that
-            expr 10# if-false-goto this 20# goto 10 that 20
+            IF expr THEN this ELSE that
+            Is compiled to the following (10 and 20 are placeholder values.):
+            expr #10 IF-FALSE-GOTO this #20 GOTO 10 that 20
          */
+        //Note: We use the current index as generated labels because that along with making them negative will always be unique.
         var falseBranchLabel = -_index;//Note: Made negative because all valid BASIC labels are positive so there won't be a conflict.
         Next();
         Expression();
