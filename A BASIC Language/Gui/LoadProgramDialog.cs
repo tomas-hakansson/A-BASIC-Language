@@ -79,6 +79,10 @@ public partial class LoadProgramDialog : Form
         Add("letter.bas"); //         59
         Add("life.bas"); //           60
         Add("lifefortwo.bas"); //     61
+        Add("litquiz.bas"); //        62
+        Add("love.bas"); //           63
+        Add("lunar.bas"); //          64
+        Add("mastermind.bas"); //     65
     }
 
     private void Add(string filename, int iconIndex = 0)
