@@ -6,8 +6,8 @@ namespace A_BASIC_Language;
 
 public class Interpreter
 {
-    private const string TheProgramHasEnded = "The program has ended";
-    private Terminal? _terminal;
+    const string TheProgramHasEnded = "The program has ended";
+    Terminal? _terminal;
     readonly Stage2.ParseResult _parseResult;
     readonly Dictionary<string, ValueBase?> _variables;//Ponder: do the value need to be nullable?
     readonly Stack<ValueBase> _data;
@@ -231,7 +231,10 @@ public class Interpreter
                             }
                             break;
                         case "NEXT-LINE":
-                            _terminal.WriteLine(string.Empty);
+                            _terminal.WriteLine();
+                            break;
+                        case "NEXT-TAB-POSITION":
+                            _terminal.NextTab();
                             break;
                         default:
                             //todo :error handling.
@@ -249,7 +252,7 @@ public class Interpreter
     {
         if (_terminal != null)
         {
-            _terminal.WriteLine("");
+            _terminal.WriteLine();
             _terminal.Write(TheProgramHasEnded);
             _terminal.End();
         }

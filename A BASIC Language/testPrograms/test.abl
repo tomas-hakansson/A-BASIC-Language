@@ -1,6 +1,6 @@
 ﻿This is a simple ABL program
 20 input n
-22 if n = 42 then print "true branch" else print "false branch"
+n.b. 22 if n = 42 then 15+5
 25 i=sqr(sqr(n))
 
 All lines are stripped of whitespace characters. What follows determines if it's common or code.
@@ -9,11 +9,11 @@ One consequence of this is that code can be indented for effect:
 
 Code begins with a number followed by a statement or variable.
 
-35printn
+35printn,j
 
 Everything else is a comment.
 
-38 print j
+n.b. 38 print j
 
 39. Including this (Note the period '.' following the number).
 

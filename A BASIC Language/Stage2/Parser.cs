@@ -173,7 +173,7 @@ public class Parser
             else if (_currentTokenType == TokenType.UserDefinedName)
             {
                 //Note: if the value after the user defined name is an equals sign then this is a statement.
-                (_, TokenType type) = LookAhead();
+                var (_, type) = LookAhead();
                 if (type == TokenType.EqualityOrAssignment)
                     OneOrMoreStatements();
                 else
