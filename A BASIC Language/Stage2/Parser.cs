@@ -146,12 +146,12 @@ public class Parser
         //body       => numeric-expr | statements
         //statements => statement (: statement)*
 
-
         /*
             IF expr THEN this ELSE that
             Is compiled to the following (10 and 20 are placeholder values.):
             expr #10 IF-FALSE-GOTO this #20 GOTO 10 that 20
          */
+
         //Note: We use the current index as generated labels because that along with making them negative will always be unique.
         var falseBranchLabel = -_index;//Note: Made negative because all valid BASIC labels are positive so there won't be a conflict.
         Next();
@@ -172,7 +172,7 @@ public class Parser
                 OneOrMoreStatements();
             else if (_currentTokenType == TokenType.UserDefinedName)
             {
-                //Note: if the value after the user defined name is an equal then this is a statement.
+                //Note: if the value after the user defined name is an equals sign then this is a statement.
                 (_, TokenType type) = LookAhead();
                 if (type == TokenType.EqualityOrAssignment)
                     OneOrMoreStatements();
