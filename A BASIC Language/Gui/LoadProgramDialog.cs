@@ -89,10 +89,10 @@ public partial class LoadProgramDialog : Form
     {
         var li = listView1.Items.Add(filename);
         li.ImageIndex = iconIndex;
-        if (iconIndex == 1)
-            li.Tag = $@"..\..\..\testPrograms\{filename}";
-        else
-            li.Tag = $@"https://raw.githubusercontent.com/GReaperEx/bcg/master/{filename}";
+
+        li.Tag = iconIndex == 1
+            ? $@"..\..\..\testPrograms\{filename}"
+            : $@"https://raw.githubusercontent.com/GReaperEx/bcg/master/{filename}";
     }
     
     private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
