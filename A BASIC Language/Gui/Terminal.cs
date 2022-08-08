@@ -28,6 +28,12 @@ public class Terminal : IDisposable
         State = TerminalState.Ended;
     }
 
+    public bool FullScreen
+    {
+        get => Emu.IsFullScreen();
+        set => Emu.SetFullScreen(value);
+    }
+
     public void NextTab(string s) =>
         Emu.NextTab(s);
 

@@ -5,6 +5,9 @@ namespace A_BASIC_Language.Gui.WinForms;
 
 public partial class TerminalEmulator : Form
 {
+    private bool FullScreen { get; set; }
+    private Rectangle OldPosition { get; set; }
+    private FormWindowState OldWindowState { get; set; }
     private Brush OutputBrush { get; }
     private Brush InputBrush { get; }
     private Brush InputBackgroundBrush { get; }
@@ -35,6 +38,9 @@ public partial class TerminalEmulator : Form
 #pragma warning restore CS8618
     {
         InitializeComponent();
+        FullScreen = false;
+        OldWindowState = FormWindowState.Normal;
+        OldPosition = new Rectangle(50, 50, 200, 200);
         OutputBrush = new SolidBrush(Color.FromArgb(0, 255, 0));
         InputBrush = new SolidBrush(Color.FromArgb(0, 255, 255));
         InputBackgroundBrush = new SolidBrush(Color.FromArgb(0, 42, 0));
@@ -47,7 +53,53 @@ public partial class TerminalEmulator : Form
     {
         LineInputMode = false;
     }
-    
+
+    public bool IsFullScreen() =>
+        FullScreen;
+
+    private void ToggleFullScreen() =>
+        SetFullScreen(!FullScreen);
+
+    public void SetFullScreen(bool fullScreen)
+    {
+        if (fullScreen & !FullScreen)
+            DoSetFullScreen();
+        else if (!fullScreen & FullScreen)
+            DoSetWindowMode();
+    }
+
+    private void DoSetFullScreen()
+    {
+        FullScreen = true;
+        var s = GetScreen();
+        OldWindowState = WindowState;
+        OldPosition = new Rectangle(Left, Top, Width, Height);
+        WindowState = FormWindowState.Normal;
+        FormBorderStyle = FormBorderStyle.None;
+        TopMost = true;
+        Top = s.Bounds.Top;
+        Left = s.Bounds.Left;
+        Width = s.Bounds.Width;
+        Height = s.Bounds.Height;
+        Focus();
+    }
+
+    private void DoSetWindowMode()
+    {
+        FullScreen = false;
+        FormBorderStyle = FormBorderStyle.Sizable;
+        WindowState = OldWindowState;
+        Width = OldPosition.Width;
+        Height = OldPosition.Height;
+        Top = OldPosition.Top;
+        Left = OldPosition.Left;
+        TopMost = false;
+        Focus();
+    }
+
+    private Screen GetScreen() =>
+        Screen.FromPoint(new Point(Left + Width / 2, Top + Height / 2));
+
     public void Clear()
     {
         LineInputX = 0;
@@ -356,6 +408,9 @@ public partial class TerminalEmulator : Form
     {
         switch (e.KeyCode)
         {
+            case Keys.F11:
+                ToggleFullScreen();
+                break;
             case Keys.Enter:
                 if (LineInputMode)
                     SaveLineInput();
