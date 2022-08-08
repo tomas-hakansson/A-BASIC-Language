@@ -1,8 +1,8 @@
 ﻿This is a simple ABL program
 20 input n
-22 if n = 42 then 20
+22 if n = 42 then print "true branch" else print "false branch"
 25 i=sqr(sqr(n))
-26 print 4 + n * 2
+
 All lines are stripped of whitespace characters. What follows determines if it's common or code.
 One consequence of this is that code can be indented for effect:
     30 j=(i^2)^2
