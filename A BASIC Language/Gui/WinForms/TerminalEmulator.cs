@@ -137,6 +137,17 @@ public partial class TerminalEmulator : Form
         OperationCompleted();
     }
 
+    public void NextTab() =>
+        NextTab("");
+
+    public void NextTab(string text)
+    {
+        while (CursorX%8 != 0)
+            Write(" ");
+
+        Write(text);
+    }
+
     public void WriteSeparator()
     {
         _graphicalElements.Add(new SeparatorGraphicalElement(CursorY));

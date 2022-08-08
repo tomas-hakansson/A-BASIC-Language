@@ -28,8 +28,17 @@ public class Terminal : IDisposable
         State = TerminalState.Ended;
     }
 
+    public void NextTab(string s) =>
+        Emu.NextTab(s);
+
+    public void NextTab() =>
+        Emu.NextTab();
+
     public void Write(string s) =>
         Emu.Write(s);
+
+    public void WriteLine() =>
+        Emu.WriteLine();
 
     public void WriteLine(string s) =>
         Emu.WriteLine(s);
