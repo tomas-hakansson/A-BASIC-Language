@@ -155,14 +155,14 @@ public class Parser
         /*
             IF expr THEN this ELSE that
             Is compiled to the following (10 and 20 are placeholder values.):
-            expr #10 IF-FALSE-GOTO this #20 GOTO 10 that 20
+            expr #10 #IF-FALSE-GOTO this #20 GOTO 10 that 20
          */
 
         //Note: We use the current index as generated labels because that along with making them negative will always be unique.
         var falseBranchLabel = -_index;//Note: Made negative because all valid BASIC labels are positive so there won't be a conflict.
         Next();
         Expression();
-        Generate(new ABL_Number(falseBranchLabel), new ABL_Procedure("IF-FALSE-GOTO"));
+        Generate(new ABL_Number(falseBranchLabel), new ABL_Procedure("#IF-FALSE-GOTO"));
         MustMatch("THEN");
         Body();
         var endBranchLabel = -_index;//Note: Se above.
@@ -255,7 +255,7 @@ public class Parser
             switch (_currentTokenType)
             {
                 case TokenType.Comma:
-                    Generate(new ABL_Procedure("NEXT-TAB-POSITION"));
+                    Generate(new ABL_Procedure("#NEXT-TAB-POSITION"));
                     shouldPrintNewline = false;
                     Next();
                     continue;
@@ -265,11 +265,11 @@ public class Parser
                     continue;
             }
             Expression();
-            Generate(new ABL_Procedure("WRITE"));
+            Generate(new ABL_Procedure("#WRITE"));
             shouldPrintNewline = true;
         }
         if (shouldPrintNewline)
-            Generate(new ABL_Procedure("NEXT-LINE"));
+            Generate(new ABL_Procedure("#NEXT-LINE"));
     }
 
     void Input()
@@ -279,7 +279,7 @@ public class Parser
 
         Next();
         Prompt();
-        Generate(new ABL_String("? "), new ABL_Procedure("WRITE"));
+        Generate(new ABL_String("? "), new ABL_Procedure("#WRITE"));
         Variable();
         while (MightMatch(TokenType.Comma))
             Variable();
@@ -289,7 +289,7 @@ public class Parser
             if (MightMatch(TokenType.String, out var prompt))
             {
                 MustMatch(TokenType.Semicolon);
-                Generate(new ABL_String(prompt), new ABL_Procedure("WRITE"));
+                Generate(new ABL_String(prompt), new ABL_Procedure("#WRITE"));
             }
         }
 
@@ -301,15 +301,15 @@ public class Parser
                 switch (typeSpecifier)
                 {
                     case "$":
-                        Generate(new ABL_Procedure("INPUT-STRING"), new ABL_Assignment(newVariable));
+                        Generate(new ABL_Procedure("#INPUT-STRING"), new ABL_Assignment(newVariable));
                         break;
                     case "%":
-                        Generate(new ABL_Procedure("INPUT-INT"), new ABL_Assignment(newVariable));
+                        Generate(new ABL_Procedure("#INPUT-INT"), new ABL_Assignment(newVariable));
                         break;
                 }
             }
             else
-                Generate(new ABL_Procedure("INPUT-FLOAT"), new ABL_Assignment(newVariable));
+                Generate(new ABL_Procedure("#INPUT-FLOAT"), new ABL_Assignment(newVariable));
 
             //todo: check for dim accessing (e.g. a(i)).
         }

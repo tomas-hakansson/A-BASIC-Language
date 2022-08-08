@@ -260,7 +260,7 @@ public class Interpreter
                                     Debug.Fail("The stack is empty");
                             }
                             break;
-                        case "IF-FALSE-GOTO":
+                        case "#IF-FALSE-GOTO":
                             {
                                 if (_data.Count >= 2)
                                 {
@@ -287,7 +287,7 @@ public class Interpreter
                                     Debug.Fail("The stack is empty");
                             }
                             break;
-                        case "INPUT-FLOAT":
+                        case "#INPUT-FLOAT":
                             {
                                 var value = ValueBase.GetValueType(_terminal.ReadLine()); // TODO: Must support "redo from start".
                                 _data.Push(value);
@@ -300,10 +300,10 @@ public class Interpreter
                                 _data.Push(new IntValue(result));
                             }
                             break;
-                        case "NEXT-LINE":
+                        case "#NEXT-LINE":
                             _terminal.WriteLine();
                             break;
-                        case "NEXT-TAB-POSITION":
+                        case "#NEXT-TAB-POSITION":
                             _terminal.NextTab();
                             break;
                         case "RND":
@@ -346,7 +346,7 @@ public class Interpreter
                                     Debug.Fail("The stack is empty");
                             }
                             break;
-                        case "WRITE":
+                        case "#WRITE":
                             {
                                 if (_data.Count > 0)
                                 {
