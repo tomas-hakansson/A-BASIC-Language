@@ -148,6 +148,74 @@ public class Interpreter
                                     Debug.Fail("Insufficient items on the stack");
                             }
                             break;
+                        case ">":
+                            {
+                                if (_data.Count >= 2)
+                                {
+                                    var x = _data.Pop();
+                                    var y = _data.Pop();
+
+                                    //TODO: Type checking
+                                    if ((double)y.GetValueAsType<FloatValue>() > (double)x.GetValueAsType<FloatValue>())
+                                        _data.Push(new FloatValue(-1));//Note: Canonical True value.
+                                    else
+                                        _data.Push(new FloatValue(0));//Note: Canonical False value.
+                                }
+                                else
+                                    Debug.Fail("Insufficient items on the stack");
+                            }
+                            break;
+                        case ">=":
+                            {
+                                if (_data.Count >= 2)
+                                {
+                                    var x = _data.Pop();
+                                    var y = _data.Pop();
+
+                                    //TODO: Type checking
+                                    if ((double)y.GetValueAsType<FloatValue>() >= (double)x.GetValueAsType<FloatValue>())
+                                        _data.Push(new FloatValue(-1));//Note: Canonical True value.
+                                    else
+                                        _data.Push(new FloatValue(0));//Note: Canonical False value.
+                                }
+                                else
+                                    Debug.Fail("Insufficient items on the stack");
+                            }
+                            break;
+                        case "<":
+                            {
+                                if (_data.Count >= 2)
+                                {
+                                    var x = _data.Pop();
+                                    var y = _data.Pop();
+
+                                    //TODO: Type checking
+                                    if ((double)y.GetValueAsType<FloatValue>() < (double)x.GetValueAsType<FloatValue>())
+                                        _data.Push(new FloatValue(-1));//Note: Canonical True value.
+                                    else
+                                        _data.Push(new FloatValue(0));//Note: Canonical False value.
+                                }
+                                else
+                                    Debug.Fail("Insufficient items on the stack");
+                            }
+                            break;
+                        case "<=":
+                            {
+                                if (_data.Count >= 2)
+                                {
+                                    var x = _data.Pop();
+                                    var y = _data.Pop();
+
+                                    //TODO: Type checking
+                                    if ((double)y.GetValueAsType<FloatValue>() <= (double)x.GetValueAsType<FloatValue>())
+                                        _data.Push(new FloatValue(-1));//Note: Canonical True value.
+                                    else
+                                        _data.Push(new FloatValue(0));//Note: Canonical False value.
+                                }
+                                else
+                                    Debug.Fail("Insufficient items on the stack");
+                            }
+                            break;
                         case "=":
                             {
                                 if (_data.Count >= 2)
@@ -235,9 +303,9 @@ public class Interpreter
                             _terminal.NextTab();
                             break;
                         case "RND":
-                            //todo: implement this properly.
-                            _ = _data.Pop();
-                            _data.Push(new FloatValue(.5));
+                            //ToDo: implement this properly.
+                            _data.Pop();
+                            _data.Push(new FloatValue(.5));//FixMe: this is a hard coded result. It should be random.
                             break;
                         case "SQR":
                             {
