@@ -17,7 +17,7 @@ internal class ReservedWords
             "FOR", "GOSUB", "GOTO", "GO", "IF", "INPUT", "LET", "NEXT", "ON", "PRINT",
             "READ", "REM", "RESTORE", "RETURN", "STEP", "STOP","THEN","TO" };
         Operators = new List<string> { "^", "+", "-", "*", "/" , "<", ">", "<=", ">=", "<>", "!=", "NOT", "AND", "OR", "XOR"};
-        Functions = new List<string> { "SQR", "INT" };
+        Functions = new List<string> { "ABS", "ASC", "ATN", "CHR$", "COS", "EXP", "INT", "LEFT$", "LEN", "LOG", "MID$", "RND", "RIGHT$", "SGN", "SIN", "SQR", "STR$", "TAB", "TAN", "VAL" };
         Punctuation = new List<string> { "(", ")", "=", ",", ":", ";", "$", "%" };
     }
 }

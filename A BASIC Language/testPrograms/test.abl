@@ -1,19 +1,17 @@
-﻿This is a simple ABL program
+﻿10 print "This is a simple ABL program"
 20 input n
-n.b. 22 if n = 42 then 15+5
+22 if n = 42 then print "back to the start": goto 20
 25 i=sqr(sqr(n))
 
 All lines are stripped of whitespace characters. What follows determines if it's common or code.
 One consequence of this is that code can be indented for effect:
-    30 j=(i^2)^2
+30 j=(i^2)^2
 
 Code begins with a number followed by a statement or variable.
 
 35printn,j
 
 Everything else is a comment.
-
-n.b. 38 print j
 
 39. Including this (Note the period '.' following the number).
 

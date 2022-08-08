@@ -133,6 +133,21 @@ public class Interpreter
                                     Debug.Fail("Insufficient items on the stack");
                             }
                             break;
+                        case "-":
+                            {
+                                if (_data.Count >= 2)
+                                {
+                                    var x = _data.Pop();
+                                    var y = _data.Pop();
+
+                                    //TODO: Type checking
+                                    var result = (double)y.GetValueAsType<FloatValue>() - (double)x.GetValueAsType<FloatValue>();
+                                    _data.Push(new FloatValue(result));
+                                }
+                                else
+                                    Debug.Fail("Insufficient items on the stack");
+                            }
+                            break;
                         case "=":
                             {
                                 if (_data.Count >= 2)
@@ -148,36 +163,6 @@ public class Interpreter
                                 }
                                 else
                                     Debug.Fail("Insufficient items on the stack");
-                            }
-                            break;
-                        case "SQR":
-                            {
-                                if (_data.Count > 0)
-                                {
-                                    var x = _data.Pop();
-                                    //TODO: Type checking
-                                    var result = Math.Sqrt((double)x.GetValueAsType<FloatValue>());
-                                    _data.Push(new FloatValue(result));
-                                }
-                                else
-                                    Debug.Fail("The stack is empty");
-                            }
-                            break;
-                        case "INPUT-FLOAT":
-                            {
-                                var value = ValueBase.GetValueType(_terminal.ReadLine()); // TODO: Must support "redo from start".
-                                _data.Push(value);
-                            }
-                            break;
-                        case "WRITE":
-                            {
-                                if (_data.Count > 0)
-                                {
-                                    var value = _data.Pop();
-                                    _terminal.Write(value.ToString());
-                                }
-                                else
-                                    Debug.Fail("The stack is empty");
                             }
                             break;
                         case "GOTO":
@@ -230,11 +215,67 @@ public class Interpreter
                                     Debug.Fail("The stack is empty");
                             }
                             break;
+                        case "INPUT-FLOAT":
+                            {
+                                var value = ValueBase.GetValueType(_terminal.ReadLine()); // TODO: Must support "redo from start".
+                                _data.Push(value);
+                            }
+                            break;
+                        case "INT":
+                            {
+                                var value = _data.Pop();
+                                var result = (int)value.GetValueAsType<IntValue>();
+                                _data.Push(new IntValue(result));
+                            }
+                            break;
                         case "NEXT-LINE":
                             _terminal.WriteLine();
                             break;
                         case "NEXT-TAB-POSITION":
                             _terminal.NextTab();
+                            break;
+                        case "RND":
+                            //todo: implement this properly.
+                            _ = _data.Pop();
+                            _data.Push(new FloatValue(.5));
+                            break;
+                        case "SQR":
+                            {
+                                if (_data.Count > 0)
+                                {
+                                    var x = _data.Pop();
+                                    //TODO: Type checking
+                                    var result = Math.Sqrt((double)x.GetValueAsType<FloatValue>());
+                                    _data.Push(new FloatValue(result));
+                                }
+                                else
+                                    Debug.Fail("The stack is empty");
+                            }
+                            break;
+                        case "TAB":
+                            {
+                                if (_data.Count > 0)
+                                {
+                                    var x = _data.Pop();
+                                    //TODO: Type checking
+                                    var count = (int)x.GetValueAsType<IntValue>();
+                                    var result = new String(' ', count);
+                                    _data.Push(new StringValue(result));
+                                }
+                                else
+                                    Debug.Fail("The stack is empty");
+                            }
+                            break;
+                        case "WRITE":
+                            {
+                                if (_data.Count > 0)
+                                {
+                                    var value = _data.Pop();
+                                    _terminal.Write(value.ToString());
+                                }
+                                else
+                                    Debug.Fail("The stack is empty");
+                            }
                             break;
                         default:
                             //todo :error handling.

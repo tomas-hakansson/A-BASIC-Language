@@ -109,6 +109,9 @@ public class Parser
         {
             switch (_currentTokenValue)
             {
+                case "END":
+                    //todo: figure out what to do here:
+                    break;
                 case "GOTO":
                     Goto();
                     break;
@@ -131,6 +134,9 @@ public class Parser
                     break;
                 case "REM":
                     SkipLine();
+                    break;
+                case "STOP":
+                    //todo: figure out what to do here:
                     break;
                 default:
                     throw new NotImplementedException("the given statement has not been implemented yet.");
@@ -243,6 +249,7 @@ public class Parser
         bool shouldPrintNewline = true;
         while (_currentTokenType != TokenType.Label &&
             _currentTokenType != TokenType.EOF &&
+            _currentTokenType != TokenType.Colon &&
             _currentTokenType != TokenType.Statement)//Note: checks for statement in case of ELSE statement in IF.
         {
             switch (_currentTokenType)
