@@ -12,12 +12,16 @@ public class Interpreter
     readonly Dictionary<string, ValueBase?> _variables;//Ponder: do the value need to be nullable?
     readonly Stack<ValueBase> _data;
 
+    readonly Random _random;//Note: For the RND function.
+
     public Interpreter(string source)
     {
         Parser parser = new(source);
         _parseResult = parser.Result;
         _variables = new Dictionary<string, ValueBase?>();
         _data = new Stack<ValueBase>();
+
+        _random = new Random();
     }
 
     public void Run(Terminal terminal)
@@ -304,8 +308,16 @@ public class Interpreter
                             break;
                         case "RND":
                             //ToDo: implement this properly.
-                            _data.Pop();
-                            _data.Push(new FloatValue(.5));//FixMe: this is a hard coded result. It should be random.
+                            {
+                                if (_data.Count > 0)
+                                {
+                                    _ = _data.Pop();//Note: We are currently not using this value but probably will later.
+                                    var result = _random.NextDouble();
+                                    _data.Push(new FloatValue(result));
+                                }
+                                else
+                                    Debug.Fail("The stack is empty");
+                            }
                             break;
                         case "SQR":
                             {
