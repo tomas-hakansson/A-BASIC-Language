@@ -110,7 +110,8 @@ public class Parser
             switch (_currentTokenValue)
             {
                 case "END":
-                    //todo: figure out what to do here:
+                    Next();
+                    Generate(new ABL_Procedure("#END-PROGRAM"));
                     break;
                 case "GOTO":
                     Goto();
@@ -136,7 +137,8 @@ public class Parser
                     SkipLine();
                     break;
                 case "STOP":
-                    //todo: figure out what to do here:
+                    Next();
+                    Generate(new ABL_Procedure("#END-PROGRAM"));
                     break;
                 default:
                     throw new NotImplementedException("the given statement has not been implemented yet.");
@@ -533,6 +535,8 @@ public class Parser
             case TokenType.UserDefinedName:
                 Generate(new ABL_Variable(_currentTokenValue));
                 Next();
+                if (_currentTokenType == TokenType.TypeSpecifier)
+                    Next();//Ponder: Can I just ignore the type specifier here?
                 break;
             case TokenType.Statement://Note: user defined function.
                 if (MightMatch("FN"))//todo: test.
@@ -557,12 +561,6 @@ public class Parser
     {
         foreach (ABL_EvalValue value in values)
             _evalValues.Add(value);
-    }
-
-    static bool IsOneOf(string value, string values)
-    {
-        string[] vs = values.Split();
-        return vs.Contains(value);
     }
 
     void MustMatch_wws(TokenType tokenType)//deleteMe: if not in use once parser is finished.
