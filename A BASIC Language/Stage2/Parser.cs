@@ -2,7 +2,7 @@
 
 namespace A_BASIC_Language.Stage2;
 
-public class Parser
+class Parser
 {
     public ParseResult Result { get; set; } = new ParseResult();
 
@@ -12,6 +12,9 @@ public class Parser
     int _index = 0;
     string _currentTokenValue = string.Empty;
     TokenType _currentTokenType = default;
+
+    bool _parsingIf = false;
+    int _generatedLabel = 0;
 
     public Parser(TokenizeResult tokenizeResult)
     {
@@ -118,11 +121,16 @@ public class Parser
                     break;
                 case "GO":
                     Next();
-                    MustMatch("TO");
-                    Goto();
+                    if (_currentTokenValue == "TO")
+                        Goto();
+                    else
+                        throw new ArgumentException("GO TO (note the space) went wrong");
                     break;
                 case "IF":
+                    //Note: This wont work for nested ifs but that will probably not cause problems.
+                    _parsingIf = true;
                     If();
+                    _parsingIf = false;
                     break;
                 case "INPUT":
                     Input();
@@ -160,14 +168,13 @@ public class Parser
             expr #10 #IF-FALSE-GOTO this #20 GOTO 10 that 20
          */
 
-        //Note: We use the current index as generated labels because that along with making them negative will always be unique.
-        var falseBranchLabel = -_index;//Note: Made negative because all valid BASIC labels are positive so there won't be a conflict.
+        var falseBranchLabel = --_generatedLabel;//Note: Made negative because all valid BASIC labels are positive so there won't be a conflict.
         Next();
         Expression();
         Generate(new ABL_Number(falseBranchLabel), new ABL_Procedure("#IF-FALSE-GOTO"));
         MustMatch("THEN");
         Body();
-        var endBranchLabel = -_index;//Note: Se above.
+        var endBranchLabel = --_generatedLabel;//Note: Se above.
         Generate(new ABL_Number(endBranchLabel), new ABL_Procedure("GOTO"));
         GenerateLabel(falseBranchLabel);
         if (MightMatch("ELSE"))
@@ -322,7 +329,8 @@ public class Parser
         Next();
         Expression();
         Generate(new ABL_Procedure("GOTO"));
-        SkipLine();
+        if (!_parsingIf)
+            SkipLine();
     }
 
     void Let()
@@ -330,6 +338,7 @@ public class Parser
         //let => 'LET'? N = Expr
         MightMatch("LET");
         MustMatch(TokenType.UserDefinedName, out var name);
+        MightMatch(TokenType.TypeSpecifier);
         MustMatch(TokenType.EqualityOrAssignment);
         Expression();
         Generate(new ABL_Assignment(name));

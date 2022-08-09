@@ -2,7 +2,7 @@
 
 namespace A_BASIC_Language.Stage1;
 
-public class Tokenizer
+class Tokenizer
 {
     public TokenizeResult Result { get; set; }
 

@@ -2,7 +2,7 @@
 
 namespace A_BASIC_Language;
 
-internal class Parser
+public class Parser
 {
     public Stage2.ParseResult Result { get; }
 

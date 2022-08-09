@@ -1,4 +1,6 @@
-﻿namespace A_BASIC_Language;
+﻿using System.Globalization;
+
+namespace A_BASIC_Language;
 
 public class ABL_EvalValue
 {
@@ -15,7 +17,15 @@ public class ABL_Label : ABL_EvalValue
 
     public ABL_Label(string value)
     {
-        Value = int.Parse(value);
+        if (int.TryParse(value, out int parsedInt))
+            Value = parsedInt;
+        else
+            throw new ArgumentException($"Expected an int but got: ({value})", nameof(value));
+    }
+
+    public override string ToString()
+    {
+        return $"L({Value})";
     }
 }
 
@@ -30,7 +40,15 @@ public class ABL_Number : ABL_EvalValue
 
     public ABL_Number(string value)
     {
-        Value = double.Parse(value);
+        if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double parsedDouble))
+            Value = parsedDouble;
+        else
+            throw new ArgumentException($"Expected a double but got: ({value})", nameof(value));
+    }
+
+    public override string ToString()
+    {
+        return $"N({Value.ToString(CultureInfo.InvariantCulture)})";
     }
 }
 
@@ -42,6 +60,11 @@ public class ABL_String : ABL_EvalValue
     {
         Value = value;
     }
+
+    public override string ToString()
+    {
+        return $"S({Value})";
+    }
 }
 
 public class ABL_Variable : ABL_EvalValue
@@ -52,6 +75,11 @@ public class ABL_Variable : ABL_EvalValue
     {
         Symbol = symbol;
     }
+
+    public override string ToString()
+    {
+        return $"V({Symbol})";
+    }
 }
 
 public class ABL_Assignment : ABL_EvalValue
@@ -60,6 +88,11 @@ public class ABL_Assignment : ABL_EvalValue
     public ABL_Assignment(string symbol)
     {
         Symbol = symbol;
+    }
+
+    public override string ToString()
+    {
+        return $"=({Symbol})";
     }
 }
 
@@ -70,5 +103,10 @@ public class ABL_Procedure : ABL_EvalValue
     public ABL_Procedure(string name)
     {
         Name = name;
+    }
+
+    public override string ToString()
+    {
+        return $"P({Name})";
     }
 }
