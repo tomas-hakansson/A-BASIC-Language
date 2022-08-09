@@ -85,7 +85,7 @@ public class Parser_Tests
         var source = "10 x% = 42";
         var parser = new Parser(source);
         var result = parser.Result.ToString(PrintThe.EvalValues);
-        Assert.AreEqual("L(10) N(42) =(X)", result);
+        Assert.AreEqual("L(10) N(42) =(X%)", result);
     }
 
     [TestMethod]
@@ -94,7 +94,7 @@ public class Parser_Tests
         var source = "10 x$ = \"hello\" ";
         var parser = new Parser(source);
         var result = parser.Result.ToString(PrintThe.EvalValues);
-        Assert.AreEqual("L(10) S(hello) =(X)", result);
+        Assert.AreEqual("L(10) S(hello) =(X$)", result);
     }
 
     [TestMethod]
@@ -130,7 +130,7 @@ public class Parser_Tests
         var source = "10 input x%";
         var parser = new Parser(source);
         var result = parser.Result.ToString(PrintThe.EvalValues);
-        Assert.AreEqual("L(10) S(? ) P(#WRITE) P(#INPUT-INT) =(X)", result);
+        Assert.AreEqual("L(10) S(? ) P(#WRITE) P(#INPUT-INT) =(X%)", result);
     }
 
     [TestMethod]
@@ -139,7 +139,7 @@ public class Parser_Tests
         var source = "10 input x$";
         var parser = new Parser(source);
         var result = parser.Result.ToString(PrintThe.EvalValues);
-        Assert.AreEqual("L(10) S(? ) P(#WRITE) P(#INPUT-STRING) =(X)", result);
+        Assert.AreEqual("L(10) S(? ) P(#WRITE) P(#INPUT-STRING) =(X$)", result);
     }
 
     [TestMethod]
@@ -157,7 +157,7 @@ public class Parser_Tests
         var source = "10 input x%, y$";
         var parser = new Parser(source);
         var result = parser.Result.ToString(PrintThe.EvalValues);
-        Assert.AreEqual("L(10) S(? ) P(#WRITE) P(#INPUT-INT) =(X) P(#INPUT-STRING) =(Y)", result);
+        Assert.AreEqual("L(10) S(? ) P(#WRITE) P(#INPUT-INT) =(X%) P(#INPUT-STRING) =(Y$)", result);
     }
 
     [TestMethod]
@@ -166,7 +166,7 @@ public class Parser_Tests
         var source = "10 input \"enter an int followed by a string\"; x%, y$";
         var parser = new Parser(source);
         var result = parser.Result.ToString(PrintThe.EvalValues);
-        Assert.AreEqual("L(10) S(enter an int followed by a string) P(#WRITE) S(? ) P(#WRITE) P(#INPUT-INT) =(X) P(#INPUT-STRING) =(Y)", result);
+        Assert.AreEqual("L(10) S(enter an int followed by a string) P(#WRITE) S(? ) P(#WRITE) P(#INPUT-INT) =(X%) P(#INPUT-STRING) =(Y$)", result);
     }
 
     [TestMethod]
@@ -184,7 +184,7 @@ public class Parser_Tests
         var source = "10 x = 4.2:let y$ = \"hello\":z%=42";
         var parser = new Parser(source);
         var result = parser.Result.ToString(PrintThe.EvalValues);
-        Assert.AreEqual("L(10) N(4.2) =(X) S(hello) =(Y) N(42) =(Z)", result);
+        Assert.AreEqual("L(10) N(4.2) =(X) S(hello) =(Y$) N(42) =(Z%)", result);
     }
 
     [TestMethod]
@@ -202,7 +202,7 @@ public class Parser_Tests
         var source = "10 input x:input \"hi\"; y$";
         var parser = new Parser(source);
         var result = parser.Result.ToString(PrintThe.EvalValues);
-        Assert.AreEqual("L(10) S(? ) P(#WRITE) P(#INPUT-FLOAT) =(X) S(hi) P(#WRITE) S(? ) P(#WRITE) P(#INPUT-STRING) =(Y)", result);
+        Assert.AreEqual("L(10) S(? ) P(#WRITE) P(#INPUT-FLOAT) =(X) S(hi) P(#WRITE) S(? ) P(#WRITE) P(#INPUT-STRING) =(Y$)", result);
     }
 
     [TestMethod]
@@ -331,4 +331,13 @@ public class Parser_Tests
         var result = parser.Result.ToString(PrintThe.EvalValues);
         Assert.AreEqual("L(10) N(1) N(-1) P(#IF-FALSE-GOTO) S(hello) P(#WRITE) N(42) P(GOTO) N(-2) P(GOTO) L(-1) S(world) P(#WRITE) N(666) =(X) V(X) P(GOTO) L(-2)", result);
     }
+
+    //[TestMethod]
+    //public void DIM_ToBeDeveloped()
+    //{
+    //    var source = "10 dim a(10), b(2, 3)";
+    //    var parser = new Parser(source);
+    //    var result = parser.Result.ToString(PrintThe.EvalValues);
+    //    Assert.AreEqual("L(10) N(1) N(-1) P(#IF-FALSE-GOTO) S(hello) P(#WRITE) N(42) P(GOTO) N(-2) P(GOTO) L(-1) S(world) P(#WRITE) N(666) =(X) V(X) P(GOTO) L(-2)", result);
+    //}
 }

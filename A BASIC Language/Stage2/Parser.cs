@@ -310,10 +310,10 @@ class Parser
                 switch (typeSpecifier)
                 {
                     case "$":
-                        Generate(new ABL_Procedure("#INPUT-STRING"), new ABL_Assignment(newVariable));
+                        Generate(new ABL_Procedure("#INPUT-STRING"), new ABL_Assignment(newVariable + "$"));
                         break;
                     case "%":
-                        Generate(new ABL_Procedure("#INPUT-INT"), new ABL_Assignment(newVariable));
+                        Generate(new ABL_Procedure("#INPUT-INT"), new ABL_Assignment(newVariable + "%"));
                         break;
                 }
             }
@@ -338,10 +338,11 @@ class Parser
         //let => 'LET'? N = Expr
         MightMatch("LET");
         MustMatch(TokenType.UserDefinedName, out var name);
-        MightMatch(TokenType.TypeSpecifier);
+        string typeSpecifier = String.Empty;
+        MightMatch(TokenType.TypeSpecifier, out typeSpecifier);
         MustMatch(TokenType.EqualityOrAssignment);
         Expression();
-        Generate(new ABL_Assignment(name));
+        Generate(new ABL_Assignment(name + typeSpecifier));
     }
 
     /// <summary>
