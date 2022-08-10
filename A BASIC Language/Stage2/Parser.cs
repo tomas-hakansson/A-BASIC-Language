@@ -543,10 +543,12 @@ class Parser
                 Next();
                 break;
             case TokenType.UserDefinedName:
-                Generate(new ABL_Variable(_currentTokenValue));
+                var variableName = _currentTokenValue;
                 Next();
-                if (_currentTokenType == TokenType.TypeSpecifier)
-                    Next();//Ponder: Can I just ignore the type specifier here?
+                if (MightMatch(TokenType.TypeSpecifier, out var typeSpecifier))
+                    Generate(new ABL_Variable(variableName + typeSpecifier));
+                else
+                    Generate(new ABL_Variable(variableName));
                 break;
             case TokenType.Statement://Note: user defined function.
                 if (MightMatch("FN"))//todo: test.
