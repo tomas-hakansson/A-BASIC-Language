@@ -70,4 +70,56 @@ public class StringValue : ValueBase
 
     public override string ToString() =>
         Value;
+
+    public static bool operator ==(StringValue? left, StringValue? right)
+    {
+        if (left is null && right is null)
+            return true;
+
+        if (left is null || right is null)
+            return false;
+
+        return string.Compare(left.Value, right.Value, StringComparison.CurrentCultureIgnoreCase) == 0;
+    }
+
+    public static bool operator !=(StringValue? left, StringValue? right) =>
+        !(left == right);
+
+    public static bool operator ==(StringValue? left, IntValue? right)
+    {
+        if (left is null && right is null)
+            return true;
+
+        if (left is null || right is null)
+            return false;
+
+        if (!right.CanGetAsType<StringValue>())
+            return false;
+
+        var s = (string)right.GetValueAsType<StringValue>();
+
+        return string.Compare(left.Value, s, StringComparison.CurrentCultureIgnoreCase) == 0;
+    }
+
+    public static bool operator !=(StringValue? left, IntValue? right) =>
+        !(left == right);
+
+    public static bool operator ==(StringValue? left, FloatValue? right)
+    {
+        if (left is null && right is null)
+            return true;
+
+        if (left is null || right is null)
+            return false;
+
+        if (!right.CanGetAsType<StringValue>())
+            return false;
+
+        var s = (string)right.GetValueAsType<StringValue>();
+
+        return string.Compare(left.Value, s, StringComparison.CurrentCultureIgnoreCase) == 0;
+    }
+
+    public static bool operator !=(StringValue? left, FloatValue? right) =>
+        !(left == right);
 }

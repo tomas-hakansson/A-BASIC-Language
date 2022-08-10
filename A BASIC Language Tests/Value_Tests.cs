@@ -85,4 +85,29 @@ public class Value_Tests
         Assert.IsTrue(s.GetValueAsType<StringValue>() is string);
         Assert.IsTrue((string)s.GetValueAsType<StringValue>() == "Hello");
     }
+
+    [TestMethod]
+    public void CanCompare()
+    {
+        var equalString = new StringValue("50");
+        var equalFloat = new FloatValue(50.0);
+        var equalInt = new IntValue(50);
+
+        var unequalString = new StringValue("51");
+        var unequalFloat = new FloatValue(50.1);
+        var unequalInt = new IntValue(49);
+
+        Assert.IsTrue(equalString == equalFloat);
+        Assert.IsTrue(equalString == equalInt);
+        Assert.IsTrue(equalFloat == equalString);
+        Assert.IsTrue(equalFloat == equalInt);
+        Assert.IsTrue(equalInt == equalString);
+        Assert.IsTrue(equalInt == equalFloat);
+        Assert.IsTrue(unequalString != equalFloat);
+        Assert.IsTrue(unequalString != equalInt);
+        Assert.IsTrue(unequalFloat != equalString);
+        Assert.IsTrue(unequalFloat != equalInt);
+        Assert.IsTrue(unequalInt != equalString);
+        Assert.IsTrue(unequalInt != equalFloat);
+    }
 }
