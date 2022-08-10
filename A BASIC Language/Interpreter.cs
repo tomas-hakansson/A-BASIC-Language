@@ -68,12 +68,12 @@ public class Interpreter
                     {
                         if (_variables.TryGetValue(v.Symbol, out var value) && value != null)
                         {
-                            _data.Push(value);
+                            _data.Push(value); // Här tappar vi typen!
                         }
                         else
                         {
-                            Debug.Fail("Something was wrong with the value");//fixme: really bad text.
-                                                                             //todo: error handling.
+                            // Variable is probably not declared, get the default value for the variable.
+                            _data.Push(ValueBase.GetDefaultValueFor(v.Symbol));
                         }
                     }
                     break;
@@ -232,17 +232,14 @@ public class Interpreter
                                     var y = _data.Pop();
 
                                     //TODO: Type checking
-                                    if ((double)y.GetValueAsType<FloatValue>() == (double)x.GetValueAsType<FloatValue>())
-                                        _data.Push(new FloatValue(-1));//Note: Canonical True value.
-                                    else
-                                        _data.Push(new FloatValue(0));//Note: Canonical False value.
+
+                                    _data.Push(new FloatValue(x == y ? -1 : 0));
                                 }
                                 else
                                     Debug.Fail("Insufficient items on the stack");
                             }
                             break;
                         case "!=":
-                            goto case "<>";
                         case "<>":
                             {
                                 if (_data.Count >= 2)
@@ -251,10 +248,8 @@ public class Interpreter
                                     var y = _data.Pop();
 
                                     //TODO: Type checking
-                                    if ((double)y.GetValueAsType<FloatValue>() != (double)x.GetValueAsType<FloatValue>())
-                                        _data.Push(new FloatValue(-1));//Note: Canonical True value.
-                                    else
-                                        _data.Push(new FloatValue(0));//Note: Canonical False value.
+
+                                    _data.Push(new FloatValue(x != y ? -1 : 0));
                                 }
                                 else
                                     Debug.Fail("Insufficient items on the stack");

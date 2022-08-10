@@ -94,4 +94,9 @@ public class FloatValue : ValueBase
 
     public static bool operator !=(FloatValue? left, StringValue? right) =>
         !(left == right);
+
+    //public static bool operator >(FloatValue? left, FloatValue? right)
+    //{
+
+    //}
 }
