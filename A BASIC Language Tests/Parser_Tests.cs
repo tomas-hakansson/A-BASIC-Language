@@ -263,16 +263,33 @@ public class Parser_Tests
     [TestMethod]
     public void IF_BothBranches_SeveralStatements()
     {
-        var source = "10 if 1 then print \"hello\";:goto 42 else print \"world\";:x=666:goto x ";
+        var source = "10 if 1 then print \"hello\";:goto 42 else print \"world\";:x=666:goto x";
         Assert.AreEqual("L(10) N(1) N(-1) P(#IF-FALSE-GOTO) S(hello) P(#WRITE) N(42) P(GOTO) N(-2) P(GOTO) L(-1) S(world) P(#WRITE) N(666) =(X) V(X) P(GOTO) L(-2)", Parse(source));
     }
 
-    //[TestMethod]
-    //public void DIM_ToBeDeveloped()//ToDo: DIM
-    //{
-    //    var source = "10 dim a(10)";
-    //    Assert.AreEqual("L(10) N(10) N(1) P(#TO-DIM) =(A)", Parse(source));
-    //}
+    [TestMethod]
+    public void TwoSimpleLines()
+    {
+        var source = @"
+10 input ""enter name""; n$
+20 print n$";
+        Assert.AreEqual("L(10) S(enter name) P(#WRITE) S(? ) P(#WRITE) P(#INPUT-STRING) =(N$) L(20) V(N$) P(#WRITE) P(#NEXT-LINE)", Parse(source));
+    }
+
+    [TestMethod]
+    public void DIM_OneVariable_OneDimension()
+    {
+        var source = "10 dim a(4)";
+        Assert.AreEqual("L(10) N(4) N(1) P(#ARRAY) =(A)", Parse(source));
+    }
+
+    [TestMethod]
+    public void DIM_TwoVariables_TwoDimensions_SomeVariables_WithTypeSpecifiers()
+    {
+        var source = "10 dim x$(1,4),y(a,b%, 3)";
+        string actual = Parse(source);
+        Assert.AreEqual("L(10) N(1) N(4) N(2) P(#ARRAY) =(X$) V(A) V(B%) N(3) N(3) P(#ARRAY) =(Y)", actual);
+    }
 
     private static string Parse(string source) => new Parser(source).Result.ToString(PrintThe.EvalValues);
 }

@@ -112,6 +112,9 @@ class Parser
         {
             switch (_currentTokenValue)
             {
+                case "DIM":
+                    Dim();
+                    break;
                 case "END":
                     Next();
                     Generate(new ABL_Procedure("#END-PROGRAM"));
@@ -156,6 +159,49 @@ class Parser
             throw new InvalidOperationException("Syntax error");
     }
 
+    void Dim()
+    {
+        //dim     => DIM dim-var ("," dim-var)*
+        //dim-var => user-defined-name type-specifier? "(" value ("," value)* ")"
+        //value   => int | variable
+
+        //DeleteMe: "10 dim x(1,4),y(a,b, 3)";
+        Next();
+        DimVar();
+        while (MightMatch(TokenType.Comma))
+            DimVar();
+
+        void DimVar()
+        {
+            MustMatch(TokenType.UserDefinedName, out var name);
+            MightMatch(TokenType.TypeSpecifier, out var typeSpecifier);
+            MustMatch(TokenType.OpeningParenthesis);
+            Value();
+            int dimensionCount = 1;
+            while (MightMatch(TokenType.Comma))
+            {
+                Value();
+                dimensionCount++;
+            }
+            Generate(new ABL_Number(dimensionCount));
+            MustMatch(TokenType.ClosingParenthesis);
+            Generate(new ABL_Procedure("#ARRAY"), new ABL_Assignment(name + typeSpecifier));
+        }
+
+        void Value()
+        {
+            if (MightMatch(TokenType.Number, out var number))
+                Generate(new ABL_Number(number));
+            else if (MightMatch(TokenType.UserDefinedName, out var name))
+            {
+                MightMatch(TokenType.TypeSpecifier, out var typeSpecifier);
+                Generate(new ABL_Variable(name + typeSpecifier));
+            }
+            else
+                throw new ArgumentException("The value here can be either an int or a variable");
+        }
+    }
+
     void If()
     {
         //if         => IF boolean-expr THEN body (ELSE body)?
@@ -168,13 +214,13 @@ class Parser
             expr #10 #IF-FALSE-GOTO this #20 GOTO 10 that 20
          */
 
-        var falseBranchLabel = --_generatedLabel;//Note: Made negative because all valid BASIC labels are positive so there won't be a conflict.
+        var falseBranchLabel = GetGeneratedLabel();//Note: Made negative because all valid BASIC labels are positive so there won't be a conflict.
         Next();
         Expression();
         Generate(new ABL_Number(falseBranchLabel), new ABL_Procedure("#IF-FALSE-GOTO"));
         MustMatch("THEN");
         Body();
-        var endBranchLabel = --_generatedLabel;//Note: Se above.
+        var endBranchLabel = GetGeneratedLabel();//Note: Se above.
         Generate(new ABL_Number(endBranchLabel), new ABL_Procedure("GOTO"));
         GenerateLabel(falseBranchLabel);
         if (MightMatch("ELSE"))
@@ -221,6 +267,8 @@ class Parser
             return result;
         }
     }
+
+    private int GetGeneratedLabel() => --_generatedLabel;
 
     private void OneOrMoreStatements()
     {
@@ -338,8 +386,7 @@ class Parser
         //let => 'LET'? N = Expr
         MightMatch("LET");
         MustMatch(TokenType.UserDefinedName, out var name);
-        string typeSpecifier = String.Empty;
-        MightMatch(TokenType.TypeSpecifier, out typeSpecifier);
+        MightMatch(TokenType.TypeSpecifier, out var typeSpecifier);
         MustMatch(TokenType.EqualityOrAssignment);
         Expression();
         Generate(new ABL_Assignment(name + typeSpecifier));
@@ -545,10 +592,8 @@ class Parser
             case TokenType.UserDefinedName:
                 var variableName = _currentTokenValue;
                 Next();
-                if (MightMatch(TokenType.TypeSpecifier, out var typeSpecifier))
-                    Generate(new ABL_Variable(variableName + typeSpecifier));
-                else
-                    Generate(new ABL_Variable(variableName));
+                MightMatch(TokenType.TypeSpecifier, out var typeSpecifier);
+                Generate(new ABL_Variable(variableName + typeSpecifier));
                 break;
             case TokenType.Statement://Note: user defined function.
                 if (MightMatch("FN"))//todo: test.
