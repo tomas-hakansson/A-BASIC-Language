@@ -11,7 +11,7 @@ public partial class TerminalEmulator : Form
     private Brush OutputBrush { get; }
     private Brush InputBrush { get; }
     private Brush InputBackgroundBrush { get; }
-    private const int PixelsWidth = 320;
+    private const int PixelsWidth = 640;
     private const int PixelsHeight = 200;
     private const int CharacterWidth = 8;
     private const int CharacterHeight = 8;
@@ -25,7 +25,7 @@ public partial class TerminalEmulator : Form
     public static Pen VectorGraphicsPen { get; }
     public bool LineInputMode { get; set; }
     public const int RowCount = 25;
-    public const int ColumnCount = 40;
+    public const int ColumnCount = 80;
     public string LineInputResult { get; private set; }
 
     static TerminalEmulator()
@@ -118,14 +118,14 @@ public partial class TerminalEmulator : Form
     public void ShowWelcome(string program)
     {
         WriteLine();
-        WriteLine("        *** A BASIC LANGUAGE ***");
+        WriteLine("                            *** A BASIC LANGUAGE ***");
         WriteLine();
-        WriteLine("         Altair BASIC Emulator.");
-
+        WriteLine("                             Altair BASIC Emulator.");
+        //"          "
         if (string.IsNullOrWhiteSpace(program))
         {
-            WriteLine("       written by Tomas Hakansson");
-            WriteLine("          and Anders Hesselbom");
+            WriteLine("                           written by Tomas Hakansson");
+            WriteLine("                              and Anders Hesselbom");
             WriteLine();
         }
         else
