@@ -158,7 +158,7 @@ public class FloatValue : ValueBase
         if (left is null || right is null)
             return false;
 
-        return left.Value > right.Value;
+        return left.Value >= right.Value;
     }
 
     public static bool operator <=(FloatValue? left, FloatValue? right)
@@ -166,7 +166,7 @@ public class FloatValue : ValueBase
         if (left is null || right is null)
             return false;
 
-        return left.Value < right.Value;
+        return left.Value <= right.Value;
     }
 
     public static bool operator >=(FloatValue? left, IntValue? right)
@@ -174,7 +174,7 @@ public class FloatValue : ValueBase
         if (left is null || right is null)
             return false;
 
-        return left.Value > right.Value;
+        return left.Value >= right.Value;
     }
 
     public static bool operator <=(FloatValue? left, IntValue? right)
@@ -182,7 +182,7 @@ public class FloatValue : ValueBase
         if (left is null || right is null)
             return false;
 
-        return left.Value < right.Value;
+        return left.Value <= right.Value;
     }
 
     public static bool operator >=(FloatValue? left, StringValue? right)
@@ -195,7 +195,7 @@ public class FloatValue : ValueBase
 
         var f = (double)right.GetValueAsType<FloatValue>();
 
-        return left.Value > f;
+        return left.Value >= f;
     }
 
     public static bool operator <=(FloatValue? left, StringValue? right)
@@ -208,6 +208,6 @@ public class FloatValue : ValueBase
 
         var f = (double)right.GetValueAsType<FloatValue>();
 
-        return left.Value < f;
+        return left.Value <= f;
     }
 }
