@@ -66,8 +66,11 @@ public class Interpreter
                     break;
                 case ABL_Variable v:
                     {
-                        if (_variables.TryGetValue(v.Symbol, out var value) && value != null)
+                        if (_variables.TryGetValue(v.Symbol, out var value))
                         {
+                            if (value is null)
+                                value = ValueBase.GetDefaultValueFor(v.Symbol);
+
                             _data.Push(value); // Här tappar vi typen!
                         }
                         else
