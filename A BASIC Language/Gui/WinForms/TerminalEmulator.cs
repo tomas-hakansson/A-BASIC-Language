@@ -121,7 +121,7 @@ public partial class TerminalEmulator : Form
         WriteLine("                            *** A BASIC LANGUAGE ***");
         WriteLine();
         WriteLine("                             Altair BASIC Emulator.");
-        //"          "
+
         if (string.IsNullOrWhiteSpace(program))
         {
             WriteLine("                           written by Tomas Hakansson");
