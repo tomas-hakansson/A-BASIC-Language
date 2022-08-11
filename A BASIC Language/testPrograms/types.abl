@@ -1,2 +1,3 @@
-﻿10 if a$="hej" then print "true!"
-20 if a$<>"hej" then print "false!"
+﻿10 a%=4
+20 b=5
+30 print a%>b

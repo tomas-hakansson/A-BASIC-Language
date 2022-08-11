@@ -71,6 +71,214 @@ public abstract class ValueBase
         return true;
     }
 
+    public static bool operator ==(ValueBase? left, ValueBase? right)
+    {
+        if (left is IntValue iLeft)
+        {
+            if (right is IntValue iRight)
+                return iLeft == iRight;
+
+            if (right is FloatValue fRight)
+                return iLeft == fRight;
+
+            if (right is StringValue sRight)
+                return iLeft == sRight;
+        }
+
+        if (left is FloatValue fLeft)
+        {
+            if (right is IntValue iRight)
+                return fLeft == iRight;
+
+            if (right is FloatValue fRight)
+                return fLeft == fRight;
+
+            if (right is StringValue sRight)
+                return fLeft == sRight;
+        }
+
+        if (left is StringValue sLeft)
+        {
+            if (right is IntValue iRight)
+                return sLeft == iRight;
+
+            if (right is FloatValue fRight)
+                return sLeft == fRight;
+
+            if (right is StringValue sRight)
+                return sLeft == sRight;
+        }
+
+        throw new SystemException("What?");
+    }
+
+    public static bool operator !=(ValueBase? left, ValueBase? right) =>
+        !(left == right);
+
+    public static bool operator >(ValueBase? left, ValueBase? right)
+    {
+        if (left is IntValue iLeft)
+        {
+            if (right is IntValue iRight)
+                return iLeft > iRight;
+
+            if (right is FloatValue fRight)
+                return iLeft > fRight;
+
+            if (right is StringValue sRight)
+                return iLeft > sRight;
+        }
+
+        if (left is FloatValue fLeft)
+        {
+            if (right is IntValue iRight)
+                return fLeft > iRight;
+
+            if (right is FloatValue fRight)
+                return fLeft > fRight;
+
+            if (right is StringValue sRight)
+                return fLeft > sRight;
+        }
+
+        if (left is StringValue sLeft)
+        {
+            if (right is IntValue iRight)
+                return sLeft > iRight;
+
+            if (right is FloatValue fRight)
+                return sLeft > fRight;
+
+            if (right is StringValue sRight)
+                return sLeft > sRight;
+        }
+
+        throw new SystemException("What?");
+    }
+
+    public static bool operator <(ValueBase? left, ValueBase? right)
+    {
+        if (left is IntValue iLeft)
+        {
+            if (right is IntValue iRight)
+                return iLeft < iRight;
+
+            if (right is FloatValue fRight)
+                return iLeft < fRight;
+
+            if (right is StringValue sRight)
+                return iLeft < sRight;
+        }
+
+        if (left is FloatValue fLeft)
+        {
+            if (right is IntValue iRight)
+                return fLeft < iRight;
+
+            if (right is FloatValue fRight)
+                return fLeft < fRight;
+
+            if (right is StringValue sRight)
+                return fLeft < sRight;
+        }
+
+        if (left is StringValue sLeft)
+        {
+            if (right is IntValue iRight)
+                return sLeft < iRight;
+
+            if (right is FloatValue fRight)
+                return sLeft < fRight;
+
+            if (right is StringValue sRight)
+                return sLeft < sRight;
+        }
+
+        throw new SystemException("What?");
+    }
+
+    public static bool operator >=(ValueBase? left, ValueBase? right)
+    {
+        if (left is IntValue iLeft)
+        {
+            if (right is IntValue iRight)
+                return iLeft >= iRight;
+
+            if (right is FloatValue fRight)
+                return iLeft >= fRight;
+
+            if (right is StringValue sRight)
+                return iLeft >= sRight;
+        }
+
+        if (left is FloatValue fLeft)
+        {
+            if (right is IntValue iRight)
+                return fLeft >= iRight;
+
+            if (right is FloatValue fRight)
+                return fLeft >= fRight;
+
+            if (right is StringValue sRight)
+                return fLeft >= sRight;
+        }
+
+        if (left is StringValue sLeft)
+        {
+            if (right is IntValue iRight)
+                return sLeft >= iRight;
+
+            if (right is FloatValue fRight)
+                return sLeft >= fRight;
+
+            if (right is StringValue sRight)
+                return sLeft >= sRight;
+        }
+
+        throw new SystemException("What?");
+    }
+
+    public static bool operator <=(ValueBase? left, ValueBase? right)
+    {
+        if (left is IntValue iLeft)
+        {
+            if (right is IntValue iRight)
+                return iLeft <= iRight;
+
+            if (right is FloatValue fRight)
+                return iLeft <= fRight;
+
+            if (right is StringValue sRight)
+                return iLeft <= sRight;
+        }
+
+        if (left is FloatValue fLeft)
+        {
+            if (right is IntValue iRight)
+                return fLeft <= iRight;
+
+            if (right is FloatValue fRight)
+                return fLeft <= fRight;
+
+            if (right is StringValue sRight)
+                return fLeft <= sRight;
+        }
+
+        if (left is StringValue sLeft)
+        {
+            if (right is IntValue iRight)
+                return sLeft <= iRight;
+
+            if (right is FloatValue fRight)
+                return sLeft <= fRight;
+
+            if (right is StringValue sRight)
+                return sLeft <= sRight;
+        }
+
+        throw new SystemException("What?");
+    }
+
     public abstract bool IsOfType<T>() where T : ValueBase;
 
     public abstract bool CanGetAsType<T>() where T : ValueBase;

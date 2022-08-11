@@ -163,11 +163,7 @@ public class Interpreter
                                     var x = _data.Pop();
                                     var y = _data.Pop();
 
-                                    //TODO: Type checking
-                                    if ((double)y.GetValueAsType<FloatValue>() > (double)x.GetValueAsType<FloatValue>())
-                                        _data.Push(new FloatValue(-1));//Note: Canonical True value.
-                                    else
-                                        _data.Push(new FloatValue(0));//Note: Canonical False value.
+                                    _data.Push(new FloatValue(x > y ? -1 : 0));
                                 }
                                 else
                                     Debug.Fail("Insufficient items on the stack");
@@ -180,11 +176,7 @@ public class Interpreter
                                     var x = _data.Pop();
                                     var y = _data.Pop();
 
-                                    //TODO: Type checking
-                                    if ((double)y.GetValueAsType<FloatValue>() >= (double)x.GetValueAsType<FloatValue>())
-                                        _data.Push(new FloatValue(-1));//Note: Canonical True value.
-                                    else
-                                        _data.Push(new FloatValue(0));//Note: Canonical False value.
+                                    _data.Push(new FloatValue(x >= y ? -1 : 0));
                                 }
                                 else
                                     Debug.Fail("Insufficient items on the stack");
@@ -197,11 +189,7 @@ public class Interpreter
                                     var x = _data.Pop();
                                     var y = _data.Pop();
 
-                                    //TODO: Type checking
-                                    if ((double)y.GetValueAsType<FloatValue>() < (double)x.GetValueAsType<FloatValue>())
-                                        _data.Push(new FloatValue(-1));//Note: Canonical True value.
-                                    else
-                                        _data.Push(new FloatValue(0));//Note: Canonical False value.
+                                    _data.Push(new FloatValue(x < y ? -1 : 0));
                                 }
                                 else
                                     Debug.Fail("Insufficient items on the stack");
@@ -214,11 +202,7 @@ public class Interpreter
                                     var x = _data.Pop();
                                     var y = _data.Pop();
 
-                                    //TODO: Type checking
-                                    if ((double)y.GetValueAsType<FloatValue>() <= (double)x.GetValueAsType<FloatValue>())
-                                        _data.Push(new FloatValue(-1));//Note: Canonical True value.
-                                    else
-                                        _data.Push(new FloatValue(0));//Note: Canonical False value.
+                                    _data.Push(new FloatValue(x <= y ? -1 : 0));
                                 }
                                 else
                                     Debug.Fail("Insufficient items on the stack");
@@ -230,8 +214,6 @@ public class Interpreter
                                 {
                                     var x = _data.Pop();
                                     var y = _data.Pop();
-
-                                    //TODO: Type checking
 
                                     _data.Push(new FloatValue(x == y ? -1 : 0));
                                 }
@@ -246,8 +228,6 @@ public class Interpreter
                                 {
                                     var x = _data.Pop();
                                     var y = _data.Pop();
-
-                                    //TODO: Type checking
 
                                     _data.Push(new FloatValue(x != y ? -1 : 0));
                                 }
