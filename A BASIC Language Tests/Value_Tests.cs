@@ -126,7 +126,7 @@ public class Value_Tests
         Assert.IsTrue(unequalFloat != equalInt);
         Assert.IsTrue(unequalInt != equalString);
         Assert.IsTrue(unequalInt != equalFloat);
-        /*
+        
         Assert.IsTrue(unequalString > equalFloat);
         Assert.IsTrue(unequalString > equalInt);
         Assert.IsTrue(unequalFloat > equalString);
@@ -154,6 +154,5 @@ public class Value_Tests
         Assert.IsTrue(unequalFloat <= equalInt);
         Assert.IsTrue(unequalInt <= equalString);
         Assert.IsTrue(unequalInt <= equalFloat);
-        */
     }
 }

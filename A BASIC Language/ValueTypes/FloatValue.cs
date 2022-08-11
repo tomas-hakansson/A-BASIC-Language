@@ -95,8 +95,119 @@ public class FloatValue : ValueBase
     public static bool operator !=(FloatValue? left, StringValue? right) =>
         !(left == right);
 
-    //public static bool operator >(FloatValue? left, FloatValue? right)
-    //{
+    public static bool operator >(FloatValue? left, FloatValue? right)
+    {
+        if (left is null || right is null)
+            return false;
 
-    //}
+        return left.Value > right.Value;
+    }
+
+    public static bool operator <(FloatValue? left, FloatValue? right)
+    {
+        if (left is null || right is null)
+            return false;
+
+        return left.Value < right.Value;
+    }
+
+    public static bool operator >(FloatValue? left, IntValue? right)
+    {
+        if (left is null || right is null)
+            return false;
+
+        return left.Value > right.Value;
+    }
+
+    public static bool operator <(FloatValue? left, IntValue? right)
+    {
+        if (left is null || right is null)
+            return false;
+
+        return left.Value < right.Value;
+    }
+
+    public static bool operator >(FloatValue? left, StringValue? right)
+    {
+        if (left is null || right is null)
+            return false;
+
+        if (!right.CanGetAsType<FloatValue>())
+            return false;
+
+        var f = (double)right.GetValueAsType<FloatValue>();
+
+        return left.Value > f;
+    }
+
+    public static bool operator <(FloatValue? left, StringValue? right)
+    {
+        if (left is null || right is null)
+            return false;
+
+        if (!right.CanGetAsType<FloatValue>())
+            return false;
+
+        var f = (double)right.GetValueAsType<FloatValue>();
+
+        return left.Value < f;
+    }
+
+    public static bool operator >=(FloatValue? left, FloatValue? right)
+    {
+        if (left is null || right is null)
+            return false;
+
+        return left.Value > right.Value;
+    }
+
+    public static bool operator <=(FloatValue? left, FloatValue? right)
+    {
+        if (left is null || right is null)
+            return false;
+
+        return left.Value < right.Value;
+    }
+
+    public static bool operator >=(FloatValue? left, IntValue? right)
+    {
+        if (left is null || right is null)
+            return false;
+
+        return left.Value > right.Value;
+    }
+
+    public static bool operator <=(FloatValue? left, IntValue? right)
+    {
+        if (left is null || right is null)
+            return false;
+
+        return left.Value < right.Value;
+    }
+
+    public static bool operator >=(FloatValue? left, StringValue? right)
+    {
+        if (left is null || right is null)
+            return false;
+
+        if (!right.CanGetAsType<FloatValue>())
+            return false;
+
+        var f = (double)right.GetValueAsType<FloatValue>();
+
+        return left.Value > f;
+    }
+
+    public static bool operator <=(FloatValue? left, StringValue? right)
+    {
+        if (left is null || right is null)
+            return false;
+
+        if (!right.CanGetAsType<FloatValue>())
+            return false;
+
+        var f = (double)right.GetValueAsType<FloatValue>();
+
+        return left.Value < f;
+    }
 }
