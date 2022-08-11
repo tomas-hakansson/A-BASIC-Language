@@ -124,7 +124,7 @@ public class IntValue : ValueBase
         if (left is null || right is null)
             return false;
 
-        return left.Value > right.Value;
+        return left.Value < right.Value;
     }
 
     public static bool operator >(IntValue? left, StringValue? right)
@@ -135,7 +135,7 @@ public class IntValue : ValueBase
         if (!right.CanGetAsType<IntValue>())
             return false;
 
-        var i = (double)right.GetValueAsType<IntValue>();
+        var i = (int)right.GetValueAsType<IntValue>();
 
         return left.Value > i;
     }
@@ -148,7 +148,7 @@ public class IntValue : ValueBase
         if (!right.CanGetAsType<IntValue>())
             return false;
 
-        var i = (double)right.GetValueAsType<IntValue>();
+        var i = (int)right.GetValueAsType<IntValue>();
 
         return left.Value < i;
     }
@@ -182,7 +182,7 @@ public class IntValue : ValueBase
         if (left is null || right is null)
             return false;
 
-        return left.Value >= right.Value;
+        return left.Value <= right.Value;
     }
 
     public static bool operator >=(IntValue? left, StringValue? right)
@@ -193,7 +193,7 @@ public class IntValue : ValueBase
         if (!right.CanGetAsType<IntValue>())
             return false;
 
-        var i = (double)right.GetValueAsType<IntValue>();
+        var i = (int)right.GetValueAsType<IntValue>();
 
         return left.Value >= i;
     }
@@ -206,7 +206,7 @@ public class IntValue : ValueBase
         if (!right.CanGetAsType<IntValue>())
             return false;
 
-        var i = (double)right.GetValueAsType<IntValue>();
+        var i = (int)right.GetValueAsType<IntValue>();
 
         return left.Value <= i;
     }

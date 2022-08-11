@@ -122,4 +122,40 @@ public class StringValue : ValueBase
 
     public static bool operator !=(StringValue? left, FloatValue? right) =>
         !(left == right);
+
+    public static bool operator >(StringValue? left, StringValue? right) =>
+        false; // Cannot compare.
+
+    public static bool operator <(StringValue? left, StringValue? right) =>
+        false; // Cannot compare.
+
+    public static bool operator >(StringValue? left, IntValue? right) =>
+        false; // Cannot compare.
+
+    public static bool operator <(StringValue? left, IntValue? right) =>
+        false; // Cannot compare.
+
+    public static bool operator >(StringValue? left, FloatValue? right) =>
+        false; // Cannot compare.
+
+    public static bool operator <(StringValue? left, FloatValue? right) =>
+        false; // Cannot compare.
+
+    public static bool operator >=(StringValue? left, StringValue? right) =>
+    false; // Cannot compare.
+
+    public static bool operator <=(StringValue? left, StringValue? right) =>
+        false; // Cannot compare.
+
+    public static bool operator >=(StringValue? left, IntValue? right) =>
+        false; // Cannot compare.
+
+    public static bool operator <=(StringValue? left, IntValue? right) =>
+        false; // Cannot compare.
+
+    public static bool operator >=(StringValue? left, FloatValue? right) =>
+        false; // Cannot compare.
+
+    public static bool operator <=(StringValue? left, FloatValue? right) =>
+        false; // Cannot compare.
 }
