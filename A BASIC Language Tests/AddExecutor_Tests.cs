@@ -9,7 +9,7 @@ namespace A_BASIC_Language_Tests;
 public class AddExecutor_Tests
 {
     [TestMethod]
-    public void Add()
+    public void CanExecute()
     {
         Stack<ValueBase> values = new();
         AddExecutor executor = new(values);

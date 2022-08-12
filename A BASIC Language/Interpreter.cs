@@ -66,7 +66,7 @@ public class Interpreter
                     _data.Push(ValueBase.GetValueType(n.Value));
                     break;
                 case ABL_String s:
-                    _data.Push(ValueBase.GetValueType(s.Value));
+                    _data.Push(new StringValue(s.Value));
                     break;
                 case ABL_Variable v:
                     {
