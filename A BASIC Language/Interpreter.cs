@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using A_BASIC_Language.Gui;
+using A_BASIC_Language.SpecificExecutors;
 using A_BASIC_Language.ValueTypes;
 
 namespace A_BASIC_Language;
@@ -20,7 +21,6 @@ public class Interpreter
         _parseResult = parser.Result;
         _variables = new Dictionary<string, ValueBase?>();
         _data = new Stack<ValueBase>();
-
         _random = new Random();
     }
 
@@ -39,6 +39,10 @@ public class Interpreter
     {
         if (_terminal == null)
             throw new SystemException("Terminal not initialized.");
+
+        Application.DoEvents();
+
+        var addExecutor = new AddExecutor(_data);
 
         Application.DoEvents();
 
@@ -130,19 +134,7 @@ public class Interpreter
                             }
                             break;
                         case "+":
-                            {
-                                if (_data.Count >= 2)
-                                {
-                                    var x = _data.Pop();
-                                    var y = _data.Pop();
-
-                                    //TODO: Type checking
-                                    var result = (double)y.GetValueAsType<FloatValue>() + (double)x.GetValueAsType<FloatValue>();
-                                    _data.Push(new FloatValue(result));
-                                }
-                                else
-                                    Debug.Fail("Insufficient items on the stack");
-                            }
+                            addExecutor.Run();
                             break;
                         case "-":
                             {
@@ -275,7 +267,7 @@ public class Interpreter
                                     {
                                         if (_parseResult.LabelIndex.TryGetValue((int)label.GetValueAsType<IntValue>(), out var newIndex))
                                         {
-                                            i = (int)newIndex;
+                                            i = newIndex;
                                             i--;//HACK: come up with something better.
                                             continue;
                                         }

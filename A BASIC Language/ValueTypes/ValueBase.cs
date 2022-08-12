@@ -47,10 +47,10 @@ public abstract class ValueBase
     public abstract bool FitsInVariable(string symbol);
 
     internal static bool VariableIsDeclaredAsString(string symbol) =>
-        IsName(symbol, out var n) && symbol.EndsWith("$");
+        IsName(symbol, out _) && symbol.EndsWith("$");
 
     internal static bool VariableIsDeclaredAsInt(string symbol) =>
-        IsName(symbol, out var n) && symbol.EndsWith("%");
+        IsName(symbol, out _) && symbol.EndsWith("%");
 
     internal static bool VariableIsDeclaredAsFloat(string symbol) =>
         IsName(symbol, out var n) && MiddleCharacterOfName.Contains(n[^1]);
