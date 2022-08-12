@@ -60,12 +60,12 @@ public class AddExecutor_Tests
         values.Push(new FloatValue(2));
         executor.Run();
         Assert.AreEqual(values.Count, 1);
-        Assert.AreEqual(((dynamic)values.Pop()).Value, 3);
+        Assert.AreEqual(((dynamic)values.Pop()).Value, "21");
 
         values.Push(new StringValue("1"));
         values.Push(new IntValue(2));
         executor.Run();
         Assert.AreEqual(values.Count, 1);
-        Assert.AreEqual(((dynamic)values.Pop()).Value, 3);
+        Assert.AreEqual(((dynamic)values.Pop()).Value, "21");
     }
 }
