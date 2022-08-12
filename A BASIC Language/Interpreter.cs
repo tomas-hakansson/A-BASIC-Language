@@ -43,12 +43,15 @@ public class Interpreter
         Application.DoEvents();
 
         var addExecutor = new AddExecutor(_data);
+        var subtractExecutor = new SubtractExecutor(_data);
 
         Application.DoEvents();
 
         var endProgram = false;
 
         //todo: Debug.WriteLine($"Eval {_index}: {line}");
+
+        var lineNumber = 0;
 
         for (int i = 0; i < _parseResult.EvalValues.Count; i++)
         {
@@ -59,7 +62,8 @@ public class Interpreter
 
             switch (_parseResult.EvalValues[i])
             {
-                case ABL_Label:
+                case ABL_Label lbl:
+                    lineNumber = lbl.Value;
                     //Note: NOP.
                     break;
                 case ABL_Number n:
@@ -75,7 +79,7 @@ public class Interpreter
                             if (value is null)
                                 value = ValueBase.GetDefaultValueFor(v.Symbol);
 
-                            _data.Push(value); // Här tappar vi typen!
+                            _data.Push(value);
                         }
                         else
                         {
@@ -134,22 +138,10 @@ public class Interpreter
                             }
                             break;
                         case "+":
-                            addExecutor.Run();
+                            addExecutor.Run(lineNumber);
                             break;
                         case "-":
-                            {
-                                if (_data.Count >= 2)
-                                {
-                                    var x = _data.Pop();
-                                    var y = _data.Pop();
-
-                                    //TODO: Type checking
-                                    var result = (double)y.GetValueAsType<FloatValue>() - (double)x.GetValueAsType<FloatValue>();
-                                    _data.Push(new FloatValue(result));
-                                }
-                                else
-                                    Debug.Fail("Insufficient items on the stack");
-                            }
+                            subtractExecutor.Run(lineNumber);
                             break;
                         case ">":
                             {

@@ -11,7 +11,7 @@ public class AddExecutor : ISubExecutor
         _data = data;
     }
 
-    public void Run()
+    public void Run(int lineNumber)
     {
         if (_data.Count >= 2)
         {
@@ -20,7 +20,7 @@ public class AddExecutor : ISubExecutor
             _data.Push(Add(x, y));
         }
         else
-            throw new SystemException("Insufficient items on the stack.");
+            throw new SystemException($"Line {lineNumber}: Insufficient items on the stack.");
 
     }
 

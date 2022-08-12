@@ -2,5 +2,5 @@
 
 public interface ISubExecutor
 {
-    void Run();
+    void Run(int lineNumber);
 }
