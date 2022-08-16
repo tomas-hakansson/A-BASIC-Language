@@ -88,6 +88,16 @@ public partial class LoadProgramDialog : Form
         Add("name.bas"); //           68
         Add("nicomachus.bas"); //     69
         Add("nim.bas"); //            70
+        Add("number.bas"); //         71
+        Add("onecheck.bas"); //       72
+        Add("orbit.bas"); //          73
+        Add("pizza.bas"); //          74
+        Add("poetry.bas"); //         75
+        Add("poker.bas"); //          76
+        Add("qubic.bas"); //          77
+        Add("queen.bas"); //          78
+        Add("reverse.bas"); //        79
+        Add("rocket.bas"); //         80
     }
 
     private void Add(string filename, int iconIndex = 0)
