@@ -98,29 +98,17 @@ public partial class LoadProgramDialog : Form
         Add("queen.bas"); //          78
         Add("reverse.bas"); //        79
         Add("rocket.bas"); //         80
+        Add("rockscissors.bas"); //   81
+        Add("roulette.bas"); //       82
     }
 
     private void Add(string filename, int iconIndex = 0)
     {
-        var li = listView1.Items.Add(filename);
-        li.ImageIndex = iconIndex;
+        var li = listView1.AddItem(iconIndex, filename);
 
         li.Tag = iconIndex == 1
             ? $@"..\..\..\testPrograms\{filename}"
             : $@"https://raw.githubusercontent.com/GReaperEx/bcg/master/{filename}";
-    }
-    
-    private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
-    {
-        var li = listView1.GetItemAt(e.X, e.Y);
-
-        if (li == null)
-            return;
-
-        listView1.SelectedItems.Clear();
-        li.Selected = true;
-
-        btnOk_Click(sender, EventArgs.Empty);
     }
 
     private void btnOk_Click(object sender, EventArgs e)
@@ -151,10 +139,10 @@ public partial class LoadProgramDialog : Form
 
     private void viewSourceToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        if (listView1.SelectedItems.Count <= 0)
+        if (listView1.SelectedItem == null)
             return;
 
-        var n = (string)listView1.SelectedItems[0].Tag;
+        var n = (string)listView1.SelectedItem.Tag;
 
         var source = MainWindow.ProgramRepository.GetProgram(this, n, out _);
 
@@ -166,4 +154,7 @@ public partial class LoadProgramDialog : Form
 
     private void runToolStripMenuItem_Click(object sender, EventArgs e) =>
         btnOk_Click(sender, e);
+
+    private void listView1_ItemSelected(object sender, SelectListLibrary.ItemSelectedEventArgs eventArgs) =>
+        btnOk_Click(sender, EventArgs.Empty);
 }

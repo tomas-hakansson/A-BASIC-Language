@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoadProgramDialog));
-            this.listView1 = new System.Windows.Forms.ListView();
+            this.listView1 = new SelectListLibrary.SelectList();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
@@ -42,15 +42,17 @@
             // 
             // listView1
             // 
+            this.listView1.FullRowSelect = true;
             this.listView1.LargeImageList = this.imageList1;
             this.listView1.Location = new System.Drawing.Point(4, 4);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
+            this.listView1.SelectedItem = null;
             this.listView1.Size = new System.Drawing.Size(488, 468);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.ItemSelected += new SelectListLibrary.ItemSelectedHandler(this.listView1_ItemSelected);
             this.listView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
-            this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
             // 
             // imageList1
             // 
@@ -127,7 +129,7 @@
 
         #endregion
 
-        private ListView listView1;
+        private SelectListLibrary.SelectList listView1;
         private Button btnOk;
         private Button btnCancel;
         private ImageList imageList1;
