@@ -47,7 +47,6 @@
             this.listView1.Location = new System.Drawing.Point(4, 4);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
-            this.listView1.SelectedItem = null;
             this.listView1.Size = new System.Drawing.Size(488, 468);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
