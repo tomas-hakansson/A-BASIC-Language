@@ -19,7 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="SelectListLibrary" Version="1.0.1" />
+	  <PackageReference Include="SelectListLibrary" Version="1.0.2" />
 	</ItemGroup>
 
 	<ItemGroup>
