@@ -10,7 +10,7 @@ public static class Program
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
         var main = new MainWindow();
-        main.ProgramFilename = args.FirstOrDefault();
+        main.ProgramFilename = args.FirstOrDefault() ?? "";
         Application.Run(main);
     }
 }

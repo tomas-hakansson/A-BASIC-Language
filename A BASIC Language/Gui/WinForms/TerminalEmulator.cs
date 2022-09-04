@@ -11,7 +11,7 @@ public partial class TerminalEmulator : Form
     private Brush OutputBrush { get; }
     private Brush InputBrush { get; }
     private Brush InputBackgroundBrush { get; }
-    private const int PixelsWidth = 640;
+    private int PixelsWidth;
     private const int PixelsHeight = 200;
     private const int CharacterWidth = 8;
     private const int CharacterHeight = 8;
@@ -25,7 +25,7 @@ public partial class TerminalEmulator : Form
     public static Pen VectorGraphicsPen { get; }
     public bool LineInputMode { get; set; }
     public const int RowCount = 25;
-    public const int ColumnCount = 80;
+    public int ColumnCount;
     public string LineInputResult { get; private set; }
 
     static TerminalEmulator()
@@ -38,6 +38,24 @@ public partial class TerminalEmulator : Form
 #pragma warning restore CS8618
     {
         InitializeComponent();
+
+        var columnCountConfigValue = System.Configuration.ConfigurationManager.AppSettings["columnCount"];
+
+        switch (columnCountConfigValue)
+        {
+            case "40":
+                ColumnCount = 40;
+                break;
+            case "80":
+                ColumnCount = 80;
+                break;
+            default:
+                ColumnCount = 60;
+                break;
+        }
+
+        PixelsWidth = ColumnCount * 8;
+
         FullScreen = false;
         OldWindowState = FormWindowState.Normal;
         OldPosition = new Rectangle(50, 50, 200, 200);
@@ -117,15 +135,26 @@ public partial class TerminalEmulator : Form
 
     public void ShowWelcome(string program)
     {
+        var spaces = 28;
+        switch (ColumnCount)
+        {
+            case 40:
+                spaces = 8;
+                break;
+            case 60:
+                spaces = 18;
+                break;
+        }
+
         WriteLine();
-        WriteLine("                            *** A BASIC LANGUAGE ***");
+        WriteLine($"{new string(' ', spaces)}*** A BASIC LANGUAGE ***");
         WriteLine();
-        WriteLine("                             Altair BASIC Emulator.");
+        WriteLine($"{new string(' ', spaces + 1)}Altair BASIC Emulator.");
 
         if (string.IsNullOrWhiteSpace(program))
         {
-            WriteLine("                           written by Tomas Hakansson");
-            WriteLine("                              and Anders Hesselbom");
+            WriteLine($"{new string(' ', spaces - 1)}written by Tomas Hakansson");
+            WriteLine($"{new string(' ', spaces + 2)}and Anders Hesselbom");
             WriteLine();
         }
         else

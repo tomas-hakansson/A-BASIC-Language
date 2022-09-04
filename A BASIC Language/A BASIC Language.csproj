@@ -20,6 +20,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="SelectListLibrary" Version="1.0.2" />
+	  <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
