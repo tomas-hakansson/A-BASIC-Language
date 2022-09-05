@@ -12,6 +12,7 @@ public class Interpreter
     readonly Stage2.ParseResult _parseResult;
     readonly Dictionary<string, ValueBase?> _variables;//Ponder: do the value need to be nullable?
     readonly Stack<ValueBase> _data;
+    bool EndMessageDisplayed { get; set; }
 
     readonly Random _random;//Note: For the RND function.
 
@@ -28,7 +29,6 @@ public class Interpreter
     {
         _terminal = terminal;
 
-
         if (_terminal.State != TerminalState.Running)
             return;
 
@@ -37,6 +37,8 @@ public class Interpreter
 
     void Eval()
     {
+        EndMessageDisplayed = false;
+
         if (_terminal == null)
             throw new SystemException("Terminal not initialized.");
 
@@ -361,16 +363,27 @@ public class Interpreter
                     throw new NotImplementedException("The operation has either not been implemented or theres another bug");
             }
         }
+
+        if (!EndMessageDisplayed)
+            End("Program has run through.");
     }
 
     void End(string message)
     {
+        EndMessageDisplayed = true;
+
         if (_terminal != null)
         {
+            if (_terminal.FullScreen)
+                _terminal.FullScreen = false;
+
+            _terminal.Title = "Simple direct mode";
+
             _terminal.WriteLine();
-            _terminal.Write(TheProgramHasEnded);
+            _terminal.WriteLine(TheProgramHasEnded);
             _terminal.End();
         }
+
         MessageBox.Show(message, TheProgramHasEnded);
     }
 }

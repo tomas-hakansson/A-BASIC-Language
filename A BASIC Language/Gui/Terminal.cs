@@ -14,7 +14,7 @@ public class Terminal : IDisposable
 
     public void Run(string title, string programName)
     {
-        Emu.Text = title;
+        Title = title;
         Emu.Show();
         Emu.BringToFront();
         Emu.Clear();
@@ -32,6 +32,12 @@ public class Terminal : IDisposable
     {
         get => Emu.IsFullScreen();
         set => Emu.SetFullScreen(value);
+    }
+
+    public string Title
+    {
+        get => Emu.Text;
+        set => Emu.Text = value;
     }
 
     public void NextTab(string s) =>
