@@ -7,20 +7,22 @@ namespace A_BASIC_Language
     //Note: I used the following for index calculation: https://stackoverflow.com/a/3613492
     public class Dimension
     {
+        public int Count { get; private set; }
+
         readonly ValueBase[] _atoms;
         readonly int[] _multipliers;
         public Dimension(List<int> maxIndices)
         {
             //ToDo: Validate input.
+            //Ponder: Maybe have an optimisation that skips all the machinery for one-dimensional arrays?
+            //Hack: I first wrote the code under the assumption that the constructor would be given the shape as argument.
             var shape = maxIndices.Select(x => x + 1).ToList();
             _atoms = new ValueBase[shape.Aggregate((x, y) => x * y)];
-            var sc = shape.Count;
-            _multipliers = new int[sc];
-            for (int i = 0, j = sc - 1; i < sc; i++, j--)
-                if (i == 0)
-                    _multipliers[j] = 1;
-                else
-                    _multipliers[j] = (int)Math.Pow(shape[i], i);
+            Count = shape.Count;
+            _multipliers = new int[Count];
+            _multipliers[Count - 1] = 1;
+            for (int i = 1, j = Count - 2; i < Count; i++, j--)
+                _multipliers[j] = shape.TakeLast(i).Aggregate((x, y) => x * y);
         }
 
         /// <summary>
