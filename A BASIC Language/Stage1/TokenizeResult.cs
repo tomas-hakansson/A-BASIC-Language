@@ -2,8 +2,14 @@
 
 public class TokenizeResult
 {
-    public List<string> TokenValues { get; private set; } = new List<string>();
-    public List<TokenType> TokenTypes { get; private set; } = new List<TokenType>();
+    public List<string> TokenValues { get; }
+    public List<TokenType> TokenTypes { get; }
+
+    public TokenizeResult()
+    {
+        TokenValues = new List<string>();
+        TokenTypes = new List<TokenType>();
+    }
 
     public void Add(string value, TokenType type)
     {
