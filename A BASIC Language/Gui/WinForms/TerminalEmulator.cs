@@ -5,13 +5,14 @@ namespace A_BASIC_Language.Gui.WinForms;
 
 public partial class TerminalEmulator : Form
 {
+    private bool? _isActive;
     private bool FullScreen { get; set; }
     private Rectangle OldPosition { get; set; }
     private FormWindowState OldWindowState { get; set; }
     private Brush OutputBrush { get; }
     private Brush InputBrush { get; }
     private Brush InputBackgroundBrush { get; }
-    private int PixelsWidth;
+    private readonly int _pixelsWidth;
     private const int PixelsHeight = 200;
     private const int CharacterWidth = 8;
     private const int CharacterHeight = 8;
@@ -54,7 +55,7 @@ public partial class TerminalEmulator : Form
                 break;
         }
 
-        PixelsWidth = ColumnCount * 8;
+        _pixelsWidth = ColumnCount * 8;
 
         FullScreen = false;
         OldWindowState = FormWindowState.Normal;
@@ -326,26 +327,32 @@ public partial class TerminalEmulator : Form
         if (ClientRectangle.Width < 10 || ClientRectangle.Height < 10)
             return;
 
-        if (ClientRectangle.Width > PixelsWidth && ClientRectangle.Height > PixelsHeight)
+        var active = _isActive ?? true;
+
+        float scaleX, scaleY;
+
+        if (ClientRectangle.Width > _pixelsWidth && ClientRectangle.Height > PixelsHeight)
         {
-            var scaleX = ClientRectangle.Width / (double)PixelsWidth;
-            var scaleY = ClientRectangle.Height / (double)PixelsHeight;
-            e.Graphics.ScaleTransform((float)scaleX, (float)scaleY);
+            scaleX = (float)(ClientRectangle.Width / (double)_pixelsWidth);
+            scaleY = (float)(ClientRectangle.Height / (double)PixelsHeight);
         }
-        else if (ClientRectangle.Width > PixelsWidth)
+        else if (ClientRectangle.Width > _pixelsWidth)
         {
-            var scaleX = ClientRectangle.Width / (double)PixelsWidth;
-            e.Graphics.ScaleTransform((float)scaleX, 1.0f);
+            scaleX = (float)(ClientRectangle.Width / (double)_pixelsWidth);
+            scaleY = 1f;
         }
         else if (ClientRectangle.Height > PixelsHeight)
         {
-            var scaleY = ClientRectangle.Height / (double)PixelsHeight;
-            e.Graphics.ScaleTransform(1.0f, (float)scaleY);
+            scaleX = 1f;
+            scaleY = (float)(ClientRectangle.Height / (double)PixelsHeight);
         }
         else
         {
-            e.Graphics.ScaleTransform(1.0f, 1.0f);
+            scaleX = 1f;
+            scaleY = 1f;
         }
+
+        e.Graphics.ScaleTransform(scaleX, scaleY);
 
         e.Graphics.FillRectangle(Brushes.Black, ClientRectangle);
 
@@ -364,7 +371,7 @@ public partial class TerminalEmulator : Form
                     var isInsideInputZone = IsInsideInputZone(x, y);
                     var b = isInsideInputZone ? InputBrush : OutputBrush;
 
-                    if (CursorBlink && CursorX == x && CursorY == y)
+                    if (active && CursorBlink && CursorX == x && CursorY == y)
                     {
                         e.Graphics.FillRectangle(b, pixelX, pixelY, CharacterWidth, CharacterHeight);
 
@@ -391,7 +398,7 @@ public partial class TerminalEmulator : Form
             {
                 for (var x = 0; x < ColumnCount; x++)
                 {
-                    if (CursorBlink && CursorX == x && CursorY == y)
+                    if (active && CursorBlink && CursorX == x && CursorY == y)
                     {
                         e.Graphics.FillRectangle(OutputBrush, pixelX, pixelY, CharacterWidth, CharacterHeight);
 
@@ -408,6 +415,14 @@ public partial class TerminalEmulator : Form
                 pixelX = 0;
                 pixelY += CharacterHeight;
             }
+        }
+
+        if (!active)
+        {
+            const string inactiveMessage = "This window is not active.";
+            using var blueBrush = new SolidBrush(Color.FromArgb(CursorBlink ? 90 : 170, 0, 0, 200));
+                e.Graphics.FillRectangle(blueBrush, 0, 18, ClientRectangle.Width, Font.Height + 2);
+            e.Graphics.DrawString(inactiveMessage, Font, Brushes.White, 20, 20);
         }
     }
 
@@ -733,5 +748,17 @@ public partial class TerminalEmulator : Form
 
         if (m != null)
             m.Quit();
+    }
+
+    private void TerminalEmulator_Activated(object sender, EventArgs e)
+    {
+        _isActive = true;
+        Invalidate();
+    }
+
+    private void TerminalEmulator_Deactivate(object sender, EventArgs e)
+    {
+        _isActive = false;
+        Invalidate();
     }
 }
