@@ -28,6 +28,7 @@ public partial class TerminalEmulator : Form
     public const int RowCount = 25;
     public int ColumnCount;
     public string LineInputResult { get; private set; }
+    public TerminalState State { get; set; }
 
     static TerminalEmulator()
     {
@@ -421,7 +422,7 @@ public partial class TerminalEmulator : Form
         {
             const string inactiveMessage = "This window is not active.";
             using var blueBrush = new SolidBrush(Color.FromArgb(CursorBlink ? 90 : 170, 0, 0, 200));
-                e.Graphics.FillRectangle(blueBrush, 0, 18, ClientRectangle.Width, Font.Height + 2);
+            e.Graphics.FillRectangle(blueBrush, 0, 18, ClientRectangle.Width, Font.Height + 2);
             e.Graphics.DrawString(inactiveMessage, Font, Brushes.White, 20, 20);
         }
     }
@@ -458,6 +459,8 @@ public partial class TerminalEmulator : Form
             case Keys.Enter:
                 if (LineInputMode)
                     SaveLineInput();
+                else if (State == TerminalState.Empty || State == TerminalState.Ended)
+                    SaveDirectModeInput();
 
                 CursorY++;
 
@@ -709,6 +712,16 @@ public partial class TerminalEmulator : Form
                     result.Append(_characters[x, y] == (char)0 ? " " : _characters[x, y]);
             }
         }
+
+        LineInputResult = result.ToString();
+    }
+
+    private void SaveDirectModeInput()
+    {
+        var result = new StringBuilder();
+
+        for (var x = LineInputX; x < CursorX; x++)
+            result.Append(_characters[x, CursorY] == (char)0 ? " " : _characters[x, CursorY]);
 
         LineInputResult = result.ToString();
     }

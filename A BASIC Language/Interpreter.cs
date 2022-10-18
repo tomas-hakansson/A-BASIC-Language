@@ -381,9 +381,13 @@ public class Interpreter
 
             _terminal.WriteLine();
             _terminal.WriteLine(TheProgramHasEnded);
+
+            if (!string.IsNullOrWhiteSpace(message))
+                _terminal.WriteLine(message);
+
+            _terminal.WriteLine();
+            _terminal.WriteLine("Ready. Type RESTART, SOURCE, LOAD or QUIT.");
             _terminal.End();
         }
-
-        MessageBox.Show(message, TheProgramHasEnded);
     }
 }
