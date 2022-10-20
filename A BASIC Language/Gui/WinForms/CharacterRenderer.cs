@@ -12,7 +12,6 @@ public class CharacterRenderer : IDisposable
     private const int CharacterHeight = 8;
     private Font Font { get; }
 
-
     public CharacterRenderer(char[,] characters, int rowCount, int columnCount)
     {
         _characters = characters;
@@ -107,5 +106,6 @@ public class CharacterRenderer : IDisposable
         OutputBrush.Dispose();
         InputBrush.Dispose();
         InputBackgroundBrush.Dispose();
+        Font.Dispose();
     }
 }

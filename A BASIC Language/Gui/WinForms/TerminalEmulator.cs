@@ -6,6 +6,7 @@ namespace A_BASIC_Language.Gui.WinForms;
 public partial class TerminalEmulator : Form
 {
     private readonly CharacterRenderer _characterRenderer;
+    private readonly OverlayRenderer _overlayRenderer;
     private bool? _isActive;
     private bool FullScreen { get; set; }
     private Rectangle OldPosition { get; set; }
@@ -64,6 +65,7 @@ public partial class TerminalEmulator : Form
         Clear();
 
         _characterRenderer = new CharacterRenderer(_characters, RowCount, ColumnCount);
+        _overlayRenderer = new OverlayRenderer();
     }
 
     public void EndLineInput()
@@ -360,15 +362,7 @@ public partial class TerminalEmulator : Form
 
         e.Graphics.ResetTransform();
         
-        e.Graphics.FillRectangle(Brushes.White, 20, 20, 20, 20);
-
-        if (!active)
-        {
-            const string inactiveMessage = "This window is not active.";
-            using var blueBrush = new SolidBrush(Color.FromArgb(CursorBlink ? 90 : 170, 0, 0, 200));
-            e.Graphics.FillRectangle(blueBrush, 0, 18, ClientRectangle.Width, Font.Height + 2);
-            e.Graphics.DrawString(inactiveMessage, Font, Brushes.White, 20, 20);
-        }
+        _overlayRenderer.Render(e.Graphics, active, CursorBlink, ClientRectangle);
     }
 
     private void TerminalEmulator_Resize(object sender, EventArgs e)
