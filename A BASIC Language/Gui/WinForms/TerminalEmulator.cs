@@ -174,7 +174,6 @@ public partial class TerminalEmulator : Form
 
     private void TerminalEmulator_Shown(object sender, EventArgs e)
     {
-        Font = new Font("Courier New", 6.0f);
         Width = (int)(Screen.PrimaryScreen.WorkingArea.Width / 2.1);
         Height = (int)(Screen.PrimaryScreen.WorkingArea.Height / 1.8);
         CenterToScreen();

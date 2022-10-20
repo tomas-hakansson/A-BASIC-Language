@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace A_BASIC_Language.Gui.WinForms;
+﻿namespace A_BASIC_Language.Gui.WinForms;
 
 public class CharacterRenderer : IDisposable
 {
@@ -23,10 +21,10 @@ public class CharacterRenderer : IDisposable
         InputBackgroundBrush = new SolidBrush(Color.FromArgb(0, 42, 0));
         RowCount = rowCount;
         ColumnCount = columnCount;
-        Font = new Font(FontFamily.GenericSerif, 20);
+        Font = new Font("Courier New", 6.0f);
     }
 
-    public void Render(Graphics g, bool lineInputMode, bool showCursor, bool cursorBlink, int cursorX, int cursorY, int lineInputX, int lintInputY)
+    public void Render(Graphics g, bool lineInputMode, bool showCursor, bool cursorBlink, int cursorX, int cursorY, int lineInputX, int lineInputY)
     {
         var pixelX = 0;
         var pixelY = 0;
@@ -37,7 +35,7 @@ public class CharacterRenderer : IDisposable
             {
                 for (var x = 0; x < ColumnCount; x++)
                 {
-                    var isInsideInputZone = IsInsideInputZone(x, y);
+                    var isInsideInputZone = IsInsideInputZone(x, y, lineInputX, lineInputY, cursorX, cursorY);
                     var b = isInsideInputZone ? InputBrush : OutputBrush;
 
                     if (showCursor && cursorBlink && cursorX == x && cursorY == y)
@@ -87,7 +85,7 @@ public class CharacterRenderer : IDisposable
         }
     }
 
-    private bool IsInsideInputZone(int x, int y, int lineInputX, int lineInputY)
+    private bool IsInsideInputZone(int x, int y, int lineInputX, int lineInputY, int cursorX, int cursorY)
     {
         if (y < lineInputY)
             return false;
