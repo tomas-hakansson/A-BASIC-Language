@@ -65,7 +65,7 @@ public partial class TerminalEmulator : Form
         Clear();
 
         _characterRenderer = new CharacterRenderer(_characters, RowCount, ColumnCount);
-        _overlayRenderer = new OverlayRenderer();
+        _overlayRenderer = new OverlayRenderer(imageList1);
     }
 
     public void EndLineInput()
@@ -163,14 +163,17 @@ public partial class TerminalEmulator : Form
             WriteLine();
         }
         
-        WriteLine("Ready.");
-        
         if (!string.IsNullOrWhiteSpace(program))
         {
+            WriteLine("Ready.");
             WriteLine();
             WriteLine("Loaded program:");
             WriteLine(program);
             WriteSeparator();
+        }
+        else
+        {
+            WriteLine("Ready. Type LOAD or QUIT.");
         }
     }
 
@@ -362,7 +365,7 @@ public partial class TerminalEmulator : Form
 
         e.Graphics.ResetTransform();
         
-        _overlayRenderer.Render(e.Graphics, active, CursorBlink, ClientRectangle);
+        _overlayRenderer.Render(e.Graphics, active, CursorBlink, ClientRectangle, State);
     }
 
     private void TerminalEmulator_Resize(object sender, EventArgs e)

@@ -31,12 +31,22 @@ namespace A_BASIC_Language.Gui.WinForms
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TerminalEmulator));
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.SuspendLayout();
             // 
             // timer1
             // 
             this.timer1.Interval = 500;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // imageList1
+            // 
+            this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "status_icon_empty.png");
+            this.imageList1.Images.SetKeyName(1, "status_icon_running.png");
+            this.imageList1.Images.SetKeyName(2, "status_icon_done.png");
             // 
             // TerminalEmulator
             // 
@@ -62,5 +72,6 @@ namespace A_BASIC_Language.Gui.WinForms
         #endregion
 
         private System.Windows.Forms.Timer timer1;
+        private ImageList imageList1;
     }
 }

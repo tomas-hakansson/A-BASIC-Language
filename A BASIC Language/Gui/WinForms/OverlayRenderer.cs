@@ -2,18 +2,31 @@
 
 public class OverlayRenderer : IDisposable
 {
+    private readonly ImageList _imageList;
     private Font ScaleIndependentFont { get; }
 
-    public OverlayRenderer()
+    public OverlayRenderer(ImageList imageList)
     {
+        _imageList = imageList;
         ScaleIndependentFont = new Font("Arial", 12.0f);
     }
 
-    public void Render(Graphics g, bool active, bool cursorBlink, Rectangle clientRectangle)
+    public void Render(Graphics g, bool active, bool cursorBlink, Rectangle clientRectangle, TerminalState state)
     {
         if (active)
         {
-
+            switch (state)
+            {
+                case TerminalState.Empty:
+                    g.DrawImageUnscaled(_imageList.Images[0], clientRectangle.Width - 18, 2);
+                    break;
+                case TerminalState.Running:
+                    g.DrawImageUnscaled(cursorBlink ? _imageList.Images[1] : _imageList.Images[0], clientRectangle.Width - 18, 2);
+                    break;
+                case TerminalState.Ended:
+                    g.DrawImageUnscaled(cursorBlink ? _imageList.Images[2] : _imageList.Images[0], clientRectangle.Width - 18, 2);
+                    break;
+            }
         }
         else
         {

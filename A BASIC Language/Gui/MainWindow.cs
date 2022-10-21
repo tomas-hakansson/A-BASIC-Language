@@ -22,26 +22,6 @@ public partial class MainWindow : Form
         Terminal = new Terminal();
     }
 
-    private void MainWindow_Shown(object sender, EventArgs e)
-    {
-        Refresh();
-
-        if (string.IsNullOrWhiteSpace(ProgramFilename))
-        {
-            using var x = new LoadProgramDialog();
-
-            if (x.ShowDialog(this) != DialogResult.OK)
-            {
-                btnQuit_Click(this, EventArgs.Empty);
-                return;
-            }
-
-            ProgramFilename = Path.GetFullPath(x.Filename ?? "");
-        }
-
-        Run();
-    }
-
     private void btnLoad_Click(object sender, EventArgs e)
     {
         using var x = new LoadProgramDialog();
@@ -57,6 +37,14 @@ public partial class MainWindow : Form
             ProgramFilename = Path.GetFullPath(x.Filename!);
 
         Run();
+    }
+
+    private void ViewEmptyTerminal()
+    {
+        Interpreter eval = new(SourceCode);
+        Cursor = Cursors.Default;
+        Terminal.Run("A BASIC Language", "");
+        eval.Run(Terminal);
     }
 
     private void Run()
@@ -133,5 +121,19 @@ public partial class MainWindow : Form
     private void MainWindow_FormClosed(object sender, FormClosedEventArgs e)
     {
         Quit();
+    }
+
+    private void MainWindow_Shown(object sender, EventArgs e)
+    {
+        Refresh();
+
+        if (string.IsNullOrWhiteSpace(ProgramFilename))
+        {
+            ViewEmptyTerminal();
+        }
+        else
+        {
+            Run();
+        }
     }
 }

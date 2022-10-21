@@ -7,6 +7,7 @@ namespace A_BASIC_Language;
 
 public class Interpreter
 {
+    private readonly bool _empty;
     const string TheProgramHasEnded = "The program has ended";
     Terminal? _terminal;
     readonly Stage2.ParseResult _parseResult;
@@ -18,6 +19,7 @@ public class Interpreter
 
     public Interpreter(string source)
     {
+        _empty = string.IsNullOrWhiteSpace(source);
         Parser parser = new(source);
         _parseResult = parser.Result;
         _variables = new Dictionary<string, ValueBase?>();
@@ -364,8 +366,10 @@ public class Interpreter
             }
         }
 
-        if (!EndMessageDisplayed)
+        if (!EndMessageDisplayed && !_empty)
             End("Program has run through.");
+        else if (_empty)
+            _terminal.State = TerminalState.Empty;
     }
 
     void End(string message)
