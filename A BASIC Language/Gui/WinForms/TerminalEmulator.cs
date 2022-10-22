@@ -1,17 +1,20 @@
 using System.Text;
 using A_BASIC_Language.Gui.WinForms.PseudoGraphics;
+using A_BASIC_Language.IO;
 
 namespace A_BASIC_Language.Gui.WinForms;
 
 public partial class TerminalEmulator : Form
 {
+    private string SourceCode { get; set; }
+    private delegate void DirectInputHandlerDelegate(string command);
+    private readonly CharacterRenderer _characterRenderer;
+    private readonly OverlayRenderer _overlayRenderer;
+    private bool? _isActive;
     private bool FullScreen { get; set; }
     private Rectangle OldPosition { get; set; }
     private FormWindowState OldWindowState { get; set; }
-    private Brush OutputBrush { get; }
-    private Brush InputBrush { get; }
-    private Brush InputBackgroundBrush { get; }
-    private int PixelsWidth;
+    private readonly int _pixelsWidth;
     private const int PixelsHeight = 200;
     private const int CharacterWidth = 8;
     private const int CharacterHeight = 8;
@@ -22,15 +25,20 @@ public partial class TerminalEmulator : Form
     private bool CursorBlink { get; set; }
     private int LineInputX { get; set; }
     private int LineInputY { get; set; }
+    private Terminal Terminal { get; }
+    public static ProgramRepository ProgramRepository { get; }
+    public string ProgramFilename { get; set; }
     public static Pen VectorGraphicsPen { get; }
     public bool LineInputMode { get; set; }
     public const int RowCount = 25;
     public int ColumnCount;
     public string LineInputResult { get; private set; }
+    public TerminalState State { get; set; }
 
     static TerminalEmulator()
     {
         VectorGraphicsPen = new Pen(Color.FromArgb(100, 100, 0));
+        ProgramRepository = new ProgramRepository();
     }
 
 #pragma warning disable CS8618 // Initializes from method.
@@ -38,6 +46,10 @@ public partial class TerminalEmulator : Form
 #pragma warning restore CS8618
     {
         InitializeComponent();
+
+        SourceCode = "";
+        ProgramFilename = "";
+        Terminal = new Terminal(this);
 
         var columnCountConfigValue = System.Configuration.ConfigurationManager.AppSettings["columnCount"];
 
@@ -54,17 +66,17 @@ public partial class TerminalEmulator : Form
                 break;
         }
 
-        PixelsWidth = ColumnCount * 8;
+        _pixelsWidth = ColumnCount * 8;
 
         FullScreen = false;
         OldWindowState = FormWindowState.Normal;
         OldPosition = new Rectangle(50, 50, 200, 200);
-        OutputBrush = new SolidBrush(Color.FromArgb(0, 255, 0));
-        InputBrush = new SolidBrush(Color.FromArgb(0, 255, 255));
-        InputBackgroundBrush = new SolidBrush(Color.FromArgb(0, 42, 0));
         _characters = new char[ColumnCount, RowCount];
         _graphicalElements = new List<GraphicalElement>();
         Clear();
+
+        _characterRenderer = new CharacterRenderer(_characters, RowCount, ColumnCount);
+        _overlayRenderer = new OverlayRenderer(imageList1);
     }
 
     public void EndLineInput()
@@ -162,20 +174,22 @@ public partial class TerminalEmulator : Form
             WriteLine();
         }
         
-        WriteLine("Ready.");
-        
         if (!string.IsNullOrWhiteSpace(program))
         {
+            WriteLine("Ready.");
             WriteLine();
             WriteLine("Loaded program:");
             WriteLine(program);
             WriteSeparator();
         }
+        else
+        {
+            WriteLine("Ready. Type LOAD or QUIT.");
+        }
     }
 
     private void TerminalEmulator_Shown(object sender, EventArgs e)
     {
-        Font = new Font("Courier New", 6.0f);
         Width = (int)(Screen.PrimaryScreen.WorkingArea.Width / 2.1);
         Height = (int)(Screen.PrimaryScreen.WorkingArea.Height / 1.8);
         CenterToScreen();
@@ -326,106 +340,43 @@ public partial class TerminalEmulator : Form
         if (ClientRectangle.Width < 10 || ClientRectangle.Height < 10)
             return;
 
-        if (ClientRectangle.Width > PixelsWidth && ClientRectangle.Height > PixelsHeight)
+        var active = _isActive ?? true;
+
+        float scaleX, scaleY;
+
+        if (ClientRectangle.Width > _pixelsWidth && ClientRectangle.Height > PixelsHeight)
         {
-            var scaleX = ClientRectangle.Width / (double)PixelsWidth;
-            var scaleY = ClientRectangle.Height / (double)PixelsHeight;
-            e.Graphics.ScaleTransform((float)scaleX, (float)scaleY);
+            scaleX = (float)(ClientRectangle.Width / (double)_pixelsWidth);
+            scaleY = (float)(ClientRectangle.Height / (double)PixelsHeight);
         }
-        else if (ClientRectangle.Width > PixelsWidth)
+        else if (ClientRectangle.Width > _pixelsWidth)
         {
-            var scaleX = ClientRectangle.Width / (double)PixelsWidth;
-            e.Graphics.ScaleTransform((float)scaleX, 1.0f);
+            scaleX = (float)(ClientRectangle.Width / (double)_pixelsWidth);
+            scaleY = 1f;
         }
         else if (ClientRectangle.Height > PixelsHeight)
         {
-            var scaleY = ClientRectangle.Height / (double)PixelsHeight;
-            e.Graphics.ScaleTransform(1.0f, (float)scaleY);
+            scaleX = 1f;
+            scaleY = (float)(ClientRectangle.Height / (double)PixelsHeight);
         }
         else
         {
-            e.Graphics.ScaleTransform(1.0f, 1.0f);
+            scaleX = 1f;
+            scaleY = 1f;
         }
+
+        e.Graphics.ScaleTransform(scaleX, scaleY);
 
         e.Graphics.FillRectangle(Brushes.Black, ClientRectangle);
 
         foreach (var graphicalElement in _graphicalElements)
             graphicalElement.Draw(e.Graphics, CharacterWidth, CharacterHeight, ClientRectangle.Width, ClientRectangle.Height);
 
-        var pixelX = 0;
-        var pixelY = 0;
+        _characterRenderer.Render(e.Graphics, LineInputMode, active, CursorBlink, CursorX, CursorY, LineInputX, LineInputY);
 
-        if (LineInputMode)
-        {
-            for (var y = 0; y < RowCount; y++)
-            {
-                for (var x = 0; x < ColumnCount; x++)
-                {
-                    var isInsideInputZone = IsInsideInputZone(x, y);
-                    var b = isInsideInputZone ? InputBrush : OutputBrush;
-
-                    if (CursorBlink && CursorX == x && CursorY == y)
-                    {
-                        e.Graphics.FillRectangle(b, pixelX, pixelY, CharacterWidth, CharacterHeight);
-
-                        if (_characters[x, y] > 0)
-                            e.Graphics.DrawString(_characters[x, y].ToString(), Font, Brushes.Black, pixelX, pixelY);
-                    }
-                    else
-                    {
-                        if (isInsideInputZone)
-                            e.Graphics.FillRectangle(InputBackgroundBrush, pixelX, pixelY, CharacterWidth, CharacterHeight);
-
-                        if (_characters[x, y] > 0)
-                            e.Graphics.DrawString(_characters[x, y].ToString(), Font, b, pixelX, pixelY);
-                    }
-                    pixelX += CharacterWidth;
-                }
-                pixelX = 0;
-                pixelY += CharacterHeight;
-            }
-        }
-        else
-        {
-            for (var y = 0; y < RowCount; y++)
-            {
-                for (var x = 0; x < ColumnCount; x++)
-                {
-                    if (CursorBlink && CursorX == x && CursorY == y)
-                    {
-                        e.Graphics.FillRectangle(OutputBrush, pixelX, pixelY, CharacterWidth, CharacterHeight);
-
-                        if (_characters[x, y] > 0)
-                            e.Graphics.DrawString(_characters[x, y].ToString(), Font, Brushes.Black, pixelX, pixelY);
-                    }
-                    else
-                    {
-                        if (_characters[x, y] > 0)
-                            e.Graphics.DrawString(_characters[x, y].ToString(), Font, OutputBrush, pixelX, pixelY);
-                    }
-                    pixelX += CharacterWidth;
-                }
-                pixelX = 0;
-                pixelY += CharacterHeight;
-            }
-        }
-    }
-
-    private bool IsInsideInputZone(int x, int y)
-    {
-        if (y < LineInputY)
-            return false;
-
-        if (y == LineInputY && x < LineInputX)
-            return false;
-
-        if (y > CursorY)
-            return false;
-
-        if (y == CursorY && x >= CursorX)
-            return false;
-
-        return true;
+        e.Graphics.ResetTransform();
+        
+        _overlayRenderer.Render(e.Graphics, active, CursorBlink, ClientRectangle, State);
     }
 
     private void TerminalEmulator_Resize(object sender, EventArgs e)
@@ -443,6 +394,8 @@ public partial class TerminalEmulator : Form
             case Keys.Enter:
                 if (LineInputMode)
                     SaveLineInput();
+                else if (State == TerminalState.Empty || State == TerminalState.Ended)
+                    SaveDirectModeInput();
 
                 CursorY++;
 
@@ -698,6 +651,111 @@ public partial class TerminalEmulator : Form
         LineInputResult = result.ToString();
     }
 
+    private void SaveDirectModeInput()
+    {
+        var result = new StringBuilder();
+
+        for (var x = LineInputX; x < CursorX; x++)
+            result.Append(_characters[x, CursorY] == (char)0 ? " " : _characters[x, CursorY]);
+
+        var directInput = result.ToString();
+
+        var handler = new DirectInputHandlerDelegate(DirectInputHandler);
+
+        Task.Run(() => handler(directInput));
+    }
+
+    private void DirectInputHandler(string command)
+    {
+        Thread.Sleep(50);
+        Invoke(CarryOutSimpleImmediateCommand, command);
+    }
+
+    private void CarryOutSimpleImmediateCommand(string command)
+    {
+        switch (command.Trim().ToUpper())
+        {
+            case "RESTART":
+                if (State == TerminalState.Ended)
+                {
+                    State = TerminalState.Ended;
+                    Application.DoEvents();
+                    Run(false);
+                }
+                else
+                {
+                    WriteLine("Invalid state for restart.");
+                }
+                break;
+            case "SOURCE":
+                if (State == TerminalState.Ended)
+                {
+                    using var x = new SourceDialog();
+                    x.Filename = ProgramFilename;
+                    x.SourceCode = SourceCode;
+                    x.ShowDialog(this);
+                }
+                else
+                {
+                    WriteLine("Invalid state for source.");
+                }
+                break;
+            case "LOAD":
+            {
+                using var x = new LoadProgramDialog();
+
+                if (x.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                var f = x.Filename ?? "";
+
+                if (f.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase) || f.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase))
+                    ProgramFilename = f;
+                else
+                    ProgramFilename = Path.GetFullPath(x.Filename!);
+
+                Run(false);
+            }
+                break;
+            case "QUIT":
+                State = TerminalState.Ended;
+                Application.DoEvents();
+                Close();
+                break;
+            default:
+                WriteLine("Invalid simple direct mode input.");
+                break;
+        }
+    }
+
+    public void Run(bool clear)
+    {
+        Cursor = Cursors.WaitCursor;
+
+        var source = ProgramRepository.GetProgram(this, ProgramFilename, out var nameOnly);
+
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            Terminal.WriteLine("Load failed.");
+            return;
+        }
+
+        SourceCode = source;
+
+        Interpreter eval = new(SourceCode);
+        Cursor = Cursors.Default;
+        Terminal.Run(nameOnly, ProgramFilename, clear);
+        eval.Run(Terminal);
+    }
+
+    public void ShowEmptyTerminal()
+    {
+        Console.WriteLine(State);
+        Interpreter eval = new(SourceCode);
+        Terminal.Run("A BASIC Language", "", true);
+        eval.Run(Terminal);
+    }
+
     private void TerminalEmulator_KeyPress(object sender, KeyPressEventArgs e)
     {
         if (!"abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:,;-*+-/!#$€&()=".Contains(e.KeyChar.ToString()))
@@ -725,13 +783,15 @@ public partial class TerminalEmulator : Form
         Invalidate();
     }
 
-    private void TerminalEmulator_FormClosed(object sender, FormClosedEventArgs e)
+    private void TerminalEmulator_Activated(object sender, EventArgs e)
     {
-        var forms = Application.OpenForms.Cast<Form>().ToList();
-        
-        MainWindow? m = forms.OfType<MainWindow>().FirstOrDefault();
+        _isActive = true;
+        Invalidate();
+    }
 
-        if (m != null)
-            m.Quit();
+    private void TerminalEmulator_Deactivate(object sender, EventArgs e)
+    {
+        _isActive = false;
+        Invalidate();
     }
 }

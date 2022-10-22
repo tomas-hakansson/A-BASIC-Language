@@ -1,16 +1,13 @@
-﻿using A_BASIC_Language.Gui;
+﻿using A_BASIC_Language.Gui.WinForms;
 
-namespace A_BASIC_Language;
+Application.SetCompatibleTextRenderingDefault(false);
+Application.EnableVisualStyles();
+var main = new TerminalEmulator();
+main.ProgramFilename = args.FirstOrDefault() ?? "";
 
-public static class Program
-{
-    [STAThread]
-    private static void Main(string[] args)
-    {
-        Application.EnableVisualStyles();
-        Application.SetCompatibleTextRenderingDefault(false);
-        var main = new MainWindow();
-        main.ProgramFilename = args.FirstOrDefault() ?? "";
-        Application.Run(main);
-    }
-}
+if (string.IsNullOrWhiteSpace(main.ProgramFilename))
+    main.ShowEmptyTerminal();
+else
+    main.Run(true); 
+
+Application.Run(main);

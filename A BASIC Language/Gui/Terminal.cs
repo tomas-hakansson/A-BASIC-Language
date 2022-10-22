@@ -5,27 +5,36 @@ namespace A_BASIC_Language.Gui;
 public class Terminal : IDisposable
 {
     private TerminalEmulator Emu { get; }
-    public TerminalState State { get; set; }
-
-    public Terminal()
+    
+    public Terminal(TerminalEmulator emu)
     {
-        Emu = new TerminalEmulator();
+        Emu = emu;
     }
 
-    public void Run(string title, string programName)
+    public void Run(string title, string programName, bool clear)
     {
         Title = title;
-        Emu.Show();
         Emu.BringToFront();
-        Emu.Clear();
-        Emu.ShowWelcome(programName);
-        State = TerminalState.Running;
+
+        if (clear)
+        {
+            Emu.Clear();
+            Emu.ShowWelcome(programName);
+        }
+
+        Emu.State = TerminalState.Running;
+    }
+
+    public TerminalState State
+    {
+        get => Emu.State;
+        set => Emu.State = value;
     }
 
     public void End()
     {
         Emu.EndLineInput();
-        State = TerminalState.Ended;
+        Emu.State = TerminalState.Ended;
     }
 
     public bool FullScreen
@@ -69,7 +78,7 @@ public class Terminal : IDisposable
         {
             Application.DoEvents();
 
-            if (State != TerminalState.Running)
+            if (Emu.State != TerminalState.Running)
                 return "";
 
         } while (Emu.LineInputMode);

@@ -18,7 +18,7 @@ class Tokenizer
 
     private void RegexTokenizer()
     {
-        /* The algorirthm here is:
+        /* The algorithm here is:
          * Handle each case in turn.
          * Remove the matches so that they don't interfere in the later cases.
          *      For instance: If we leave strings around then if they contain
@@ -79,20 +79,20 @@ class Tokenizer
         {
             foreach (Group g in ms.Groups)
             {
-                if (ms.Success)
+                if (!ms.Success)
+                    continue;
+
+                if (g.Name == "string")
                 {
-                    if (g.Name == "string")
-                    {
-                        tokenTypes.Add(TokenType.String);
-                        tokenIndices.Add(g.Index);
-                        tokenLengths.Add(g.Length);
-                        tokenValues.Add(g.Value);
-                    }
-                    else
-                    {
-                        string placeholders = new('¤', g.Value.Length);
-                        _source = _source.Remove(g.Index, g.Length).Insert(g.Index, placeholders);
-                    }
+                    tokenTypes.Add(TokenType.String);
+                    tokenIndices.Add(g.Index);
+                    tokenLengths.Add(g.Length);
+                    tokenValues.Add(g.Value);
+                }
+                else
+                {
+                    string placeholders = new('¤', g.Value.Length);
+                    _source = _source.Remove(g.Index, g.Length).Insert(g.Index, placeholders);
                 }
             }
         }
@@ -317,16 +317,20 @@ class Tokenizer
             aWord += word + "|";
         }
         aWord = aWord.Remove(aWord.Length - 1);
+
         var matches = Regex.Matches(_source, aWord,
             RegexOptions.CultureInvariant |
             RegexOptions.IgnoreCase);
+        
         List<int> indices = new();
         List<int> lengths = new();//not sure I need this.
         List<string> values = new();
+        
         foreach (Match m in matches)
         {
             if (!m.Success || m.Captures.Count != 1)
                 throw new Exception("this is a tokenizer bug, sorry.");
+
             indices.Add(m.Index);
             lengths.Add(m.Length);
             values.Add(m.Value);
@@ -337,6 +341,7 @@ class Tokenizer
             string placeholders = new('¤', m.Value.Length);
             _source = _source.Remove(m.Index, m.Length).Insert(m.Index, placeholders);
         }
+
         return (indices, lengths, values);
     }
 }

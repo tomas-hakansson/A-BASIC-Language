@@ -4,6 +4,24 @@ namespace A_BASIC_Language.ValueTypes;
 
 public class StringValue : ValueBase
 {
+    protected bool Equals(StringValue other)
+    {
+        return Value == other.Value;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((StringValue)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return Value.GetHashCode();
+    }
+
     public string Value { get; set; }
 
     public StringValue(string value)
@@ -122,40 +140,4 @@ public class StringValue : ValueBase
 
     public static bool operator !=(StringValue? left, FloatValue? right) =>
         !(left == right);
-
-    public static bool operator >(StringValue? left, StringValue? right) =>
-        false; // Cannot compare.
-
-    public static bool operator <(StringValue? left, StringValue? right) =>
-        false; // Cannot compare.
-
-    public static bool operator >(StringValue? left, IntValue? right) =>
-        false; // Cannot compare.
-
-    public static bool operator <(StringValue? left, IntValue? right) =>
-        false; // Cannot compare.
-
-    public static bool operator >(StringValue? left, FloatValue? right) =>
-        false; // Cannot compare.
-
-    public static bool operator <(StringValue? left, FloatValue? right) =>
-        false; // Cannot compare.
-
-    public static bool operator >=(StringValue? left, StringValue? right) =>
-    false; // Cannot compare.
-
-    public static bool operator <=(StringValue? left, StringValue? right) =>
-        false; // Cannot compare.
-
-    public static bool operator >=(StringValue? left, IntValue? right) =>
-        false; // Cannot compare.
-
-    public static bool operator <=(StringValue? left, IntValue? right) =>
-        false; // Cannot compare.
-
-    public static bool operator >=(StringValue? left, FloatValue? right) =>
-        false; // Cannot compare.
-
-    public static bool operator <=(StringValue? left, FloatValue? right) =>
-        false; // Cannot compare.
 }
