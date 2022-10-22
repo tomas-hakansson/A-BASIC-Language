@@ -1,4 +1,6 @@
-﻿namespace A_BASIC_Language.Gui;
+﻿using A_BASIC_Language.Gui.WinForms;
+
+namespace A_BASIC_Language.Gui;
 
 public partial class LoadProgramDialog : Form
 {
@@ -64,7 +66,7 @@ public partial class LoadProgramDialog : Form
 
         var n = (string)listView1.SelectedItem.Tag;
 
-        var source = MainWindow.ProgramRepository.GetProgram(this, n, out _);
+        var source = TerminalEmulator.ProgramRepository.GetProgram(this, n, out _);
 
         using var x = new SourceDialog();
         x.Filename = listView1.SelectedItems[0].Text;

@@ -1,10 +1,12 @@
 using System.Text;
 using A_BASIC_Language.Gui.WinForms.PseudoGraphics;
+using A_BASIC_Language.IO;
 
 namespace A_BASIC_Language.Gui.WinForms;
 
 public partial class TerminalEmulator : Form
 {
+    private string SourceCode { get; set; }
     private delegate void DirectInputHandlerDelegate(string command);
     private readonly CharacterRenderer _characterRenderer;
     private readonly OverlayRenderer _overlayRenderer;
@@ -23,6 +25,9 @@ public partial class TerminalEmulator : Form
     private bool CursorBlink { get; set; }
     private int LineInputX { get; set; }
     private int LineInputY { get; set; }
+    private Terminal Terminal { get; }
+    public static ProgramRepository ProgramRepository { get; }
+    public string ProgramFilename { get; set; }
     public static Pen VectorGraphicsPen { get; }
     public bool LineInputMode { get; set; }
     public const int RowCount = 25;
@@ -33,6 +38,7 @@ public partial class TerminalEmulator : Form
     static TerminalEmulator()
     {
         VectorGraphicsPen = new Pen(Color.FromArgb(100, 100, 0));
+        ProgramRepository = new ProgramRepository();
     }
 
 #pragma warning disable CS8618 // Initializes from method.
@@ -40,6 +46,10 @@ public partial class TerminalEmulator : Form
 #pragma warning restore CS8618
     {
         InitializeComponent();
+
+        SourceCode = "";
+        ProgramFilename = "";
+        Terminal = new Terminal(this);
 
         var columnCountConfigValue = System.Configuration.ConfigurationManager.AppSettings["columnCount"];
 
@@ -668,7 +678,9 @@ public partial class TerminalEmulator : Form
             case "RESTART":
                 if (State == TerminalState.Ended)
                 {
-                    // TODO: Restart
+                    State = TerminalState.Ended;
+                    Application.DoEvents();
+                    Run(false);
                 }
                 else
                 {
@@ -678,7 +690,10 @@ public partial class TerminalEmulator : Form
             case "SOURCE":
                 if (State == TerminalState.Ended)
                 {
-                    // TODO: View source
+                    using var x = new SourceDialog();
+                    x.Filename = ProgramFilename;
+                    x.SourceCode = SourceCode;
+                    x.ShowDialog(this);
                 }
                 else
                 {
@@ -686,14 +701,59 @@ public partial class TerminalEmulator : Form
                 }
                 break;
             case "LOAD":
-                // TODO: Load
+            {
+                using var x = new LoadProgramDialog();
+
+                if (x.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                var f = x.Filename ?? "";
+
+                if (f.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase) || f.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase))
+                    ProgramFilename = f;
+                else
+                    ProgramFilename = Path.GetFullPath(x.Filename!);
+
+                Run(false);
+            }
+                break;
             case "QUIT":
+                State = TerminalState.Ended;
+                Application.DoEvents();
                 Close();
                 break;
             default:
                 WriteLine("Invalid simple direct mode input.");
                 break;
         }
+    }
+
+    public void Run(bool clear)
+    {
+        Cursor = Cursors.WaitCursor;
+
+        var source = ProgramRepository.GetProgram(this, ProgramFilename, out var nameOnly);
+
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            Terminal.WriteLine("Load failed.");
+            return;
+        }
+
+        SourceCode = source;
+
+        Interpreter eval = new(SourceCode);
+        Cursor = Cursors.Default;
+        Terminal.Run(nameOnly, ProgramFilename, clear);
+        eval.Run(Terminal);
+    }
+
+    public void ShowEmptyTerminal()
+    {
+        Console.WriteLine(State);
+        Interpreter eval = new(SourceCode);
+        Terminal.Run("A BASIC Language", "", true);
+        eval.Run(Terminal);
     }
 
     private void TerminalEmulator_KeyPress(object sender, KeyPressEventArgs e)
@@ -721,16 +781,6 @@ public partial class TerminalEmulator : Form
         CursorBlink = true;
         timer1.Enabled = true;
         Invalidate();
-    }
-
-    private void TerminalEmulator_FormClosed(object sender, FormClosedEventArgs e)
-    {
-        var forms = Application.OpenForms.Cast<Form>().ToList();
-        
-        MainWindow? m = forms.OfType<MainWindow>().FirstOrDefault();
-
-        if (m != null)
-            m.Quit();
     }
 
     private void TerminalEmulator_Activated(object sender, EventArgs e)

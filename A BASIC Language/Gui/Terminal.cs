@@ -6,18 +6,22 @@ public class Terminal : IDisposable
 {
     private TerminalEmulator Emu { get; }
     
-    public Terminal()
+    public Terminal(TerminalEmulator emu)
     {
-        Emu = new TerminalEmulator();
+        Emu = emu;
     }
 
-    public void Run(string title, string programName)
+    public void Run(string title, string programName, bool clear)
     {
         Title = title;
-        Emu.Show();
         Emu.BringToFront();
-        Emu.Clear();
-        Emu.ShowWelcome(programName);
+
+        if (clear)
+        {
+            Emu.Clear();
+            Emu.ShowWelcome(programName);
+        }
+
         Emu.State = TerminalState.Running;
     }
 
