@@ -185,7 +185,7 @@ class Parser
             }
             Generate(new ABL_Number(dimensionCount));
             MustMatch(TokenType.ClosingParenthesis);
-            Generate(new ABL_Procedure("#ARRAY"), new ABL_Assignment(name + typeSpecifier));
+            Generate(new ABL_Procedure("#CREATE-ARRAY"), new ABL_Assignment(name + typeSpecifier));
         }
 
         void Value()
@@ -612,7 +612,6 @@ class Parser
                 return;
         }
     }
-
 
     void Generate(params ABL_EvalValue[] values)
     {

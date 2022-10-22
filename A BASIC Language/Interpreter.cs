@@ -11,18 +11,22 @@ public class Interpreter
     Terminal? _terminal;
     readonly Stage2.ParseResult _parseResult;
     readonly Dictionary<string, ValueBase?> _variables;//Ponder: do the value need to be nullable?
+    readonly Dictionary<string, Dimension> _DimVariables;
     readonly Stack<ValueBase> _data;
     bool EndMessageDisplayed { get; set; }
 
     readonly Random _random;//Note: For the RND function.
+    int _currentLineNumber;
 
     public Interpreter(string source)
     {
         Parser parser = new(source);
         _parseResult = parser.Result;
         _variables = new Dictionary<string, ValueBase?>();
+        _DimVariables = new Dictionary<string, Dimension>();
         _data = new Stack<ValueBase>();
         _random = new Random();
+        _currentLineNumber = 0;
     }
 
     public void Run(Terminal terminal)
@@ -53,8 +57,6 @@ public class Interpreter
 
         //todo: Debug.WriteLine($"Eval {_index}: {line}");
 
-        var lineNumber = 0;
-
         for (int i = 0; i < _parseResult.EvalValues.Count; i++)
         {
             if (endProgram)
@@ -65,7 +67,7 @@ public class Interpreter
             switch (_parseResult.EvalValues[i])
             {
                 case ABL_Label lbl:
-                    lineNumber = lbl.Value;
+                    _currentLineNumber = lbl.Value;
                     //Note: NOP.
                     break;
                 case ABL_Number n:
@@ -103,7 +105,40 @@ public class Interpreter
                             _variables[symbol] = value;
                         }
                         else
-                            Debug.Fail("The stack is empty");
+                            End("The stack is empty");
+                    }
+                    break;
+                // ABL_DIM_Variable// I'm thinking this should be merged with ABL_Variable since "DIM X" creates an ordinary variable.
+                case ABL_DIM_Assignment da:
+                    {//Note: E.g. 10 dimvariable(1, 2) = 42.
+                        //Note: We will for now require a DIM variable to be predefined before accessing it in any way. | 2022-10-16 - Tomas Håkansson.
+                        if (_data.Count > 0)
+                        {
+                            var value = _data.Pop();
+                            var symbol = da.Symbol;
+
+                            if (!value.FitsInVariable(symbol))
+                                End("Type mismatch."); // TODO: Better error message and also line number.
+
+                            var indexCount = (int)_data.Pop().GetValueAsType<IntValue>();
+                            List<int> index = new();
+                            for (int inner = 0; inner < indexCount; inner++)
+                            {
+                                var indexDigit = (int)_data.Pop().GetValueAsType<IntValue>();
+                                index.Add(indexDigit);
+                            }
+
+                            if (_DimVariables.ContainsKey(symbol))
+                            {
+                                var dim = _DimVariables[symbol];
+                                dim.Add(value, index);
+                                _DimVariables[symbol] = dim;
+                            }
+                            else
+                                End("Undefined DIM variable");
+                        }
+                        else
+                            End("The stack is empty");
                     }
                     break;
                 case ABL_Procedure p:
@@ -140,10 +175,10 @@ public class Interpreter
                             }
                             break;
                         case "+":
-                            addExecutor.Run(lineNumber);
+                            addExecutor.Run(_currentLineNumber);
                             break;
                         case "-":
-                            subtractExecutor.Run(lineNumber);
+                            subtractExecutor.Run(_currentLineNumber);
                             break;
                         case ">":
                             {
@@ -384,6 +419,6 @@ public class Interpreter
             _terminal.End();
         }
 
-        MessageBox.Show(message, TheProgramHasEnded);
+        MessageBox.Show($"{message} At line: {_currentLineNumber}", TheProgramHasEnded);
     }
 }
