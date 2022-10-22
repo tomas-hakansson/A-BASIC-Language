@@ -5,6 +5,7 @@ namespace A_BASIC_Language.Gui.WinForms;
 
 public partial class TerminalEmulator : Form
 {
+    private delegate void DirectInputHandlerDelegate(string command);
     private readonly CharacterRenderer _characterRenderer;
     private readonly OverlayRenderer _overlayRenderer;
     private bool? _isActive;
@@ -647,7 +648,52 @@ public partial class TerminalEmulator : Form
         for (var x = LineInputX; x < CursorX; x++)
             result.Append(_characters[x, CursorY] == (char)0 ? " " : _characters[x, CursorY]);
 
-        LineInputResult = result.ToString();
+        var directInput = result.ToString();
+
+        var handler = new DirectInputHandlerDelegate(DirectInputHandler);
+
+        Task.Run(() => handler(directInput));
+    }
+
+    private void DirectInputHandler(string command)
+    {
+        Thread.Sleep(50);
+        Invoke(CarryOutSimpleImmediateCommand, command);
+    }
+
+    private void CarryOutSimpleImmediateCommand(string command)
+    {
+        switch (command.Trim().ToUpper())
+        {
+            case "RESTART":
+                if (State == TerminalState.Ended)
+                {
+                    // TODO: Restart
+                }
+                else
+                {
+                    WriteLine("Invalid state for restart.");
+                }
+                break;
+            case "SOURCE":
+                if (State == TerminalState.Ended)
+                {
+                    // TODO: View source
+                }
+                else
+                {
+                    WriteLine("Invalid state for source.");
+                }
+                break;
+            case "LOAD":
+                // TODO: Load
+            case "QUIT":
+                Close();
+                break;
+            default:
+                WriteLine("Invalid simple direct mode input.");
+                break;
+        }
     }
 
     private void TerminalEmulator_KeyPress(object sender, KeyPressEventArgs e)
