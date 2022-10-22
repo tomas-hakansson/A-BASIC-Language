@@ -12,13 +12,20 @@ namespace A_BASIC_Language
         readonly ValueBase[] _atoms;
         readonly int[] _multipliers;
 
-        public Dimension(List<int> maxIndices)
+        /// <summary>
+        /// Test only.
+        /// </summary>
+        /// <param name="maxIndices"></param>
+        public Dimension(List<int> maxIndices) : this(maxIndices, new IntValue(0)) { }
+
+        public Dimension(List<int> maxIndices, ValueBase defaultValue)
         {
             //ToDo: Validate input.
             //Ponder: Maybe have an optimisation that skips all the machinery for one-dimensional arrays?
             //Hack: I first wrote the code under the assumption that the constructor would be given the shape as argument.
             var shape = maxIndices.Select(x => x + 1).ToList();
             _atoms = new ValueBase[shape.Aggregate((x, y) => x * y)];
+            Array.Fill(_atoms, defaultValue);
             IndexCount = shape.Count;
             _multipliers = new int[IndexCount];
             _multipliers[IndexCount - 1] = 1;
