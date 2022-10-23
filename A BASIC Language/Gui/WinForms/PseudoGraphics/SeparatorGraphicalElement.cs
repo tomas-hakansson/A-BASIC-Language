@@ -4,7 +4,7 @@ public class SeparatorGraphicalElement : GraphicalElement
 {
     public int CharacterY { get; set; }
 
-    public SeparatorGraphicalElement(int characterY)
+    public SeparatorGraphicalElement(int rowCount, int characterY) : base(rowCount)
     {
         CharacterY = characterY;
     }
@@ -13,7 +13,7 @@ public class SeparatorGraphicalElement : GraphicalElement
         CharacterY--;
 
     public override bool Visible =>
-        CharacterY >= 0 && CharacterY < TerminalEmulator.RowCount;
+        CharacterY >= 0 && CharacterY < RowCount;
 
     public override void Draw(Graphics g, int characterWidth, int characterHeight, int totalPixelWidth, int totalPixelHeight)
     {

@@ -2,24 +2,20 @@
 
 public class CharacterRenderer : IDisposable
 {
-    private readonly char[,] _characters;
+    private readonly CharacterMatrix _characters;
     private Brush OutputBrush { get; }
     private Brush InputBrush { get; }
     private Brush InputBackgroundBrush { get; }
-    private int RowCount { get; }
-    private int ColumnCount { get; }
     private const int CharacterWidth = 8;
     private const int CharacterHeight = 8;
     private Font Font { get; }
 
-    public CharacterRenderer(char[,] characters, int rowCount, int columnCount)
+    public CharacterRenderer(CharacterMatrix characters)
     {
         _characters = characters;
         OutputBrush = new SolidBrush(Color.FromArgb(0, 255, 0));
         InputBrush = new SolidBrush(Color.FromArgb(0, 255, 255));
         InputBackgroundBrush = new SolidBrush(Color.FromArgb(0, 42, 0));
-        RowCount = rowCount;
-        ColumnCount = columnCount;
         Font = new Font("Courier New", 6.0f);
     }
 
@@ -30,9 +26,9 @@ public class CharacterRenderer : IDisposable
 
         if (lineInputMode)
         {
-            for (var y = 0; y < RowCount; y++)
+            for (var y = 0; y < _characters.RowCount; y++)
             {
-                for (var x = 0; x < ColumnCount; x++)
+                for (var x = 0; x < _characters.ColumnCount; x++)
                 {
                     var isInsideInputZone = IsInsideInputZone(x, y, lineInputX, lineInputY, cursorX, cursorY);
                     var b = isInsideInputZone ? InputBrush : OutputBrush;
@@ -41,16 +37,16 @@ public class CharacterRenderer : IDisposable
                     {
                         g.FillRectangle(b, pixelX, pixelY, CharacterWidth, CharacterHeight);
 
-                        if (_characters[x, y] > 0)
-                            g.DrawString(_characters[x, y].ToString(), Font, Brushes.Black, pixelX, pixelY);
+                        if (_characters.Characters[x, y] > 0)
+                            g.DrawString(_characters.Characters[x, y].ToString(), Font, Brushes.Black, pixelX, pixelY);
                     }
                     else
                     {
                         if (isInsideInputZone)
                             g.FillRectangle(InputBackgroundBrush, pixelX, pixelY, CharacterWidth, CharacterHeight);
 
-                        if (_characters[x, y] > 0)
-                            g.DrawString(_characters[x, y].ToString(), Font, b, pixelX, pixelY);
+                        if (_characters.Characters[x, y] > 0)
+                            g.DrawString(_characters.Characters[x, y].ToString(), Font, b, pixelX, pixelY);
                     }
                     pixelX += CharacterWidth;
                 }
@@ -60,21 +56,21 @@ public class CharacterRenderer : IDisposable
         }
         else
         {
-            for (var y = 0; y < RowCount; y++)
+            for (var y = 0; y < _characters.RowCount; y++)
             {
-                for (var x = 0; x < ColumnCount; x++)
+                for (var x = 0; x < _characters.ColumnCount; x++)
                 {
                     if (showCursor && cursorBlink && cursorX == x && cursorY == y)
                     {
                         g.FillRectangle(OutputBrush, pixelX, pixelY, CharacterWidth, CharacterHeight);
 
-                        if (_characters[x, y] > 0)
-                            g.DrawString(_characters[x, y].ToString(), Font, Brushes.Black, pixelX, pixelY);
+                        if (_characters.Characters[x, y] > 0)
+                            g.DrawString(_characters.Characters[x, y].ToString(), Font, Brushes.Black, pixelX, pixelY);
                     }
                     else
                     {
-                        if (_characters[x, y] > 0)
-                            g.DrawString(_characters[x, y].ToString(), Font, OutputBrush, pixelX, pixelY);
+                        if (_characters.Characters[x, y] > 0)
+                            g.DrawString(_characters.Characters[x, y].ToString(), Font, OutputBrush, pixelX, pixelY);
                     }
                     pixelX += CharacterWidth;
                 }

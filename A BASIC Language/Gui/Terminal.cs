@@ -5,10 +5,12 @@ namespace A_BASIC_Language.Gui;
 public class Terminal : IDisposable
 {
     private TerminalEmulator Emu { get; }
-    
-    public Terminal(TerminalEmulator emu)
+    private readonly TerminalEmulatorStateStructure _ts;
+
+    public Terminal(TerminalEmulator emu, TerminalEmulatorStateStructure ts)
     {
         Emu = emu;
+        _ts = ts;
     }
 
     public void Run(string title, string programName, bool clear)
@@ -22,19 +24,19 @@ public class Terminal : IDisposable
             Emu.ShowWelcome(programName);
         }
 
-        Emu.State = TerminalState.Running;
+        _ts.State = TerminalState.Running;
     }
 
     public TerminalState State
     {
-        get => Emu.State;
-        set => Emu.State = value;
+        get => _ts.State;
+        set => _ts.State = value;
     }
 
     public void End()
     {
         Emu.EndLineInput();
-        Emu.State = TerminalState.Ended;
+        _ts.State = TerminalState.Ended;
     }
 
     public bool FullScreen
@@ -78,10 +80,10 @@ public class Terminal : IDisposable
         {
             Application.DoEvents();
 
-            if (Emu.State != TerminalState.Running)
+            if (_ts.State != TerminalState.Running)
                 return "";
 
-        } while (Emu.LineInputMode);
+        } while (_ts.LineInputMode);
 
         return Emu.LineInputResult;
     }
