@@ -280,16 +280,29 @@ public class Parser_Tests
     public void DIM_OneVariable_OneDimension()
     {
         var source = "10 dim a(4)";
-        Assert.AreEqual("L(10) N(4) N(1) P(#ARRAY) =(A)", Parse(source));
+        Assert.AreEqual("L(10) N(4) N(1) P(#CREATE-ARRAY) =(A)", Parse(source));
     }
 
     [TestMethod]
     public void DIM_TwoVariables_TwoDimensions_SomeVariables_WithTypeSpecifiers()
     {
         var source = "10 dim x$(1,4),y(a,b%, 3)";
-        string actual = Parse(source);
-        Assert.AreEqual("L(10) N(1) N(4) N(2) P(#ARRAY) =(X$) V(A) V(B%) N(3) N(3) P(#ARRAY) =(Y)", actual);
+        Assert.AreEqual("L(10) N(1) N(4) N(2) P(#CREATE-ARRAY) =(X$) V(A) V(B%) N(3) N(3) P(#CREATE-ARRAY) =(Y)", Parse(source));
     }
+
+    //[TestMethod]
+    //public void DIM_Accessing()
+    //{
+    //    var source = "10 x = a(4)";
+    //    Assert.AreEqual("L(10) N(4) N(1) P(#READ-ARRAY) =(X)", Parse(source));
+    //}
+
+    [TestMethod]
+    //public void DEF_something()//ToDo: def fn
+    //{
+    //    var source = "10 def fn f(x) = 2 * x";
+    //    Assert.AreEqual("L(10) FN(f, x) N(2) V(X) P(*) P(RETURN)", Parse(source));
+    //}
 
     private static string Parse(string source) => new Parser(source).Result.ToString(PrintThe.EvalValues);
 }
