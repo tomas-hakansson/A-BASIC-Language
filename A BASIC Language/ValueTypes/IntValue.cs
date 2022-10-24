@@ -108,7 +108,7 @@ public class IntValue : ValueBase
         if (left is null || right is null)
             return false;
 
-        return left.Value > right.Value;
+        return left.Value < right.Value;
     }
 
     public static bool operator >(IntValue? left, FloatValue? right)
@@ -166,7 +166,7 @@ public class IntValue : ValueBase
         if (left is null || right is null)
             return false;
 
-        return left.Value >= right.Value;
+        return left.Value <= right.Value;
     }
 
     public static bool operator >=(IntValue? left, FloatValue? right)
