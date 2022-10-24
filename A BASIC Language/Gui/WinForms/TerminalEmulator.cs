@@ -6,10 +6,12 @@ namespace A_BASIC_Language.Gui.WinForms;
 
 public partial class TerminalEmulator : Form
 {
+    private readonly TerminalEmulatorStateStructure _ts;
     private string SourceCode { get; set; }
     private delegate void DirectInputHandlerDelegate(string command);
     private readonly CharacterRenderer _characterRenderer;
     private readonly OverlayRenderer _overlayRenderer;
+    private readonly KeyboardController _keyboardController;
     private bool? _isActive;
     private bool FullScreen { get; set; }
     private Rectangle OldPosition { get; set; }
@@ -18,22 +20,14 @@ public partial class TerminalEmulator : Form
     private const int PixelsHeight = 200;
     private const int CharacterWidth = 8;
     private const int CharacterHeight = 8;
-    private readonly char[,] _characters;
     private readonly List<GraphicalElement> _graphicalElements;
-    private int CursorX { get; set; }
-    private int CursorY { get; set; }
     private bool CursorBlink { get; set; }
-    private int LineInputX { get; set; }
-    private int LineInputY { get; set; }
     private Terminal Terminal { get; }
     public static ProgramRepository ProgramRepository { get; }
     public string ProgramFilename { get; set; }
     public static Pen VectorGraphicsPen { get; }
-    public bool LineInputMode { get; set; }
-    public const int RowCount = 25;
-    public int ColumnCount;
     public string LineInputResult { get; private set; }
-    public TerminalState State { get; set; }
+    private readonly CharacterMatrix _characters;
 
     static TerminalEmulator()
     {
@@ -46,42 +40,41 @@ public partial class TerminalEmulator : Form
 #pragma warning restore CS8618
     {
         InitializeComponent();
-
         SourceCode = "";
         ProgramFilename = "";
-        Terminal = new Terminal(this);
 
         var columnCountConfigValue = System.Configuration.ConfigurationManager.AppSettings["columnCount"];
-
+        var columnCount = 60;
         switch (columnCountConfigValue)
         {
             case "40":
-                ColumnCount = 40;
+                columnCount = 40;
                 break;
             case "80":
-                ColumnCount = 80;
-                break;
-            default:
-                ColumnCount = 60;
+                columnCount = 80;
                 break;
         }
 
-        _pixelsWidth = ColumnCount * 8;
+        _ts = new TerminalEmulatorStateStructure(columnCount, 25);
+        Terminal = new Terminal(this, _ts);
+
+        _pixelsWidth = columnCount * 8;
 
         FullScreen = false;
         OldWindowState = FormWindowState.Normal;
         OldPosition = new Rectangle(50, 50, 200, 200);
-        _characters = new char[ColumnCount, RowCount];
+        _characters = new CharacterMatrix(columnCount);
         _graphicalElements = new List<GraphicalElement>();
         Clear();
 
-        _characterRenderer = new CharacterRenderer(_characters, RowCount, ColumnCount);
+        _characterRenderer = new CharacterRenderer(_characters);
         _overlayRenderer = new OverlayRenderer(imageList1);
+        _keyboardController = new KeyboardController(_characters, KeyDownOperationCompleted, _ts, ToggleFullScreen, ScrollUp, SaveLineInput, SaveDirectModeInput, DeleteCharacterAt, InsertCharacterAt, MoveLineInputLeft);
     }
 
     public void EndLineInput()
     {
-        LineInputMode = false;
+        _ts.LineInputMode = false;
     }
 
     public bool IsFullScreen() =>
@@ -132,23 +125,23 @@ public partial class TerminalEmulator : Form
 
     public void Clear()
     {
-        LineInputX = 0;
-        LineInputY = 0;
+        _ts.LineInputX = 0;
+        _ts.LineInputY = 0;
         LineInputResult = "";
-        CursorX = 0;
-        CursorY = 0;
-        LineInputMode = false;
+        _ts.CursorX = 0;
+        _ts.CursorY = 0;
+        _ts.LineInputMode = false;
         _graphicalElements.Clear();
 
-        for (var y = 0; y < RowCount; y++)
-            for (var x = 0; x < ColumnCount; x++)
-                _characters[x, y] = ' ';
+        for (var y = 0; y < _characters.RowCount; y++)
+            for (var x = 0; x < _characters.ColumnCount; x++)
+                _characters.Characters[x, y] = ' ';
     }
 
     public void ShowWelcome(string program)
     {
         var spaces = 28;
-        switch (ColumnCount)
+        switch (_characters.ColumnCount)
         {
             case 40:
                 spaces = 8;
@@ -220,12 +213,12 @@ public partial class TerminalEmulator : Form
         foreach (var c in text)
             WriteCharAndProgress(c);
 
-        CursorX = 0;
-        CursorY++;
+        _ts.CursorX = 0;
+        _ts.CursorY++;
 
-        if (CursorY >= RowCount)
+        if (_ts.CursorY >= _characters.RowCount)
         {
-            CursorY = RowCount - 1;
+            _ts.CursorY = _characters.RowCount - 1;
             ScrollUp();
         }
 
@@ -237,7 +230,7 @@ public partial class TerminalEmulator : Form
 
     public void NextTab(string text)
     {
-        while (CursorX%8 != 0)
+        while (_ts.CursorX%8 != 0)
             Write(" ");
 
         Write(text);
@@ -245,15 +238,15 @@ public partial class TerminalEmulator : Form
 
     public void WriteSeparator()
     {
-        _graphicalElements.Add(new SeparatorGraphicalElement(CursorY));
+        _graphicalElements.Add(new SeparatorGraphicalElement(_characters.RowCount, _ts.CursorY));
         WriteLine();
     }
 
     public void BeginLineInput()
     {
-        LineInputX = CursorX;
-        LineInputY = CursorY;
-        LineInputMode = true;
+        _ts.LineInputX = _ts.CursorX;
+        _ts.LineInputY = _ts.CursorY;
+        _ts.LineInputMode = true;
     }
 
     private void OperationCompleted()
@@ -276,39 +269,39 @@ public partial class TerminalEmulator : Form
 
     private void WriteCharAndProgress(char c)
     {
-        _characters[CursorX, CursorY] = c;
+        _characters.Characters[_ts.CursorX, _ts.CursorY] = c;
 
-        CursorX++;
+        _ts.CursorX++;
 
-        if (CursorX < ColumnCount)
+        if (_ts.CursorX < _characters.ColumnCount)
             return;
 
-        CursorX = 0;
-        CursorY++;
+        _ts.CursorX = 0;
+        _ts.CursorY++;
 
-        if (CursorY < RowCount)
+        if (_ts.CursorY < _characters.RowCount)
             return;
 
-        CursorY = RowCount - 1;
+        _ts.CursorY = _characters.RowCount - 1;
         ScrollUp();
     }
 
     private void ScrollUp()
     {
-        for (var y = 1; y < RowCount; y++)
+        for (var y = 1; y < _characters.RowCount; y++)
         {
-            for (var x = 0; x < ColumnCount; x++)
+            for (var x = 0; x < _characters.ColumnCount; x++)
             {
-                _characters[x, y - 1] = _characters[x, y];
+                _characters.Characters[x, y - 1] = _characters.Characters[x, y];
             }
         }
 
-        var lastRow = RowCount - 1;
+        var lastRow = _characters.RowCount - 1;
         var zeroChar = (char)0;
 
-        for (var x = 0; x < ColumnCount; x++)
+        for (var x = 0; x < _characters.ColumnCount; x++)
         {
-            _characters[x, lastRow] = zeroChar;
+            _characters.Characters[x, lastRow] = zeroChar;
         }
 
         foreach (var graphicalElement in _graphicalElements)
@@ -372,11 +365,11 @@ public partial class TerminalEmulator : Form
         foreach (var graphicalElement in _graphicalElements)
             graphicalElement.Draw(e.Graphics, CharacterWidth, CharacterHeight, ClientRectangle.Width, ClientRectangle.Height);
 
-        _characterRenderer.Render(e.Graphics, LineInputMode, active, CursorBlink, CursorX, CursorY, LineInputX, LineInputY);
+        _characterRenderer.Render(e.Graphics, _ts.LineInputMode, active, CursorBlink, _ts.CursorX, _ts.CursorY, _ts.LineInputX, _ts.LineInputY);
 
         e.Graphics.ResetTransform();
         
-        _overlayRenderer.Render(e.Graphics, active, CursorBlink, ClientRectangle, State);
+        _overlayRenderer.Render(e.Graphics, active, CursorBlink, ClientRectangle, _ts.State);
     }
 
     private void TerminalEmulator_Resize(object sender, EventArgs e)
@@ -384,174 +377,67 @@ public partial class TerminalEmulator : Form
         Invalidate();
     }
 
-    private void TerminalEmulator_KeyDown(object sender, KeyEventArgs e)
-    {
-        switch (e.KeyCode)
-        {
-            case Keys.F11:
-                ToggleFullScreen();
-                break;
-            case Keys.Enter:
-                if (LineInputMode)
-                    SaveLineInput();
-                else if (State == TerminalState.Empty || State == TerminalState.Ended)
-                    SaveDirectModeInput();
-
-                CursorY++;
-
-                if (CursorY >= RowCount)
-                {
-                    CursorY = RowCount - 1;
-                    ScrollUp();
-                }
-
-                CursorX = 0;
-
-                KeyDownOperationCompleted(ref e);
-
-                if (LineInputMode)
-                    LineInputMode = false;
-
-                break;
-            case Keys.Up:
-                CursorY--;
-
-                if (CursorY < 0)
-                    CursorY = 0;
-
-                KeyDownOperationCompleted(ref e);
-                break;
-            case Keys.Down:
-                CursorY++;
-
-                if (CursorY >= RowCount)
-                {
-                    CursorY = RowCount - 1;
-                    ScrollUp();
-                }
-
-                KeyDownOperationCompleted(ref e);
-                break;
-            case Keys.Left:
-                CursorLeft();
-                KeyDownOperationCompleted(ref e);
-                break;
-            case Keys.Right:
-                CursorRight();
-                KeyDownOperationCompleted(ref e);
-                break;
-            case Keys.PageUp:
-                CursorY = 0;
-                KeyDownOperationCompleted(ref e);
-                break;
-            case Keys.PageDown:
-                if (CursorY == RowCount - 1)
-                    ScrollUp();
-                else
-                    CursorY = RowCount - 1;
-                KeyDownOperationCompleted(ref e);
-                break;
-            case Keys.Insert:
-                if (CursorX == ColumnCount - 1 && CursorY == RowCount - 1)
-                {
-                    _characters[CursorX, CursorY] = ' ';
-                    return;
-                }
-                InsertCharacterAt(CursorX, CursorY);
-                KeyDownOperationCompleted(ref e);
-                break;
-            case Keys.Delete:
-                if (CursorX == ColumnCount - 1 && CursorY == RowCount - 1)
-                {
-                    _characters[CursorX, CursorY] = ' ';
-                    return;
-                }
-                DeleteCharacterAt(CursorX, CursorY);
-                KeyDownOperationCompleted(ref e);
-                break;
-            case Keys.Home:
-                while (CursorX > 0)
-                    CursorLeft();
-                KeyDownOperationCompleted(ref e);
-                break;
-            case Keys.End:
-                while (CursorX < ColumnCount - 1)
-                    CursorRight();
-                KeyDownOperationCompleted(ref e);
-                break;
-            case Keys.Back:
-                if (CursorX <= 0 && CursorY <= 0)
-                    return;
-
-                if (LineInputMode)
-                    if (LineInputY > CursorY || (LineInputY == CursorY && LineInputX >= CursorX))
-                        MoveLineInputLeft();
-
-                CursorLeft();
-                DeleteCharacterAt(CursorX, CursorY);
-                KeyDownOperationCompleted(ref e);
-                break;
-        }
-    }
+    private void TerminalEmulator_KeyDown(object sender, KeyEventArgs e) =>
+        _keyboardController.HandleKeyDown(e, _ts);
 
     public void InsertCharacterAt(int posX, int posY)
     {
-        for (var y = RowCount - 1; y > posY; y--)
+        for (var y = _characters.RowCount - 1; y > posY; y--)
         {
-            for (var x = ColumnCount - 1; x >= 0; x--)
+            for (var x = _characters.ColumnCount - 1; x >= 0; x--)
             {
-                _characters[x, y] = GetPreviousCharacter(x, y);
+                _characters.Characters[x, y] = GetPreviousCharacter(x, y);
             }
         }
 
-        for (var x = ColumnCount - 1; x > posX; x--)
+        for (var x = _characters.ColumnCount - 1; x > posX; x--)
         {
-            _characters[x, posY] = GetPreviousCharacter(x, posY);
+            _characters.Characters[x, posY] = GetPreviousCharacter(x, posY);
         }
 
-        _characters[posX, posY] = ' ';
+        _characters.Characters[posX, posY] = ' ';
     }
 
     private void DeleteCharacterAt(int posX, int posY)
     {
-        for (var x = posX; x < ColumnCount; x++)
+        for (var x = posX; x < _characters.ColumnCount; x++)
         {
-            _characters[x, posY] = GetNextCharacter(x, posY);
+            _characters.Characters[x, posY] = GetNextCharacter(x, posY);
         }
 
         posY++;
 
-        if (posY >= RowCount - 1)
+        if (posY >= _characters.RowCount - 1)
             return;
 
-        for (var y = posY; y < RowCount; y++)
+        for (var y = posY; y < _characters.RowCount; y++)
         {
-            for (var x = 0; x < ColumnCount; x++)
+            for (var x = 0; x < _characters.ColumnCount; x++)
             {
-                _characters[x, y] = GetNextCharacter(x, y);
+                _characters.Characters[x, y] = GetNextCharacter(x, y);
             }
         }
     }
 
     private char GetNextCharacter(int x, int y)
     {
-        if (x >= ColumnCount - 1 && y >= RowCount - 1)
+        if (x >= _characters.ColumnCount - 1 && y >= _characters.RowCount - 1)
             return ' ';
 
         x++;
 
-        if (x >= ColumnCount && y < RowCount - 1)
+        if (x >= _characters.ColumnCount && y < _characters.RowCount - 1)
         {
             x = 0;
             y++;
         }
-        else if (x >= ColumnCount)
+        else if (x >= _characters.ColumnCount)
         {
             x = 0;
-            y = RowCount - 1;
+            y = _characters.RowCount - 1;
         }
 
-        return _characters[x, y];
+        return _characters.Characters[x, y];
     }
 
     private char GetPreviousCharacter(int x, int y)
@@ -563,7 +449,7 @@ public partial class TerminalEmulator : Form
 
         if (x < 0 && y > 0)
         {
-            x = ColumnCount - 1;
+            x = _characters.ColumnCount - 1;
             y--;
         }
         else if (x < 0)
@@ -571,52 +457,21 @@ public partial class TerminalEmulator : Form
             x = 0;
         }
 
-        return _characters[x, y];
-    }
-
-    private void CursorLeft()
-    {
-        CursorX--;
-
-        if (CursorX < 0 && CursorY > 0)
-        {
-            CursorX = ColumnCount - 1;
-            CursorY--;
-        }
-        else if (CursorX < 0)
-        {
-            CursorX = 0;
-        }
-    }
-
-    private void CursorRight()
-    {
-        CursorX++;
-
-        if (CursorX >= ColumnCount && CursorY < RowCount - 1)
-        {
-            CursorX = 0;
-            CursorY++;
-        }
-        else if (CursorX >= ColumnCount)
-        {
-            CursorX = 0;
-            CursorY = RowCount - 1;
-        }
+        return _characters.Characters[x, y];
     }
 
     private void MoveLineInputLeft()
     {
-        LineInputX--;
+        _ts.LineInputX--;
 
-        if (LineInputX < 0 && LineInputY > 0)
+        if (_ts.LineInputX < 0 && _ts.LineInputY > 0)
         {
-            LineInputX = ColumnCount - 1;
-            LineInputY--;
+            _ts.LineInputX = _characters.ColumnCount - 1;
+            _ts.LineInputY--;
         }
-        else if (LineInputX < 0)
+        else if (_ts.LineInputX < 0)
         {
-            LineInputX = 0;
+            _ts.LineInputX = 0;
         }
     }
 
@@ -624,27 +479,27 @@ public partial class TerminalEmulator : Form
     {
         var result = new StringBuilder();
 
-        for (var y = LineInputY; y <= CursorY; y++)
+        for (var y = _ts.LineInputY; y <= _ts.CursorY; y++)
         {
-            if (y == LineInputY && y == CursorY) // Only one row
+            if (y == _ts.LineInputY && y == _ts.CursorY) // Only one row
             {
-                for (var x = LineInputX; x < CursorX; x++)
-                    result.Append(_characters[x, y] == (char)0 ? " " : _characters[x, y]);
+                for (var x = _ts.LineInputX; x < _ts.CursorX; x++)
+                    result.Append(_characters.Characters[x, y] == (char)0 ? " " : _characters.Characters[x, y]);
             }
-            else if (y == LineInputY) // First row
+            else if (y == _ts.LineInputY) // First row
             {
-                for (var x = LineInputX; x < ColumnCount; x++)
-                    result.Append(_characters[x, y] == (char)0 ? " " : _characters[x, y]);
+                for (var x = _ts.LineInputX; x < _characters.ColumnCount; x++)
+                    result.Append(_characters.Characters[x, y] == (char)0 ? " " : _characters.Characters[x, y]);
             }
-            else if (y == CursorY) // Last row
+            else if (y == _ts.CursorY) // Last row
             {
-                for (var x = 0; x < CursorX; x++)
-                    result.Append(_characters[x, y] == (char)0 ? " " : _characters[x, y]);
+                for (var x = 0; x < _ts.CursorX; x++)
+                    result.Append(_characters.Characters[x, y] == (char)0 ? " " : _characters.Characters[x, y]);
             }
             else // Row between
             {
-                for (var x = 0; x < ColumnCount; x++)
-                    result.Append(_characters[x, y] == (char)0 ? " " : _characters[x, y]);
+                for (var x = 0; x < _characters.ColumnCount; x++)
+                    result.Append(_characters.Characters[x, y] == (char)0 ? " " : _characters.Characters[x, y]);
             }
         }
 
@@ -655,8 +510,8 @@ public partial class TerminalEmulator : Form
     {
         var result = new StringBuilder();
 
-        for (var x = LineInputX; x < CursorX; x++)
-            result.Append(_characters[x, CursorY] == (char)0 ? " " : _characters[x, CursorY]);
+        for (var x = _ts.LineInputX; x < _ts.CursorX; x++)
+            result.Append(_characters.Characters[x, _ts.CursorY] == (char)0 ? " " : _characters.Characters[x, _ts.CursorY]);
 
         var directInput = result.ToString();
 
@@ -676,9 +531,9 @@ public partial class TerminalEmulator : Form
         switch (command.Trim().ToUpper())
         {
             case "RESTART":
-                if (State == TerminalState.Ended)
+                if (_ts.State == TerminalState.Ended)
                 {
-                    State = TerminalState.Ended;
+                    _ts.State = TerminalState.Ended;
                     Application.DoEvents();
                     Run(false);
                 }
@@ -688,7 +543,7 @@ public partial class TerminalEmulator : Form
                 }
                 break;
             case "SOURCE":
-                if (State == TerminalState.Ended)
+                if (_ts.State == TerminalState.Ended)
                 {
                     using var x = new SourceDialog();
                     x.Filename = ProgramFilename;
@@ -718,7 +573,7 @@ public partial class TerminalEmulator : Form
             }
                 break;
             case "QUIT":
-                State = TerminalState.Ended;
+                _ts.State = TerminalState.Ended;
                 Application.DoEvents();
                 Close();
                 break;
@@ -750,7 +605,7 @@ public partial class TerminalEmulator : Form
 
     public void ShowEmptyTerminal()
     {
-        Console.WriteLine(State);
+        Console.WriteLine(_ts.State);
         Interpreter eval = new(SourceCode);
         Terminal.Run("A BASIC Language", "", true);
         eval.Run(Terminal);
@@ -761,19 +616,19 @@ public partial class TerminalEmulator : Form
         if (!"abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:,;-*+-/!#$€&()=".Contains(e.KeyChar.ToString()))
             return;
 
-        _characters[CursorX, CursorY] = e.KeyChar;
+        _characters.Characters[_ts.CursorX, _ts.CursorY] = e.KeyChar;
 
-        CursorX++;
+        _ts.CursorX++;
 
-        if (CursorX >= ColumnCount && CursorY < RowCount - 1)
+        if (_ts.CursorX >= _characters.ColumnCount && _ts.CursorY < _characters.RowCount - 1)
         {
-            CursorX = 0;
-            CursorY++;
+            _ts.CursorX = 0;
+            _ts.CursorY++;
         }
-        else if (CursorX >= ColumnCount)
+        else if (_ts.CursorX >= _characters.ColumnCount)
         {
-            CursorX = 0;
-            CursorY = RowCount - 1;
+            _ts.CursorX = 0;
+            _ts.CursorY = _characters.RowCount - 1;
         }
 
         e.Handled = true;
