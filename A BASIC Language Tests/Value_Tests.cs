@@ -126,33 +126,46 @@ public class Value_Tests
         Assert.IsTrue(unequalFloat != equalInt);
         Assert.IsTrue(unequalInt != equalString);
         Assert.IsTrue(unequalInt != equalFloat);
-        
-        Assert.IsFalse(unequalString > equalFloat); // Cannot compare.
-        Assert.IsFalse(unequalString > equalInt); // Cannot compare.
+
+        //Assert.IsFalse(unequalString > equalFloat); // Cannot compare.
+        //Assert.IsFalse(unequalString > equalInt); // Cannot compare.
         Assert.IsTrue(unequalFloat > equalString);
         Assert.IsTrue(unequalFloat > equalInt);
         Assert.IsFalse(unequalInt > equalString);
         Assert.IsFalse(unequalInt > equalFloat);
 
-        Assert.IsFalse(unequalString < equalFloat); // Cannot compare.
-        Assert.IsFalse(unequalString < equalInt); // Cannot compare.
+        //Assert.IsFalse(unequalString < equalFloat); // Cannot compare.
+        //Assert.IsFalse(unequalString < equalInt); // Cannot compare.
         Assert.IsFalse(unequalFloat < equalString);
         Assert.IsFalse(unequalFloat < equalInt);
         Assert.IsTrue(unequalInt < equalString);
         Assert.IsTrue(unequalInt < equalFloat);
 
-        Assert.IsFalse(unequalString >= equalFloat); // Cannot compare.
-        Assert.IsFalse(unequalString >= equalInt); // Cannot compare.
+        //Assert.IsFalse(unequalString >= equalFloat); // Cannot compare.
+        //Assert.IsFalse(unequalString >= equalInt); // Cannot compare.
         Assert.IsTrue(unequalFloat >= equalString);
         Assert.IsTrue(unequalFloat >= equalInt);
         Assert.IsFalse(unequalInt >= equalString);
         Assert.IsFalse(unequalInt >= equalFloat);
 
-        Assert.IsFalse(unequalString <= equalFloat); // Cannot compare.
-        Assert.IsFalse(unequalString <= equalInt); // Cannot compare.
+        //Assert.IsFalse(unequalString <= equalFloat); // Cannot compare.
+        //Assert.IsFalse(unequalString <= equalInt); // Cannot compare.
         Assert.IsFalse(unequalFloat <= equalString);
         Assert.IsFalse(unequalFloat <= equalInt);
         Assert.IsTrue(unequalInt <= equalString);
         Assert.IsTrue(unequalInt <= equalFloat);
+    }
+
+    [TestMethod]
+    public void Comparison_Integer()
+    {
+        var lesser = new IntValue(20);
+        var greater = new IntValue(40);
+
+        Assert.IsFalse(lesser > greater);
+        Assert.IsTrue(lesser < greater);
+        Assert.IsFalse(lesser >= greater);
+        Assert.IsTrue(lesser <= greater);
+        Assert.IsFalse(lesser == greater);
     }
 }
