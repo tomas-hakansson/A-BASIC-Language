@@ -67,6 +67,21 @@ public class ABL_String : ABL_EvalValue
     }
 }
 
+public class ABL_DIM_Creation : ABL_EvalValue
+{
+    public string Symbol { get; private set; }
+
+    public ABL_DIM_Creation(string symbol)
+    {
+        Symbol = symbol;
+    }
+
+    public override string ToString()
+    {
+        return $"DC({Symbol})";
+    }
+}
+
 public class ABL_Variable : ABL_EvalValue
 {
     public string Symbol { get; private set; }
@@ -79,6 +94,21 @@ public class ABL_Variable : ABL_EvalValue
     public override string ToString()
     {
         return $"V({Symbol})";
+    }
+}
+
+public class ABL_DIM_Variable : ABL_EvalValue
+{
+    public string Symbol { get; private set; }
+
+    public ABL_DIM_Variable(string symbol)
+    {
+        Symbol = symbol;
+    }
+
+    public override string ToString()
+    {
+        return $"DV({Symbol})";
     }
 }
 
@@ -100,14 +130,14 @@ public class ABL_DIM_Assignment : ABL_EvalValue
 {
     public string Symbol { get; private set; }
 
-    public ABL_DIM_Assignment(string symbol, int index)
+    public ABL_DIM_Assignment(string symbol)
     {
         Symbol=symbol;
     }
 
     public override string ToString()
     {
-        return $"=({Symbol})";
+        return $"D=({Symbol})";
     }
 }
 

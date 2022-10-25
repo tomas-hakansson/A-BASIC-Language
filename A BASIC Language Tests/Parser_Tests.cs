@@ -277,27 +277,64 @@ public class Parser_Tests
     }
 
     [TestMethod]
-    public void DIM_OneVariable_OneDimension()
+    public void DIM_Create_OneVariable_OneDimension()
     {
         var source = "10 dim a(4)";
-        Assert.AreEqual("L(10) N(4) N(1) P(#CREATE-ARRAY) =(A)", Parse(source));
+        Assert.AreEqual("L(10) N(4) N(1) DC(A)", Parse(source));
     }
 
     [TestMethod]
-    public void DIM_TwoVariables_TwoDimensions_SomeVariables_WithTypeSpecifiers()
+    public void DIM_Create_NestedIndex()
+    {
+        var source = "10 dim a(4, 1, x(b(4), 99))";
+        Assert.AreEqual("L(10) N(4) N(1) N(4) N(1) DV(B) N(99) N(2) DV(X) N(3) DC(A)", Parse(source));
+    }
+
+    [TestMethod]
+    public void DIM_Create_TwoVariables_TwoDimensions_SomeVariables_WithTypeSpecifiers()
     {
         var source = "10 dim x$(1,4),y(a,b%, 3)";
-        Assert.AreEqual("L(10) N(1) N(4) N(2) P(#CREATE-ARRAY) =(X$) V(A) V(B%) N(3) N(3) P(#CREATE-ARRAY) =(Y)", Parse(source));
+        Assert.AreEqual("L(10) N(1) N(4) N(2) DC(X$) V(A) V(B%) N(3) N(3) DC(Y)", Parse(source));
+    }
+
+    [TestMethod]
+    public void DIM_ZeroDimensions()
+    {
+        //Note: A DIM with no dimensions becomes an ordinary variable.
+        //  If that variable was set prior to this it's original value remains.
+        var source = "10 dim x";
+        Assert.AreEqual("L(10) V(X)", Parse(source));
+    }
+
+    [TestMethod]
+    public void DIM_LET()
+    {
+        var source = "10 x(3) = 42";
+        Assert.AreEqual("L(10) N(3) N(1) N(42) D=(X)", Parse(source));
+    }
+
+    [TestMethod]
+    public void DIM_Accessing()
+    {
+        var source = "10 x = a(4)";
+        Assert.AreEqual("L(10) N(4) N(1) DV(A) =(X)", Parse(source));
+    }
+
+    [TestMethod]
+    public void DIM_INPUT()
+    {
+        var source = "10 input a(4)";
+        Assert.AreEqual("L(10) S(? ) P(#WRITE) N(4) N(1) P(#INPUT-FLOAT) D=(A)", Parse(source));
+    }
+
+    [TestMethod]
+    public void DIM_PRINT()
+    {
+        var source = "10 print a(4)";
+        Assert.AreEqual("L(10) N(4) N(1) DV(A) P(#WRITE) P(#NEXT-LINE)", Parse(source));
     }
 
     //[TestMethod]
-    //public void DIM_Accessing()
-    //{
-    //    var source = "10 x = a(4)";
-    //    Assert.AreEqual("L(10) N(4) N(1) P(#READ-ARRAY) =(X)", Parse(source));
-    //}
-
-    [TestMethod]
     //public void DEF_something()//ToDo: def fn
     //{
     //    var source = "10 def fn f(x) = 2 * x";

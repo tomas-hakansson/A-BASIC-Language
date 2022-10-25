@@ -78,6 +78,26 @@ public class Interpreter
                 case ABL_String s:
                     _data.Push(new StringValue(s.Value));
                     break;
+                case ABL_DIM_Creation dc:
+                    {
+                        if (_data.Count > 1)
+                        {
+                            var indexCount = (int)_data.Pop().GetValueAsType<IntValue>();
+                            List<int> index = new();
+                            for (int inner = 0; inner < indexCount; inner++)
+                            {
+                                var indexDigit = (int)_data.Pop().GetValueAsType<IntValue>();
+                                index.Add(indexDigit);
+                            }
+
+                            var defaultValue = ValueBase.GetDefaultValueFor(dc.Symbol);
+                            Dimension newDim = new(index, defaultValue);
+                            _DimVariables[dc.Symbol] = newDim;
+                        }
+                        else
+                            End("Insufficient items on the stack");
+                    }
+                    break;
                 case ABL_Variable v:
                     {
                         if (_variables.TryGetValue(v.Symbol, out var value))
@@ -92,6 +112,31 @@ public class Interpreter
                             // Variable is probably not declared, get the default value for the variable.
                             _data.Push(ValueBase.GetDefaultValueFor(v.Symbol));
                         }
+                    }
+                    break;
+                case ABL_DIM_Variable dv:
+                    {
+                        if (_data.Count > 1)
+                        {
+                            //Note: Removal of index data from the stack must be done in all successful cases.
+                            var indexCount = (int)_data.Pop().GetValueAsType<IntValue>();
+                            List<int> index = new();
+                            for (int inner = 0; inner < indexCount; inner++)
+                            {
+                                var indexDigit = (int)_data.Pop().GetValueAsType<IntValue>();
+                                index.Add(indexDigit);
+                            }
+
+                            if (_DimVariables.TryGetValue(dv.Symbol, out var dim))
+                                _data.Push(dim.Get(index));
+                            else
+                            {
+                                // Variable is probably not declared, get the default value for the variable.
+                                _data.Push(ValueBase.GetDefaultValueFor(dv.Symbol));
+                            }
+                        }
+                        else
+                            End("Insufficient items on the stack");
                     }
                     break;
                 case ABL_Assignment a:
@@ -110,11 +155,9 @@ public class Interpreter
                             End("The stack is empty");
                     }
                     break;
-                // ABL_DIM_Variable// I'm thinking this should be merged with ABL_Variable since "DIM X" creates an ordinary variable.
                 case ABL_DIM_Assignment da:
                     {//Note: E.g. 10 dimvariable(1, 2) = 42.
-                        //Note: We will for now require a DIM variable to be predefined before accessing it in any way. | 2022-10-16 - Tomas Håkansson.
-                        if (_data.Count > 0)
+                        if (_data.Count > 2)
                         {
                             var value = _data.Pop();
                             var symbol = da.Symbol;
@@ -130,17 +173,16 @@ public class Interpreter
                                 index.Add(indexDigit);
                             }
 
-                            if (_DimVariables.ContainsKey(symbol))
+                            if (!_DimVariables.TryGetValue(symbol, out var dim))
                             {
-                                var dim = _DimVariables[symbol];
-                                dim.Add(value, index);
-                                _DimVariables[symbol] = dim;
+                                var defaultValue = ValueBase.GetDefaultValueFor(symbol);
+                                dim = new(index, defaultValue);
                             }
-                            else
-                                End("Undefined DIM variable");
+                            dim.Add(value, index);
+                            _DimVariables[symbol] = dim;
                         }
                         else
-                            End("The stack is empty");
+                            End("Insufficient items on the stack");
                     }
                     break;
                 case ABL_Procedure p:
@@ -189,7 +231,7 @@ public class Interpreter
                                     var x = _data.Pop();
                                     var y = _data.Pop();
 
-                                    _data.Push(new FloatValue(x > y ? -1 : 0));
+                                    _data.Push(new FloatValue(y > x ? -1 : 0));
                                 }
                                 else
                                     Debug.Fail("Insufficient items on the stack");
@@ -202,7 +244,7 @@ public class Interpreter
                                     var x = _data.Pop();
                                     var y = _data.Pop();
 
-                                    _data.Push(new FloatValue(x >= y ? -1 : 0));
+                                    _data.Push(new FloatValue(y >= x ? -1 : 0));
                                 }
                                 else
                                     Debug.Fail("Insufficient items on the stack");
@@ -215,7 +257,7 @@ public class Interpreter
                                     var x = _data.Pop();
                                     var y = _data.Pop();
 
-                                    _data.Push(new FloatValue(x < y ? -1 : 0));
+                                    _data.Push(new FloatValue(y < x ? -1 : 0));
                                 }
                                 else
                                     Debug.Fail("Insufficient items on the stack");
@@ -228,7 +270,7 @@ public class Interpreter
                                     var x = _data.Pop();
                                     var y = _data.Pop();
 
-                                    _data.Push(new FloatValue(x <= y ? -1 : 0));
+                                    _data.Push(new FloatValue(y <= x ? -1 : 0));
                                 }
                                 else
                                     Debug.Fail("Insufficient items on the stack");

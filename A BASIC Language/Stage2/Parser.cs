@@ -161,44 +161,20 @@ class Parser
 
     void Dim()
     {
-        //dim     => DIM dim-var ("," dim-var)*
-        //dim-var => user-defined-name type-specifier? "(" value ("," value)* ")"
-        //value   => int | variable
+        //dim     => DIM unset-variable ("," unset-variable)*
 
-        //DeleteMe: "10 dim x(1,4),y(a,b, 3)";
         Next();
-        DimVar();
+        UnsetVariable();
         while (MightMatch(TokenType.Comma))
-            DimVar();
+            UnsetVariable();
 
-        void DimVar()
+        void UnsetVariable()
         {
-            MustMatch(TokenType.UserDefinedName, out var name);
-            MightMatch(TokenType.TypeSpecifier, out var typeSpecifier);
-            MustMatch(TokenType.OpeningParenthesis);
-            Value();
-            int dimensionCount = 1;
-            while (MightMatch(TokenType.Comma))
-            {
-                Value();
-                dimensionCount++;
-            }
-            Generate(new ABL_Number(dimensionCount));
-            MustMatch(TokenType.ClosingParenthesis);
-            Generate(new ABL_Procedure("#CREATE-ARRAY"), new ABL_Assignment(name + typeSpecifier));
-        }
-
-        void Value()
-        {
-            if (MightMatch(TokenType.Number, out var number))
-                Generate(new ABL_Number(number));
-            else if (MightMatch(TokenType.UserDefinedName, out var name))
-            {
-                MightMatch(TokenType.TypeSpecifier, out var typeSpecifier);
-                Generate(new ABL_Variable(name + typeSpecifier));
-            }
+            var (fullName, _, dimVariable) = ASetVariable(true);
+            if (dimVariable)
+                Generate(new ABL_DIM_Creation(fullName));
             else
-                throw new ArgumentException("The value here can be either an int or a variable");
+                Generate(new ABL_Variable(fullName));
         }
     }
 
@@ -273,6 +249,7 @@ class Parser
     private void OneOrMoreStatements()
     {
         //OneOrMoreStatements => aStatementWithParts (: aStatementWithParts)*
+
         AStatementPlusParts();
         while (MightMatch(TokenType.Colon))
             AStatementPlusParts();
@@ -284,7 +261,6 @@ class Parser
         {
             Generate(new ABL_Label(_currentTokenValue));
             value = int.Parse(_currentTokenValue);
-            //_labelIndex.Add(int.Parse(_currentTokenValue), _evalValues.Count - 1);
         }
         else
             Generate(new ABL_Label(value.Value));
@@ -331,15 +307,14 @@ class Parser
 
     void Input()
     {
-        //input      => INPUT (prompt-string [;])? assignable (, assignable)*
-        //assignable => user-defined-name (type-specifier  ('(' index ')')? )?
+        //input      => INPUT (prompt-string [;])? unset-variable (, unset-variable)*
 
         Next();
         Prompt();
         Generate(new ABL_String("? "), new ABL_Procedure("#WRITE"));
-        Variable();
+        UnsetVariable();
         while (MightMatch(TokenType.Comma))
-            Variable();
+            UnsetVariable();
 
         void Prompt()
         {
@@ -350,25 +325,22 @@ class Parser
             }
         }
 
-        void Variable()
+        void UnsetVariable()
         {
-            MustMatch(TokenType.UserDefinedName, out var newVariable);
-            if (MightMatch(TokenType.TypeSpecifier, out var typeSpecifier))
+            var v = ASetVariable(true);
+            var assignmentType = ASetVariable_Helper(v);
+            switch (v.typeSpecifier)
             {
-                switch (typeSpecifier)
-                {
-                    case "$":
-                        Generate(new ABL_Procedure("#INPUT-STRING"), new ABL_Assignment(newVariable + "$"));
-                        break;
-                    case "%":
-                        Generate(new ABL_Procedure("#INPUT-INT"), new ABL_Assignment(newVariable + "%"));
-                        break;
-                }
+                case "$":
+                    Generate(new ABL_Procedure("#INPUT-STRING"), assignmentType);
+                    break;
+                case "%":
+                    Generate(new ABL_Procedure("#INPUT-INT"), assignmentType);
+                    break;
+                default:
+                    Generate(new ABL_Procedure("#INPUT-FLOAT"), assignmentType);
+                    break;
             }
-            else
-                Generate(new ABL_Procedure("#INPUT-FLOAT"), new ABL_Assignment(newVariable));
-
-            //todo: check for dim accessing (e.g. a(i)).
         }
     }
 
@@ -383,13 +355,91 @@ class Parser
 
     void Let()
     {
-        //let => 'LET'? N = Expr
+        //let => 'LET'? unset-variable = expression
+
         MightMatch("LET");
-        MustMatch(TokenType.UserDefinedName, out var name);
-        MightMatch(TokenType.TypeSpecifier, out var typeSpecifier);
+        var v = ASetVariable(true);
         MustMatch(TokenType.EqualityOrAssignment);
         Expression();
-        Generate(new ABL_Assignment(name + typeSpecifier));
+        Generate(ASetVariable_Helper(v));
+    }
+
+    static ABL_EvalValue ASetVariable_Helper((string fullName, string _, bool dimVariable) v)
+    {
+        var fullName = v.fullName;
+        if (v.dimVariable)
+            return new ABL_DIM_Assignment(fullName);
+        else
+            return new ABL_Assignment(fullName);
+    }
+
+    /// <summary>
+    /// A variable with a value.
+    /// </summary>
+    (string fullName, string typeSpecifier, bool dimVariable) ASetVariable(bool assignmentMode = false)
+    {
+        /*
+        What's a set variable? It's a variable that has a value together with any indices.
+        Examples:
+        x
+        y(4)
+        z(2,9)
+        A set variable can have set variables in its indices:
+        a(x, y)
+        b(4, s)
+        These set variables can have indices in turn:
+        b(1, c(x, y))
+        Naturally the depth is arbitrary.
+        indices have the type int and floats that can be ints. This means that any expression which produces that can be found in the index position:
+        x(1+2)
+        Naturally this to can have arbitrary depth and complexity.
+         */
+
+        // set-variable => name index?
+        // name         => user-defined-name type-specifier?
+        // index        => '(' index-value ')'
+        // index-value  => expression (',' expression)*
+
+        string fullName, typeSpecifier;
+        bool dimVariable = false;
+        Name();
+        Index();
+        return (fullName, typeSpecifier, dimVariable);
+
+        void Name()
+        {
+            MustMatch(TokenType.UserDefinedName, out var name);
+            MightMatch(TokenType.TypeSpecifier, out typeSpecifier);
+            fullName = name + typeSpecifier;
+        }
+
+        void Index()
+        {
+            if (!MightMatch(TokenType.OpeningParenthesis))
+            {
+                if (!assignmentMode)
+                    Generate(new ABL_Variable(fullName));
+                return;
+            }
+            dimVariable = true;
+            Index_Value();
+            MustMatch(TokenType.ClosingParenthesis);
+            if (assignmentMode)
+                return;
+            Generate(new ABL_DIM_Variable(fullName));
+
+            void Index_Value()
+            {
+                Expression();
+                int dimensionCount = 1;
+                while (MightMatch(TokenType.Comma))
+                {
+                    Expression();
+                    dimensionCount++;
+                }
+                Generate(new ABL_Number(dimensionCount));
+            }
+        }
     }
 
     /// <summary>
@@ -577,10 +627,7 @@ class Parser
                 MustMatch(TokenType.ClosingParenthesis);
                 Generate(new ABL_Procedure(functionName));
                 break;
-            case TokenType.Float:
-                Generate(new ABL_Number(_currentTokenValue));//todo: float tokens.
-                Next();
-                break;
+            case TokenType.Float://todo: float tokens.
             case TokenType.Number:
                 Generate(new ABL_Number(_currentTokenValue));
                 Next();
@@ -590,10 +637,7 @@ class Parser
                 Next();
                 break;
             case TokenType.UserDefinedName:
-                var variableName = _currentTokenValue;
-                Next();
-                MightMatch(TokenType.TypeSpecifier, out var typeSpecifier);
-                Generate(new ABL_Variable(variableName + typeSpecifier));
+                ASetVariable();
                 break;
             case TokenType.Statement://Note: user defined function.
                 if (MightMatch("FN"))//todo: test.
