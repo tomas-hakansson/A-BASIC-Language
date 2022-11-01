@@ -8,6 +8,9 @@ main.ProgramFilename = args.FirstOrDefault() ?? "";
 if (string.IsNullOrWhiteSpace(main.ProgramFilename))
     main.ShowEmptyTerminal();
 else
-    main.Run(true); 
+{
+    main.Show();
+    main.Run(true);
+}
 
 Application.Run(main);
