@@ -510,7 +510,7 @@ public partial class TerminalEmulator : Form
     {
         var result = new StringBuilder();
 
-        for (var x = _ts.LineInputX; x < _ts.CursorX; x++)
+        for (var x = 0; x < _ts.CursorX; x++)
             result.Append(_characters.Characters[x, _ts.CursorY] == (char)0 ? " " : _characters.Characters[x, _ts.CursorY]);
 
         var directInput = result.ToString();

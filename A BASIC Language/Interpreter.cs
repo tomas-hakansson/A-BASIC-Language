@@ -12,7 +12,7 @@ public class Interpreter
     Terminal? _terminal;
     readonly Stage2.ParseResult _parseResult;
     readonly Dictionary<string, ValueBase?> _variables;//Ponder: do the value need to be nullable?
-    readonly Dictionary<string, Dimension> _DimVariables;
+    readonly Dictionary<string, Dimension> _dimVariables;
     readonly Stack<ValueBase> _data;
     bool EndMessageDisplayed { get; set; }
 
@@ -25,7 +25,7 @@ public class Interpreter
         Parser parser = new(source);
         _parseResult = parser.Result;
         _variables = new Dictionary<string, ValueBase?>();
-        _DimVariables = new Dictionary<string, Dimension>();
+        _dimVariables = new Dictionary<string, Dimension>();
         _data = new Stack<ValueBase>();
         _random = new Random();
         _currentLineNumber = 0;
@@ -52,6 +52,7 @@ public class Interpreter
 
         var addExecutor = new AddExecutor(_data);
         var subtractExecutor = new SubtractExecutor(_data);
+        var comparisonExecutor = new ComparisonExecutor(_data);
 
         Application.DoEvents();
 
@@ -92,7 +93,7 @@ public class Interpreter
 
                             var defaultValue = ValueBase.GetDefaultValueFor(dc.Symbol);
                             Dimension newDim = new(index, defaultValue);
-                            _DimVariables[dc.Symbol] = newDim;
+                            _dimVariables[dc.Symbol] = newDim;
                         }
                         else
                             End("Insufficient items on the stack");
@@ -127,7 +128,7 @@ public class Interpreter
                                 index.Add(indexDigit);
                             }
 
-                            if (_DimVariables.TryGetValue(dv.Symbol, out var dim))
+                            if (_dimVariables.TryGetValue(dv.Symbol, out var dim))
                                 _data.Push(dim.Get(index));
                             else
                             {
@@ -173,13 +174,13 @@ public class Interpreter
                                 index.Add(indexDigit);
                             }
 
-                            if (!_DimVariables.TryGetValue(symbol, out var dim))
+                            if (!_dimVariables.TryGetValue(symbol, out var dim))
                             {
                                 var defaultValue = ValueBase.GetDefaultValueFor(symbol);
                                 dim = new(index, defaultValue);
                             }
                             dim.Add(value, index);
-                            _DimVariables[symbol] = dim;
+                            _dimVariables[symbol] = dim;
                         }
                         else
                             End("Insufficient items on the stack");
@@ -225,83 +226,23 @@ public class Interpreter
                             subtractExecutor.Run(_currentLineNumber);
                             break;
                         case ">":
-                            {
-                                if (_data.Count >= 2)
-                                {
-                                    var x = _data.Pop();
-                                    var y = _data.Pop();
-
-                                    _data.Push(new FloatValue(y > x ? -1 : 0));
-                                }
-                                else
-                                    Debug.Fail("Insufficient items on the stack");
-                            }
+                            comparisonExecutor.Run(_currentLineNumber, (a, b) => a > b);
                             break;
                         case ">=":
-                            {
-                                if (_data.Count >= 2)
-                                {
-                                    var x = _data.Pop();
-                                    var y = _data.Pop();
-
-                                    _data.Push(new FloatValue(y >= x ? -1 : 0));
-                                }
-                                else
-                                    Debug.Fail("Insufficient items on the stack");
-                            }
+                            comparisonExecutor.Run(_currentLineNumber, (a, b) => a >= b);
                             break;
                         case "<":
-                            {
-                                if (_data.Count >= 2)
-                                {
-                                    var x = _data.Pop();
-                                    var y = _data.Pop();
-
-                                    _data.Push(new FloatValue(y < x ? -1 : 0));
-                                }
-                                else
-                                    Debug.Fail("Insufficient items on the stack");
-                            }
+                            comparisonExecutor.Run(_currentLineNumber, (a, b) => a < b);
                             break;
                         case "<=":
-                            {
-                                if (_data.Count >= 2)
-                                {
-                                    var x = _data.Pop();
-                                    var y = _data.Pop();
-
-                                    _data.Push(new FloatValue(y <= x ? -1 : 0));
-                                }
-                                else
-                                    Debug.Fail("Insufficient items on the stack");
-                            }
+                            comparisonExecutor.Run(_currentLineNumber, (a, b) => a <= b);
                             break;
                         case "=":
-                            {
-                                if (_data.Count >= 2)
-                                {
-                                    var x = _data.Pop();
-                                    var y = _data.Pop();
-
-                                    _data.Push(new FloatValue(x == y ? -1 : 0));
-                                }
-                                else
-                                    Debug.Fail("Insufficient items on the stack");
-                            }
+                            comparisonExecutor.Run(_currentLineNumber, (a, b) => Math.Abs(a - b) < 0.00001);
                             break;
                         case "!=":
                         case "<>":
-                            {
-                                if (_data.Count >= 2)
-                                {
-                                    var x = _data.Pop();
-                                    var y = _data.Pop();
-
-                                    _data.Push(new FloatValue(x != y ? -1 : 0));
-                                }
-                                else
-                                    Debug.Fail("Insufficient items on the stack");
-                            }
+                            comparisonExecutor.Run(_currentLineNumber, (a, b) => Math.Abs(a - b) > 0.00001);
                             break;
                         case "#END-PROGRAM":
                             endProgram = true;
@@ -314,14 +255,13 @@ public class Interpreter
                                     //TODO: Type checking
                                     if (_parseResult.LabelIndex.TryGetValue((int)label.GetValueAsType<IntValue>(), out var newIndex))
                                     {
-                                        i = (int)newIndex;
+                                        i = newIndex;
                                         i--;//HACK: come up with something better.
-                                        continue;
                                     }
                                     else
                                     {
                                         Debug.Fail("Something was wrong with the value");//fixme; really bad text.
-                                                                                         //todo: error handling.
+                                                                                         ////todo: error handling.
                                         throw new InvalidOperationException("this is only to get c# to stop complaining.");
                                     }
                                 }
@@ -342,7 +282,6 @@ public class Interpreter
                                         {
                                             i = newIndex;
                                             i--;//HACK: come up with something better.
-                                            continue;
                                         }
                                         else
                                         {
@@ -426,7 +365,7 @@ public class Interpreter
                                 if (_data.Count > 0)
                                 {
                                     var value = _data.Pop();
-                                    _terminal.Write(value.ToString());
+                                    _terminal.Write(value.ToString() ?? "");
                                 }
                                 else
                                     Debug.Fail("The stack is empty");
@@ -434,12 +373,12 @@ public class Interpreter
                             break;
                         default:
                             //todo :error handling.
-                            throw new NotImplementedException("The procedure has either not been implemented or theres another bug");
+                            throw new NotImplementedException("The procedure has either not been implemented or there's another bug");
                     }
                     break;
                 default:
                     //todo: error handling or remove this.
-                    throw new NotImplementedException("The operation has either not been implemented or theres another bug");
+                    throw new NotImplementedException("The operation has either not been implemented or there's another bug");
             }
         }
 
