@@ -52,13 +52,14 @@ namespace A_BASIC_Language.Gui.WinForms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(957, 450);
+            this.ClientSize = new System.Drawing.Size(759, 498);
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimizeBox = false;
             this.Name = "TerminalEmulator";
             this.Activated += new System.EventHandler(this.TerminalEmulator_Activated);
             this.Deactivate += new System.EventHandler(this.TerminalEmulator_Deactivate);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.TerminalEmulator_FormClosed);
             this.Shown += new System.EventHandler(this.TerminalEmulator_Shown);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.TerminalEmulator_Paint);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TerminalEmulator_KeyDown);

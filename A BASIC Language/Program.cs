@@ -13,4 +13,12 @@ else
     main.Run(true);
 }
 
-Application.Run(main);
+try
+{
+    Application.Run(main);
+}
+catch (ObjectDisposedException e)
+{
+    // Not sure why it does this.
+    Console.WriteLine(e.Message);
+}

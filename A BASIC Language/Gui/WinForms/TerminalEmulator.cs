@@ -58,14 +58,11 @@ public partial class TerminalEmulator : Form
         _ts = new TerminalEmulatorStateStructure(columnCount, 25);
         Terminal = new Terminal(this, _ts);
 
-        _pixelsWidth = columnCount * 8;
-
-        FullScreen = false;
-        OldWindowState = FormWindowState.Normal;
-        OldPosition = new Rectangle(50, 50, 200, 200);
         _characters = new CharacterMatrix(columnCount);
         _graphicalElements = new List<GraphicalElement>();
         Clear();
+
+        _pixelsWidth = columnCount * 8;
 
         _characterRenderer = new CharacterRenderer(_characters);
         _overlayRenderer = new OverlayRenderer(imageList1);
@@ -183,9 +180,9 @@ public partial class TerminalEmulator : Form
 
     private void TerminalEmulator_Shown(object sender, EventArgs e)
     {
-        Width = (int)(Screen.PrimaryScreen.WorkingArea.Width / 2.1);
-        Height = (int)(Screen.PrimaryScreen.WorkingArea.Height / 1.8);
-        CenterToScreen();
+        FullScreen = false;
+        OldWindowState = FormWindowState.Normal;
+        OldPosition = new Rectangle(50, 50, 200, 200);
 
         Invalidate();
         timer1.Enabled = true;
@@ -648,5 +645,10 @@ public partial class TerminalEmulator : Form
     {
         _isActive = false;
         Invalidate();
+    }
+
+    private void TerminalEmulator_FormClosed(object sender, FormClosedEventArgs e)
+    {
+        _ts.Quit();
     }
 }

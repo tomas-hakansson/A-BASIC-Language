@@ -22,6 +22,11 @@ public class TerminalEmulatorStateStructure
         LineInputY = 0;
     }
 
+    public void Quit()
+    {
+        State = TerminalState.Ended;
+    }
+
     public void CursorLeft()
     {
         CursorX--;
