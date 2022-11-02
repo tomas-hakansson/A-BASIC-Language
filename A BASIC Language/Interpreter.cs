@@ -53,12 +53,12 @@ public class Interpreter
         var addExecutor = new AddExecutor(_data);
         var subtractExecutor = new SubtractExecutor(_data);
         var comparisonExecutor = new ComparisonExecutor(_data);
+        var flatVariableExecutor = new FlatVariableExecutor(_data,End, _variables);
+        var dimExecutor = new DimExecutor(_data, End, _dimVariables);
 
         Application.DoEvents();
 
         var endProgram = false;
-
-        //todo: Debug.WriteLine($"Eval {_index}: {line}");
 
         for (int i = 0; i < _parseResult.EvalValues.Count; i++)
         {
@@ -80,111 +80,19 @@ public class Interpreter
                     _data.Push(new StringValue(s.Value));
                     break;
                 case ABL_DIM_Creation dc:
-                    {
-                        if (_data.Count > 1)
-                        {
-                            var indexCount = (int)_data.Pop().GetValueAsType<IntValue>();
-                            List<int> index = new();
-                            for (int inner = 0; inner < indexCount; inner++)
-                            {
-                                var indexDigit = (int)_data.Pop().GetValueAsType<IntValue>();
-                                index.Add(indexDigit);
-                            }
-
-                            var defaultValue = ValueBase.GetDefaultValueFor(dc.Symbol);
-                            Dimension newDim = new(index, defaultValue);
-                            _dimVariables[dc.Symbol] = newDim;
-                        }
-                        else
-                            End("Insufficient items on the stack");
-                    }
+                    dimExecutor.Create(dc);
                     break;
                 case ABL_Variable v:
-                    {
-                        if (_variables.TryGetValue(v.Symbol, out var value))
-                        {
-                            if (value is null)
-                                value = ValueBase.GetDefaultValueFor(v.Symbol);
-
-                            _data.Push(value);
-                        }
-                        else
-                        {
-                            // Variable is probably not declared, get the default value for the variable.
-                            _data.Push(ValueBase.GetDefaultValueFor(v.Symbol));
-                        }
-                    }
+                    flatVariableExecutor.Create(v);
                     break;
                 case ABL_DIM_Variable dv:
-                    {
-                        if (_data.Count > 1)
-                        {
-                            //Note: Removal of index data from the stack must be done in all successful cases.
-                            var indexCount = (int)_data.Pop().GetValueAsType<IntValue>();
-                            List<int> index = new();
-                            for (int inner = 0; inner < indexCount; inner++)
-                            {
-                                var indexDigit = (int)_data.Pop().GetValueAsType<IntValue>();
-                                index.Add(indexDigit);
-                            }
-
-                            if (_dimVariables.TryGetValue(dv.Symbol, out var dim))
-                                _data.Push(dim.Get(index));
-                            else
-                            {
-                                // Variable is probably not declared, get the default value for the variable.
-                                _data.Push(ValueBase.GetDefaultValueFor(dv.Symbol));
-                            }
-                        }
-                        else
-                            End("Insufficient items on the stack");
-                    }
+                    dimExecutor.Read(dv);
                     break;
                 case ABL_Assignment a:
-                    {
-                        if (_data.Count > 0)
-                        {
-                            var value = _data.Pop();
-                            var symbol = a.Symbol;
-
-                            if (!value.FitsInVariable(symbol))
-                                End("Type mismatch."); // TODO: Better error message and also line number.
-
-                            _variables[symbol] = value;
-                        }
-                        else
-                            End("The stack is empty");
-                    }
+                    flatVariableExecutor.Write(a);
                     break;
                 case ABL_DIM_Assignment da:
-                    {//Note: E.g. 10 dimvariable(1, 2) = 42.
-                        if (_data.Count > 2)
-                        {
-                            var value = _data.Pop();
-                            var symbol = da.Symbol;
-
-                            if (!value.FitsInVariable(symbol))
-                                End("Type mismatch."); // TODO: Better error message and also line number.
-
-                            var indexCount = (int)_data.Pop().GetValueAsType<IntValue>();
-                            List<int> index = new();
-                            for (int inner = 0; inner < indexCount; inner++)
-                            {
-                                var indexDigit = (int)_data.Pop().GetValueAsType<IntValue>();
-                                index.Add(indexDigit);
-                            }
-
-                            if (!_dimVariables.TryGetValue(symbol, out var dim))
-                            {
-                                var defaultValue = ValueBase.GetDefaultValueFor(symbol);
-                                dim = new(index, defaultValue);
-                            }
-                            dim.Add(value, index);
-                            _dimVariables[symbol] = dim;
-                        }
-                        else
-                            End("Insufficient items on the stack");
-                    }
+                    dimExecutor.Write(da); //Note: E.g. 10 dimvariable(1, 2) = 42.
                     break;
                 case ABL_Procedure p:
                     switch (p.Name)
