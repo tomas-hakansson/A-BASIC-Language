@@ -1,8 +1,10 @@
-﻿namespace A_BASIC_Language.Gui.WinForms;
+﻿using CharacterMatrix;
+
+namespace A_BASIC_Language.Gui.WinForms;
 
 public class CharacterRenderer : IDisposable
 {
-    private readonly CharacterMatrix _characters;
+    private readonly Matrix _characters;
     private Brush OutputBrush { get; }
     private Brush InputBrush { get; }
     private Brush InputBackgroundBrush { get; }
@@ -10,7 +12,7 @@ public class CharacterRenderer : IDisposable
     private const int CharacterHeight = 8;
     private Font Font { get; }
 
-    public CharacterRenderer(CharacterMatrix characters)
+    public CharacterRenderer(Matrix characters)
     {
         _characters = characters;
         OutputBrush = new SolidBrush(Color.FromArgb(0, 255, 0));
@@ -37,16 +39,16 @@ public class CharacterRenderer : IDisposable
                     {
                         g.FillRectangle(b, pixelX, pixelY, CharacterWidth, CharacterHeight);
 
-                        if (_characters.Characters[x, y] > 0)
-                            g.DrawString(_characters.Characters[x, y].ToString(), Font, Brushes.Black, pixelX, pixelY);
+                        if (_characters.GetAt(x, y) > 0)
+                            g.DrawString(_characters.GetAt(x, y).ToString(), Font, Brushes.Black, pixelX, pixelY);
                     }
                     else
                     {
                         if (isInsideInputZone)
                             g.FillRectangle(InputBackgroundBrush, pixelX, pixelY, CharacterWidth, CharacterHeight);
 
-                        if (_characters.Characters[x, y] > 0)
-                            g.DrawString(_characters.Characters[x, y].ToString(), Font, b, pixelX, pixelY);
+                        if (_characters.GetAt(x, y) > 0)
+                            g.DrawString(_characters.GetAt(x, y).ToString(), Font, b, pixelX, pixelY);
                     }
                     pixelX += CharacterWidth;
                 }
@@ -64,13 +66,13 @@ public class CharacterRenderer : IDisposable
                     {
                         g.FillRectangle(OutputBrush, pixelX, pixelY, CharacterWidth, CharacterHeight);
 
-                        if (_characters.Characters[x, y] > 0)
-                            g.DrawString(_characters.Characters[x, y].ToString(), Font, Brushes.Black, pixelX, pixelY);
+                        if (_characters.GetAt(x, y) > 0)
+                            g.DrawString(_characters.GetAt(x, y).ToString(), Font, Brushes.Black, pixelX, pixelY);
                     }
                     else
                     {
-                        if (_characters.Characters[x, y] > 0)
-                            g.DrawString(_characters.Characters[x, y].ToString(), Font, OutputBrush, pixelX, pixelY);
+                        if (_characters.GetAt(x, y) > 0)
+                            g.DrawString(_characters.GetAt(x, y).ToString(), Font, OutputBrush, pixelX, pixelY);
                     }
                     pixelX += CharacterWidth;
                 }

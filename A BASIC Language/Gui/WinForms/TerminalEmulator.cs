@@ -1,6 +1,7 @@
 using System.Text;
 using A_BASIC_Language.Gui.WinForms.PseudoGraphics;
 using A_BASIC_Language.IO;
+using CharacterMatrix;
 
 namespace A_BASIC_Language.Gui.WinForms;
 
@@ -27,7 +28,7 @@ public partial class TerminalEmulator : Form
     public string ProgramFilename { get; set; }
     public static Pen VectorGraphicsPen { get; }
     public string LineInputResult { get; private set; }
-    private readonly CharacterMatrix _characters;
+    private readonly Matrix _characters;
 
     static TerminalEmulator()
     {
@@ -58,7 +59,7 @@ public partial class TerminalEmulator : Form
         _ts = new TerminalEmulatorStateStructure(columnCount, 25);
         Terminal = new Terminal(this, _ts);
 
-        _characters = new CharacterMatrix(columnCount);
+        _characters = new Matrix(columnCount);
         _graphicalElements = new List<GraphicalElement>();
         Clear();
 
@@ -66,7 +67,7 @@ public partial class TerminalEmulator : Form
 
         _characterRenderer = new CharacterRenderer(_characters);
         _overlayRenderer = new OverlayRenderer(imageList1);
-        _keyboardController = new KeyboardController(_characters, KeyDownOperationCompleted, _ts, ToggleFullScreen, ScrollUp, SaveLineInput, SaveDirectModeInput, DeleteCharacterAt, InsertCharacterAt, MoveLineInputLeft);
+        _keyboardController = new KeyboardController(_characters, KeyDownOperationCompleted, _ts, ToggleFullScreen, ScrollUp, SaveLineInput, SaveDirectModeInput, MoveLineInputLeft);
     }
 
     public void EndLineInput()
@@ -129,10 +130,7 @@ public partial class TerminalEmulator : Form
         _ts.CursorY = 0;
         _ts.LineInputMode = false;
         _graphicalElements.Clear();
-
-        for (var y = 0; y < _characters.RowCount; y++)
-            for (var x = 0; x < _characters.ColumnCount; x++)
-                _characters.Characters[x, y] = ' ';
+        _characters.Clear();
     }
 
     public void ShowWelcome(string program)
@@ -266,7 +264,7 @@ public partial class TerminalEmulator : Form
 
     private void WriteCharAndProgress(char c)
     {
-        _characters.Characters[_ts.CursorX, _ts.CursorY] = c;
+        _characters.SetAt(_ts.CursorX, _ts.CursorY, c);
 
         _ts.CursorX++;
 
@@ -285,21 +283,7 @@ public partial class TerminalEmulator : Form
 
     private void ScrollUp()
     {
-        for (var y = 1; y < _characters.RowCount; y++)
-        {
-            for (var x = 0; x < _characters.ColumnCount; x++)
-            {
-                _characters.Characters[x, y - 1] = _characters.Characters[x, y];
-            }
-        }
-
-        var lastRow = _characters.RowCount - 1;
-        var zeroChar = (char)0;
-
-        for (var x = 0; x < _characters.ColumnCount; x++)
-        {
-            _characters.Characters[x, lastRow] = zeroChar;
-        }
+        _characters.ScrollUp();
 
         foreach (var graphicalElement in _graphicalElements)
             graphicalElement.ScrollUp();
@@ -377,86 +361,6 @@ public partial class TerminalEmulator : Form
     private void TerminalEmulator_KeyDown(object sender, KeyEventArgs e) =>
         _keyboardController.HandleKeyDown(e, _ts);
 
-    public void InsertCharacterAt(int posX, int posY)
-    {
-        for (var y = _characters.RowCount - 1; y > posY; y--)
-        {
-            for (var x = _characters.ColumnCount - 1; x >= 0; x--)
-            {
-                _characters.Characters[x, y] = GetPreviousCharacter(x, y);
-            }
-        }
-
-        for (var x = _characters.ColumnCount - 1; x > posX; x--)
-        {
-            _characters.Characters[x, posY] = GetPreviousCharacter(x, posY);
-        }
-
-        _characters.Characters[posX, posY] = ' ';
-    }
-
-    private void DeleteCharacterAt(int posX, int posY)
-    {
-        for (var x = posX; x < _characters.ColumnCount; x++)
-        {
-            _characters.Characters[x, posY] = GetNextCharacter(x, posY);
-        }
-
-        posY++;
-
-        if (posY >= _characters.RowCount - 1)
-            return;
-
-        for (var y = posY; y < _characters.RowCount; y++)
-        {
-            for (var x = 0; x < _characters.ColumnCount; x++)
-            {
-                _characters.Characters[x, y] = GetNextCharacter(x, y);
-            }
-        }
-    }
-
-    private char GetNextCharacter(int x, int y)
-    {
-        if (x >= _characters.ColumnCount - 1 && y >= _characters.RowCount - 1)
-            return ' ';
-
-        x++;
-
-        if (x >= _characters.ColumnCount && y < _characters.RowCount - 1)
-        {
-            x = 0;
-            y++;
-        }
-        else if (x >= _characters.ColumnCount)
-        {
-            x = 0;
-            y = _characters.RowCount - 1;
-        }
-
-        return _characters.Characters[x, y];
-    }
-
-    private char GetPreviousCharacter(int x, int y)
-    {
-        if (x <= 0 && y <= 0)
-            return ' ';
-
-        x--;
-
-        if (x < 0 && y > 0)
-        {
-            x = _characters.ColumnCount - 1;
-            y--;
-        }
-        else if (x < 0)
-        {
-            x = 0;
-        }
-
-        return _characters.Characters[x, y];
-    }
-
     private void MoveLineInputLeft()
     {
         _ts.LineInputX--;
@@ -481,22 +385,22 @@ public partial class TerminalEmulator : Form
             if (y == _ts.LineInputY && y == _ts.CursorY) // Only one row
             {
                 for (var x = _ts.LineInputX; x < _ts.CursorX; x++)
-                    result.Append(_characters.Characters[x, y] == (char)0 ? " " : _characters.Characters[x, y]);
+                    result.Append(_characters.GetAt(x, y) == (char)0 ? " " : _characters.GetAt(x, y));
             }
             else if (y == _ts.LineInputY) // First row
             {
                 for (var x = _ts.LineInputX; x < _characters.ColumnCount; x++)
-                    result.Append(_characters.Characters[x, y] == (char)0 ? " " : _characters.Characters[x, y]);
+                    result.Append(_characters.GetAt(x, y) == (char)0 ? " " : _characters.GetAt(x, y));
             }
             else if (y == _ts.CursorY) // Last row
             {
                 for (var x = 0; x < _ts.CursorX; x++)
-                    result.Append(_characters.Characters[x, y] == (char)0 ? " " : _characters.Characters[x, y]);
+                    result.Append(_characters.GetAt(x, y) == (char)0 ? " " : _characters.GetAt(x, y));
             }
             else // Row between
             {
                 for (var x = 0; x < _characters.ColumnCount; x++)
-                    result.Append(_characters.Characters[x, y] == (char)0 ? " " : _characters.Characters[x, y]);
+                    result.Append(_characters.GetAt(x, y) == (char)0 ? " " : _characters.GetAt(x, y));
             }
         }
 
@@ -508,7 +412,7 @@ public partial class TerminalEmulator : Form
         var result = new StringBuilder();
 
         for (var x = 0; x < _ts.CursorX; x++)
-            result.Append(_characters.Characters[x, _ts.CursorY] == (char)0 ? " " : _characters.Characters[x, _ts.CursorY]);
+            result.Append(_characters.GetAt(x, _ts.CursorY) == (char)0 ? " " : _characters.GetAt(x, _ts.CursorY));
 
         var directInput = result.ToString();
 
@@ -613,7 +517,7 @@ public partial class TerminalEmulator : Form
         if (!"abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:,;-*+-/!#$€&()=".Contains(e.KeyChar.ToString()))
             return;
 
-        _characters.Characters[_ts.CursorX, _ts.CursorY] = e.KeyChar;
+        _characters.SetAt(_ts.CursorX, _ts.CursorY, e.KeyChar);
 
         _ts.CursorX++;
 

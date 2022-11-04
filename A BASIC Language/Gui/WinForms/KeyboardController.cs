@@ -1,22 +1,21 @@
-﻿namespace A_BASIC_Language.Gui.WinForms;
+﻿using CharacterMatrix;
+
+namespace A_BASIC_Language.Gui.WinForms;
 
 public class KeyboardController
 {
     public delegate void KeyDownOperationCompletedDelegate(ref KeyEventArgs eventArgs);
 
-    private readonly CharacterMatrix _characters;
+    private readonly Matrix _characters;
     private readonly KeyDownOperationCompletedDelegate _keyDownOperationCompleted;
     private readonly TerminalEmulatorStateStructure _ts;
     private readonly Action _toggleFullScreen;
     private readonly Action _scrollUp;
     private readonly Action _saveLineInput;
     private readonly Action _saveDirectModeInput;
-    private readonly Action<int, int> _deleteCharacterAt;
-    private readonly Action<int, int> _insertCharacterAt;
     private readonly Action _moveLineInputLeft;
 
-    public KeyboardController(CharacterMatrix characters, KeyDownOperationCompletedDelegate keyDownOperationCompleted, TerminalEmulatorStateStructure ts, Action toggleFullScreen, Action scrollUp, Action saveLineInput, Action saveDirectModeInput, Action<int, int> deleteCharacterAt, Action<int, int> insertCharacterAt, Action moveLineInputLeft)
-    {
+    public KeyboardController(Matrix characters, KeyDownOperationCompletedDelegate keyDownOperationCompleted, TerminalEmulatorStateStructure ts, Action toggleFullScreen, Action scrollUp, Action saveLineInput, Action saveDirectModeInput, Action moveLineInputLeft) {
         _characters = characters;
         _keyDownOperationCompleted = keyDownOperationCompleted;
         _ts = ts;
@@ -24,8 +23,6 @@ public class KeyboardController
         _scrollUp = scrollUp;
         _saveLineInput = saveLineInput;
         _saveDirectModeInput = saveDirectModeInput;
-        _deleteCharacterAt = deleteCharacterAt;
-        _insertCharacterAt = insertCharacterAt;
         _moveLineInputLeft = moveLineInputLeft;
     }
 
@@ -99,19 +96,19 @@ public class KeyboardController
             case Keys.Insert:
                 if (_ts.CursorX == _characters.ColumnCount - 1 && _ts.CursorY == _characters.RowCount - 1)
                 {
-                    _characters.Characters[_ts.CursorX, _ts.CursorY] = ' ';
+                    _characters.SetAt(_ts.CursorX, _ts.CursorY, ' ');
                     return;
                 }
-                _insertCharacterAt(_ts.CursorX, _ts.CursorY);
+                _characters.InsertAt(_ts.CursorX, _ts.CursorY);
                 _keyDownOperationCompleted(ref e);
                 break;
             case Keys.Delete:
                 if (_ts.CursorX == _characters.ColumnCount - 1 && _ts.CursorY == _characters.RowCount - 1)
                 {
-                    _characters.Characters[_ts.CursorX, _ts.CursorY] = ' ';
+                    _characters.SetAt(_ts.CursorX, _ts.CursorY, ' ');
                     return;
                 }
-                _deleteCharacterAt(_ts.CursorX, _ts.CursorY);
+                _characters.DeleteAt(_ts.CursorX, _ts.CursorY);
                 _keyDownOperationCompleted(ref e);
                 break;
             case Keys.Home:
@@ -133,7 +130,7 @@ public class KeyboardController
                         _moveLineInputLeft();
 
                 _ts.CursorLeft();
-                _deleteCharacterAt(_ts.CursorX, _ts.CursorY);
+                _characters.DeleteAt(_ts.CursorX, _ts.CursorY);
                 _keyDownOperationCompleted(ref e);
                 break;
         }
