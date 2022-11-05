@@ -46,6 +46,7 @@ public partial class TerminalEmulator : Form
 
         var columnCountConfigValue = System.Configuration.ConfigurationManager.AppSettings["columnCount"];
         var columnCount = 60;
+
         switch (columnCountConfigValue)
         {
             case "40":
@@ -284,6 +285,14 @@ public partial class TerminalEmulator : Form
     private void ScrollUp()
     {
         _characters.ScrollUp();
+
+        if (_ts.LineInputMode)
+        {
+            _ts.LineInputY--;
+
+            if (_ts.LineInputY < 0)
+                _ts.LineInputY = 0;
+        }
 
         foreach (var graphicalElement in _graphicalElements)
             graphicalElement.ScrollUp();
