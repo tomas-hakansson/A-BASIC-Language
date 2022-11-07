@@ -14,8 +14,10 @@ public class KeyboardController
     private readonly Action _saveLineInput;
     private readonly Action _saveDirectModeInput;
     private readonly Action _moveLineInputLeft;
+    private readonly Action _end;
 
-    public KeyboardController(Matrix characters, KeyDownOperationCompletedDelegate keyDownOperationCompleted, TerminalEmulatorStateStructure ts, Action toggleFullScreen, Action scrollUp, Action saveLineInput, Action saveDirectModeInput, Action moveLineInputLeft) {
+    public KeyboardController(Matrix characters, KeyDownOperationCompletedDelegate keyDownOperationCompleted, TerminalEmulatorStateStructure ts, Action toggleFullScreen, Action scrollUp, Action saveLineInput, Action saveDirectModeInput, Action moveLineInputLeft, Action end)
+    {
         _characters = characters;
         _keyDownOperationCompleted = keyDownOperationCompleted;
         _ts = ts;
@@ -24,6 +26,7 @@ public class KeyboardController
         _saveLineInput = saveLineInput;
         _saveDirectModeInput = saveDirectModeInput;
         _moveLineInputLeft = moveLineInputLeft;
+        _end = end;
     }
 
     public void HandleKeyDown(KeyEventArgs e, TerminalEmulatorStateStructure ts)
@@ -32,6 +35,15 @@ public class KeyboardController
         {
             case Keys.F11:
                 _toggleFullScreen();
+                break;
+            case Keys.C:
+                if (e.Control)
+                {
+                    _ts.LineInputMode = false;
+                    _ts.State = TerminalState.Ended;
+                    _ts.UserBreak = true;
+                    _end();
+                }
                 break;
             case Keys.Enter:
                 if (_ts.LineInputMode)

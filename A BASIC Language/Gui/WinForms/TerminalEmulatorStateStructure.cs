@@ -8,11 +8,13 @@ public class TerminalEmulatorStateStructure
     public int CursorX { get; set; }
     public int CursorY { get; set; }
     public TerminalState State { get; set; }
+    public bool UserBreak { get; set; }
     public int LineInputX { get; set; }
     public int LineInputY { get; set; }
 
     public TerminalEmulatorStateStructure(int columnCount, int rowCount)
     {
+        UserBreak = false;
         LineInputMode = false;
         CursorX = 0;
         CursorY = 0;

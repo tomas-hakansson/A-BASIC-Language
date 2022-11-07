@@ -39,6 +39,12 @@ public class Terminal : IDisposable
         _ts.State = TerminalState.Ended;
     }
 
+    public bool UserBreak
+    {
+        get => _ts.UserBreak;
+        set => _ts.UserBreak = value;
+    }
+
     public bool FullScreen
     {
         get => Emu.IsFullScreen();

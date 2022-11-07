@@ -36,7 +36,7 @@ public class OverlayRenderer : IDisposable
             var x = (int)(clientRectangle.Width / 2.0 - size.Width / 2);
             var y = clientRectangle.Height / 3;
             using var blueBrush = new SolidBrush(Color.FromArgb(cursorBlink ? 250 : 170, 0, 0, 250));
-            g.FillRectangle(blueBrush, 0, 18, clientRectangle.Width, ScaleIndependentFont.Height + 3);
+            g.FillRectangle(blueBrush, 0, y - 2, clientRectangle.Width, ScaleIndependentFont.Height + 3);
             g.DrawString(inactiveMessage, ScaleIndependentFont, Brushes.White, x, y);
             g.DrawRectangle(Pens.White, -1, y - 2, clientRectangle.Width + 2, size.Height + 3);
         }

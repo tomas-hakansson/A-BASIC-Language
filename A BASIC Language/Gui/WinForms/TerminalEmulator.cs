@@ -24,11 +24,12 @@ public partial class TerminalEmulator : Form
     private readonly List<GraphicalElement> _graphicalElements;
     private bool CursorBlink { get; set; }
     private Terminal Terminal { get; }
+    private readonly Matrix _characters;
     public static ProgramRepository ProgramRepository { get; }
     public string ProgramFilename { get; set; }
     public static Pen VectorGraphicsPen { get; }
     public string LineInputResult { get; private set; }
-    private readonly Matrix _characters;
+    
 
     static TerminalEmulator()
     {
@@ -68,7 +69,7 @@ public partial class TerminalEmulator : Form
 
         _characterRenderer = new CharacterRenderer(_characters);
         _overlayRenderer = new OverlayRenderer(imageList1);
-        _keyboardController = new KeyboardController(_characters, KeyDownOperationCompleted, _ts, ToggleFullScreen, ScrollUp, SaveLineInput, SaveDirectModeInput, MoveLineInputLeft);
+        _keyboardController = new KeyboardController(_characters, KeyDownOperationCompleted, _ts, ToggleFullScreen, ScrollUp, SaveLineInput, SaveDirectModeInput, MoveLineInputLeft, Terminal.End);
     }
 
     public void EndLineInput()
@@ -440,6 +441,8 @@ public partial class TerminalEmulator : Form
     {
         switch (command.Trim().ToUpper())
         {
+            case "":
+                break;
             case "RESTART":
                 if (_ts.State == TerminalState.Ended)
                 {

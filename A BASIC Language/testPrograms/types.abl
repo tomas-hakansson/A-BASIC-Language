@@ -3,4 +3,4 @@
 30 print 5<2
 40 input "say something";a$
 50 print "you say " a$
-60 goto 40
+60 rem goto 40

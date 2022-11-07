@@ -64,6 +64,13 @@ public class Interpreter
         {
             if (endProgram)
                 return;
+
+            if (_terminal.UserBreak)
+            {
+                _terminal.UserBreak = false;
+                End("User terminated the program.");
+            }
+
             if (_terminal.State != TerminalState.Running)
                 return;
 
@@ -300,22 +307,20 @@ public class Interpreter
     {
         EndMessageDisplayed = true;
 
-        if (_terminal != null)
-        {
-            if (_terminal.FullScreen)
-                _terminal.FullScreen = false;
+        if (_terminal == null)
+            return;
 
-            _terminal.Title = "Simple direct mode";
+        if (_terminal.FullScreen)
+            _terminal.FullScreen = false;
 
-            _terminal.WriteLine();
-            _terminal.WriteLine(TheProgramHasEnded);
+        _terminal.Title = "Simple direct mode";
 
-            if (!string.IsNullOrWhiteSpace(message))
-                _terminal.WriteLine(message);
+        _terminal.WriteLine();
 
-            _terminal.WriteLine();
-            _terminal.WriteLine("Ready. Type RESTART, SOURCE, LOAD or QUIT.");
-            _terminal.End();
-        }
+        _terminal.WriteLine(string.IsNullOrWhiteSpace(message) ? TheProgramHasEnded : message);
+
+        _terminal.WriteLine();
+        _terminal.WriteLine("Ready. Type RESTART, SOURCE, LOAD or QUIT.");
+        _terminal.End();
     }
 }
