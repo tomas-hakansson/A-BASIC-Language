@@ -30,7 +30,6 @@ public partial class TerminalEmulator : Form
     public static Pen VectorGraphicsPen { get; }
     public string LineInputResult { get; private set; }
     
-
     static TerminalEmulator()
     {
         VectorGraphicsPen = new Pen(Color.FromArgb(100, 100, 0));
