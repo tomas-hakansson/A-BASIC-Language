@@ -1,10 +1,8 @@
-﻿using System.Net;
+﻿namespace A_BASIC_Language.IO;
 
-namespace A_BASIC_Language.IO;
-
-public class NetIO : IOBase
+public class NetIo : IoBase
 {
-    public NetIO(string filename) : base(filename)
+    public NetIo(string filename) : base(filename)
     {
     }
 
@@ -13,13 +11,16 @@ public class NetIO : IOBase
             ? Filename.Split("/").LastOrDefault() ?? ""
             : Filename;
 
-    public override LoadResult Load()
+    public override async Task<LoadResult> Load()
     {
         try
         {
-            using var wc = new WebClient(); // todo
-            var source = wc.DownloadString(Filename);
-            return LoadResult.Success(source);
+            var httpClient = new HttpClient();
+            var response = await httpClient.GetStringAsync(Filename);
+
+            return string.IsNullOrWhiteSpace(response)
+                ? LoadResult.Fail() 
+                : LoadResult.Success(response ?? "");
         }
         catch
         {

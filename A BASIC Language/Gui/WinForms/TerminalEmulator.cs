@@ -495,23 +495,23 @@ public partial class TerminalEmulator : Form
         }
     }
 
-    public void Run(bool clear)
+    public async void Run(bool clear)
     {
         Cursor = Cursors.WaitCursor;
 
-        var source = ProgramRepository.GetProgram(this, ProgramFilename, out var nameOnly);
+        var source = await ProgramRepository.GetProgram(this, ProgramFilename);
 
-        if (string.IsNullOrWhiteSpace(source))
+        if (string.IsNullOrWhiteSpace(source.SourceCode))
         {
             Terminal.WriteLine("Load failed.");
             return;
         }
 
-        SourceCode = source;
+        SourceCode = source.SourceCode;
 
         Interpreter eval = new(SourceCode);
         Cursor = Cursors.Default;
-        Terminal.Run(nameOnly, ProgramFilename, clear);
+        Terminal.Run(source.Filename, ProgramFilename, clear);
         eval.Run(Terminal);
     }
 

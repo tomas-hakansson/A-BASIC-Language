@@ -7,6 +7,8 @@ public partial class SourceDialog : Form
 
     public SourceDialog()
     {
+        SourceCode = "";
+        Filename = "";
         InitializeComponent();
     }
 

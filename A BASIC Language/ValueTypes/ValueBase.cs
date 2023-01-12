@@ -279,6 +279,20 @@ public abstract class ValueBase
         throw new SystemException("What?");
     }
 
+    // ReSharper disable once RedundantOverriddenMember
+    public override bool Equals(object? obj) // todo
+    {
+        // ReSharper disable once BaseObjectEqualsIsObjectEquals
+        return base.Equals(obj);
+    }
+
+    // ReSharper disable once RedundantOverriddenMember
+    public override int GetHashCode() // todo
+    {
+        // ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode
+        return base.GetHashCode();
+    }
+
     public abstract bool IsOfType<T>() where T : ValueBase;
 
     public abstract bool CanGetAsType<T>() where T : ValueBase;

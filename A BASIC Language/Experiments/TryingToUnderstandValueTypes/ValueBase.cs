@@ -4,20 +4,22 @@ namespace A_BASIC_Language.Experiments.TryingToUnderstandValueTypes;
 
 public abstract class ValueBase
 {
+    public const double FloatValueCompareErrorTolerance = 0.00001;
+
     //https://www.codeproject.com/Articles/242749/Multiple-Dispatch-and-Double-Dispatch
     //Note: Multimethod -> Compare(ValueBase x, ValueBase y);
-    static bool Equal(FloatValue f1, FloatValue f2) => f1.Value == f2.Value;
-    static bool Equal(FloatValue f, IntValue i) => f.Value == i.Value;
-    static bool Equal(FloatValue f, StringValue s) => f.Value.ToString() == s.Value;
+    static bool Equal(FloatValue f1, FloatValue f2) => Math.Abs(f1.Value - f2.Value) < FloatValueCompareErrorTolerance;
+    static bool Equal(FloatValue f, IntValue i) => Math.Abs(f.Value - i.Value) < FloatValueCompareErrorTolerance;
+    static bool Equal(FloatValue f, StringValue s) => f.Value.ToString(CultureInfo.InvariantCulture) == s.Value;
     static bool Equal(FloatValue f, NullValue n) => false;
 
     static bool Equal(IntValue i1, IntValue i2) => i1.Value == i2.Value;
-    static bool Equal(IntValue i, FloatValue f) => i.Value == f.Value;
+    static bool Equal(IntValue i, FloatValue f) => Math.Abs(i.Value - f.Value) < FloatValueCompareErrorTolerance;
     static bool Equal(IntValue i, StringValue s) => i.Value.ToString() == s.Value;
     static bool Equal(IntValue i, NullValue s) => false;
 
     static bool Equal(StringValue s1, StringValue s2) => s1.Value == s2.Value;
-    static bool Equal(StringValue s, FloatValue f) => s.Value == f.Value.ToString();
+    static bool Equal(StringValue s, FloatValue f) => s.Value == f.Value.ToString(CultureInfo.InvariantCulture);
     static bool Equal(StringValue s, IntValue i) => s.Value == i.Value.ToString();
     static bool Equal(StringValue s, NullValue n) => false;
 
@@ -29,10 +31,14 @@ public abstract class ValueBase
     public static bool operator ==(ValueBase left, ValueBase right) => Equal((dynamic)left, (dynamic)right);
     public static bool operator !=(ValueBase left, ValueBase right) => !(left == right);
 
-    public override bool Equals(object obj)//Ponder: WHY is it complaining‽‽‽
+    public override bool Equals(object? obj)
     {
-        if (obj is null) return false;
-        if (ReferenceEquals(this, obj)) return true;
+        if (obj is null)
+            return false;
+
+        if (ReferenceEquals(this, obj))
+            return true;
+        
         return obj is ValueBase @base && this == @base;
     }
     public abstract int GetHash();
@@ -77,7 +83,5 @@ public class StringValue : ValueBase
 
 public class NullValue : ValueBase
 {
-    public NullValue(object obj) { }
-
     public override int GetHash() => 42;
 }

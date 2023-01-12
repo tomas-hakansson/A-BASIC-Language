@@ -1,15 +1,15 @@
 ﻿namespace A_BASIC_Language.IO;
 
-public abstract class IOBase
+public abstract class IoBase
 {
     protected string Filename { get; }
 
-    protected IOBase(string filename)
+    protected IoBase(string filename)
     {
         Filename = filename;
     }
 
     public abstract string GetNameOnly();
 
-    public abstract LoadResult Load();
+    public abstract Task<LoadResult> Load();
 }

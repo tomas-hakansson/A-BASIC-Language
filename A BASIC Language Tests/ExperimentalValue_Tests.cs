@@ -17,8 +17,8 @@ public class ExperimentalValue_Tests
         var unequalFloat = new FloatValue(50.1);
         var unequalInt = new IntValue(49);
 
-        var aNull = new NullValue(42);
-        var anotherNull = new NullValue(-1);
+        var aNull = new NullValue();
+        var anotherNull = new NullValue();
 
         Assert.IsTrue(equalString == equalFloat);
         Assert.IsTrue(equalString == equalInt);

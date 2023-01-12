@@ -41,7 +41,7 @@ public class FloatValue : ValueBase
         Value != 0.0;
 
     public override string ToString() =>
-        Value.ToString();
+        Value.ToString(CultureInfo.InvariantCulture);
 
     public static bool operator ==(FloatValue? left, FloatValue? right)
     {
@@ -209,5 +209,25 @@ public class FloatValue : ValueBase
         var f = (double)right.GetValueAsType<FloatValue>();
 
         return left.Value <= f;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not ValueBase b)
+            return false;
+
+        if (!b.CanGetAsType<FloatValue>())
+            return false;
+
+        var f = (double)b.GetValueAsType<FloatValue>();
+
+        return Math.Abs(Value - f) < Experiments.TryingToUnderstandValueTypes.ValueBase.FloatValueCompareErrorTolerance;
+    }
+
+    public override int GetHashCode()
+    {
+        // ReSharper disable once NonReadonlyMemberInGetHashCode
+        var bits = BitConverter.DoubleToUInt64Bits(Value);
+        return (int)bits%int.MaxValue;
     }
 }

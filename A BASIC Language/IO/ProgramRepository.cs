@@ -9,29 +9,29 @@ public class ProgramRepository
         ProgramCache = new Dictionary<string, string>();
     }
 
-    public string GetProgram(IWin32Window owner, string pathAndName, out string name)
+    public async Task<BasicProgram> GetProgram(IWin32Window owner, string pathAndName)
     {
         var ioDispatcher = new Dispatcher();
         var io = ioDispatcher.GetIo(pathAndName);
-        name = io.GetNameOnly();
+        var name = io.GetNameOnly();
 
         if (ProgramCache.ContainsKey(name))
-            return ProgramCache.GetValueOrDefault(name) ?? "";
+            return new BasicProgram(ProgramCache.GetValueOrDefault(name) ?? "", name);
 
-        var source = io.Load();
+        var source = await io.Load();
 
         if (!source.Result)
         {
             MessageBox.Show(owner, @"Failed to load source code.", @"Run failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return "";
+            return BasicProgram.Empty();
         }
 
         if (source.IsEmpty)
         {
             MessageBox.Show(@"Empty file loaded.", @"Run failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return "";
+            return BasicProgram.Empty();
         }
 
-        return source.Data;
+        return new BasicProgram(source.Data, name);
     }
 }

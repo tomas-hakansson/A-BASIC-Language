@@ -2,9 +2,9 @@
 
 namespace A_BASIC_Language.IO;
 
-public class FileIO : IOBase
+public class FileIo : IoBase
 {
-    public FileIO(string filename) : base(filename)
+    public FileIo(string filename) : base(filename)
     {
     }
 
@@ -25,12 +25,12 @@ public class FileIO : IOBase
         return nameOnly;
     }
 
-    public override LoadResult Load()
+    public override async Task<LoadResult> Load()
     {
         try
         {
             using var x = new StreamReader(Filename, Encoding.UTF8);
-            var source = x.ReadToEnd();
+            var source = await x.ReadToEndAsync();
             x.Close();
             return LoadResult.Success(source);
         }
