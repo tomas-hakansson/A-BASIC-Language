@@ -210,4 +210,18 @@ public class IntValue : ValueBase
 
         return left.Value <= i;
     }
+
+    // ReSharper disable once RedundantOverriddenMember
+    public override bool Equals(object? obj) // todo
+    {
+        // ReSharper disable once BaseObjectEqualsIsObjectEquals
+        return base.Equals(obj);
+    }
+
+    // ReSharper disable once RedundantOverriddenMember
+    public override int GetHashCode() // todo
+    {
+        // ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode
+        return base.GetHashCode();
+    }
 }
