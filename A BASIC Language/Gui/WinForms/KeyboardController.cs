@@ -138,7 +138,7 @@ public class KeyboardController
                     return;
 
                 if (_ts.LineInputMode)
-                    if (_ts.LineInputY > _ts.CursorPosition.Y || (_ts.LineInputY == _ts.CursorPosition.Y && _ts.LineInputX >= _ts.CursorPosition.X))
+                    if (_ts.LineInputPosition.Y > _ts.CursorPosition.Y || (_ts.LineInputPosition.Y == _ts.CursorPosition.Y && _ts.LineInputPosition.X >= _ts.CursorPosition.X))
                         _moveLineInputLeft();
 
                 _ts.CursorLeft();

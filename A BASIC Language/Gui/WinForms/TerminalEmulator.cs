@@ -125,8 +125,7 @@ public partial class TerminalEmulator : Form
 
     public void Clear()
     {
-        _ts.LineInputX = 0;
-        _ts.LineInputY = 0;
+        _ts.LineInputPosition.Clear();
         LineInputResult = "";
         _ts.CursorPosition.Clear();
         _ts.LineInputMode = false;
@@ -240,8 +239,7 @@ public partial class TerminalEmulator : Form
 
     public void BeginLineInput()
     {
-        _ts.LineInputX = _ts.CursorPosition.X;
-        _ts.LineInputY = _ts.CursorPosition.Y;
+        _ts.LineInputPosition.Set(_ts.CursorPosition);
         _ts.LineInputMode = true;
     }
 
@@ -292,10 +290,10 @@ public partial class TerminalEmulator : Form
 
         if (_ts.LineInputMode)
         {
-            _ts.LineInputY--;
+            _ts.LineInputPosition.Y--;
 
-            if (_ts.LineInputY < 0)
-                _ts.LineInputY = 0;
+            if (_ts.LineInputPosition.Y < 0)
+                _ts.LineInputPosition.Y = 0;
         }
 
         foreach (var graphicalElement in _graphicalElements)
@@ -359,7 +357,7 @@ public partial class TerminalEmulator : Form
         foreach (var graphicalElement in _graphicalElements)
             graphicalElement.Draw(e.Graphics, CharacterWidth, CharacterHeight, ClientRectangle.Width, ClientRectangle.Height);
 
-        _characterRenderer.Render(e.Graphics, _ts.LineInputMode, active, CursorBlink, _ts.CursorPosition, _ts.LineInputX, _ts.LineInputY);
+        _characterRenderer.Render(e.Graphics, _ts.LineInputMode, active, CursorBlink, _ts.CursorPosition, _ts.LineInputPosition.X, _ts.LineInputPosition.Y);
 
         e.Graphics.ResetTransform();
         
@@ -374,35 +372,23 @@ public partial class TerminalEmulator : Form
     private void TerminalEmulator_KeyDown(object sender, KeyEventArgs e) =>
         _keyboardController.HandleKeyDown(e, _ts);
 
-    private void MoveLineInputLeft()
-    {
-        _ts.LineInputX--;
-
-        if (_ts.LineInputX < 0 && _ts.LineInputY > 0)
-        {
-            _ts.LineInputX = _characters.ColumnCount - 1;
-            _ts.LineInputY--;
-        }
-        else if (_ts.LineInputX < 0)
-        {
-            _ts.LineInputX = 0;
-        }
-    }
+    private void MoveLineInputLeft() =>
+        _ts.LineInputPosition.MoveLeft(_characters.ColumnCount);
 
     private void SaveLineInput()
     {
         var result = new StringBuilder();
 
-        for (var y = _ts.LineInputY; y <= _ts.CursorPosition.Y; y++)
+        for (var y = _ts.LineInputPosition.Y; y <= _ts.CursorPosition.Y; y++)
         {
-            if (y == _ts.LineInputY && y == _ts.CursorPosition.Y) // Only one row
+            if (y == _ts.LineInputPosition.Y && y == _ts.CursorPosition.Y) // Only one row
             {
-                for (var x = _ts.LineInputX; x < _ts.CursorPosition.X; x++)
+                for (var x = _ts.LineInputPosition.X; x < _ts.CursorPosition.X; x++)
                     result.Append(_characters.GetAt(x, y) == (char)0 ? " " : _characters.GetAt(x, y));
             }
-            else if (y == _ts.LineInputY) // First row
+            else if (y == _ts.LineInputPosition.Y) // First row
             {
-                for (var x = _ts.LineInputX; x < _characters.ColumnCount; x++)
+                for (var x = _ts.LineInputPosition.X; x < _characters.ColumnCount; x++)
                     result.Append(_characters.GetAt(x, y) == (char)0 ? " " : _characters.GetAt(x, y));
             }
             else if (y == _ts.CursorPosition.Y) // Last row

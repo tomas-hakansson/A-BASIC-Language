@@ -8,8 +8,7 @@ public class TerminalEmulatorStateStructure
     public Point CursorPosition { get; }
     public TerminalState State { get; set; }
     public bool UserBreak { get; set; }
-    public int LineInputX { get; set; }
-    public int LineInputY { get; set; }
+    public Point LineInputPosition { get; }
 
     public TerminalEmulatorStateStructure(int columnCount, int rowCount)
     {
@@ -18,8 +17,7 @@ public class TerminalEmulatorStateStructure
         CursorPosition = new Point();
         _columnCount = columnCount;
         _rowCount = rowCount;
-        LineInputX = 0;
-        LineInputY = 0;
+        LineInputPosition = new Point();
     }
 
     public void Quit()

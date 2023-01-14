@@ -27,6 +27,18 @@ public class Point
     public bool Is(Point p) =>
         X == p.X && Y == p.Y;
 
+    public void Set(int x, int y)
+    {
+        X = x;
+        Y = y;
+    }
+
+    public void Set(Point point)
+    {
+        X = point.X;
+        Y = point.Y;
+    }
+
     public void MoveLeft(int limit)
     {
         X--;
