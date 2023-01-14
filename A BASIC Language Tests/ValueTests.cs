@@ -5,8 +5,10 @@ using A_BASIC_Language.ValueTypes;
 namespace A_BASIC_Language_Tests;
 
 [TestClass]
-public class Value_Tests
+public class ValueTests
 {
+    private const double FloatValueCompareErrorTolerance = A_BASIC_Language.Experiments.TryingToUnderstandValueTypes.ValueBase.FloatValueCompareErrorTolerance;
+
     [TestMethod]
     public void CanCreateValueTypes()
     {
@@ -30,7 +32,7 @@ public class Value_Tests
 
         Assert.IsTrue(i.CanGetAsType<FloatValue>());
         Assert.IsTrue(i.GetValueAsType<FloatValue>() is double);
-        Assert.IsTrue(Math.Abs((double)i.GetValueAsType<FloatValue>() - 40.0) < 0.00001);
+        Assert.IsTrue(Math.Abs((double)i.GetValueAsType<FloatValue>() - 40.0) < FloatValueCompareErrorTolerance);
 
         Assert.IsTrue(i.CanGetAsType<StringValue>());
         Assert.IsTrue(i.GetValueAsType<StringValue>() is string);
@@ -48,7 +50,7 @@ public class Value_Tests
 
         Assert.IsTrue(f.CanGetAsType<FloatValue>());
         Assert.IsTrue(f.GetValueAsType<FloatValue>() is double);
-        Assert.IsTrue((double)f.GetValueAsType<FloatValue>() == 40.5);
+        Assert.IsTrue(Math.Abs((double)f.GetValueAsType<FloatValue>() - 40.5) < FloatValueCompareErrorTolerance);
 
         Assert.IsTrue(f.CanGetAsType<StringValue>());
         Assert.IsTrue(f.GetValueAsType<StringValue>() is string);
@@ -66,7 +68,7 @@ public class Value_Tests
 
         Assert.IsTrue(s.CanGetAsType<FloatValue>());
         Assert.IsTrue(s.GetValueAsType<FloatValue>() is double);
-        Assert.IsTrue((double)s.GetValueAsType<FloatValue>() == 40.5);
+        Assert.IsTrue(Math.Abs((double)s.GetValueAsType<FloatValue>() - 40.5) < FloatValueCompareErrorTolerance);
 
         Assert.IsTrue(s.CanGetAsType<StringValue>());
         Assert.IsTrue(s.GetValueAsType<StringValue>() is string);
@@ -92,15 +94,15 @@ public class Value_Tests
     {
         var stringThing = ValueBase.GetDefaultValueFor("A$");
         Assert.IsTrue(stringThing is StringValue);
-        Assert.IsTrue((stringThing as StringValue).Value == "");
+        Assert.IsTrue((stringThing as StringValue)!.Value == "");
 
         var intThing = ValueBase.GetDefaultValueFor("A%");
         Assert.IsTrue(intThing is IntValue);
-        Assert.IsTrue((intThing as IntValue).Value == 0);
+        Assert.IsTrue((intThing as IntValue)!.Value == 0);
 
         var floatThing = ValueBase.GetDefaultValueFor("A");
         Assert.IsTrue(floatThing is FloatValue);
-        Assert.IsTrue((floatThing as FloatValue).Value == 0.0);
+        Assert.IsTrue((floatThing as FloatValue)!.Value == 0.0);
     }
 
     [TestMethod]
