@@ -121,15 +121,14 @@ public partial class TerminalEmulator : Form
     }
 
     private Screen GetScreen() =>
-        Screen.FromPoint(new Point(Left + Width / 2, Top + Height / 2));
+        Screen.FromPoint(new System.Drawing.Point(Left + Width / 2, Top + Height / 2));
 
     public void Clear()
     {
         _ts.LineInputX = 0;
         _ts.LineInputY = 0;
         LineInputResult = "";
-        _ts.CursorX = 0;
-        _ts.CursorY = 0;
+        _ts.CursorPosition.Clear();
         _ts.LineInputMode = false;
         _graphicalElements.Clear();
         _characters.Clear();
@@ -210,12 +209,12 @@ public partial class TerminalEmulator : Form
         foreach (var c in text)
             WriteCharAndProgress(c);
 
-        _ts.CursorX = 0;
-        _ts.CursorY++;
-
-        if (_ts.CursorY >= _characters.RowCount)
+        _ts.CursorPosition.X = 0;
+        _ts.CursorPosition.Y++;
+        
+        if (_ts.CursorPosition.Y >= _characters.RowCount)
         {
-            _ts.CursorY = _characters.RowCount - 1;
+            _ts.CursorPosition.Y = _characters.RowCount - 1;
             ScrollUp();
         }
 
@@ -227,7 +226,7 @@ public partial class TerminalEmulator : Form
 
     public void NextTab(string text)
     {
-        while (_ts.CursorX%8 != 0)
+        while (_ts.CursorPosition.X%8 != 0)
             Write(" ");
 
         Write(text);
@@ -235,14 +234,14 @@ public partial class TerminalEmulator : Form
 
     public void WriteSeparator()
     {
-        _graphicalElements.Add(new SeparatorGraphicalElement(_characters.RowCount, _ts.CursorY));
+        _graphicalElements.Add(new SeparatorGraphicalElement(_characters.RowCount, _ts.CursorPosition.Y));
         WriteLine();
     }
 
     public void BeginLineInput()
     {
-        _ts.LineInputX = _ts.CursorX;
-        _ts.LineInputY = _ts.CursorY;
+        _ts.LineInputX = _ts.CursorPosition.X;
+        _ts.LineInputY = _ts.CursorPosition.Y;
         _ts.LineInputMode = true;
     }
 
@@ -270,20 +269,20 @@ public partial class TerminalEmulator : Form
 
     private void WriteCharAndProgress(char c)
     {
-        _characters.SetAt(_ts.CursorX, _ts.CursorY, c);
+        _characters.SetAt(_ts.CursorPosition.X, _ts.CursorPosition.Y, c);
 
-        _ts.CursorX++;
+        _ts.CursorPosition.X++;
 
-        if (_ts.CursorX < _characters.ColumnCount)
+        if (_ts.CursorPosition.X < _characters.ColumnCount)
             return;
 
-        _ts.CursorX = 0;
-        _ts.CursorY++;
+        _ts.CursorPosition.X = 0;
+        _ts.CursorPosition.Y++;
 
-        if (_ts.CursorY < _characters.RowCount)
+        if (_ts.CursorPosition.Y < _characters.RowCount)
             return;
 
-        _ts.CursorY = _characters.RowCount - 1;
+        _ts.CursorPosition.Y = _characters.RowCount - 1;
         ScrollUp();
     }
 
@@ -360,7 +359,7 @@ public partial class TerminalEmulator : Form
         foreach (var graphicalElement in _graphicalElements)
             graphicalElement.Draw(e.Graphics, CharacterWidth, CharacterHeight, ClientRectangle.Width, ClientRectangle.Height);
 
-        _characterRenderer.Render(e.Graphics, _ts.LineInputMode, active, CursorBlink, _ts.CursorX, _ts.CursorY, _ts.LineInputX, _ts.LineInputY);
+        _characterRenderer.Render(e.Graphics, _ts.LineInputMode, active, CursorBlink, _ts.CursorPosition, _ts.LineInputX, _ts.LineInputY);
 
         e.Graphics.ResetTransform();
         
@@ -394,11 +393,11 @@ public partial class TerminalEmulator : Form
     {
         var result = new StringBuilder();
 
-        for (var y = _ts.LineInputY; y <= _ts.CursorY; y++)
+        for (var y = _ts.LineInputY; y <= _ts.CursorPosition.Y; y++)
         {
-            if (y == _ts.LineInputY && y == _ts.CursorY) // Only one row
+            if (y == _ts.LineInputY && y == _ts.CursorPosition.Y) // Only one row
             {
-                for (var x = _ts.LineInputX; x < _ts.CursorX; x++)
+                for (var x = _ts.LineInputX; x < _ts.CursorPosition.X; x++)
                     result.Append(_characters.GetAt(x, y) == (char)0 ? " " : _characters.GetAt(x, y));
             }
             else if (y == _ts.LineInputY) // First row
@@ -406,9 +405,9 @@ public partial class TerminalEmulator : Form
                 for (var x = _ts.LineInputX; x < _characters.ColumnCount; x++)
                     result.Append(_characters.GetAt(x, y) == (char)0 ? " " : _characters.GetAt(x, y));
             }
-            else if (y == _ts.CursorY) // Last row
+            else if (y == _ts.CursorPosition.Y) // Last row
             {
-                for (var x = 0; x < _ts.CursorX; x++)
+                for (var x = 0; x < _ts.CursorPosition.X; x++)
                     result.Append(_characters.GetAt(x, y) == (char)0 ? " " : _characters.GetAt(x, y));
             }
             else // Row between
@@ -425,8 +424,8 @@ public partial class TerminalEmulator : Form
     {
         var result = new StringBuilder();
 
-        for (var x = 0; x < _ts.CursorX; x++)
-            result.Append(_characters.GetAt(x, _ts.CursorY) == (char)0 ? " " : _characters.GetAt(x, _ts.CursorY));
+        for (var x = 0; x < _ts.CursorPosition.X; x++)
+            result.Append(_characters.GetAt(x, _ts.CursorPosition.Y) == (char)0 ? " " : _characters.GetAt(x, _ts.CursorPosition.Y));
 
         var directInput = result.ToString();
 
@@ -533,19 +532,19 @@ public partial class TerminalEmulator : Form
         if (!"abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:,;-*+-/!#$€&()=".Contains(e.KeyChar.ToString()))
             return;
 
-        _characters.SetAt(_ts.CursorX, _ts.CursorY, e.KeyChar);
+        _characters.SetAt(_ts.CursorPosition.X, _ts.CursorPosition.Y, e.KeyChar);
 
-        _ts.CursorX++;
+        _ts.CursorPosition.X++;
 
-        if (_ts.CursorX >= _characters.ColumnCount && _ts.CursorY < _characters.RowCount - 1)
+        if (_ts.CursorPosition.X >= _characters.ColumnCount && _ts.CursorPosition.Y < _characters.RowCount - 1)
         {
-            _ts.CursorX = 0;
-            _ts.CursorY++;
+            _ts.CursorPosition.X = 0;
+            _ts.CursorPosition.Y++;
         }
-        else if (_ts.CursorX >= _characters.ColumnCount)
+        else if (_ts.CursorPosition.X >= _characters.ColumnCount)
         {
-            _ts.CursorX = 0;
-            _ts.CursorY = _characters.RowCount - 1;
+            _ts.CursorPosition.X = 0;
+            _ts.CursorPosition.Y = _characters.RowCount - 1;
         }
 
         e.Handled = true;
