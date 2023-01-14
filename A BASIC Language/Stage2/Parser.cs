@@ -379,7 +379,7 @@ class Parser
     (string fullName, string typeSpecifier, bool dimVariable) ASetVariable(bool assignmentMode = false)
     {
         /*
-        What's a set variable? It's a variable that has a value together with any indices.
+        What's a set variable? It's a variable that has a value, together with an optional index.
         Examples:
         x
         y(4)

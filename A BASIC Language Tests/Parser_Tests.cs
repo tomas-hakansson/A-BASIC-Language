@@ -335,6 +335,13 @@ public class Parser_Tests
     }
 
     //[TestMethod]
+    //public void BugFixTest_4_5_shouldBe_45()
+    //{
+    //    var source = "10 print 4 5;";
+    //    Assert.AreEqual("L(10) N(45) P(#WRITE)", Parse(source));
+    //}
+
+    //[TestMethod]
     //public void DEF_something()//ToDo: def fn
     //{
     //    var source = "10 def fn f(x) = 2 * x";
