@@ -27,6 +27,9 @@ public class Terminal : IDisposable
         _ts.State = TerminalState.Running;
     }
 
+    public bool QuitFlag =>
+        Emu.QuitFlag;
+
     public TerminalState State
     {
         get => _ts.State;
@@ -86,7 +89,7 @@ public class Terminal : IDisposable
         {
             Application.DoEvents();
 
-            if (_ts.State != TerminalState.Running)
+            if (_ts.State != TerminalState.Running || QuitFlag)
                 return "";
 
         } while (_ts.LineInputMode);

@@ -29,6 +29,7 @@ public partial class TerminalEmulator : Form
     public string ProgramFilename { get; set; }
     public static Pen VectorGraphicsPen { get; }
     public string LineInputResult { get; private set; }
+    public bool QuitFlag { get; set; }
     
     static TerminalEmulator()
     {
@@ -249,6 +250,10 @@ public partial class TerminalEmulator : Form
     {
         timer1.Enabled = false;
         CursorBlink = true;
+
+        if (QuitFlag)
+            return;
+
         timer1.Enabled = true;
         Invalidate();
     }
@@ -564,6 +569,7 @@ public partial class TerminalEmulator : Form
 
     private void TerminalEmulator_FormClosed(object sender, FormClosedEventArgs e)
     {
+        QuitFlag = true;
         _ts.Quit();
     }
 }

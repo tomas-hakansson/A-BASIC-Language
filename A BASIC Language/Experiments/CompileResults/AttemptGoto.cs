@@ -1,4 +1,5 @@
 ﻿namespace A_BASIC_Language.Experiments.CompileResults;
+
 internal class AttemptGoto
 {
     /*
@@ -20,16 +21,16 @@ internal class AttemptGoto
     ABL_Label_5:
         var readValue = Console.ReadLine();
     ABL_Label_10:
-        var readValue_Int = int.Parse(readValue!);
-        Console.WriteLine(readValue_Int);
+        var readValueInt = int.Parse(readValue!);
+        Console.WriteLine(readValueInt);
     ABL_Label_15:
-        Console.WriteLine(readValue_Int + 1);
+        Console.WriteLine(readValueInt + 1);
     ABL_Label_20:
-        Console.WriteLine(readValue_Int + 5);
+        Console.WriteLine(readValueInt + 5);
     ABL_Label_25:
         goto ABL_Label_GOTO_Switch;
     ABL_Label_GOTO_Switch:
-        switch (readValue_Int)
+        switch (readValueInt)
         {
             case 5:
                 goto ABL_Label_5;

@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using A_BASIC_Language.ValueTypes;
 
 namespace A_BASIC_Language_Tests;
@@ -29,7 +30,7 @@ public class Value_Tests
 
         Assert.IsTrue(i.CanGetAsType<FloatValue>());
         Assert.IsTrue(i.GetValueAsType<FloatValue>() is double);
-        Assert.IsTrue((double)i.GetValueAsType<FloatValue>() == 40.0);
+        Assert.IsTrue(Math.Abs((double)i.GetValueAsType<FloatValue>() - 40.0) < 0.00001);
 
         Assert.IsTrue(i.CanGetAsType<StringValue>());
         Assert.IsTrue(i.GetValueAsType<StringValue>() is string);

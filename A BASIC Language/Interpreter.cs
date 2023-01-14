@@ -53,7 +53,7 @@ public class Interpreter
         var addExecutor = new AddExecutor(_data);
         var subtractExecutor = new SubtractExecutor(_data);
         var comparisonExecutor = new ComparisonExecutor(_data);
-        var flatVariableExecutor = new FlatVariableExecutor(_data,End, _variables);
+        var flatVariableExecutor = new FlatVariableExecutor(_data, End, _variables);
         var dimExecutor = new DimExecutor(_data, End, _dimVariables);
 
         Application.DoEvents();
@@ -212,12 +212,35 @@ public class Interpreter
                             break;
                         case "#INPUT-FLOAT":
                             {
-                                var value = ValueBase.GetValueType(_terminal.ReadLine()); // TODO: Must support "redo from start".
-                                _data.Push(value);
+                                bool happy;
+                                do
+                                {
+                                    if (_terminal.QuitFlag)
+                                        return;
+
+                                    happy = false;
+                                    var value = ValueBase.GetValueType(_terminal.ReadLine());
+
+                                    if (value.CanGetAsType<FloatValue>())
+                                    {
+                                        var floatValue = new FloatValue((double)value.GetValueAsType<FloatValue>());
+                                        _data.Push(floatValue);
+                                        happy = true;
+                                    }
+                                    else
+                                    {
+                                        _terminal.WriteLine("?Redo from start");
+                                        _terminal.Write("Enter a numeric value: ");
+                                    }
+
+                                } while (!happy);
                             }
                             break;
                         case "#INPUT-STRING":
                             {
+                                if (_terminal.QuitFlag)
+                                    return;
+
                                 var value = ValueBase.GetValueType(_terminal.ReadLine()); // TODO: Must support "redo from start".
                                 _data.Push(value);
                             }
