@@ -241,7 +241,7 @@ public class Interpreter
                                 if (_terminal.QuitFlag)
                                     return;
 
-                                var value = ValueBase.GetValueType(_terminal.ReadLine()); // TODO: Must support "redo from start".
+                                var value = ValueBase.GetValueType(_terminal.ReadLine());
                                 _data.Push(value);
                             }
                             break;
