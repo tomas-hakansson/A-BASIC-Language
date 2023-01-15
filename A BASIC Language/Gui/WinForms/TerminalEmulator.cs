@@ -369,8 +369,18 @@ public partial class TerminalEmulator : Form
         Invalidate();
     }
 
-    private void TerminalEmulator_KeyDown(object sender, KeyEventArgs e) =>
-        _keyboardController.HandleKeyDown(e, _ts);
+    private void TerminalEmulator_KeyDown(object sender, KeyEventArgs e)
+    {
+        var breakFlag = _keyboardController.HandleKeyDown(e, _ts);
+
+        if (!breakFlag)
+            return;
+
+        if (_ts.CursorPosition.X > 0)
+            WriteLine();
+
+        WriteLine("?User break.");
+    }
 
     private void MoveLineInputLeft() =>
         _ts.LineInputPosition.MoveLeft(_characters.ColumnCount);

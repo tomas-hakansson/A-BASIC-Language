@@ -29,7 +29,7 @@ public class KeyboardController
         _end = end;
     }
 
-    public void HandleKeyDown(KeyEventArgs e, TerminalEmulatorStateStructure ts)
+    public bool HandleKeyDown(KeyEventArgs e, TerminalEmulatorStateStructure ts)
     {
         switch (e.KeyCode)
         {
@@ -43,6 +43,7 @@ public class KeyboardController
                     _ts.State = TerminalState.Ended;
                     _ts.UserBreak = true;
                     _end();
+                    return true;
                 }
                 break;
             case Keys.Enter:
@@ -109,7 +110,7 @@ public class KeyboardController
                 if (_ts.CursorPosition.X == _characters.ColumnCount - 1 && _ts.CursorPosition.Y == _characters.RowCount - 1)
                 {
                     _characters.SetAt(_ts.CursorPosition.X, _ts.CursorPosition.Y, ' ');
-                    return;
+                    return false;
                 }
                 _characters.InsertAt(_ts.CursorPosition.X, _ts.CursorPosition.Y);
                 _keyDownOperationCompleted(ref e);
@@ -118,7 +119,7 @@ public class KeyboardController
                 if (_ts.CursorPosition.X == _characters.ColumnCount - 1 && _ts.CursorPosition.Y == _characters.RowCount - 1)
                 {
                     _characters.SetAt(_ts.CursorPosition.X, _ts.CursorPosition.Y, ' ');
-                    return;
+                    return false;
                 }
                 _characters.DeleteAt(_ts.CursorPosition.X, _ts.CursorPosition.Y);
                 _keyDownOperationCompleted(ref e);
@@ -135,7 +136,7 @@ public class KeyboardController
                 break;
             case Keys.Back:
                 if (_ts.CursorPosition is { X: <= 0, Y: <= 0 })
-                    return;
+                    return false;
 
                 if (_ts.LineInputMode)
                     if (_ts.LineInputPosition.Y > _ts.CursorPosition.Y || (_ts.LineInputPosition.Y == _ts.CursorPosition.Y && _ts.LineInputPosition.X >= _ts.CursorPosition.X))
@@ -146,5 +147,7 @@ public class KeyboardController
                 _keyDownOperationCompleted(ref e);
                 break;
         }
+
+        return false;
     }
 }

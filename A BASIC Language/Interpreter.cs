@@ -215,7 +215,7 @@ public class Interpreter
                                 bool happy;
                                 do
                                 {
-                                    if (_terminal.QuitFlag)
+                                    if (_terminal.QuitFlag || _terminal.State != TerminalState.Running)
                                         return;
 
                                     happy = false;
@@ -224,13 +224,23 @@ public class Interpreter
                                     if (value.CanGetAsType<FloatValue>())
                                     {
                                         var floatValue = new FloatValue((double)value.GetValueAsType<FloatValue>());
-                                        _data.Push(floatValue);
+
+                                        if (!_terminal.QuitFlag && _terminal.State == TerminalState.Running)
+                                            _data.Push(floatValue);
+
                                         happy = true;
                                     }
                                     else
                                     {
-                                        _terminal.WriteLine("?Redo from start");
-                                        _terminal.Write("Enter a numeric value: ");
+                                        if (!_terminal.QuitFlag && _terminal.State == TerminalState.Running)
+                                        {
+                                            _terminal.WriteLine("?Redo from start");
+                                            _terminal.Write("Enter a numeric value: ");
+                                        }
+                                        else
+                                        {
+                                            return;
+                                        }
                                     }
 
                                 } while (!happy);
@@ -238,11 +248,13 @@ public class Interpreter
                             break;
                         case "#INPUT-STRING":
                             {
-                                if (_terminal.QuitFlag)
+                                if (_terminal.QuitFlag || _terminal.State != TerminalState.Running)
                                     return;
 
                                 var value = ValueBase.GetValueType(_terminal.ReadLine());
-                                _data.Push(value);
+
+                                if (!_terminal.QuitFlag && _terminal.State == TerminalState.Running)
+                                    _data.Push(value);
                             }
                             break;
                         case "INT":
@@ -291,7 +303,7 @@ public class Interpreter
                                     var x = _data.Pop();
                                     //TODO: Type checking
                                     var count = (int)x.GetValueAsType<IntValue>();
-                                    var result = new String(' ', count);
+                                    var result = new string(' ', count);
                                     _data.Push(new StringValue(result));
                                 }
                                 else
