@@ -133,49 +133,6 @@ public partial class TerminalEmulator : Form
         _characters.Clear();
     }
 
-    public void ShowWelcome(string program)
-    {
-        var spaces = 28;
-        switch (_characters.ColumnCount)
-        {
-            case 40:
-                spaces = 8;
-                break;
-            case 60:
-                spaces = 18;
-                break;
-        }
-
-        WriteLine();
-        WriteLine($"{new string(' ', spaces)}*** A BASIC LANGUAGE ***");
-        WriteLine();
-        WriteLine($"{new string(' ', spaces + 1)}Altair BASIC Emulator.");
-
-        if (string.IsNullOrWhiteSpace(program))
-        {
-            WriteLine($"{new string(' ', spaces - 1)}written by Tomas Hakansson");
-            WriteLine($"{new string(' ', spaces + 2)}and Anders Hesselbom");
-            WriteLine();
-        }
-        else
-        {
-            WriteLine();
-        }
-        
-        if (!string.IsNullOrWhiteSpace(program))
-        {
-            WriteLine("Ready.");
-            WriteLine();
-            WriteLine("Loaded program:");
-            WriteLine(program);
-            WriteSeparator();
-        }
-        else
-        {
-            WriteLine("Ready. Type LOAD or QUIT.");
-        }
-    }
-
     private void TerminalEmulator_Shown(object sender, EventArgs e)
     {
         FullScreen = false;
@@ -185,6 +142,9 @@ public partial class TerminalEmulator : Form
         Invalidate();
         timer1.Enabled = true;
     }
+
+    public void ShowWelcome(string programFilename) =>
+        new WelcomeScreen(_characters.ColumnCount, WriteLine, WriteLine, WriteSeparator).Show(programFilename);
 
     public void Write(string text)
     {
