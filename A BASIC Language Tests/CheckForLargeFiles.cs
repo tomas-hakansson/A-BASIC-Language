@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FileUtility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
 using System.Text.RegularExpressions;
 
 namespace A_BASIC_Language_Tests;
@@ -27,6 +27,9 @@ public class CheckForLargeFiles
             var rowCount = Regex.Split(content, "\r\n|\r|\n").Length;
             sourceFiles.Add(new SourceFile(f.FileInfo.Name, rowCount));
         }
+
+        foreach (var sourceFile in sourceFiles.OrderBy(x => x.Rows))
+            System.Diagnostics.Debug.WriteLine($@"{sourceFile.Rows} rows: {sourceFile.FileName}");
     }
 
     private class SourceFile
