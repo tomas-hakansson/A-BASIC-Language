@@ -560,7 +560,7 @@ class Parser
 
     void Precedence_3_Operator()
     {//Note: This method is Term in Crenshaw's book.
-        Precedence_1_Operator();
+        Precedence_2_Operator();
         while (_currentTokenType == TokenType.Operator)
         {
             switch (_currentTokenValue)
