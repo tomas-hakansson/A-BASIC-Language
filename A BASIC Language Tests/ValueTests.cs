@@ -7,7 +7,7 @@ namespace A_BASIC_Language_Tests;
 [TestClass]
 public class ValueTests
 {
-    private const double FloatValueCompareErrorTolerance = A_BASIC_Language.Experiments.TryingToUnderstandValueTypes.ValueBase.FloatValueCompareErrorTolerance;
+    private const double FloatValueCompareErrorTolerance = 0.00001;
 
     [TestMethod]
     public void CanCreateValueTypes()

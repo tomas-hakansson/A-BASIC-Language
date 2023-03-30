@@ -29,7 +29,7 @@ public class KeyboardController
         _end = end;
     }
 
-    public void HandleKeyDown(KeyEventArgs e, TerminalEmulatorStateStructure ts)
+    public bool HandleKeyDown(KeyEventArgs e, TerminalEmulatorStateStructure ts)
     {
         switch (e.KeyCode)
         {
@@ -43,6 +43,7 @@ public class KeyboardController
                     _ts.State = TerminalState.Ended;
                     _ts.UserBreak = true;
                     _end();
+                    return true;
                 }
                 break;
             case Keys.Enter:
@@ -51,15 +52,15 @@ public class KeyboardController
                 else if (_ts.State == TerminalState.Empty || _ts.State == TerminalState.Ended)
                     _saveDirectModeInput();
 
-                _ts.CursorY++;
+                _ts.CursorPosition.Y++;
 
-                if (_ts.CursorY >= _characters.RowCount)
+                if (_ts.CursorPosition.Y >= _characters.RowCount)
                 {
-                    _ts.CursorY = _characters.RowCount - 1;
+                    _ts.CursorPosition.Y = _characters.RowCount - 1;
                     _scrollUp();
                 }
 
-                _ts.CursorX = 0;
+                _ts.CursorPosition.X = 0;
 
                 _keyDownOperationCompleted(ref e);
 
@@ -68,19 +69,19 @@ public class KeyboardController
 
                 break;
             case Keys.Up:
-                _ts.CursorY--;
+                _ts.CursorPosition.Y--;
 
-                if (_ts.CursorY < 0)
-                    _ts.CursorY = 0;
+                if (_ts.CursorPosition.Y < 0)
+                    _ts.CursorPosition.Y = 0;
 
                 _keyDownOperationCompleted(ref e);
                 break;
             case Keys.Down:
-                _ts.CursorY++;
+                _ts.CursorPosition.Y++;
 
-                if (_ts.CursorY >= _characters.RowCount)
+                if (_ts.CursorPosition.Y >= _characters.RowCount)
                 {
-                    _ts.CursorY = _characters.RowCount - 1;
+                    _ts.CursorPosition.Y = _characters.RowCount - 1;
                     _scrollUp();
                 }
 
@@ -95,56 +96,58 @@ public class KeyboardController
                 _keyDownOperationCompleted(ref e);
                 break;
             case Keys.PageUp:
-                _ts.CursorY = 0;
+                _ts.CursorPosition.Y = 0;
                 _keyDownOperationCompleted(ref e);
                 break;
             case Keys.PageDown:
-                if (_ts.CursorY == _characters.RowCount - 1)
+                if (_ts.CursorPosition.Y == _characters.RowCount - 1)
                     _scrollUp();
                 else
-                    _ts.CursorY = _characters.RowCount - 1;
+                    _ts.CursorPosition.Y = _characters.RowCount - 1;
                 _keyDownOperationCompleted(ref e);
                 break;
             case Keys.Insert:
-                if (_ts.CursorX == _characters.ColumnCount - 1 && _ts.CursorY == _characters.RowCount - 1)
+                if (_ts.CursorPosition.X == _characters.ColumnCount - 1 && _ts.CursorPosition.Y == _characters.RowCount - 1)
                 {
-                    _characters.SetAt(_ts.CursorX, _ts.CursorY, ' ');
-                    return;
+                    _characters.SetAt(_ts.CursorPosition.X, _ts.CursorPosition.Y, ' ');
+                    return false;
                 }
-                _characters.InsertAt(_ts.CursorX, _ts.CursorY);
+                _characters.InsertAt(_ts.CursorPosition.X, _ts.CursorPosition.Y);
                 _keyDownOperationCompleted(ref e);
                 break;
             case Keys.Delete:
-                if (_ts.CursorX == _characters.ColumnCount - 1 && _ts.CursorY == _characters.RowCount - 1)
+                if (_ts.CursorPosition.X == _characters.ColumnCount - 1 && _ts.CursorPosition.Y == _characters.RowCount - 1)
                 {
-                    _characters.SetAt(_ts.CursorX, _ts.CursorY, ' ');
-                    return;
+                    _characters.SetAt(_ts.CursorPosition.X, _ts.CursorPosition.Y, ' ');
+                    return false;
                 }
-                _characters.DeleteAt(_ts.CursorX, _ts.CursorY);
+                _characters.DeleteAt(_ts.CursorPosition.X, _ts.CursorPosition.Y);
                 _keyDownOperationCompleted(ref e);
                 break;
             case Keys.Home:
-                while (_ts.CursorX > 0)
+                while (_ts.CursorPosition.X > 0)
                     _ts.CursorLeft();
                 _keyDownOperationCompleted(ref e);
                 break;
             case Keys.End:
-                while (_ts.CursorX < _characters.ColumnCount - 1)
+                while (_ts.CursorPosition.X < _characters.ColumnCount - 1)
                     _ts.CursorRight();
                 _keyDownOperationCompleted(ref e);
                 break;
             case Keys.Back:
-                if (_ts.CursorX <= 0 && _ts.CursorY <= 0)
-                    return;
+                if (_ts.CursorPosition is { X: <= 0, Y: <= 0 })
+                    return false;
 
                 if (_ts.LineInputMode)
-                    if (_ts.LineInputY > _ts.CursorY || (_ts.LineInputY == _ts.CursorY && _ts.LineInputX >= _ts.CursorX))
+                    if (_ts.LineInputPosition.Y > _ts.CursorPosition.Y || (_ts.LineInputPosition.Y == _ts.CursorPosition.Y && _ts.LineInputPosition.X >= _ts.CursorPosition.X))
                         _moveLineInputLeft();
 
                 _ts.CursorLeft();
-                _characters.DeleteAt(_ts.CursorX, _ts.CursorY);
+                _characters.DeleteAt(_ts.CursorPosition.X, _ts.CursorPosition.Y);
                 _keyDownOperationCompleted(ref e);
                 break;
         }
+
+        return false;
     }
 }

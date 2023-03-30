@@ -4,17 +4,15 @@ namespace A_BASIC_Language.Experiments.TryingToUnderstandValueTypes;
 
 public abstract class ValueBase
 {
-    public const double FloatValueCompareErrorTolerance = 0.00001;
-
     //https://www.codeproject.com/Articles/242749/Multiple-Dispatch-and-Double-Dispatch
     //Note: Multimethod -> Compare(ValueBase x, ValueBase y);
-    static bool Equal(FloatValue f1, FloatValue f2) => Math.Abs(f1.Value - f2.Value) < FloatValueCompareErrorTolerance;
-    static bool Equal(FloatValue f, IntValue i) => Math.Abs(f.Value - i.Value) < FloatValueCompareErrorTolerance;
+    static bool Equal(FloatValue f1, FloatValue f2) => Math.Abs(f1.Value - f2.Value) < FloatValue.CompareErrorTolerance;
+    static bool Equal(FloatValue f, IntValue i) => Math.Abs(f.Value - i.Value) < FloatValue.CompareErrorTolerance;
     static bool Equal(FloatValue f, StringValue s) => f.Value.ToString(CultureInfo.InvariantCulture) == s.Value;
     static bool Equal(FloatValue f, NullValue n) => false;
 
     static bool Equal(IntValue i1, IntValue i2) => i1.Value == i2.Value;
-    static bool Equal(IntValue i, FloatValue f) => Math.Abs(i.Value - f.Value) < FloatValueCompareErrorTolerance;
+    static bool Equal(IntValue i, FloatValue f) => Math.Abs(i.Value - f.Value) < FloatValue.CompareErrorTolerance;
     static bool Equal(IntValue i, StringValue s) => i.Value.ToString() == s.Value;
     static bool Equal(IntValue i, NullValue s) => false;
 
@@ -47,6 +45,8 @@ public abstract class ValueBase
 
 public class FloatValue : ValueBase
 {
+    public const double CompareErrorTolerance = 0.00001;
+
     public double Value { get; set; }
 
     public FloatValue(double value)

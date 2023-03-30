@@ -21,7 +21,7 @@ public class CharacterRenderer : IDisposable
         Font = new Font("Courier New", 6.0f);
     }
 
-    public void Render(Graphics g, bool lineInputMode, bool showCursor, bool cursorBlink, int cursorX, int cursorY, int lineInputX, int lineInputY)
+    public void Render(Graphics g, bool lineInputMode, bool showCursor, bool cursorBlink, Point cursorPosition, int lineInputX, int lineInputY)
     {
         var pixelX = 0;
         var pixelY = 0;
@@ -32,10 +32,10 @@ public class CharacterRenderer : IDisposable
             {
                 for (var x = 0; x < _characters.ColumnCount; x++)
                 {
-                    var isInsideInputZone = IsInsideInputZone(x, y, lineInputX, lineInputY, cursorX, cursorY);
+                    var isInsideInputZone = IsInsideInputZone(x, y, lineInputX, lineInputY, cursorPosition);
                     var b = isInsideInputZone ? InputBrush : OutputBrush;
 
-                    if (showCursor && cursorBlink && cursorX == x && cursorY == y)
+                    if (showCursor && cursorBlink && cursorPosition.Is(x, y))
                     {
                         g.FillRectangle(b, pixelX, pixelY, CharacterWidth, CharacterHeight);
 
@@ -62,7 +62,7 @@ public class CharacterRenderer : IDisposable
             {
                 for (var x = 0; x < _characters.ColumnCount; x++)
                 {
-                    if (showCursor && cursorBlink && cursorX == x && cursorY == y)
+                    if (showCursor && cursorBlink && cursorPosition.Is(x, y))
                     {
                         g.FillRectangle(OutputBrush, pixelX, pixelY, CharacterWidth, CharacterHeight);
 
@@ -82,7 +82,7 @@ public class CharacterRenderer : IDisposable
         }
     }
 
-    private bool IsInsideInputZone(int x, int y, int lineInputX, int lineInputY, int cursorX, int cursorY)
+    private static bool IsInsideInputZone(int x, int y, int lineInputX, int lineInputY, Point cursorPosition)
     {
         if (y < lineInputY)
             return false;
@@ -90,10 +90,10 @@ public class CharacterRenderer : IDisposable
         if (y == lineInputY && x < lineInputX)
             return false;
 
-        if (y > cursorY)
+        if (y > cursorPosition.Y)
             return false;
 
-        if (y == cursorY && x >= cursorX)
+        if (y == cursorPosition.Y && x >= cursorPosition.X)
             return false;
 
         return true;

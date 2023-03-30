@@ -5,23 +5,19 @@ public class TerminalEmulatorStateStructure
     private readonly int _columnCount;
     private readonly int _rowCount;
     public bool LineInputMode { get; set; }
-    public int CursorX { get; set; }
-    public int CursorY { get; set; }
+    public Point CursorPosition { get; }
     public TerminalState State { get; set; }
     public bool UserBreak { get; set; }
-    public int LineInputX { get; set; }
-    public int LineInputY { get; set; }
+    public Point LineInputPosition { get; }
 
     public TerminalEmulatorStateStructure(int columnCount, int rowCount)
     {
         UserBreak = false;
         LineInputMode = false;
-        CursorX = 0;
-        CursorY = 0;
+        CursorPosition = new Point();
         _columnCount = columnCount;
         _rowCount = rowCount;
-        LineInputX = 0;
-        LineInputY = 0;
+        LineInputPosition = new Point();
     }
 
     public void Quit()
@@ -29,34 +25,9 @@ public class TerminalEmulatorStateStructure
         State = TerminalState.Ended;
     }
 
-    public void CursorLeft()
-    {
-        CursorX--;
+    public void CursorLeft() =>
+        CursorPosition.MoveLeft(_columnCount);
 
-        if (CursorX < 0 && CursorY > 0)
-        {
-            CursorX = _columnCount - 1;
-            CursorY--;
-        }
-        else if (CursorX < 0)
-        {
-            CursorX = 0;
-        }
-    }
-
-    public void CursorRight()
-    {
-        CursorX++;
-
-        if (CursorX >= _columnCount && CursorY < _rowCount - 1)
-        {
-            CursorX = 0;
-            CursorY++;
-        }
-        else if (CursorX >= _columnCount)
-        {
-            CursorX = 0;
-            CursorY = _rowCount - 1;
-        }
-    }
+    public void CursorRight() =>
+        CursorPosition.MoveRight(_columnCount, _rowCount);
 }

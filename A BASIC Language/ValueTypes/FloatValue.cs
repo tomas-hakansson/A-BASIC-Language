@@ -4,6 +4,8 @@ namespace A_BASIC_Language.ValueTypes;
 
 public class FloatValue : ValueBase
 {
+    public const double CompareErrorTolerance = 0.00001;
+
     public double Value { get; set; }
 
     public FloatValue(double value)
@@ -221,7 +223,7 @@ public class FloatValue : ValueBase
 
         var f = (double)b.GetValueAsType<FloatValue>();
 
-        return Math.Abs(Value - f) < Experiments.TryingToUnderstandValueTypes.ValueBase.FloatValueCompareErrorTolerance;
+        return Math.Abs(Value - f) < FloatValue.CompareErrorTolerance;
     }
 
     public override int GetHashCode()
