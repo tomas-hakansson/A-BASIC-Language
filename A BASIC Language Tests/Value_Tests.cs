@@ -5,7 +5,7 @@ using System;
 namespace A_BASIC_Language_Tests;
 
 [TestClass]
-public class ValueTests
+public class Value_Tests
 {
     private const double FloatValueCompareErrorTolerance = 0.00001;
 
