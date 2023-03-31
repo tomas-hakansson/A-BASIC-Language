@@ -132,6 +132,7 @@ public abstract class ValueBase
     }
     public static bool operator <=(ValueBase? x, ValueBase? y) => !(x > y);
 
+
     // ReSharper disable once RedundantOverriddenMember
     public override bool Equals(object? obj) // todo
     {
