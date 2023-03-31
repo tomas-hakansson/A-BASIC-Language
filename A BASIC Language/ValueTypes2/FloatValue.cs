@@ -8,10 +8,8 @@ public class FloatValue : ValueBase
 
     public double Value { get; set; }
 
-    public FloatValue(double value)
-    {
+    public FloatValue(double value) =>
         Value = value;
-    }
 
     public override bool FitsInVariable(string symbol) =>
         true;
@@ -34,6 +32,24 @@ public class FloatValue : ValueBase
             return Value.ToString(CultureInfo.InvariantCulture);
 
         throw new SystemException("What?!");
+    }
+
+    public override bool TryGetAsFloatValue(out FloatValue value)
+    {
+        value = this;
+        return true;
+    }
+
+    public override bool TryGetAsIntValue(out IntValue value)
+    {
+        value = new IntValue((int)Value);
+        return true;
+    }
+
+    public override bool TryGetAsStringValue(out StringValue value)
+    {
+        value = new StringValue(Value.ToString(CultureInfo.InvariantCulture));
+        return true;
     }
 
     public override bool CanActAsBool() =>
@@ -62,6 +78,6 @@ public class FloatValue : ValueBase
     {
         // ReSharper disable once NonReadonlyMemberInGetHashCode
         var bits = BitConverter.DoubleToUInt64Bits(Value);
-        return (int)bits%int.MaxValue;
+        return (int)bits % int.MaxValue;
     }
 }

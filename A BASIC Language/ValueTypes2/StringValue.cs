@@ -6,27 +6,8 @@ public class StringValue : ValueBase
 {
     public string Value { get; set; }
 
-    public StringValue(string value)
-    {
+    public StringValue(string value) =>
         Value = value;
-    }
-    protected bool Equals(StringValue other)
-    {
-        return Value == other.Value;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
-        return Equals((StringValue)obj);
-    }
-
-    public override int GetHashCode()
-    {
-        return Value.GetHashCode();
-    }
 
     public override bool FitsInVariable(string symbol)
     {
@@ -79,6 +60,40 @@ public class StringValue : ValueBase
         throw new SystemException("What?!");
     }
 
+    public override bool TryGetAsFloatValue(out FloatValue value)
+    {
+        value = new FloatValue(-1);
+        if (double.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double newValue))
+        {
+            value = new FloatValue(newValue);
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public override bool TryGetAsIntValue(out IntValue value)
+    {
+        value = new IntValue(-1);
+        if (int.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var newInt))
+        {
+            value = new IntValue(newInt);
+            return true;
+        }
+        else if (double.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var newDouble))
+        {
+            value = new IntValue((int)newDouble);
+            return true;
+        }
+        return false;
+    }
+
+    public override bool TryGetAsStringValue(out StringValue value)
+    {
+        value = this;
+        return true;
+    }
+
     public override bool CanActAsBool() =>
         false;
 
@@ -87,4 +102,22 @@ public class StringValue : ValueBase
 
     public override string ToString() =>
         Value;
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((StringValue)obj);
+    }
+
+    protected bool Equals(StringValue other)
+    {
+        return Value == other.Value;
+    }
+
+    public override int GetHashCode()
+    {
+        return Value.GetHashCode();
+    }
 }

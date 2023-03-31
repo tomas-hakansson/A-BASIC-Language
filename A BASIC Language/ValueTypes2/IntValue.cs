@@ -6,10 +6,8 @@ public class IntValue : ValueBase
 {
     public int Value { get; set; }
 
-    public IntValue(int value)
-    {
+    public IntValue(int value) =>
         Value = value;
-    }
 
     public override bool FitsInVariable(string symbol) =>
         true;
@@ -32,6 +30,24 @@ public class IntValue : ValueBase
             return Value.ToString(CultureInfo.InvariantCulture);
 
         throw new SystemException("What?!");
+    }
+
+    public override bool TryGetAsFloatValue(out FloatValue value)
+    {
+        value = new FloatValue(Value);
+        return true;
+    }
+
+    public override bool TryGetAsIntValue(out IntValue value)
+    {
+        value = this;
+        return true;
+    }
+
+    public override bool TryGetAsStringValue(out StringValue value)
+    {
+        value = new StringValue(Value.ToString(CultureInfo.InvariantCulture));
+        return true;
     }
 
     public override bool CanActAsBool() =>

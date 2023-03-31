@@ -5,9 +5,10 @@ namespace A_BASIC_Language.ValueTypes2;
 
 public abstract class ValueBase
 {
-    private const string FirstCharacterOfName = "abcdefghijklmnopqrstuvwxyz";
-    private const string MiddleCharacterOfName = FirstCharacterOfName + "0123456789";
-    private const string LastCharacterOfName = MiddleCharacterOfName + "$%";
+    //Note: [a-z][A-Z0-9]*[$%]+
+    const string FirstCharacterOfName = "abcdefghijklmnopqrstuvwxyz";
+    const string MiddleCharacterOfName = FirstCharacterOfName + "0123456789";
+    const string LastCharacterOfName = MiddleCharacterOfName + "$%";
 
     public static bool IsFloat(string value) =>
         double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out _);
@@ -17,7 +18,7 @@ public abstract class ValueBase
 
     public static ValueBase GetValueType(string value)
     {
-        if (value.Contains(".") && double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var f))
+        if (value.Contains('.') && double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var f))
             return GetValueType(f);
 
         if (int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var i))
@@ -45,8 +46,6 @@ public abstract class ValueBase
         throw new SystemException("This is not good...");
     }
 
-    public abstract bool FitsInVariable(string symbol);
-
     internal static bool VariableIsDeclaredAsString(string symbol) =>
         IsName(symbol, out _) && symbol.EndsWith("$");
 
@@ -56,7 +55,7 @@ public abstract class ValueBase
     internal static bool VariableIsDeclaredAsFloat(string symbol) =>
         IsName(symbol, out var n) && MiddleCharacterOfName.Contains(n[^1]);
 
-    private static bool IsName(string symbol, out string symbolName)
+    static bool IsName(string symbol, out string symbolName)
     {
         symbolName = symbol.Trim().ToLower();
 
@@ -75,60 +74,28 @@ public abstract class ValueBase
     //ToDo: null == null => true everything else false
 
     //Note: Overriding '==' and '!=' operators:
-    static bool Equal(FloatValue? x, FloatValue? y)
-    {
-        if (x is null || y is null)
-            return false;
+    static bool Equal(FloatValue x, FloatValue y) => Math.Abs(x.Value - y.Value) < FloatValue.CompareErrorTolerance;
+    static bool Equal(FloatValue x, IntValue y) => Math.Abs(x.Value - y.Value) < FloatValue.CompareErrorTolerance;
+    static bool Equal(FloatValue x, StringValue y) => y.TryGetAsFloatValue(out var v) && Equal(x, v);
 
-        return Math.Abs(x.Value - y.Value) < FloatValue.CompareErrorTolerance;
-    }
-    static bool Equal(FloatValue? x, IntValue? y)
-    {
-        if (x is null || y is null)
-            return false;
+    static bool Equal(IntValue x, IntValue y) => x.Value == y.Value;
+    static bool Equal(IntValue x, FloatValue y) => Equal(y, x);
+    static bool Equal(IntValue x, StringValue y) => y.TryGetAsIntValue(out var v) && Equal(x, v);
 
-        return Math.Abs(x.Value - y.Value) < FloatValue.CompareErrorTolerance;
-    }
-    static bool Equal(FloatValue? x, StringValue? y) =>
-        throw new TypeMismatchException("TYPE MISMATCH ERROR");
-
-    static bool Equal(IntValue? x, IntValue? y)
-    {
-        if (x is null || y is null)
-            return false;
-
-        return x.Value == y.Value;
-    }
-    static bool Equal(IntValue? x, FloatValue? y)
-    {
-        if (x is null || y is null)
-            return false;
-
-        return Math.Abs(x.Value - y.Value) < FloatValue.CompareErrorTolerance;
-    }
-    static bool Equal(IntValue? x, StringValue? y) =>
-        throw new TypeMismatchException("TYPE MISMATCH ERROR");
-
-    static bool Equal(StringValue? x, StringValue? y)
-    {
-        if (x is null || y is null)
-            return false;
-
-        return x.Value == y.Value;
-    }
-    static bool Equal(StringValue? x, FloatValue? y) =>
-        throw new TypeMismatchException("TYPE MISMATCH ERROR");
-    static bool Equal(StringValue? x, IntValue? y) =>
-        throw new TypeMismatchException("TYPE MISMATCH ERROR");
+    static bool Equal(StringValue x, StringValue y) => x.Value == y.Value;
+    static bool Equal(StringValue x, FloatValue y) => Equal(y, x);
+    static bool Equal(StringValue x, IntValue y) => Equal(y, x);
 
     public static bool operator ==(ValueBase? x, ValueBase? y)
     {
+        if (x is null && y is null)
+            return true;
+
         if (x is null || y is null)
             return false;
 
         return Equal((dynamic)x, (dynamic)y);
     }
-
     public static bool operator !=(ValueBase? x, ValueBase? y)
     {
         if (x is null || y is null)
@@ -186,7 +153,6 @@ public abstract class ValueBase
 
         return GreaterThan((dynamic)x, (dynamic)y);
     }
-
     public static bool operator <(ValueBase? x, ValueBase? y)
     {
         if (x is null || y is null)
@@ -244,7 +210,6 @@ public abstract class ValueBase
 
         return GreaterThanOrEqual((dynamic)x, (dynamic)y);
     }
-
     public static bool operator <=(ValueBase? x, ValueBase? y)
     {
         if (x is null || y is null)
@@ -267,11 +232,17 @@ public abstract class ValueBase
         return base.GetHashCode();
     }
 
+    public abstract bool FitsInVariable(string symbol);
+
     public abstract bool IsOfType<T>() where T : ValueBase;
 
     public abstract bool CanGetAsType<T>() where T : ValueBase;
 
     public abstract object GetValueAsType<T>() where T : ValueBase;
+
+    public abstract bool TryGetAsFloatValue(out FloatValue value);
+    public abstract bool TryGetAsIntValue(out IntValue value);
+    public abstract bool TryGetAsStringValue(out StringValue value);
 
     public abstract bool CanActAsBool();
 
