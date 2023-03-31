@@ -4,9 +4,10 @@ namespace A_BASIC_Language.ValueTypes;
 
 public abstract class ValueBase
 {
-    private const string FirstCharacterOfName = "abcdefghijklmnopqrstuvwxyz";
-    private const string MiddleCharacterOfName = FirstCharacterOfName + "0123456789";
-    private const string LastCharacterOfName = MiddleCharacterOfName + "$%";
+    //Note: [a-z][A-Z0-9]*[$%]+
+    const string FirstCharacterOfName = "abcdefghijklmnopqrstuvwxyz";
+    const string MiddleCharacterOfName = FirstCharacterOfName + "0123456789";
+    const string LastCharacterOfName = MiddleCharacterOfName + "$%";
 
     public static bool IsFloat(string value) =>
         double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out _);
@@ -16,7 +17,7 @@ public abstract class ValueBase
 
     public static ValueBase GetValueType(string value)
     {
-        if (value.Contains(".") && double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var f))
+        if (value.Contains('.') && double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var f))
             return GetValueType(f);
 
         if (int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var i))
@@ -44,8 +45,6 @@ public abstract class ValueBase
         throw new SystemException("This is not good...");
     }
 
-    public abstract bool FitsInVariable(string symbol);
-
     internal static bool VariableIsDeclaredAsString(string symbol) =>
         IsName(symbol, out _) && symbol.EndsWith("$");
 
@@ -55,7 +54,7 @@ public abstract class ValueBase
     internal static bool VariableIsDeclaredAsFloat(string symbol) =>
         IsName(symbol, out var n) && MiddleCharacterOfName.Contains(n[^1]);
 
-    private static bool IsName(string symbol, out string symbolName)
+    static bool IsName(string symbol, out string symbolName)
     {
         symbolName = symbol.Trim().ToLower();
 
@@ -71,213 +70,67 @@ public abstract class ValueBase
         return true;
     }
 
-    public static bool operator ==(ValueBase? left, ValueBase? right)
+
+    //Note: Overriding '==' and '!=' operators:
+    static bool Equal(FloatValue x, FloatValue y) => Math.Abs(x.Value - y.Value) < FloatValue.CompareErrorTolerance;
+    static bool Equal(FloatValue x, IntValue y) => Math.Abs(x.Value - y.Value) < FloatValue.CompareErrorTolerance;
+    static bool Equal(FloatValue x, StringValue y) => y.TryGetAsFloatValue(out var ny) && Equal(x, ny);
+
+    static bool Equal(IntValue x, IntValue y) => x.Value == y.Value;
+    static bool Equal(IntValue x, FloatValue y) => Equal(y, x);
+    static bool Equal(IntValue x, StringValue y) => y.TryGetAsIntValue(out var ny) && Equal(x, ny);
+
+    static bool Equal(StringValue x, StringValue y) => x.Value == y.Value;
+    static bool Equal(StringValue x, FloatValue y) => Equal(y, x);
+    static bool Equal(StringValue x, IntValue y) => Equal(y, x);
+
+    public static bool operator ==(ValueBase? x, ValueBase? y)
     {
-        if (left is IntValue iLeft)
-        {
-            if (right is IntValue iRight)
-                return iLeft == iRight;
+        if (x is null && y is null)
+            return true;
 
-            if (right is FloatValue fRight)
-                return iLeft == fRight;
+        if (x is null || y is null)
+            return false;
 
-            if (right is StringValue sRight)
-                return iLeft == sRight;
-        }
-
-        if (left is FloatValue fLeft)
-        {
-            if (right is IntValue iRight)
-                return fLeft == iRight;
-
-            if (right is FloatValue fRight)
-                return fLeft == fRight;
-
-            if (right is StringValue sRight)
-                return fLeft == sRight;
-        }
-
-        if (left is StringValue sLeft)
-        {
-            if (right is IntValue iRight)
-                return sLeft == iRight;
-
-            if (right is FloatValue fRight)
-                return sLeft == fRight;
-
-            if (right is StringValue sRight)
-                return sLeft == sRight;
-        }
-
-        throw new SystemException("What?");
+        return Equal((dynamic)x, (dynamic)y);
     }
+    public static bool operator !=(ValueBase? x, ValueBase? y) => !(x == y);
 
-    public static bool operator !=(ValueBase? left, ValueBase? right) =>
-        !(left == right);
 
-    public static bool operator >(ValueBase? left, ValueBase? right)
+    //Note: Overriding '>' and '<' operators:
+    static bool GreaterThan(FloatValue x, FloatValue y) => x.Value > y.Value;
+    static bool GreaterThan(FloatValue x, IntValue y) => x.Value > y.Value;
+    static bool GreaterThan(FloatValue x, StringValue y) => y.TryGetAsFloatValue(out var ny) && GreaterThan(x, ny);
+
+    static bool GreaterThan(IntValue x, IntValue y) => x.Value > y.Value;
+    static bool GreaterThan(IntValue x, FloatValue y) => x.Value > y.Value;
+    static bool GreaterThan(IntValue x, StringValue y) => y.TryGetAsIntValue(out var ny) && GreaterThan(x, ny);
+
+    static bool GreaterThan(StringValue x, StringValue y) =>
+        throw new NotImplementedException();//ToDo: Check how this works in BASIC.
+    static bool GreaterThan(StringValue x, FloatValue y) => x.TryGetAsFloatValue(out var nx) && GreaterThan(nx, y);
+    static bool GreaterThan(StringValue x, IntValue y) => x.TryGetAsIntValue(out var nx) && GreaterThan(nx, y);
+
+    public static bool operator >(ValueBase? x, ValueBase? y)
     {
-        if (left is IntValue iLeft)
-        {
-            if (right is IntValue iRight)
-                return iLeft > iRight;
+        if (x is null || y is null)
+            return false;
 
-            if (right is FloatValue fRight)
-                return iLeft > fRight;
-
-            if (right is StringValue sRight)
-                return iLeft > sRight;
-        }
-
-        if (left is FloatValue fLeft)
-        {
-            if (right is IntValue iRight)
-                return fLeft > iRight;
-
-            if (right is FloatValue fRight)
-                return fLeft > fRight;
-
-            if (right is StringValue sRight)
-                return fLeft > sRight;
-        }
-
-        if (left is StringValue sLeft)
-        {
-            if (right is IntValue iRight)
-                return sLeft > iRight;
-
-            if (right is FloatValue fRight)
-                return sLeft > fRight;
-
-            if (right is StringValue sRight)
-                return sLeft > sRight;
-        }
-
-        throw new SystemException("What?");
+        return GreaterThan((dynamic)x, (dynamic)y);
     }
+    public static bool operator <(ValueBase? x, ValueBase? y) => !(x >= y);
 
-    public static bool operator <(ValueBase? left, ValueBase? right)
+
+    //Note: Overriding '>=' and '<=' operators:
+    public static bool operator >=(ValueBase? x, ValueBase? y)
     {
-        if (left is IntValue iLeft)
-        {
-            if (right is IntValue iRight)
-                return iLeft < iRight;
+        if (x is null || y is null)
+            return false;
 
-            if (right is FloatValue fRight)
-                return iLeft < fRight;
-
-            if (right is StringValue sRight)
-                return iLeft < sRight;
-        }
-
-        if (left is FloatValue fLeft)
-        {
-            if (right is IntValue iRight)
-                return fLeft < iRight;
-
-            if (right is FloatValue fRight)
-                return fLeft < fRight;
-
-            if (right is StringValue sRight)
-                return fLeft < sRight;
-        }
-
-        if (left is StringValue sLeft)
-        {
-            if (right is IntValue iRight)
-                return sLeft < iRight;
-
-            if (right is FloatValue fRight)
-                return sLeft < fRight;
-
-            if (right is StringValue sRight)
-                return sLeft < sRight;
-        }
-
-        throw new SystemException("What?");
+        return (dynamic)x == (dynamic)y || (dynamic)x > (dynamic)y;
     }
+    public static bool operator <=(ValueBase? x, ValueBase? y) => !(x > y);
 
-    public static bool operator >=(ValueBase? left, ValueBase? right)
-    {
-        if (left is IntValue iLeft)
-        {
-            if (right is IntValue iRight)
-                return iLeft >= iRight;
-
-            if (right is FloatValue fRight)
-                return iLeft >= fRight;
-
-            if (right is StringValue sRight)
-                return iLeft >= sRight;
-        }
-
-        if (left is FloatValue fLeft)
-        {
-            if (right is IntValue iRight)
-                return fLeft >= iRight;
-
-            if (right is FloatValue fRight)
-                return fLeft >= fRight;
-
-            if (right is StringValue sRight)
-                return fLeft >= sRight;
-        }
-
-        if (left is StringValue sLeft)
-        {
-            if (right is IntValue iRight)
-                return sLeft >= iRight;
-
-            if (right is FloatValue fRight)
-                return sLeft >= fRight;
-
-            if (right is StringValue sRight)
-                return sLeft >= sRight;
-        }
-
-        throw new SystemException("What?");
-    }
-
-    public static bool operator <=(ValueBase? left, ValueBase? right)
-    {
-        if (left is IntValue iLeft)
-        {
-            if (right is IntValue iRight)
-                return iLeft <= iRight;
-
-            if (right is FloatValue fRight)
-                return iLeft <= fRight;
-
-            if (right is StringValue sRight)
-                return iLeft <= sRight;
-        }
-
-        if (left is FloatValue fLeft)
-        {
-            if (right is IntValue iRight)
-                return fLeft <= iRight;
-
-            if (right is FloatValue fRight)
-                return fLeft <= fRight;
-
-            if (right is StringValue sRight)
-                return fLeft <= sRight;
-        }
-
-        if (left is StringValue sLeft)
-        {
-            if (right is IntValue iRight)
-                return sLeft <= iRight;
-
-            if (right is FloatValue fRight)
-                return sLeft <= fRight;
-
-            if (right is StringValue sRight)
-                return sLeft <= sRight;
-        }
-
-        throw new SystemException("What?");
-    }
 
     // ReSharper disable once RedundantOverriddenMember
     public override bool Equals(object? obj) // todo
@@ -293,11 +146,17 @@ public abstract class ValueBase
         return base.GetHashCode();
     }
 
+    public abstract bool FitsInVariable(string symbol);
+
     public abstract bool IsOfType<T>() where T : ValueBase;
 
     public abstract bool CanGetAsType<T>() where T : ValueBase;
 
     public abstract object GetValueAsType<T>() where T : ValueBase;
+
+    public abstract bool TryGetAsFloatValue(out FloatValue value);
+    public abstract bool TryGetAsIntValue(out IntValue value);
+    public abstract bool TryGetAsStringValue(out StringValue value);
 
     public abstract bool CanActAsBool();
 

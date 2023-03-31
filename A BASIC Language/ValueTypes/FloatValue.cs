@@ -8,10 +8,8 @@ public class FloatValue : ValueBase
 
     public double Value { get; set; }
 
-    public FloatValue(double value)
-    {
+    public FloatValue(double value) =>
         Value = value;
-    }
 
     public override bool FitsInVariable(string symbol) =>
         true;
@@ -36,6 +34,24 @@ public class FloatValue : ValueBase
         throw new SystemException("What?!");
     }
 
+    public override bool TryGetAsFloatValue(out FloatValue value)
+    {
+        value = this;
+        return true;
+    }
+
+    public override bool TryGetAsIntValue(out IntValue value)
+    {
+        value = new IntValue((int)Value);
+        return true;
+    }
+
+    public override bool TryGetAsStringValue(out StringValue value)
+    {
+        value = new StringValue(Value.ToString(CultureInfo.InvariantCulture));
+        return true;
+    }
+
     public override bool CanActAsBool() =>
         true;
 
@@ -44,174 +60,6 @@ public class FloatValue : ValueBase
 
     public override string ToString() =>
         Value.ToString(CultureInfo.InvariantCulture);
-
-    public static bool operator ==(FloatValue? left, FloatValue? right)
-    {
-        if (left is null && right is null)
-            return true;
-
-        if (left is null || right is null)
-            return false;
-
-        return Math.Abs(left.Value - right.Value) < 0.001;
-    }
-
-    public static bool operator !=(FloatValue? left, FloatValue? right) =>
-        !(left == right);
-
-    public static bool operator ==(FloatValue? left, IntValue? right)
-    {
-        if (left is null && right is null)
-            return true;
-
-        if (left is null || right is null)
-            return false;
-
-        if (!right.CanGetAsType<FloatValue>())
-            return false;
-
-        var f = (double)right.GetValueAsType<FloatValue>();
-
-        return Math.Abs(left.Value - f) < 0.001;
-    }
-
-    public static bool operator !=(FloatValue? left, IntValue? right) =>
-        !(left == right);
-
-    public static bool operator ==(FloatValue? left, StringValue? right)
-    {
-        if (left is null && right is null)
-            return true;
-
-        if (left is null || right is null)
-            return false;
-
-        if (!right.CanGetAsType<FloatValue>())
-            return false;
-
-        var f = (double)right.GetValueAsType<FloatValue>();
-
-        return Math.Abs(left.Value - f) < 0.001;
-    }
-
-    public static bool operator !=(FloatValue? left, StringValue? right) =>
-        !(left == right);
-
-    public static bool operator >(FloatValue? left, FloatValue? right)
-    {
-        if (left is null || right is null)
-            return false;
-
-        return left.Value > right.Value;
-    }
-
-    public static bool operator <(FloatValue? left, FloatValue? right)
-    {
-        if (left is null || right is null)
-            return false;
-
-        return left.Value < right.Value;
-    }
-
-    public static bool operator >(FloatValue? left, IntValue? right)
-    {
-        if (left is null || right is null)
-            return false;
-
-        return left.Value > right.Value;
-    }
-
-    public static bool operator <(FloatValue? left, IntValue? right)
-    {
-        if (left is null || right is null)
-            return false;
-
-        return left.Value < right.Value;
-    }
-
-    public static bool operator >(FloatValue? left, StringValue? right)
-    {
-        if (left is null || right is null)
-            return false;
-
-        if (!right.CanGetAsType<FloatValue>())
-            return false;
-
-        var f = (double)right.GetValueAsType<FloatValue>();
-
-        return left.Value > f;
-    }
-
-    public static bool operator <(FloatValue? left, StringValue? right)
-    {
-        if (left is null || right is null)
-            return false;
-
-        if (!right.CanGetAsType<FloatValue>())
-            return false;
-
-        var f = (double)right.GetValueAsType<FloatValue>();
-
-        return left.Value < f;
-    }
-
-    public static bool operator >=(FloatValue? left, FloatValue? right)
-    {
-        if (left is null || right is null)
-            return false;
-
-        return left.Value >= right.Value;
-    }
-
-    public static bool operator <=(FloatValue? left, FloatValue? right)
-    {
-        if (left is null || right is null)
-            return false;
-
-        return left.Value <= right.Value;
-    }
-
-    public static bool operator >=(FloatValue? left, IntValue? right)
-    {
-        if (left is null || right is null)
-            return false;
-
-        return left.Value >= right.Value;
-    }
-
-    public static bool operator <=(FloatValue? left, IntValue? right)
-    {
-        if (left is null || right is null)
-            return false;
-
-        return left.Value <= right.Value;
-    }
-
-    public static bool operator >=(FloatValue? left, StringValue? right)
-    {
-        if (left is null || right is null)
-            return false;
-
-        if (!right.CanGetAsType<FloatValue>())
-            return false;
-
-        var f = (double)right.GetValueAsType<FloatValue>();
-
-        return left.Value >= f;
-    }
-
-    public static bool operator <=(FloatValue? left, StringValue? right)
-    {
-        if (left is null || right is null)
-            return false;
-
-        if (!right.CanGetAsType<FloatValue>())
-            return false;
-
-        var f = (double)right.GetValueAsType<FloatValue>();
-
-        return left.Value <= f;
-    }
 
     public override bool Equals(object? obj)
     {
@@ -230,6 +78,6 @@ public class FloatValue : ValueBase
     {
         // ReSharper disable once NonReadonlyMemberInGetHashCode
         var bits = BitConverter.DoubleToUInt64Bits(Value);
-        return (int)bits%int.MaxValue;
+        return (int)bits % int.MaxValue;
     }
 }

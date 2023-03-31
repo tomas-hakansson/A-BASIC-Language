@@ -4,30 +4,10 @@ namespace A_BASIC_Language.ValueTypes;
 
 public class StringValue : ValueBase
 {
-    protected bool Equals(StringValue other)
-    {
-        return Value == other.Value;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
-        return Equals((StringValue)obj);
-    }
-
-    public override int GetHashCode()
-    {
-        return Value.GetHashCode();
-    }
-
     public string Value { get; set; }
 
-    public StringValue(string value)
-    {
+    public StringValue(string value) =>
         Value = value;
-    }
 
     public override bool FitsInVariable(string symbol)
     {
@@ -80,6 +60,40 @@ public class StringValue : ValueBase
         throw new SystemException("What?!");
     }
 
+    public override bool TryGetAsFloatValue(out FloatValue value)
+    {
+        value = new FloatValue(-1);
+        if (double.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double newValue))
+        {
+            value = new FloatValue(newValue);
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public override bool TryGetAsIntValue(out IntValue value)
+    {
+        value = new IntValue(-1);
+        if (int.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var newInt))
+        {
+            value = new IntValue(newInt);
+            return true;
+        }
+        else if (double.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var newDouble))
+        {
+            value = new IntValue((int)newDouble);
+            return true;
+        }
+        return false;
+    }
+
+    public override bool TryGetAsStringValue(out StringValue value)
+    {
+        value = this;
+        return true;
+    }
+
     public override bool CanActAsBool() =>
         false;
 
@@ -89,55 +103,21 @@ public class StringValue : ValueBase
     public override string ToString() =>
         Value;
 
-    public static bool operator ==(StringValue? left, StringValue? right)
+    public override bool Equals(object? obj)
     {
-        if (left is null && right is null)
-            return true;
-
-        if (left is null || right is null)
-            return false;
-
-        return string.Compare(left.Value, right.Value, StringComparison.CurrentCultureIgnoreCase) == 0;
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((StringValue)obj);
     }
 
-    public static bool operator !=(StringValue? left, StringValue? right) =>
-        !(left == right);
-
-    public static bool operator ==(StringValue? left, IntValue? right)
+    protected bool Equals(StringValue other)
     {
-        if (left is null && right is null)
-            return true;
-
-        if (left is null || right is null)
-            return false;
-
-        if (!right.CanGetAsType<StringValue>())
-            return false;
-
-        var s = (string)right.GetValueAsType<StringValue>();
-
-        return string.Compare(left.Value, s, StringComparison.CurrentCultureIgnoreCase) == 0;
+        return Value == other.Value;
     }
 
-    public static bool operator !=(StringValue? left, IntValue? right) =>
-        !(left == right);
-
-    public static bool operator ==(StringValue? left, FloatValue? right)
+    public override int GetHashCode()
     {
-        if (left is null && right is null)
-            return true;
-
-        if (left is null || right is null)
-            return false;
-
-        if (!right.CanGetAsType<StringValue>())
-            return false;
-
-        var s = (string)right.GetValueAsType<StringValue>();
-
-        return string.Compare(left.Value, s, StringComparison.CurrentCultureIgnoreCase) == 0;
+        return Value.GetHashCode();
     }
-
-    public static bool operator !=(StringValue? left, FloatValue? right) =>
-        !(left == right);
 }

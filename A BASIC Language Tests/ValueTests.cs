@@ -1,6 +1,6 @@
-﻿using System;
+﻿using A_BASIC_Language.ValueTypes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using A_BASIC_Language.ValueTypes;
+using System;
 
 namespace A_BASIC_Language_Tests;
 
@@ -106,69 +106,106 @@ public class ValueTests
     }
 
     [TestMethod]
-    public void CanCompare()
+    public void Equal()
     {
-        var equalString = new StringValue("50");
-        var equalFloat = new FloatValue(50.0);
-        var equalInt = new IntValue(50);
+        var fltGreater = new FloatValue(50.1);
+        var fltLesser = new FloatValue(50.0);
 
-        var unequalString = new StringValue("51");
-        var unequalFloat = new FloatValue(50.1);
-        var unequalInt = new IntValue(49);
+        var intGreater = new IntValue(50);
+        var intLesser = new IntValue(49);
 
-        Assert.IsTrue(equalString == equalFloat);
-        Assert.IsTrue(equalString == equalInt);
-        Assert.IsTrue(equalFloat == equalString);
-        Assert.IsTrue(equalFloat == equalInt);
-        Assert.IsTrue(equalInt == equalString);
-        Assert.IsTrue(equalInt == equalFloat);
+        var strFiftyOne = new StringValue("51");
+        var strFifty = new StringValue("50");
 
-        Assert.IsTrue(unequalString != equalFloat);
-        Assert.IsTrue(unequalString != equalInt);
-        Assert.IsTrue(unequalFloat != equalString);
-        Assert.IsTrue(unequalFloat != equalInt);
-        Assert.IsTrue(unequalInt != equalString);
-        Assert.IsTrue(unequalInt != equalFloat);
+        Assert.IsTrue(fltLesser == intGreater);
+        Assert.IsTrue(intGreater == fltLesser);
+        Assert.IsFalse(intGreater == fltGreater);
+        Assert.IsFalse(intLesser == intGreater);
+        Assert.IsFalse(strFifty == strFiftyOne);
 
-        //Assert.IsFalse(unequalString > equalFloat); // Cannot compare.
-        //Assert.IsFalse(unequalString > equalInt); // Cannot compare.
-        Assert.IsTrue(unequalFloat > equalString);
-        Assert.IsTrue(unequalFloat > equalInt);
-        Assert.IsFalse(unequalInt > equalString);
-        Assert.IsFalse(unequalInt > equalFloat);
+        // Null handling:
+        Assert.IsTrue(null == null);
+        Assert.IsFalse(null == fltGreater);
 
-        //Assert.IsFalse(unequalString < equalFloat); // Cannot compare.
-        //Assert.IsFalse(unequalString < equalInt); // Cannot compare.
-        Assert.IsFalse(unequalFloat < equalString);
-        Assert.IsFalse(unequalFloat < equalInt);
-        Assert.IsTrue(unequalInt < equalString);
-        Assert.IsTrue(unequalInt < equalFloat);
-
-        //Assert.IsFalse(unequalString >= equalFloat); // Cannot compare.
-        //Assert.IsFalse(unequalString >= equalInt); // Cannot compare.
-        Assert.IsTrue(unequalFloat >= equalString);
-        Assert.IsTrue(unequalFloat >= equalInt);
-        Assert.IsFalse(unequalInt >= equalString);
-        Assert.IsFalse(unequalInt >= equalFloat);
-
-        //Assert.IsFalse(unequalString <= equalFloat); // Cannot compare.
-        //Assert.IsFalse(unequalString <= equalInt); // Cannot compare.
-        Assert.IsFalse(unequalFloat <= equalString);
-        Assert.IsFalse(unequalFloat <= equalInt);
-        Assert.IsTrue(unequalInt <= equalString);
-        Assert.IsTrue(unequalInt <= equalFloat);
+        // String casting:
+        Assert.IsTrue(strFifty == fltLesser);
+        Assert.IsTrue(strFifty == intGreater);
+        Assert.IsTrue(fltLesser == strFifty);
+        Assert.IsTrue(intGreater == strFifty);
     }
 
     [TestMethod]
-    public void Comparison_Integer()
+    public void GreaterThan()
     {
-        var lesser = new IntValue(20);
-        var greater = new IntValue(40);
+        var fltGreater = new FloatValue(50.1);
+        var fltLesser = new FloatValue(50.0);
 
-        Assert.IsFalse(lesser > greater);
-        Assert.IsTrue(lesser < greater);
-        Assert.IsFalse(lesser >= greater);
-        Assert.IsTrue(lesser <= greater);
-        Assert.IsFalse(lesser == greater);
+        var intGreater = new IntValue(50);
+        var intLesser = new IntValue(49);
+
+        var strFiftyOne = new StringValue("51");
+        var strFifty = new StringValue("50");
+
+        Assert.IsTrue(fltGreater > intGreater);
+        Assert.IsFalse(intLesser > fltLesser);
+        Assert.IsFalse(intLesser > intGreater);
+
+        // String casting:
+        Assert.IsTrue(strFiftyOne > fltLesser);
+        Assert.IsTrue(strFiftyOne > intGreater);
+        Assert.IsTrue(fltGreater > strFifty);
+        Assert.IsFalse(intLesser > strFifty);
+    }
+
+    [TestMethod]
+    public void GreaterThanOrEqual()
+    {
+        var fltGreater = new FloatValue(50.1);
+        var fltLesser = new FloatValue(50.0);
+
+        var intGreater = new IntValue(50);
+        var intLesser = new IntValue(49);
+
+        var strFiftyOne = new StringValue("51");
+        var strFifty = new StringValue("50");
+
+        Assert.IsTrue(fltGreater >= intGreater);
+        Assert.IsFalse(intLesser >= fltLesser);
+        Assert.IsFalse(intLesser >= intGreater);
+
+        // String casting:
+        Assert.IsTrue(strFiftyOne >= fltLesser);
+        Assert.IsTrue(strFiftyOne >= intGreater);
+        Assert.IsTrue(fltGreater >= strFifty);
+        Assert.IsFalse(intLesser >= strFifty);
+    }
+
+    [TestMethod]
+    public void OppositesAndNegation()
+    {
+        //Note: Since '!=', '<' and '<=' are all defined in terms of '==', '>' and '>=' there is little need for many tests
+
+        var fltGreater = new FloatValue(50.1);
+        var fltLesser = new FloatValue(50.0);
+
+        var intGreater = new IntValue(50);
+        var intLesser = new IntValue(49);
+
+        var strFiftyOne = new StringValue("51");
+        var strFifty = new StringValue("50");
+
+        Assert.IsTrue(fltGreater != intGreater);
+        Assert.IsFalse(fltGreater < intGreater);
+        Assert.IsFalse(fltGreater <= intGreater);
+
+        // Null handling:
+        Assert.IsFalse(null != null);
+        Assert.IsTrue(null != fltGreater);
+
+        // String casting:
+        Assert.IsTrue(strFiftyOne != fltLesser);
+        Assert.IsTrue(strFiftyOne != intGreater);
+        Assert.IsTrue(fltGreater != strFifty);
+        Assert.IsTrue(intLesser != strFifty);
     }
 }
