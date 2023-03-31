@@ -71,16 +71,15 @@ public abstract class ValueBase
         return true;
     }
 
-    //ToDo: null == null => true everything else false
 
     //Note: Overriding '==' and '!=' operators:
     static bool Equal(FloatValue x, FloatValue y) => Math.Abs(x.Value - y.Value) < FloatValue.CompareErrorTolerance;
     static bool Equal(FloatValue x, IntValue y) => Math.Abs(x.Value - y.Value) < FloatValue.CompareErrorTolerance;
-    static bool Equal(FloatValue x, StringValue y) => y.TryGetAsFloatValue(out var v) && Equal(x, v);
+    static bool Equal(FloatValue x, StringValue y) => y.TryGetAsFloatValue(out var ny) && Equal(x, ny);
 
     static bool Equal(IntValue x, IntValue y) => x.Value == y.Value;
     static bool Equal(IntValue x, FloatValue y) => Equal(y, x);
-    static bool Equal(IntValue x, StringValue y) => y.TryGetAsIntValue(out var v) && Equal(x, v);
+    static bool Equal(IntValue x, StringValue y) => y.TryGetAsIntValue(out var ny) && Equal(x, ny);
 
     static bool Equal(StringValue x, StringValue y) => x.Value == y.Value;
     static bool Equal(StringValue x, FloatValue y) => Equal(y, x);
@@ -96,55 +95,22 @@ public abstract class ValueBase
 
         return Equal((dynamic)x, (dynamic)y);
     }
-    public static bool operator !=(ValueBase? x, ValueBase? y)
-    {
-        if (x is null || y is null)
-            return false;
+    public static bool operator !=(ValueBase? x, ValueBase? y) => !(x == y);
 
-        return !(x == y);
-    }
 
     //Note: Overriding '>' and '<' operators:
-    static bool GreaterThan(FloatValue? x, FloatValue? y)
-    {
-        if (x is null || y is null)
-            return false;
+    static bool GreaterThan(FloatValue x, FloatValue y) => x.Value > y.Value;
+    static bool GreaterThan(FloatValue x, IntValue y) => x.Value > y.Value;
+    static bool GreaterThan(FloatValue x, StringValue y) => y.TryGetAsFloatValue(out var ny) && GreaterThan(x, ny);
 
-        return x.Value > y.Value;
-    }
-    static bool GreaterThan(FloatValue? x, IntValue? y)
-    {
-        if (x is null || y is null)
-            return false;
-
-        return x.Value > y.Value;
-    }
-    static bool GreaterThan(FloatValue? x, StringValue? y) =>
-        throw new TypeMismatchException("TYPE MISMATCH ERROR");
-
-    static bool GreaterThan(IntValue x, IntValue y)
-    {
-        if (x is null || y is null)
-            return false;
-
-        return x.Value > y.Value;
-    }
-    static bool GreaterThan(IntValue x, FloatValue y)
-    {
-        if (x is null || y is null)
-            return false;
-
-        return x.Value > y.Value;
-    }
-    static bool GreaterThan(IntValue x, StringValue y) =>
-        throw new TypeMismatchException("TYPE MISMATCH ERROR");
+    static bool GreaterThan(IntValue x, IntValue y) => x.Value > y.Value;
+    static bool GreaterThan(IntValue x, FloatValue y) => x.Value > y.Value;
+    static bool GreaterThan(IntValue x, StringValue y) => y.TryGetAsIntValue(out var ny) && GreaterThan(x, ny);
 
     static bool GreaterThan(StringValue x, StringValue y) =>
         throw new NotImplementedException();//ToDo: Check how this works in BASIC.
-    static bool GreaterThan(StringValue x, FloatValue y) =>
-        throw new TypeMismatchException("TYPE MISMATCH ERROR");
-    static bool GreaterThan(StringValue x, IntValue y) =>
-        throw new TypeMismatchException("TYPE MISMATCH ERROR");
+    static bool GreaterThan(StringValue x, FloatValue y) => x.TryGetAsFloatValue(out var nx) && GreaterThan(nx, y);
+    static bool GreaterThan(StringValue x, IntValue y) => x.TryGetAsIntValue(out var nx) && GreaterThan(nx, y);
 
     public static bool operator >(ValueBase? x, ValueBase? y)
     {
@@ -153,70 +119,18 @@ public abstract class ValueBase
 
         return GreaterThan((dynamic)x, (dynamic)y);
     }
-    public static bool operator <(ValueBase? x, ValueBase? y)
-    {
-        if (x is null || y is null)
-            return false;
+    public static bool operator <(ValueBase? x, ValueBase? y) => !(x >= y);
 
-        return !(x >= y);
-    }
 
     //Note: Overriding '>=' and '<=' operators:
-    static bool GreaterThanOrEqual(FloatValue? x, FloatValue? y)
-    {
-        if (x is null || y is null)
-            return false;
-
-        return x.Value >= y.Value;
-    }
-    static bool GreaterThanOrEqual(FloatValue? x, IntValue? y)
-    {
-        if (x is null || y is null)
-            return false;
-
-        return x.Value >= y.Value;
-    }
-    static bool GreaterThanOrEqual(FloatValue? x, StringValue? y) =>
-        throw new TypeMismatchException("TYPE MISMATCH ERROR");
-
-    static bool GreaterThanOrEqual(IntValue x, IntValue y)
-    {
-        if (x is null || y is null)
-            return false;
-
-        return x.Value >= y.Value;
-    }
-    static bool GreaterThanOrEqual(IntValue x, FloatValue y)
-    {
-        if (x is null || y is null)
-            return false;
-
-        return x.Value >= y.Value;
-    }
-    static bool GreaterThanOrEqual(IntValue x, StringValue y) =>
-        throw new TypeMismatchException("TYPE MISMATCH ERROR");
-
-    static bool GreaterThanOrEqual(StringValue x, StringValue y) =>
-        throw new NotImplementedException();
-    static bool GreaterThanOrEqual(StringValue x, FloatValue y) =>
-        throw new TypeMismatchException("TYPE MISMATCH ERROR");
-    static bool GreaterThanOrEqual(StringValue x, IntValue y) =>
-        throw new TypeMismatchException("TYPE MISMATCH ERROR");
-
     public static bool operator >=(ValueBase? x, ValueBase? y)
     {
         if (x is null || y is null)
             return false;
 
-        return GreaterThanOrEqual((dynamic)x, (dynamic)y);
+        return (dynamic)x == (dynamic)y || (dynamic)x > (dynamic)y;
     }
-    public static bool operator <=(ValueBase? x, ValueBase? y)
-    {
-        if (x is null || y is null)
-            return false;
-
-        return !(x > y);
-    }
+    public static bool operator <=(ValueBase? x, ValueBase? y) => !(x > y);
 
     // ReSharper disable once RedundantOverriddenMember
     public override bool Equals(object? obj) // todo
@@ -247,21 +161,4 @@ public abstract class ValueBase
     public abstract bool CanActAsBool();
 
     public abstract bool GetBoolValue();
-}
-
-public class TypeMismatchException : Exception
-{
-    public TypeMismatchException()
-    {
-    }
-
-    public TypeMismatchException(string message)
-        : base(message)
-    {
-    }
-
-    public TypeMismatchException(string message, Exception inner)
-        : base(message, inner)
-    {
-    }
 }

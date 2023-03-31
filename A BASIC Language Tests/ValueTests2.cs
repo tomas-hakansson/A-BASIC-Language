@@ -134,41 +134,32 @@ public class ValueTests2
         Assert.IsFalse(intLesser >= fltLesser);
         Assert.IsFalse(intLesser >= intGreater);
 
+        //Note: String casting:
+        Assert.IsTrue(strFifty == fltLesser);
+        Assert.IsTrue(strFifty == intGreater);
+        Assert.IsTrue(fltLesser == strFifty);
+        Assert.IsTrue(intGreater == strFifty);
+
+        Assert.IsTrue(strFiftyOne != fltLesser);
+        Assert.IsTrue(strFiftyOne != intGreater);
+        Assert.IsTrue(fltGreater != strFifty);
+        Assert.IsTrue(intLesser != strFifty);
+
+        Assert.IsTrue(strFiftyOne > fltLesser);
+        Assert.IsTrue(strFiftyOne > intGreater);
+        Assert.IsTrue(fltGreater > strFifty);
+        Assert.IsFalse(intLesser > strFifty);
+
+        Assert.IsTrue(strFiftyOne >= fltLesser);
+        Assert.IsTrue(strFiftyOne >= intGreater);
+        Assert.IsTrue(fltGreater >= strFifty);
+        Assert.IsFalse(intLesser >= strFifty);
+
         //Note: Since '!=', '<' and '<=' are all defined in terms of '==', '>' and '>=' there is little need for many tests.
+        Assert.IsFalse(null != null);
+        Assert.IsTrue(null != fltGreater);
         Assert.IsTrue(fltGreater != intGreater);
         Assert.IsFalse(fltGreater < intGreater);
         Assert.IsFalse(fltGreater <= intGreater);
-    }
-
-    [TestMethod]
-    public void CanCompare2()
-    {
-        var equalString = new StringValue("50");
-        var equalFloat = new FloatValue(50.0);
-        var equalInt = new IntValue(50);
-
-        var unequalString = new StringValue("51");
-        var unequalFloat = new FloatValue(50.1);
-        var unequalInt = new IntValue(49);
-
-        Assert.IsTrue(equalString == equalFloat);
-        Assert.IsTrue(equalString == equalInt);
-        Assert.IsTrue(equalFloat == equalString);
-        Assert.IsTrue(equalInt == equalString);
-
-        Assert.IsTrue(unequalString != equalFloat);
-        Assert.IsTrue(unequalString != equalInt);
-        Assert.IsTrue(unequalFloat != equalString);
-        Assert.IsTrue(unequalInt != equalString);
-
-        //Assert.IsFalse(unequalString > equalFloat); // Cannot compare.
-        //Assert.IsFalse(unequalString > equalInt); // Cannot compare.
-        //Assert.IsTrue(unequalFloat > equalString);
-        //Assert.IsFalse(unequalInt > equalString);
-
-        //Assert.IsFalse(unequalString >= equalFloat); // Cannot compare.
-        //Assert.IsFalse(unequalString >= equalInt); // Cannot compare.
-        //Assert.IsTrue(unequalFloat >= equalString);
-        //Assert.IsFalse(unequalInt >= equalString);
     }
 }
