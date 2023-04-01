@@ -277,6 +277,15 @@ public class Parser_Tests
     }
 
     [TestMethod]
+    public void LineNumberDecidesOrder()
+    {
+        var source = @"
+20 print n$
+10 input ""enter name""; n$";
+        Assert.AreEqual("L(10) S(enter name) P(#WRITE) S(? ) P(#WRITE) P(#INPUT-STRING) =(N$) L(20) V(N$) P(#WRITE) P(#NEXT-LINE)", Parse(source));
+    }
+
+    [TestMethod]
     public void DIM_Create_OneVariable_OneDimension()
     {
         var source = "10 dim a(4)";
