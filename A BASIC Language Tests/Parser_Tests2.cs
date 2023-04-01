@@ -286,6 +286,15 @@ public class Parser_Tests2
     }
 
     [TestMethod]
+    public void ALineThatStartsWithANumberButIsNotFollowedWithAStatementOrVariableIsAComment()
+    {
+        var source = @"
+10. this is a comment
+20 print 42";
+        Assert.AreEqual("L(20) N(42) P(#WRITE) P(#NEXT-LINE)", Parse(source));
+    }
+
+    [TestMethod]
     public void DIM_Create_OneVariable_OneDimension()
     {
         var source = "10 dim a(4)";
