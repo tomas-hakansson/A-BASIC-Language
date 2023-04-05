@@ -2,6 +2,7 @@ using System.Text;
 using A_BASIC_Language.Gui.WinForms.PseudoGraphics;
 using A_BASIC_Language.IO;
 using CharacterMatrix;
+using ConsoleControlLibrary;
 
 namespace A_BASIC_Language.Gui.WinForms;
 
@@ -70,6 +71,24 @@ public partial class TerminalEmulator : Form
         _characterRenderer = new CharacterRenderer(_characters);
         _overlayRenderer = new OverlayRenderer(imageList1);
         _keyboardController = new KeyboardController(_characters, KeyDownOperationCompleted, _ts, ToggleFullScreen, ScrollUp, SaveLineInput, SaveDirectModeInput, MoveLineInputLeft, Terminal.End);
+    }
+
+    private void TerminalEmulator_Load(object sender, EventArgs e)
+    {
+        var marginX = Size.Width - ClientRectangle.Width;
+        var marginY = Size.Height - ClientRectangle.Height;
+
+        var width = _pixelsWidth + marginX;
+        var height = 25 * 8 + marginY;
+        MinimumSize = new Size(width, height);
+
+        var consoleControl = new ConsoleControl();
+        consoleControl.ColumnCount = _ts.ColumnCount;
+        consoleControl.RowCount = _ts.RowCount;
+        consoleControl.Dock = DockStyle.Fill;
+        consoleControl.State.CurrentForm = new LoadForm(Handle, consoleControl);
+        consoleControl.Visible = false;
+        Controls.Add(consoleControl);
     }
 
     public void EndLineInput()

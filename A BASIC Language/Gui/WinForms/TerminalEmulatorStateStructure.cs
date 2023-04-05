@@ -2,8 +2,8 @@
 
 public class TerminalEmulatorStateStructure
 {
-    private readonly int _columnCount;
-    private readonly int _rowCount;
+    public int ColumnCount { get; }
+    public int RowCount { get; }
     public bool LineInputMode { get; set; }
     public Point CursorPosition { get; }
     public TerminalState State { get; set; }
@@ -15,8 +15,8 @@ public class TerminalEmulatorStateStructure
         UserBreak = false;
         LineInputMode = false;
         CursorPosition = new Point();
-        _columnCount = columnCount;
-        _rowCount = rowCount;
+        ColumnCount = columnCount;
+        RowCount = rowCount;
         LineInputPosition = new Point();
     }
 
@@ -26,8 +26,8 @@ public class TerminalEmulatorStateStructure
     }
 
     public void CursorLeft() =>
-        CursorPosition.MoveLeft(_columnCount);
+        CursorPosition.MoveLeft(ColumnCount);
 
     public void CursorRight() =>
-        CursorPosition.MoveRight(_columnCount, _rowCount);
+        CursorPosition.MoveRight(ColumnCount, RowCount);
 }
