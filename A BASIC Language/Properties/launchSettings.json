@@ -1,7 +1,8 @@
 {
   "profiles": {
     "A BASIC Language": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "..\\..\\..\\testPrograms\\countForever.abl"
     }
   }
 }

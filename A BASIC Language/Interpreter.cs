@@ -31,17 +31,17 @@ public class Interpreter
         _currentLineNumber = 0;
     }
 
-    public void Run(Terminal terminal)
+    public async Task Run(Terminal terminal)
     {
         _terminal = terminal;
 
         if (_terminal.State != TerminalState.Running)
             return;
 
-        Eval();
+        await Eval();
     }
 
-    void Eval()
+    async Task Eval()
     {
         EndMessageDisplayed = false;
 
@@ -68,7 +68,7 @@ public class Interpreter
             if (_terminal.UserBreak)
             {
                 _terminal.UserBreak = false;
-                End("User terminated the program.");
+                await End("User terminated the program.");
             }
 
             if (_terminal.State != TerminalState.Running)
@@ -234,8 +234,8 @@ public class Interpreter
                                     {
                                         if (!_terminal.QuitFlag && _terminal.State == TerminalState.Running)
                                         {
-                                            _terminal.WriteLine("?Redo from start");
-                                            _terminal.Write("Enter a numeric value: ");
+                                            await _terminal.WriteLine("?Redo from start");
+                                            await _terminal.Write("Enter a numeric value: ");
                                         }
                                         else
                                         {
@@ -265,10 +265,10 @@ public class Interpreter
                             }
                             break;
                         case "#NEXT-LINE":
-                            _terminal.WriteLine();
+                            await _terminal.WriteLine();
                             break;
                         case "#NEXT-TAB-POSITION":
-                            _terminal.NextTab();
+                            await _terminal.NextTab();
                             break;
                         case "RND":
                             //ToDo: implement this properly.
@@ -315,7 +315,7 @@ public class Interpreter
                                 if (_data.Count > 0)
                                 {
                                     var value = _data.Pop();
-                                    _terminal.Write(value.ToString() ?? "");
+                                    await _terminal.Write(value.ToString() ?? "");
                                 }
                                 else
                                     Debug.Fail("The stack is empty");
@@ -333,12 +333,12 @@ public class Interpreter
         }
 
         if (!EndMessageDisplayed && !_empty)
-            End("Program has run through.");
+            await End("Program has run through.");
         else if (_empty)
             _terminal.State = TerminalState.Empty;
     }
 
-    void End(string message)
+    async Task End(string message)
     {
         EndMessageDisplayed = true;
 
@@ -350,12 +350,10 @@ public class Interpreter
 
         _terminal.Title = "Simple direct mode";
 
-        _terminal.WriteLine();
-
-        _terminal.WriteLine(string.IsNullOrWhiteSpace(message) ? TheProgramHasEnded : message);
-
-        _terminal.WriteLine();
-        _terminal.WriteLine("Ready. Type RESTART, SOURCE, LOAD or QUIT.");
-        _terminal.End();
+        await _terminal.WriteLine();
+        await _terminal.WriteLine(string.IsNullOrWhiteSpace(message) ? TheProgramHasEnded : message);
+        await _terminal.WriteLine();
+        await _terminal.WriteLine("Ready. Type RESTART, SOURCE, LOAD or QUIT.");
+            _terminal.End();
     }
 }
