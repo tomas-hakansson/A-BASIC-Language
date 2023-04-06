@@ -360,6 +360,8 @@ public partial class TerminalEmulator : Form
         if (_ts.CursorPosition.X > 0)
             await WriteLine();
 
+        Console.WriteLine(_ts.LineInputMode);
+
         await WriteLine("?User break.");
     }
 

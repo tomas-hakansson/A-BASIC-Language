@@ -66,10 +66,7 @@ public class Interpreter
                 return;
 
             if (_terminal.UserBreak)
-            {
                 _terminal.UserBreak = false;
-                await End("User terminated the program.");
-            }
 
             if (_terminal.State != TerminalState.Running)
                 return;
