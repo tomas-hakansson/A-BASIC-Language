@@ -440,7 +440,7 @@ public partial class TerminalEmulator : Form
             case "SOURCE":
                 if (_ts.State == TerminalState.Ended)
                 {
-                    using var x = new SourceDialog();
+                    using var x = new SourceDialog(); // TODO Use the console control library instead.
                     x.Filename = ProgramFilename;
                     x.SourceCode = SourceCode;
                     x.ShowDialog(this);
