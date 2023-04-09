@@ -1,178 +1,185 @@
 ﻿using A_BASIC_Language.Stage1;
+using System.Globalization;
+using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 
 namespace A_BASIC_Language.Parsing;
 
-class Parser
+partial class Parser
 {
     //use sorted dictionary to ensure correct line ordering.
 
     public ParseResult Result { get; set; } = new ParseResult();
 
-    readonly TokenizeResult _tokenizeResult;
+    readonly string _source;
     readonly List<ABL_EvalValue> _evalValues;
     readonly Dictionary<int, int> _labelIndex;
     int _index = 0;
-    string _currentTokenValue = string.Empty;
-    TokenType _currentTokenType = default;
+    List<(int index, string message)> _parseErrors;
 
     bool _parsingIf = false;
     int _generatedLabel = 0;
 
-    public Parser(TokenizeResult tokenizeResult)
+    public Parser(string source)
     {
         //Note: Initialisation:
-        _tokenizeResult = tokenizeResult;
+        _source = source;
         _evalValues = new List<ABL_EvalValue>();
         _labelIndex = new Dictionary<int, int>();
-        Next_wws();
+        //Next_wws();
+        _parseErrors = new List<(int index, string message)>();
 
         //Note: The parsing begins:
         try
         {
             AProgram();
-            Result.EvalValues = _evalValues;
-            Result.LabelIndex = _labelIndex;
+            if (_parseErrors.Any())
+            {
+                //ToDo: Handle parse errors
+            }
+            else
+            {
+                Result.EvalValues = _evalValues;
+                Result.LabelIndex = _labelIndex;
+            }
         }
         catch (Exception ex)
         {
-            //this try catch is for development but might find use in final program.
+            //this is a bug.
             var message = ex.Message;
         }
     }
 
+    //program => line*
     private void AProgram()
     {
-        /* A program consists of zero or more lines of code.
-         * Each line begins with a numeric label.
-         * It's then followed by a statement or (in the case of let) a user defined name.
-         * The statement can optionally be followed by:
-         *  Control symbols (e.g. ',', ';' and maybe others).
-         *  Other portions of the statement in the cases where it consists of multiple parts:
-         *   If is followed by then (which itself can be followed by else) or in some versions of BASIC by goto.
-         *   Def is followed by fn.
-         *   On is followed by gosub or goto.
-         *   For is followed by to (which itself can be followed by step).
-         *   There might be others.
-         *  Mathematical and logical operations and user defined functions.
-         *  If can be followed by other statements.
-         *  Finally it can be followed by ':' which is then followed by another statement.
-         * 
-         * It follows from this that a valid line looks something like this:
-         *  aLabel aStatementWithParts (: aStatementWithParts)* //where * means zero or more.
-         *  We therefore need a parser that first parses the number and then the statement with
-         *   its parts.
-         *  The statement parser itself identifies the current statement and calls its parser 
-         *   (each statement with parts has its own parser)
-         *  After the statement parser is done, the line parser (which contains all this) 
-         *   checks if ':' follows and if so calls the statement parser again.
-         *  This is repeated until the next label is found then the line parser returns and the
-         *   program parser loops
-         *  The line parser returns true if it finds a valid program line, false otherwise.
-         *   
-         */
-
-        //Ponder: long term we probably want to keep parsing even if a line is erroneous and simply
-        // collect the errors so that we can maximise the error information we can give the user.
         bool more;
         do more = ALine();
         while (more);
     }
 
+    //line     => aLabel oneOrMoreStatements
+    //line     => aComment
+    //aComment => A valid line of code starts with a positive integer
+    //              followed by a letter, anything else is a comment.
     bool ALine()
     {
-        //line => aLabel oneOrMoreStatements
-
         if (!ALabel())
-            return false;
+        {
+            //this is a comment line. unless last line, skip to next.
+            SkipLine();
+            return _index < _source.Length - 1;
+        }
 
         OneOrMoreStatements();
 
-        //Ponder: should these checks be done in AStatementPlusParts?
-        if (_currentTokenType == TokenType.Label)
-            return true;
-        else if (_currentTokenType == TokenType.EOF)
-            return false;
-        else
-            return true;
+        return _index < _source.Length - 1;
     }
 
     bool ALabel()
     {
-        if (_currentTokenType != TokenType.Label)
-            return false;
-        GenerateLabel();
-        Next();
-        return true;
+        //Note: \G causes the matching to start from the current index.
+        var match = LabelRegex().Match(_source, _index);
+        if (match.Success)
+        {
+            var matched = false;
+            var mg = match.Groups.Cast<Group>().First(g => g.Name == "label");
+            if (mg != null)
+            {
+                matched = true;
+                _index += mg.Length;
+                GenerateLabel(mg.Value);
+                SkipWhitespace();
+            }
+            return matched;
+        }
+        else return false;
     }
 
-    void AStatementPlusParts()
+    //OneOrMoreStatements => aStatementWithParts (: aStatementWithParts)*
+    void OneOrMoreStatements(Match? match = null)
+    {
+        AStatementPlusParts(match);
+        while (Maybe(':'))
+            AStatementPlusParts();
+    }
+
+    void AStatementPlusParts(Match? isStatement = null)
     {
         //This is the tricky part.
-        if (_currentTokenType == TokenType.UserDefinedName)
-            Let();
-        else if (_currentTokenType == TokenType.Statement)
+
+        isStatement ??= StatementRegex().Match(_source, _index);
+        if (isStatement.Success)
         {
-            switch (_currentTokenValue)
+            var match = isStatement.Groups.Cast<Group>().First(g => g.Name == "statement");
+            if (match != null)
             {
-                case "DIM":
-                    Dim();
-                    break;
-                case "END":
-                    Next();
-                    Generate(new ABL_Procedure("#END-PROGRAM"));
-                    break;
-                case "GOTO":
-                    Goto();
-                    break;
-                case "GO":
-                    Next();
-                    if (_currentTokenValue == "TO")
-                        Goto();
-                    else
-                        throw new ArgumentException("GO TO (note the space) went wrong");
-                    break;
-                case "IF":
-                    //Note: This wont work for nested ifs but that will probably not cause problems.
-                    _parsingIf = true;
-                    If();
-                    _parsingIf = false;
-                    break;
-                case "INPUT":
-                    Input();
-                    break;
-                case "LET":
-                    Let();
-                    break;
-                case "PRINT":
-                    Print();
-                    break;
-                case "REM":
-                    SkipLine();
-                    break;
-                case "STOP":
-                    Next();
-                    Generate(new ABL_Procedure("#END-PROGRAM"));
-                    break;
-                default:
-                    throw new NotImplementedException("the given statement has not been implemented yet.");
+                var statement = match.Value.ToUpper();
+                if (statement != "GO")
+                {
+                    //Note: Since 'GO' is ambiguous and can be either Go or GOTO we handle this differently.
+                    _index += match.Length;
+                    SkipWhitespace();
+                }
+                switch (statement)
+                {
+                    case "DIM":
+                        Dim();
+                        break;
+                    case "END":
+                        Generate(new ABL_Procedure("#END-PROGRAM"));
+                        break;
+                    case "GO":
+                        Goto();//Note: Handles both GOTO and GO TO.
+                        break;
+                    case "IF":
+                        //Note: Since if statements can have statements as branches their parsing must handled differently
+                        //          so these flags allow the relevant code to handle these special cases.
+                        //Note: This won't work for nested ifs but that will probably not cause problems.
+                        _parsingIf = true;
+                        If();
+                        _parsingIf = false;
+                        break;
+                    case "INPUT":
+                        Input();
+                        break;
+                    case "LET":
+                        Let();
+                        break;
+                    case "PRINT":
+                        Print();
+                        break;
+                    case "REM":
+                        SkipLine();
+                        break;
+                    case "STOP":
+                        Generate(new ABL_Procedure("#END-PROGRAM"));
+                        break;
+                    default:
+                        throw new NotImplementedException("the given statement has not been implemented yet.");
+                }
+            }
+            else
+            {
+                //something went wrong.
             }
         }
         else
-            throw new InvalidOperationException("Syntax error");
+            Let();
     }
 
+    //dim => DIM unset-variable ("," unset-variable)*
     void Dim()
     {
-        //dim     => DIM unset-variable ("," unset-variable)*
-
-        Next();
         UnsetVariable();
-        while (MightMatch(TokenType.Comma))
+        while (Maybe(','))
             UnsetVariable();
 
         void UnsetVariable()
         {
-            var (fullName, _, dimVariable) = ASetVariable(true);
+            var (success, fullName, _, dimVariable) = ASetVariable(true);
+            if (!success)
+                return;
             if (dimVariable)
                 Generate(new ABL_DIM_Creation(fullName));
             else
@@ -180,156 +187,159 @@ class Parser
         }
     }
 
+    void Goto()
+    {
+        if (!Maybe("GOTO"))
+        {//Note: GO TO
+            _index += 2;//Note; It would be wasteful to reparse GO just to get the length.
+            SkipWhitespace();
+            if (!Maybe("TO"))
+            {
+                ParseError("Expected 'TO' in GO TO");
+                if (_parsingIf)
+                    SkipStatement();
+                else
+                    SkipLine();
+                return;
+            }
+        }
+        Expression();
+        Generate(new ABL_Procedure("GOTO"));
+        if (!_parsingIf)
+            SkipLine();
+    }
+
+    //if         => IF boolean-expr THEN body (ELSE body)?
+    //body       => numeric-expr | statements
+    //statements => statement (: statement)*
     void If()
     {
-        //if         => IF boolean-expr THEN body (ELSE body)?
-        //body       => numeric-expr | statements
-        //statements => statement (: statement)*
-
         /*
             IF expr THEN this ELSE that
             Is compiled to the following (10 and 20 are placeholder values.):
             expr #10 #IF-FALSE-GOTO this #20 GOTO 10 that 20
          */
 
-        var falseBranchLabel = GetGeneratedLabel();//Note: Made negative because all valid BASIC labels are positive so there won't be a conflict.
-        Next();
+        var falseBranchLabel = GetGeneratedLabel();
         Expression();
         Generate(new ABL_Number(falseBranchLabel), new ABL_Procedure("#IF-FALSE-GOTO"));
-        MustMatch("THEN");
+        if (!Maybe("THEN"))
+        {
+            ParseError("Expected 'THEN' statement in 'IF' statement");
+            //Note: Since an if statements can have multiple statements in its bodies,
+            //  each separated by ':', and since we're in the test and haven't even
+            //  reached either body, SkipStatement() is the wrong choice as it could
+            //  skip further into the if statement even though we've return from it.
+            SkipLine();
+            return;
+        }
         Body();
-        var endBranchLabel = GetGeneratedLabel();//Note: Se above.
+        var endBranchLabel = GetGeneratedLabel();
         Generate(new ABL_Number(endBranchLabel), new ABL_Procedure("GOTO"));
         GenerateLabel(falseBranchLabel);
-        if (MightMatch("ELSE"))
+
+        if (Maybe("ELSE"))
             Body();
+
         GenerateLabel(endBranchLabel);
 
         void Body()
         {
-            if (_currentTokenType == TokenType.Statement)
-                OneOrMoreStatements();
-            else if (_currentTokenType == TokenType.UserDefinedName)
+            var cc = _source[_index];
+            //Note: The body can contain either a statement, a variable or an expression.
+            var isStatement = StatementRegex().Match(_source, _index);
+            if (isStatement.Success)
+                OneOrMoreStatements(isStatement);
+            else
             {
-                //Note: if the value after the user defined name is an equals sign then this is a statement.
-                var (_, type) = LookAhead();
-                if (type == TokenType.EqualityOrAssignment)
-                    OneOrMoreStatements();
+                var isVariable = VariableRegex().Match(_source, _index);
+                if (isVariable.Success)
+                {
+                    var match = isVariable.Groups.Cast<Group>().First(g => g.Name == "var");
+                    if (match.Value.StartsWith("FN", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        //Note: this is a user defined function.
+                        Expression();
+                        Generate(new ABL_Procedure("GOTO"));
+                    }
+                    else
+                    {
+                        var index = GetNextNonWhitespaceIndex(_index + match.Length);
+
+                        if (index == -1)
+                        {
+                            ParseError("Expected either a variable of assignment operator in 'IF' statement, got EOF");
+                            return;
+                        }
+
+                        if (_source[index] == '=')
+                            OneOrMoreStatements();//Note: Is assignment.
+                        else
+                        {
+                            Expression();
+                            Generate(new ABL_Procedure("GOTO"));
+                        }
+                    }
+                }
+                else if (char.IsWhiteSpace(_source[_index]))
+                {
+                    ParseError("Expected an IF body");
+                    return;
+                }
                 else
                 {
                     Expression();
                     Generate(new ABL_Procedure("GOTO"));
                 }
             }
-            else
-            {
-                Expression();
-                Generate(new ABL_Procedure("GOTO"));
-            }
-        }
-
-        (string value, TokenType type) LookAhead()
-        {
-            if (_currentTokenType == TokenType.EOF)//Note: just in case we're at the end.
-                return ("", TokenType.EOF);
-            var result = ("", TokenType.Space);
-            for (int i = _index + 1; i < _tokenizeResult.TokenValues.Count; i++)
-            {
-                var ctt = _tokenizeResult.TokenTypes[i];
-                if (ctt == TokenType.EOF)
-                    return ("", TokenType.EOF);
-                if (ctt == TokenType.Space) continue;
-                result = (_tokenizeResult.TokenValues[i], ctt);
-                break;
-            }
-            return result;
         }
     }
 
-    private int GetGeneratedLabel() => --_generatedLabel;
+    void ParseError(string message) =>
+        _parseErrors.Add((_index, message));
 
-    private void OneOrMoreStatements()
+    //Note: Made negative because all valid BASIC labels are positive so there won't be a conflict.
+    int GetGeneratedLabel() => --_generatedLabel;
+
+    void GenerateLabel(string value) =>
+        GenerateLabel(int.Parse(value));
+
+    void GenerateLabel(int value)
     {
-        //OneOrMoreStatements => aStatementWithParts (: aStatementWithParts)*
-
-        AStatementPlusParts();
-        while (MightMatch(TokenType.Colon))
-            AStatementPlusParts();
+        Generate(new ABL_Label(value));
+        _labelIndex.Add(value, _evalValues.Count - 1);
     }
 
-    private void GenerateLabel(int? value = null)
-    {
-        if (value == null)
-        {
-            Generate(new ABL_Label(_currentTokenValue));
-            value = int.Parse(_currentTokenValue);
-        }
-        else
-            Generate(new ABL_Label(value.Value));
-        _labelIndex.Add(value.Value, _evalValues.Count - 1);
-    }
-
-    void Print()
-    {//todo: not completely tested.
-        //print => PRINT (value | ; | ,)*
-        //value => literal | variable | expression
-
-        /* Examples:
-         * PRINT "IS IT A ";RIGHT$(A$(K),LEN(A$(K))-2);
-         * PRINT "I WIN BY";-D;"POINTS"
-         * PRINT 4 2: REM returns 42
-         * PRINT 4;2: REM returns 4  2 (note two spaces, first from 4 the second from potential minus).
-         */
-        Next();
-        bool shouldPrintNewline = true;
-        while (_currentTokenType != TokenType.Label &&
-            _currentTokenType != TokenType.EOF &&
-            _currentTokenType != TokenType.Colon &&
-            _currentTokenType != TokenType.Statement)//Note: checks for statement in case of ELSE statement in IF.
-        {
-            switch (_currentTokenType)
-            {
-                case TokenType.Comma:
-                    Generate(new ABL_Procedure("#NEXT-TAB-POSITION"));
-                    shouldPrintNewline = false;
-                    Next();
-                    continue;
-                case TokenType.Semicolon:
-                    shouldPrintNewline = false;
-                    Next();
-                    continue;
-            }
-            Expression();
-            Generate(new ABL_Procedure("#WRITE"));
-            shouldPrintNewline = true;
-        }
-        if (shouldPrintNewline)
-            Generate(new ABL_Procedure("#NEXT-LINE"));
-    }
-
+    //input => INPUT (prompt-string [;])? unset-variable (, unset-variable)*
     void Input()
     {
-        //input      => INPUT (prompt-string [;])? unset-variable (, unset-variable)*
-
-        Next();
         Prompt();
         Generate(new ABL_String("? "), new ABL_Procedure("#WRITE"));
-        UnsetVariable();
-        while (MightMatch(TokenType.Comma))
-            UnsetVariable();
+        if (!UnsetVariable())
+            return;
+        while (Maybe(','))
+            if (!UnsetVariable())
+                return;
 
         void Prompt()
         {
-            if (MightMatch(TokenType.String, out var prompt))
+            if (AString(out var newString))
             {
-                MustMatch(TokenType.Semicolon);
-                Generate(new ABL_String(prompt), new ABL_Procedure("#WRITE"));
+                if (!Maybe(';'))
+                {
+                    ParseError("Expected semicolon in 'INPUT' statement");
+                    SkipStatement();
+                    return;
+                }
+                Generate(new ABL_String(newString), new ABL_Procedure("#WRITE"));
             }
         }
 
-        void UnsetVariable()
+        bool UnsetVariable()
         {
             var v = ASetVariable(true);
+            if (!v.success)
+                return false;
             var assignmentType = ASetVariable_Helper(v);
             switch (v.typeSpecifier)
             {
@@ -343,30 +353,28 @@ class Parser
                     Generate(new ABL_Procedure("#INPUT-FLOAT"), assignmentType);
                     break;
             }
+            return true;
         }
     }
 
-    void Goto()
-    {
-        Next();
-        Expression();
-        Generate(new ABL_Procedure("GOTO"));
-        if (!_parsingIf)
-            SkipLine();
-    }
-
+    //let => 'LET'? unset-variable = expression
     void Let()
     {
-        //let => 'LET'? unset-variable = expression
-
-        MightMatch("LET");
+        Maybe("LET");
         var v = ASetVariable(true);
-        MustMatch(TokenType.EqualityOrAssignment);
+        if (!v.success)
+            return;
+        if (!Maybe('='))
+        {
+            ParseError("Expected equal sign in 'LET' statement");
+            SkipStatement();
+            return;
+        }
         Expression();
         Generate(ASetVariable_Helper(v));
     }
 
-    static ABL_EvalValue ASetVariable_Helper((string fullName, string _, bool dimVariable) v)
+    static ABL_EvalValue ASetVariable_Helper((bool _1, string fullName, string _2, bool dimVariable) v)
     {
         var fullName = v.fullName;
         if (v.dimVariable)
@@ -375,10 +383,14 @@ class Parser
             return new ABL_Assignment(fullName);
     }
 
+    // set-variable => name index?
+    // name         => user-defined-name type-specifier?
+    // index        => '(' index-value ')'
+    // index-value  => expression (',' expression)*
     /// <summary>
     /// A variable with a value.
     /// </summary>
-    (string fullName, string typeSpecifier, bool dimVariable) ASetVariable(bool assignmentMode = false)
+    (bool success, string fullName, string typeSpecifier, bool dimVariable) ASetVariable(bool assignmentMode = false)
     {
         /*
         What's a set variable? It's a variable that has a value, together with an optional index.
@@ -397,44 +409,63 @@ class Parser
         Naturally this to can have arbitrary depth and complexity.
          */
 
-        // set-variable => name index?
-        // name         => user-defined-name type-specifier?
-        // index        => '(' index-value ')'
-        // index-value  => expression (',' expression)*
 
         string fullName, typeSpecifier;
         bool dimVariable = false;
-        Name();
-        Index();
-        return (fullName, typeSpecifier, dimVariable);
+        if (!Name())
+            return (false, "", "", false);
+        if (!Index())
+            return (false, "", "", false);
+        return (true, fullName, typeSpecifier, dimVariable);
 
-        void Name()
+        bool Name()
         {
-            MustMatch(TokenType.UserDefinedName, out var name);
-            MightMatch(TokenType.TypeSpecifier, out typeSpecifier);
-            fullName = name + typeSpecifier;
+            fullName = string.Empty;
+            typeSpecifier = string.Empty;
+            var isVariable = VariableRegex().Match(_source, _index);
+            if (!isVariable.Success)
+            {
+                ParseError($"Expected variable in {nameof(ASetVariable)}");
+                SkipStatement();
+                return false;
+            }
+            var varMatch = isVariable.Groups.Cast<Group>().First(g => g.Name == "var");
+            _index += varMatch.Length;
+            SkipWhitespace();
+
+            if (OneOf(out var ts, "$", "%"))
+                typeSpecifier = ts;
+            fullName = varMatch.Value + typeSpecifier;
+            SkipWhitespace();
+            return true;
         }
 
-        void Index()
+        bool Index()
         {
-            if (!MightMatch(TokenType.OpeningParenthesis))
+            if (!Maybe('('))
             {
                 if (!assignmentMode)
                     Generate(new ABL_Variable(fullName));
-                return;
+                return true;
             }
             dimVariable = true;
             Index_Value();
-            MustMatch(TokenType.ClosingParenthesis);
+            if (!Maybe(')'))
+            {
+                ParseError($"Expected closing parenthesis sign in {nameof(ASetVariable)}");
+                SkipStatement();
+                return false;
+            }
             if (assignmentMode)
-                return;
+                return true;
             Generate(new ABL_DIM_Variable(fullName));
+            return true;
 
             void Index_Value()
             {
                 Expression();
                 int dimensionCount = 1;
-                while (MightMatch(TokenType.Comma))
+                while (Maybe(','))
                 {
                     Expression();
                     dimensionCount++;
@@ -444,154 +475,85 @@ class Parser
         }
     }
 
+    //print => PRINT (, | ; | expression)*
+    void Print()
+    {//todo: not completely tested.
+
+        /* Examples:
+         * PRINT "IS IT A ";RIGHT$(A$(K),LEN(A$(K))-2);
+         * PRINT "I WIN BY";-D;"POINTS"
+         * PRINT 4 2: REM returns 42
+         * PRINT 4;2: REM returns 4  2 (note two spaces, first from 4 the second from potential minus).
+         */
+
+        var shouldPrintNewline = true;
+        //    _currentTokenType != TokenType.Statement)//Note: checks for statement in case of ELSE statement in IF.
+        while (true)
+        {
+            if (Maybe(','))
+            {
+                Generate(new ABL_Procedure("#NEXT-TAB-POSITION"));
+                shouldPrintNewline = false;
+            }
+            else if (Maybe(';'))
+                shouldPrintNewline = false;
+            else if (_parsingIf && Maybe("ELSE", incrementIfFound: false) ||
+                     _index >= _source.Length ||//EOF
+                     _index < _source.Length//EOS
+                        && _source[_index] == Environment.NewLine[0]
+                        && Maybe(Environment.NewLine) ||
+                     Maybe(':', false))//EOS
+                break;
+            else
+            {
+                Expression();
+                Generate(new ABL_Procedure("#WRITE"));
+                shouldPrintNewline = true;
+            }
+            //If the end of the file is a whitespace, this pushes the _index over EOF.
+            if (_index < _source.Length && char.IsWhiteSpace(_source[_index]))
+                _index++;
+        }
+        if (shouldPrintNewline)
+            Generate(new ABL_Procedure("#NEXT-LINE"));
+    }
+
     /// <summary>
     /// Calls the operator of the lowest precedence.
     /// </summary>
     void Expression() => Precedence_5_Operator();
 
     void Precedence_5_Operator()
-    {//Note: This method is Expression in Crenshaw's book.
+    {
         Precedence_4_Operator();
-        while (_currentTokenType == TokenType.Operator || _currentTokenType == TokenType.EqualityOrAssignment)
+        while (OneOf(out var op, "=", "<>", "!=", "<", ">", "<=", ">="))
         {
-            switch (_currentTokenValue)
-            {
-                case "=":
-                    Equal();
-                    break;
-                case "<>":
-                    NotEqual();
-                    break;
-                case "!=":
-                    NotEqual();
-                    break;
-                case "<":
-                    LessThan();
-                    break;
-                case ">":
-                    GreaterThan();
-                    break;
-                case "<=":
-                    LessThanOrEqual();
-                    break;
-                case ">=":
-                    GreaterThanOrEqual();
-                    break;
-                default:
-                    goto END;
-            }
+            Precedence_4_Operator();
+            if (op == "!=")
+                Generate(new ABL_Procedure("<>"));
+            else
+                Generate(new ABL_Procedure(op));
         }
-    END:;
-    }
-
-    private void Equal()
-    {
-        Next();
-        Precedence_4_Operator();
-        Generate(new ABL_Procedure("="));
-    }
-
-    private void NotEqual()
-    {
-        Next();
-        Precedence_4_Operator();
-        Generate(new ABL_Procedure("<>"));
-    }
-
-    private void LessThan()
-    {
-        Next();
-        Precedence_4_Operator();
-        Generate(new ABL_Procedure("<"));
-    }
-
-    private void GreaterThan()
-    {
-        Next();
-        Precedence_4_Operator();
-        Generate(new ABL_Procedure(">"));
-    }
-
-    private void LessThanOrEqual()
-    {
-        Next();
-        Precedence_4_Operator();
-        Generate(new ABL_Procedure("<="));
-    }
-
-    private void GreaterThanOrEqual()
-    {
-        Next();
-        Precedence_4_Operator();
-        Generate(new ABL_Procedure(">="));
     }
 
     void Precedence_4_Operator()
     {//Note: This method is Expression in Crenshaw's book.
         Precedence_3_Operator();
-        while (_currentTokenType == TokenType.Operator)
+        while (OneOf(out var op, "+", "-"))
         {
-            switch (_currentTokenValue)
-            {
-                case "+":
-                    Add();
-                    break;
-                case "-":
-                    Subtract();
-                    break;
-                default:
-                    goto END;
-            }
+            Precedence_3_Operator();
+            Generate(new ABL_Procedure(op));
         }
-    END:;
-    }
-
-    void Add()
-    {
-        Next();
-        Precedence_3_Operator();
-        Generate(new ABL_Procedure("+"));
-    }
-
-    void Subtract()
-    {
-        Next();
-        Precedence_3_Operator();
-        Generate(new ABL_Procedure("-"));
     }
 
     void Precedence_3_Operator()
     {//Note: This method is Term in Crenshaw's book.
         Precedence_2_Operator();
-        while (_currentTokenType == TokenType.Operator)
+        while (OneOf(out var op, "*", "/"))
         {
-            switch (_currentTokenValue)
-            {
-                case "*":
-                    Multiply();
-                    break;
-                case "/":
-                    Divide();
-                    break;
-                default:
-                    goto END;
-            }
+            Precedence_2_Operator();
+            Generate(new ABL_Procedure(op));
         }
-    END:;
-    }
-
-    void Multiply()
-    {
-        Next();
-        Precedence_2_Operator();
-        Generate(new ABL_Procedure("*"));
-    }
-
-    void Divide()
-    {
-        Next();
-        Precedence_2_Operator();
-        Generate(new ABL_Procedure("/"));
     }
 
     void Precedence_2_Operator()
@@ -602,10 +564,9 @@ class Parser
     void Precedence_1_Operator()
     {
         Atom();
-        while (_currentTokenType == TokenType.Operator && _currentTokenValue == "^")
+        while (Maybe('^'))
         {
             //exponentiate
-            Next();
             Atom();
             Generate(new ABL_Procedure("^"));
         }
@@ -613,50 +574,199 @@ class Parser
 
     void Atom()
     {//Note: This method is Factor in Crenshaw's book.
-        switch (_currentTokenType)
+        if (Maybe('('))
         {
-            case TokenType.OpeningParenthesis:
-                Next();
-                Expression();
-                MustMatch(TokenType.ClosingParenthesis);
-                break;
-            case TokenType.Function:
-                //e.g. sqr(n)
-                var functionName = _currentTokenValue;
-                Next();
-                MustMatch(TokenType.OpeningParenthesis);
-                Expression();
-                MustMatch(TokenType.ClosingParenthesis);
-                Generate(new ABL_Procedure(functionName));
-                break;
-            case TokenType.Float://todo: float tokens.
-            case TokenType.Number:
-                Generate(new ABL_Number(_currentTokenValue));
-                Next();
-                break;
-            case TokenType.String:
-                Generate(new ABL_String(_currentTokenValue));
-                Next();
-                break;
-            case TokenType.UserDefinedName:
-                ASetVariable();
-                break;
-            case TokenType.Statement://Note: user defined function.
-                if (MightMatch("FN"))//todo: test.
-                {
-                    Next();
-                    MustMatch(TokenType.UserDefinedName);
-                    var name = _currentTokenValue;
-                    MustMatch(TokenType.OpeningParenthesis);
-                    Expression();
-                    MustMatch(TokenType.ClosingParenthesis);
-                    //todo: generate for user defined functions.
-                    //Generate($"userDefinedFunction({name})");
-                }
-                break;
-            default:
+            Expression();
+            if (!Maybe(')'))
+            {
+                ParseError("Expected closing parenthesis sign in Atom");
+                if (_parsingIf)
+                    SkipLine();
+                else
+                    SkipStatement();
                 return;
+            }
         }
+        else if (Maybe("FN"))//Note: user defined function.
+        {//todo: test.
+            var isVar = VariableRegex().Match(_source, _index);
+            if (isVar.Success)
+            {
+                var match = isVar.Groups.Cast<Group>().First(g => g.Name == "var");
+                var userDefinedFunctionName = ("FN" + match.Value);
+                if (!Maybe('('))
+                {
+                    ParseError("Expected opening parenthesis sign in Atom");
+                    if (_parsingIf)
+                        SkipLine();
+                    else
+                        SkipStatement();
+                    return;
+                }
+                Expression();
+                if (!Maybe(')'))
+                {
+                    ParseError("Expected closing parenthesis sign in Atom");
+                    if (_parsingIf)
+                        SkipLine();
+                    else
+                        SkipStatement();
+                    return;
+                }
+                //todo: generate for user defined functions.
+                //Generate($"userDefinedFunction({name})");
+                return;
+            }
+            else
+            {
+                ParseError("Expected user defined function in Atom");
+                if (_parsingIf)
+                    SkipLine();
+                else
+                    SkipStatement();
+                return;
+            }
+        }
+        else if (Maybe('"', false))
+        {
+            if (AString(out var newString))
+            {
+                Generate(new ABL_String(newString));
+            }
+            else
+            {
+                //ToDo: Handle error.
+            }
+            return;
+        }
+
+        var isVariable = VariableRegex().Match(_source, _index);
+        if (isVariable.Success)
+        {
+            if (ASetVariable().success)
+            {
+                //Note: We do nothing because ASetVariable() handles everything.
+            }
+            else
+            {
+                //ToDo: Handle error.
+            }
+            return;
+        }
+
+        //Note: If function
+        Regex regex = new(@"\G(?<fun>ABS|ASC|ATN|CHR\$|COS|EXP|INT|LEFT\$|LEN|LOG|MID\$|RND|RIGHT\$|SGN|SIN|SQR|STR\$|TAB|TAN|VAL)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        var isFunction = regex.Match(_source, _index);
+        if (isFunction.Success)
+        {//e.g. sqr(n)
+            if (!Maybe('('))
+            {
+                ParseError("Expected opening parenthesis sign in Atom");
+                if (_parsingIf)
+                    SkipLine();
+                else
+                    SkipStatement();
+                return;
+            }
+            Expression();
+            if (!Maybe(')'))
+            {
+                ParseError("Expected closing parenthesis sign in Atom");
+                if (_parsingIf)
+                    SkipLine();
+                else
+                    SkipStatement();
+                return;
+            }
+            var match = isFunction.Groups.Cast<Group>().First(g => g.Name == "fun");
+            Generate(new ABL_Procedure(match.Value));
+            return;
+        }
+
+        var maybeNumber = ANumber();
+        if (maybeNumber == string.Empty)
+        {
+            ParseError("Expected a number Atom");
+            if (_parsingIf)
+                SkipLine();
+            else
+                SkipStatement();
+            return;
+        }
+        else
+            Generate(new ABL_Number(maybeNumber));
+    }
+
+    // ANumber => digit* '.'? digit+
+    string ANumber()
+    {
+        var result = string.Empty;
+        var cc = _source[_index];
+
+        while (char.IsDigit(cc))
+        {
+            result += cc;
+            _index++;
+
+            // Note: Checks for eos.
+            if (_index >= _source.Length)
+                break;
+            cc = _source[_index];
+        }
+
+        SkipWhitespace();
+
+        if (cc == '.')
+        {
+            result += cc;
+            _index++;
+
+            SkipWhitespace();
+
+            // Note: Checks for eos.
+            if (_index >= _source.Length)
+                return string.Empty;
+            cc = _source[_index];
+            if (!char.IsDigit(cc))
+                return string.Empty;
+            while (char.IsDigit(cc))
+            {
+                result += cc;
+                _index++;
+
+                // Note: Checks for eos.
+                if (_index >= _source.Length)
+                    break;
+                cc = _source[_index];
+            }
+        }
+        return result;
+    }
+
+    bool AString(out string value)
+    {
+        value = string.Empty;
+
+        Regex regex = new(@"\G""(?<string>.*?)""", RegexOptions.CultureInvariant);
+        var isString = regex.Match(_source, _index);
+        if (isString.Success)
+        {
+            var match = isString.Groups.Cast<Group>().First(g => g.Name == "string");
+            value = match.Value;
+            _index += match.Length + 2;
+            SkipWhitespace();
+            return true;
+        }
+        else
+            return false;
+
+        //ToDo: Implement string parsing properly.
+        //for (; _index < _source.Length; _index++)
+        //{
+        //    //ToDo: string parsing.
+        //}
+
+        //return result;
     }
 
     void Generate(params ABL_EvalValue[] values)
@@ -665,144 +775,125 @@ class Parser
             _evalValues.Add(value);
     }
 
-    void MustMatch_wws(TokenType tokenType)//deleteMe: if not in use once parser is finished.
-    {
-        if (tokenType == _currentTokenType)
-        {
-            Next_wws();
-        }
-        else
-        {
-            throw new Exception("placeholder #2");//todo: proper error handling.
-        }
-    }
-
-    void MustMatch(TokenType tokenType)//deleteMe: if not in use once parser is finished.
-    {
-        MustMatch_wws(tokenType);
-        SkipWhitespace();
-    }
-
-    void MustMatch_wws(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
-    {
-        if (tokenType == _currentTokenType)
-        {
-            tokenValue = _currentTokenValue;
-            Next_wws();
-        }
-        else
-            throw new Exception("placeholder #3");//todo: proper error handling.
-    }
-
-    void MustMatch(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
-    {
-        MustMatch_wws(tokenType, out tokenValue);
-        SkipWhitespace();
-    }
-
-    void MustMatch_wws(string tokenValue)//deleteMe: if not in use once parser is finished.
-    {
-        if (tokenValue == _currentTokenValue)
-        {
-            Next_wws();
-        }
-        else
-            throw new Exception("placeholder #1");//todo: proper error handling.
-    }
-
-    void MustMatch(string tokenValue)//deleteMe: if not in use once parser is finished.
-    {
-        MustMatch_wws(tokenValue);
-        SkipWhitespace();
-    }
-
-    bool MightMatch_wws(TokenType tokenType)//deleteMe: if not in use once parser is finished.
-    {
-        if (tokenType == _currentTokenType)
-        {
-            Next_wws();
-            return true;
-        }
-        return false;
-    }
-
-    bool MightMatch(TokenType tokenType)//deleteMe: if not in use once parser is finished.
-    {
-        if (MightMatch_wws(tokenType))
-        {
-            SkipWhitespace();
-            return true;
-        }
-        return false;
-    }
-
-    bool MightMatch_wws(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
-    {
-        tokenValue = string.Empty;
-        if (tokenType == _currentTokenType)
-        {
-            tokenValue = _currentTokenValue;
-            Next_wws();
-            return true;
-        }
-        return false;
-    }
-
-    bool MightMatch(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
-    {
-        if (MightMatch_wws(tokenType, out tokenValue))
-        {
-            SkipWhitespace();
-            return true;
-        }
-        return false;
-    }
-
-    bool MightMatch_wws(string tokenValue)//deleteMe: if not in use once parser is finished.
-    {
-        if (tokenValue == _currentTokenValue)
-        {
-            Next_wws();
-            return true;
-        }
-        return false;
-    }
-
-    bool MightMatch(string tokenValue)//deleteMe: if not in use once parser is finished.
-    {
-        if (MightMatch_wws(tokenValue))
-        {
-            SkipWhitespace();
-            return true;
-        }
-        return false;
-    }
-
-    void Next()
-    {
-        Next_wws();
-        SkipWhitespace();
-    }
-
+    /// <summary>
+    /// Skips all whitespace but newline.
+    /// </summary>
     void SkipWhitespace()
     {
-        while (_currentTokenType == TokenType.Space)
-            Next_wws();
+        var index = GetNextNonWhitespaceIndex();
+        if (index != -1)
+            _index = index;
+    }
+
+    int GetNextNonWhitespaceIndex(int? startAt = null)
+    {
+        startAt ??= _index;
+        if (startAt >= _source.Length - 1)
+            return -1;
+        for (; startAt.Value < _source.Length; startAt++)
+        {
+            var cc = _source[startAt.Value];
+
+            if (!char.IsWhiteSpace(cc) ||
+                cc == Environment.NewLine[0] && Maybe(Environment.NewLine, false))
+                return startAt.Value;
+        }
+        return -1;
+    }
+
+    void SkipStatement()
+    {
+        for (; _index < _source.Length; _index++)
+        {
+            if (_index >= _source.Length - 1 ||//EOF.
+                _source[_index] == Environment.NewLine[0] && Maybe(Environment.NewLine) ||//Just after newline.
+                Maybe(':', false))//New statement.
+                break;
+        }
     }
 
     void SkipLine()
     {
-        while (_currentTokenType != TokenType.Label &&
-            _currentTokenType != TokenType.EOF)
-            Next_wws();
+        for (; _index < _source.Length; _index++)
+        {
+            if (_index >= _source.Length - 1)
+                break;
+            var cc = _source[_index];
+            if (cc == Environment.NewLine[0] && Maybe(Environment.NewLine))
+                break;
+        }
     }
 
-    void Next_wws()
+    /// <summary>
+    /// Compares the source with the given string at the current index. Returns true and updates index if matching.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    bool Maybe(string value, bool skipWhitespace = true, bool incrementIfFound = true)
     {
-        if (_currentTokenType == TokenType.EOF)
-            return;
-        _currentTokenType = _tokenizeResult.TokenTypes[_index];
-        _currentTokenValue = _tokenizeResult.TokenValues[_index];
-        _index++;
+        var rsl = _source.Length - _index; //Note: Remaining source length.
+        if (rsl < value.Length) return false; //Note: If the remaining source is too short to fit the given string.
+
+        Regex regex = new($@"\G(?<value>{value})", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        var isValue = regex.Match(_source, _index);
+        if (isValue.Success)
+        {
+            var match = isValue.Groups.Cast<Group>().First(g => g.Name == "value");
+            if (incrementIfFound)
+                _index += match.Length;
+            if (skipWhitespace)
+                SkipWhitespace();
+            return match.Success;
+        }
+        return false;
     }
+
+    /// <summary>
+    /// Tries to parse source at the current index with the given value. Skips whitespace after match.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    bool Maybe(char value, bool incrementIfFound = true)
+    {
+        if (_index >= _source.Length)
+            return false;
+        if (_source[_index] == value)
+        {
+            if (incrementIfFound)
+                _index++;
+            SkipWhitespace();
+            return true;
+        }
+        return false;
+    }
+
+    bool OneOf(out string outValue, params string[] values)
+    {
+        outValue = string.Empty;
+        foreach (var value in values)
+        {
+            if (value.Length == 1)
+            {
+                if (Maybe(value[0]))
+                {
+                    outValue = value;
+                    return true;
+                }
+            }
+            else if (Maybe(value))
+            {
+                outValue = value;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [GeneratedRegex("\\G(?<label>\\d+)\\s*[A-Z]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+    private static partial Regex LabelRegex();
+
+    [GeneratedRegex("\\G(?<statement>DIM|END|GO|IF|INPUT|LET|PRINT|REM|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+    private static partial Regex StatementRegex();
+    [GeneratedRegex("\\G(?<var>[A-Z][A-Z0-9]*)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+    private static partial Regex VariableRegex();
 }

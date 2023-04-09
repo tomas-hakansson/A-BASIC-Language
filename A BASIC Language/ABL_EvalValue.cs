@@ -15,7 +15,7 @@ public class ABL_Label : ABL_EvalValue
         Value = value;
     }
 
-    public ABL_Label(string value)
+    public ABL_Label(string value)//DeleteMe: Once the new parser replaces the old.
     {
         if (int.TryParse(value, out int parsedInt))
             Value = parsedInt;
@@ -73,7 +73,7 @@ public class ABL_DIM_Creation : ABL_EvalValue
 
     public ABL_DIM_Creation(string symbol)
     {
-        Symbol = symbol;
+        Symbol = symbol.ToUpper();
     }
 
     public override string ToString()
@@ -88,7 +88,7 @@ public class ABL_Variable : ABL_EvalValue
 
     public ABL_Variable(string symbol)
     {
-        Symbol = symbol;
+        Symbol = symbol.ToUpper();
     }
 
     public override string ToString()
@@ -103,7 +103,7 @@ public class ABL_DIM_Variable : ABL_EvalValue
 
     public ABL_DIM_Variable(string symbol)
     {
-        Symbol = symbol;
+        Symbol = symbol.ToUpper();
     }
 
     public override string ToString()
@@ -117,7 +117,7 @@ public class ABL_Assignment : ABL_EvalValue
     public string Symbol { get; private set; }
     public ABL_Assignment(string symbol)
     {
-        Symbol = symbol;
+        Symbol = symbol.ToUpper();
     }
 
     public override string ToString()
@@ -132,7 +132,7 @@ public class ABL_DIM_Assignment : ABL_EvalValue
 
     public ABL_DIM_Assignment(string symbol)
     {
-        Symbol=symbol;
+        Symbol = symbol.ToUpper();
     }
 
     public override string ToString()
@@ -147,7 +147,7 @@ public class ABL_Procedure : ABL_EvalValue
 
     public ABL_Procedure(string name)
     {
-        Name = name;
+        Name = name.ToUpper();
     }
 
     public override string ToString()

@@ -8,8 +8,7 @@ public class Parser2
 
     public Parser2(string source)
     {
-        Tokenizer t = new(source);
-        Parsing.Parser p = new(t.Result);
+        Parsing.Parser p = new(source);
         Result = p.Result;
     }
 }

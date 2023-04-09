@@ -8,6 +8,13 @@ namespace A_BASIC_Language_Tests;
 public class Parser_Tests
 {
     [TestMethod]
+    public void PRINT_OneValue()
+    {
+        var source = "10 print 42";
+        Assert.AreEqual("L(10) N(42) P(#WRITE) P(#NEXT-LINE)", Parse(source));
+    }
+
+    [TestMethod]
     public void PRINT_TwoValues()
     {
         var source = "10 print 42, \"hello\" ";
