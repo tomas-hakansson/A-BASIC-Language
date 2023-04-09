@@ -16,7 +16,7 @@ public class ParseResult
         return selection switch
         {
             PrintThe.EvalValues => string.Join(" ", EvalValues.Select(x => x.ToString())),
-            PrintThe.LabelIndex => throw new NotImplementedException(),
+            PrintThe.LabelIndex => string.Join(" ++ ", LabelIndex.OrderBy(x => x.Key).Select(li => $"({li.Key}, {li.Value})")),
             _ => throw new ArgumentException("You know what you did..."),
         };
     }
