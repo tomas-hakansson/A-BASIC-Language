@@ -1,21 +1,16 @@
-﻿using A_BASIC_Language.Stage1;
-using System.Globalization;
-using System.Linq.Expressions;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace A_BASIC_Language.Parsing;
 
 partial class Parser
 {
-    //use sorted dictionary to ensure correct line ordering.
-
     public ParseResult Result { get; set; } = new ParseResult();
 
     readonly string _source;
     readonly List<ABL_EvalValue> _evalValues;
-    readonly Dictionary<int, int> _labelIndex;
+    //readonly SortedDictionary<int, >
     int _index = 0;
-    List<(int index, string message)> _parseErrors;
+    readonly List<(int index, string message)> _parseErrors;
 
     bool _parsingIf = false;
     int _generatedLabel = 0;
@@ -25,8 +20,6 @@ partial class Parser
         //Note: Initialisation:
         _source = source;
         _evalValues = new List<ABL_EvalValue>();
-        _labelIndex = new Dictionary<int, int>();
-        //Next_wws();
         _parseErrors = new List<(int index, string message)>();
 
         //Note: The parsing begins:
@@ -39,8 +32,15 @@ partial class Parser
             }
             else
             {
+                Dictionary<int, int> labelIndex = new();
+                for (int i = 0; i < _evalValues.Count; i++)
+                {
+                    if (_evalValues[i] is ABL_Label label)
+                        labelIndex.Add(label.Value, i);
+                }
+
                 Result.EvalValues = _evalValues;
-                Result.LabelIndex = _labelIndex;
+                Result.LabelIndex = labelIndex;
             }
         }
         catch (Exception ex)
@@ -88,7 +88,7 @@ partial class Parser
             {
                 matched = true;
                 _index += mg.Length;
-                GenerateLabel(mg.Value);
+                Generate(new ABL_Label(int.Parse(mg.Value)));
                 SkipWhitespace();
             }
             return matched;
@@ -236,12 +236,12 @@ partial class Parser
         Body();
         var endBranchLabel = GetGeneratedLabel();
         Generate(new ABL_Number(endBranchLabel), new ABL_Procedure("GOTO"));
-        GenerateLabel(falseBranchLabel);
+        Generate(new ABL_Label(falseBranchLabel));
 
         if (Maybe("ELSE"))
             Body();
 
-        GenerateLabel(endBranchLabel);
+        Generate(new ABL_Label(endBranchLabel));
 
         void Body()
         {
@@ -300,15 +300,6 @@ partial class Parser
 
     //Note: Made negative because all valid BASIC labels are positive so there won't be a conflict.
     int GetGeneratedLabel() => --_generatedLabel;
-
-    void GenerateLabel(string value) =>
-        GenerateLabel(int.Parse(value));
-
-    void GenerateLabel(int value)
-    {
-        Generate(new ABL_Label(value));
-        _labelIndex.Add(value, _evalValues.Count - 1);
-    }
 
     //input => INPUT (prompt-string [;])? unset-variable (, unset-variable)*
     void Input()
@@ -487,7 +478,6 @@ partial class Parser
          */
 
         var shouldPrintNewline = true;
-        //    _currentTokenType != TokenType.Statement)//Note: checks for statement in case of ELSE statement in IF.
         while (true)
         {
             if (Maybe(','))
@@ -588,7 +578,7 @@ partial class Parser
             }
         }
         else if (Maybe("FN"))//Note: user defined function.
-        {//todo: test.
+        {//todo: Implement.
             var isVar = VariableRegex().Match(_source, _index);
             if (isVar.Success)
             {
