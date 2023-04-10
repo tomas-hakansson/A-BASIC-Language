@@ -3,11 +3,11 @@
 public class WelcomeScreen
 {
     private readonly int _columnCount;
-    private readonly Action _writeEmptyLine;
-    private readonly Action<string> _writeLine;
-    private readonly Action _writeSeparator;
+    private readonly Func<Task> _writeEmptyLine;
+    private readonly Func<string, Task> _writeLine;
+    private readonly Func<Task> _writeSeparator;
 
-    public WelcomeScreen(int columnCount, Action writeEmptyLine, Action<string> writeLine, Action writeSeparator)
+    public WelcomeScreen(int columnCount, Func<Task> writeEmptyLine, Func<string, Task> writeLine, Func<Task> writeSeparator)
     {
         _columnCount = columnCount;
         _writeEmptyLine = writeEmptyLine;

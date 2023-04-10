@@ -5,9 +5,9 @@ namespace A_BASIC_Language.SpecificExecutors;
 public abstract class VariableExecutor
 {
     protected readonly Stack<ValueBase> Data;
-    protected readonly Action<string> End;
+    protected readonly Func<string, Task> End;
 
-    protected VariableExecutor(Stack<ValueBase> data, Action<string> end)
+    protected VariableExecutor(Stack<ValueBase> data, Func<string, Task> end)
     {
         Data = data;
         End = end;

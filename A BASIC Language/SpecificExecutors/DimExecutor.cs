@@ -6,7 +6,7 @@ public class DimExecutor : VariableExecutor
 {
     private readonly Dictionary<string, Dimension> _dimVariables;
 
-    public DimExecutor(Stack<ValueBase> data, Action<string> end, Dictionary<string, Dimension> dimVariables) : base(data, end)
+    public DimExecutor(Stack<ValueBase> data, Func<string, Task> end, Dictionary<string, Dimension> dimVariables) : base(data, end)
     {
         _dimVariables = dimVariables;
     }

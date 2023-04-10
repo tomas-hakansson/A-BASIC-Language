@@ -2,6 +2,7 @@ using System.Text;
 using A_BASIC_Language.Gui.WinForms.PseudoGraphics;
 using A_BASIC_Language.IO;
 using CharacterMatrix;
+using ConsoleControlLibrary;
 
 namespace A_BASIC_Language.Gui.WinForms;
 
@@ -13,6 +14,7 @@ public partial class TerminalEmulator : Form
     private readonly CharacterRenderer _characterRenderer;
     private readonly OverlayRenderer _overlayRenderer;
     private readonly KeyboardController _keyboardController;
+    private readonly ConsoleControl _consoleControl;
     private bool? _isActive;
     private bool FullScreen { get; set; }
     private Rectangle OldPosition { get; set; }
@@ -30,7 +32,7 @@ public partial class TerminalEmulator : Form
     public static Pen VectorGraphicsPen { get; }
     public string LineInputResult { get; private set; }
     public bool QuitFlag { get; set; }
-    
+
     static TerminalEmulator()
     {
         VectorGraphicsPen = new Pen(Color.FromArgb(100, 100, 0));
@@ -44,6 +46,8 @@ public partial class TerminalEmulator : Form
         InitializeComponent();
         SourceCode = "";
         ProgramFilename = "";
+
+        _consoleControl = new ConsoleControl();
 
         var columnCountConfigValue = System.Configuration.ConfigurationManager.AppSettings["columnCount"];
         var columnCount = 60;
@@ -65,11 +69,30 @@ public partial class TerminalEmulator : Form
         _graphicalElements = new List<GraphicalElement>();
         Clear();
 
-        _pixelsWidth = columnCount * 8;
+        _pixelsWidth = columnCount * CharacterWidth;
 
         _characterRenderer = new CharacterRenderer(_characters);
         _overlayRenderer = new OverlayRenderer(imageList1);
         _keyboardController = new KeyboardController(_characters, KeyDownOperationCompleted, _ts, ToggleFullScreen, ScrollUp, SaveLineInput, SaveDirectModeInput, MoveLineInputLeft, Terminal.End);
+    }
+
+    private void TerminalEmulator_Load(object sender, EventArgs e)
+    {
+        var marginX = Size.Width - ClientRectangle.Width;
+        var marginY = Size.Height - ClientRectangle.Height;
+
+        var width = _pixelsWidth + marginX;
+        var height = 25 * CharacterHeight + marginY;
+        MinimumSize = new Size(width, height);
+
+        _consoleControl.ColumnCount = _ts.ColumnCount;
+        _consoleControl.RowCount = _ts.RowCount;
+        _consoleControl.Dock = DockStyle.Fill;
+        _consoleControl.State.CurrentForm = new LoadForm(Handle, _consoleControl);
+        _consoleControl.Visible = false;
+        _consoleControl.Enabled = false;
+        Controls.Add(_consoleControl);
+        _consoleControl.KeyDown += ConsoleForm_KeyDown;
     }
 
     public void EndLineInput()
@@ -146,7 +169,7 @@ public partial class TerminalEmulator : Form
     public void ShowWelcome(string programFilename) =>
         new WelcomeScreen(_characters.ColumnCount, WriteLine, WriteLine, WriteSeparator).Show(programFilename);
 
-    public void Write(string text)
+    public async Task Write(string text)
     {
         if (text == null!)
             return;
@@ -154,13 +177,13 @@ public partial class TerminalEmulator : Form
         foreach (var c in text)
             WriteCharAndProgress(c);
 
-        OperationCompleted();
+        await OperationCompleted();
     }
 
-    public void WriteLine() =>
-        WriteLine("");
+    public async Task WriteLine() =>
+        await WriteLine("");
 
-    public void WriteLine(string text)
+    public async Task WriteLine(string text)
     {
         if (text == null!)
             return;
@@ -170,31 +193,31 @@ public partial class TerminalEmulator : Form
 
         _ts.CursorPosition.X = 0;
         _ts.CursorPosition.Y++;
-        
+
         if (_ts.CursorPosition.Y >= _characters.RowCount)
         {
             _ts.CursorPosition.Y = _characters.RowCount - 1;
             ScrollUp();
         }
 
-        OperationCompleted();
+        await OperationCompleted();
     }
 
-    public void NextTab() =>
-        NextTab("");
+    public async Task NextTab() =>
+        await NextTab("");
 
-    public void NextTab(string text)
+    public async Task NextTab(string text)
     {
-        while (_ts.CursorPosition.X%8 != 0)
-            Write(" ");
+        while (_ts.CursorPosition.X % 8 != 0)
+            await Write(" ");
 
-        Write(text);
+        await Write(text);
     }
 
-    public void WriteSeparator()
+    public async Task WriteSeparator()
     {
         _graphicalElements.Add(new SeparatorGraphicalElement(_characters.RowCount, _ts.CursorPosition.Y));
-        WriteLine();
+        await WriteLine();
     }
 
     public void BeginLineInput()
@@ -203,7 +226,7 @@ public partial class TerminalEmulator : Form
         _ts.LineInputMode = true;
     }
 
-    private void OperationCompleted()
+    private async Task OperationCompleted()
     {
         timer1.Enabled = false;
         CursorBlink = true;
@@ -213,6 +236,8 @@ public partial class TerminalEmulator : Form
 
         timer1.Enabled = true;
         Invalidate();
+        Refresh();
+        await Task.Run(() => Thread.Sleep(5));
     }
 
     private void KeyDownOperationCompleted(ref KeyEventArgs eventArgs)
@@ -320,7 +345,7 @@ public partial class TerminalEmulator : Form
         _characterRenderer.Render(e.Graphics, _ts.LineInputMode, active, CursorBlink, _ts.CursorPosition, _ts.LineInputPosition.X, _ts.LineInputPosition.Y);
 
         e.Graphics.ResetTransform();
-        
+
         _overlayRenderer.Render(e.Graphics, active, CursorBlink, ClientRectangle, _ts.State);
     }
 
@@ -329,7 +354,7 @@ public partial class TerminalEmulator : Form
         Invalidate();
     }
 
-    private void TerminalEmulator_KeyDown(object sender, KeyEventArgs e)
+    private async void TerminalEmulator_KeyDown(object sender, KeyEventArgs e)
     {
         var breakFlag = _keyboardController.HandleKeyDown(e, _ts);
 
@@ -337,9 +362,24 @@ public partial class TerminalEmulator : Form
             return;
 
         if (_ts.CursorPosition.X > 0)
-            WriteLine();
+            await WriteLine();
 
-        WriteLine("?User break.");
+        Console.WriteLine(_ts.LineInputMode);
+
+        await WriteLine("?User break.");
+    }
+
+    private void ConsoleForm_KeyDown(object? sender, KeyEventArgs e)
+    {
+        if (!_consoleControl.Visible)
+            return;
+
+        if (_consoleControl.State.CurrentForm is ViewSourceForm && e.KeyCode == Keys.Escape)
+        {
+            _consoleControl.KeyDown -= ConsoleForm_KeyDown;
+            _consoleControl.Visible = false;
+            _consoleControl.Enabled = false;
+        }
     }
 
     private void MoveLineInputLeft() =>
@@ -396,7 +436,7 @@ public partial class TerminalEmulator : Form
         Invoke(CarryOutSimpleImmediateCommand, command);
     }
 
-    private void CarryOutSimpleImmediateCommand(string command)
+    private async Task CarryOutSimpleImmediateCommand(string command)
     {
         switch (command.Trim().ToUpper())
         {
@@ -411,38 +451,47 @@ public partial class TerminalEmulator : Form
                 }
                 else
                 {
-                    WriteLine("Invalid state for restart.");
+                    await WriteLine("Invalid state for restart.");
                 }
                 break;
             case "SOURCE":
                 if (_ts.State == TerminalState.Ended)
                 {
-                    using var x = new SourceDialog();
-                    x.Filename = ProgramFilename;
-                    x.SourceCode = SourceCode;
-                    x.ShowDialog(this);
+                    _consoleControl.State.CurrentForm = new ViewSourceForm(
+                        _consoleControl.Handle,
+                        _consoleControl,
+                        SourceCode,
+                        ProgramFilename
+                    );
+
+                    _consoleControl.SetDefaultColorScheme(new ControlColorScheme());
+
+                    _consoleControl.Visible = true;
+                    _consoleControl.Enabled = true;
+                    _consoleControl.Focus();
+                    ((ViewSourceForm)_consoleControl.State.CurrentForm).SetFocusToList();
                 }
                 else
                 {
-                    WriteLine("Invalid state for source.");
+                    await WriteLine("Invalid state for source.");
                 }
                 break;
             case "LOAD":
-            {
-                using var x = new LoadProgramDialog();
+                {
+                    using var x = new LoadProgramDialog();
 
-                if (x.ShowDialog(this) != DialogResult.OK)
-                    return;
+                    if (x.ShowDialog(this) != DialogResult.OK)
+                        return;
 
-                var f = x.Filename ?? "";
+                    var f = x.Filename ?? "";
 
-                if (f.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase) || f.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase))
-                    ProgramFilename = f;
-                else
-                    ProgramFilename = Path.GetFullPath(x.Filename!);
+                    if (f.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase) || f.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase))
+                        ProgramFilename = f;
+                    else
+                        ProgramFilename = Path.GetFullPath(x.Filename!);
 
-                Run(false);
-            }
+                    Run(false);
+                }
                 break;
             case "QUIT":
                 _ts.State = TerminalState.Ended;
@@ -450,7 +499,7 @@ public partial class TerminalEmulator : Form
                 Close();
                 break;
             default:
-                WriteLine("Invalid simple direct mode input.");
+                await WriteLine("Invalid simple direct mode input.");
                 break;
         }
     }
@@ -463,7 +512,7 @@ public partial class TerminalEmulator : Form
 
         if (string.IsNullOrWhiteSpace(source.SourceCode))
         {
-            Terminal.WriteLine("Load failed.");
+            await Terminal.WriteLine("Load failed.");
             return;
         }
 
@@ -472,15 +521,15 @@ public partial class TerminalEmulator : Form
         Interpreter eval = new(SourceCode);
         Cursor = Cursors.Default;
         Terminal.Run(source.Filename, ProgramFilename, clear);
-        eval.Run(Terminal);
+        await eval.Run(Terminal);
     }
 
-    public void ShowEmptyTerminal()
+    public async Task ShowEmptyTerminal()
     {
         Console.WriteLine(_ts.State);
         Interpreter eval = new(SourceCode);
         Terminal.Run("A BASIC Language", "", true);
-        eval.Run(Terminal);
+        await eval.Run(Terminal);
     }
 
     private void TerminalEmulator_KeyPress(object sender, KeyPressEventArgs e)

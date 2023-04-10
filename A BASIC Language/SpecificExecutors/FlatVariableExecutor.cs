@@ -6,7 +6,7 @@ public class FlatVariableExecutor : VariableExecutor
 {
     private readonly Dictionary<string, ValueBase?> _variables;
 
-    public FlatVariableExecutor(Stack<ValueBase> data, Action<string> end, Dictionary<string, ValueBase?> variables) : base(data, end)
+    public FlatVariableExecutor(Stack<ValueBase> data, Func<string, Task> end, Dictionary<string, ValueBase?> variables) : base(data, end)
     {
         _variables = variables;
     }

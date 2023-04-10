@@ -60,24 +60,24 @@ public class Terminal : IDisposable
         set => Emu.Text = value;
     }
 
-    public void NextTab(string s) =>
-        Emu.NextTab(s);
+    public async Task NextTab(string s) =>
+        await Emu.NextTab(s);
 
-    public void NextTab() =>
-        Emu.NextTab();
+    public async Task NextTab() =>
+        await Emu.NextTab();
 
-    public void Write(string s) =>
-        Emu.Write(s);
+    public async Task Write(string s) =>
+        await Emu.Write(s);
 
-    public void WriteLine() =>
-        Emu.WriteLine();
+    public async Task WriteLine() =>
+        await Emu.WriteLine();
 
-    public void WriteLine(string s) =>
-        Emu.WriteLine(s);
+    public async Task WriteLine(string s) =>
+        await Emu.WriteLine(s);
 
-    public string ReadLine(string prompt)
+    public async Task<string> ReadLine(string prompt)
     {
-        Write(prompt);
+        await Write(prompt);
         return ReadLine();
     }
 

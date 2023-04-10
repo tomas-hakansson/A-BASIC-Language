@@ -799,6 +799,7 @@ class Parser
     {
         if (_currentTokenType == TokenType.EOF)
             return;
+
         _currentTokenType = _tokenizeResult.TokenTypes[_index];
         _currentTokenValue = _tokenizeResult.TokenValues[_index];
         _index++;

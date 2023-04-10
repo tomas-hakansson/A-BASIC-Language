@@ -20,8 +20,9 @@
 
 	<ItemGroup>
 	  <PackageReference Include="CharacterMatrix" Version="1.0.0" />
-	  <PackageReference Include="SelectListLibrary" Version="1.0.2" />
-	  <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
+	  <PackageReference Include="ConsoleControlLibrary" Version="1.0.0" />
+	  <PackageReference Include="SelectListLibrary" Version="1.0.3" />
+	  <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

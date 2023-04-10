@@ -68,10 +68,12 @@ public partial class LoadProgramDialog : Form
 
         var source = await TerminalEmulator.ProgramRepository.GetProgram(this, n);
 
-        using var x = new SourceDialog();
-        x.Filename = listView1.SelectedItems[0].Text;
-        x.SourceCode = source.SourceCode;
-        x.ShowDialog(this);
+        // TODO: Must be able to view source here.
+
+        //using var x = new SourceDialog();
+        //x.Filename = listView1.SelectedItems[0].Text;
+        //x.SourceCode = source.SourceCode;
+        //x.ShowDialog(this);
     }
 
     private void runToolStripMenuItem_Click(object sender, EventArgs e) =>

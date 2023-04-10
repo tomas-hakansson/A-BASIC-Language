@@ -60,6 +60,7 @@ namespace A_BASIC_Language.Gui.WinForms
             this.Activated += new System.EventHandler(this.TerminalEmulator_Activated);
             this.Deactivate += new System.EventHandler(this.TerminalEmulator_Deactivate);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.TerminalEmulator_FormClosed);
+            this.Load += new System.EventHandler(this.TerminalEmulator_Load);
             this.Shown += new System.EventHandler(this.TerminalEmulator_Shown);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.TerminalEmulator_Paint);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TerminalEmulator_KeyDown);
