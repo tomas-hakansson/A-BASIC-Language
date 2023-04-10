@@ -171,6 +171,18 @@ public class Interpreter
                         case "<>":
                             comparisonExecutor.Run(_currentLineNumber, (a, b) => Math.Abs(a - b) > 0.00001);
                             break;
+                        case "ABS":
+                            {
+                                if (_data.Count > 0)
+                                {
+                                    var number = _data.Pop();
+                                    var asDouble = (double)number.GetValueAsType<FloatValue>();
+                                    _data.Push(new FloatValue(Math.Abs(asDouble)));
+                                }
+                                else
+                                    Debug.Fail("The stack is empty");
+                            }
+                            break;
                         case "#END-PROGRAM":
                             endProgram = true;
                             break;
