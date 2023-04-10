@@ -4,11 +4,11 @@ namespace A_BASIC_Language.Parsing;
 
 partial class Parser
 {
-    public ParseResult Result { get; set; } = new ParseResult();
+    public ParseResult Result { get; private set; } = new ParseResult();
 
     readonly string _source;
-    readonly List<ABL_EvalValue> _evalValues;
-    //readonly SortedDictionary<int, >
+    readonly SortedDictionary<int, List<ABL_EvalValue>> _lines;
+    int _currentLabel;
     int _index = 0;
     readonly List<(int index, string message)> _parseErrors;
 
@@ -19,7 +19,7 @@ partial class Parser
     {
         //Note: Initialisation:
         _source = source;
-        _evalValues = new List<ABL_EvalValue>();
+        _lines = new SortedDictionary<int, List<ABL_EvalValue>>();
         _parseErrors = new List<(int index, string message)>();
 
         //Note: The parsing begins:
@@ -32,14 +32,15 @@ partial class Parser
             }
             else
             {
+                var evalValues = _lines.SelectMany(v => v.Value).ToList();
                 Dictionary<int, int> labelIndex = new();
-                for (int i = 0; i < _evalValues.Count; i++)
+                for (int i = 0; i < evalValues.Count; i++)
                 {
-                    if (_evalValues[i] is ABL_Label label)
+                    if (evalValues[i] is ABL_Label label)
                         labelIndex.Add(label.Value, i);
                 }
 
-                Result.EvalValues = _evalValues;
+                Result.EvalValues = evalValues;
                 Result.LabelIndex = labelIndex;
             }
         }
@@ -78,7 +79,6 @@ partial class Parser
 
     bool ALabel()
     {
-        //Note: \G causes the matching to start from the current index.
         var match = LabelRegex().Match(_source, _index);
         if (match.Success)
         {
@@ -88,7 +88,9 @@ partial class Parser
             {
                 matched = true;
                 _index += mg.Length;
-                Generate(new ABL_Label(int.Parse(mg.Value)));
+                _currentLabel = int.Parse(mg.Value);
+                //Note: We prime the next line by adding a new label to _lines.
+                _lines.Add(_currentLabel, new List<ABL_EvalValue>() { new ABL_Label(_currentLabel) });
                 SkipWhitespace();
             }
             return matched;
@@ -264,7 +266,7 @@ partial class Parser
                     }
                     else
                     {
-                        var index = GetNextNonWhitespaceIndex(_index + match.Length);
+                        var index = GetNextNonWhitespaceIndex(startAt: _index + match.Length);
 
                         if (index == -1)
                         {
@@ -501,7 +503,7 @@ partial class Parser
                 shouldPrintNewline = true;
             }
             //If the end of the file is a whitespace, this pushes the _index over EOF.
-            if (_index < _source.Length && char.IsWhiteSpace(_source[_index]))
+            if (_index == _source.Length - 1 && char.IsWhiteSpace(_source[_index]))
                 _index++;
         }
         if (shouldPrintNewline)
@@ -761,8 +763,12 @@ partial class Parser
 
     void Generate(params ABL_EvalValue[] values)
     {
+        List<ABL_EvalValue> evalValues = new();
         foreach (ABL_EvalValue value in values)
-            _evalValues.Add(value);
+            evalValues.Add(value);
+        var v = _lines[_currentLabel];
+        v.AddRange(evalValues);
+        _lines[_currentLabel] = v;
     }
 
     /// <summary>

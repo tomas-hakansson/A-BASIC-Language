@@ -362,7 +362,6 @@ public class Parser_Tests2
     }
 
     [TestMethod]
-    [Ignore]
     public void LineNumbersDecidesOrder()
     {
         var source = @"
@@ -370,7 +369,7 @@ public class Parser_Tests2
 10 input ""enter name""; n$";
         (var values, string indices) = Parse(source);
         Assert.AreEqual("L(10) S(enter name) P(#WRITE) S(? ) P(#WRITE) P(#INPUT-STRING) =(N$) L(20) V(N$) P(#WRITE) P(#NEXT-LINE)", values);
-        Assert.AreEqual("(10, 0)", indices);
+        Assert.AreEqual("(10, 0) ++ (20, 7)", indices);
     }
 
     [TestMethod]
