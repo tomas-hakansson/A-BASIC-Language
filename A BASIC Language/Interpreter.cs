@@ -131,6 +131,21 @@ public class Interpreter
                                     Debug.Fail("Insufficient items on the stack");
                             }
                             break;
+                        case "/":
+                            {
+                                if (_data.Count >= 2)
+                                {
+                                    var x = _data.Pop();
+                                    var y = _data.Pop();
+
+                                    //TODO: Type checking
+                                    var result = (double)y.GetValueAsType<FloatValue>() / (double)x.GetValueAsType<FloatValue>();
+                                    _data.Push(new FloatValue(result));
+                                }
+                                else
+                                    Debug.Fail("Insufficient items on the stack");
+                            }
+                            break;
                         case "+":
                             addExecutor.Run(_currentLineNumber);
                             break;
