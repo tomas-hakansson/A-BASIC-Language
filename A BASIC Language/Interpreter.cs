@@ -207,6 +207,40 @@ public class Interpreter
                                     Debug.Fail("The stack is empty");
                             }
                             break;
+                        case "#INPUT-INT":
+                            {
+                                bool happy;
+                                do
+                                {
+                                    if (_terminal.QuitFlag || _terminal.State != TerminalState.Running)
+                                        return;
+
+                                    happy = false;
+                                    var value = ValueBase.GetValueType(_terminal.ReadLine());
+
+                                    if (value.CanGetAsType<IntValue>())
+                                    {
+                                        var intValue = new IntValue((int)value.GetValueAsType<IntValue>());
+
+                                        if (!_terminal.QuitFlag && _terminal.State == TerminalState.Running)
+                                            _data.Push(intValue);
+
+                                        happy = true;
+                                    }
+                                    else
+                                    {
+                                        if (!_terminal.QuitFlag && _terminal.State == TerminalState.Running)
+                                        {
+                                            await _terminal.WriteLine("?Redo from start");
+                                            await _terminal.Write("Enter a numeric value: ");
+                                        }
+                                        else
+                                            return;
+                                    }
+
+                                } while (!happy);
+                            }
+                            break;
                         case "#INPUT-FLOAT":
                             {
                                 bool happy;

@@ -1,6 +1,6 @@
 ﻿10 print 10-2
 20 print 5>2
 30 print 5<2
-40 input "say something";a#
-50 print "you say " a#
+40 input "say something";a%
+50 print "you say " a%
 60 goto 40
