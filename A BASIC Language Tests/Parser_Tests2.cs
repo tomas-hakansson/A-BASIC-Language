@@ -466,6 +466,15 @@ public class Parser_Tests2
         Assert.AreEqual("(10, 0)", indices);
     }
 
+    [TestMethod]
+    public void BugFix_CorrectlyParseExponentiationOperator()
+    {
+        var source = "10 j=(i^2)^2";
+        (var values, string indices) = Parse(source);
+        Assert.AreEqual("L(10) V(I) N(2) P(^) N(2) P(^) =(J)", values);
+        Assert.AreEqual("(10, 0)", indices);
+    }
+
     //[TestMethod]
     //public void BugFixTest_4_5_shouldBe_45()
     //{

@@ -576,8 +576,8 @@ partial class Parser
                     SkipLine();
                 else
                     SkipStatement();
-                return;
             }
+            return;
         }
         else if (Maybe("FN"))//Note: user defined function.
         {//todo: Implement.
