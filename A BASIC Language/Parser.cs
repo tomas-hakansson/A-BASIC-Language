@@ -1,15 +1,12 @@
-﻿using A_BASIC_Language.Stage1;
-
-namespace A_BASIC_Language;
+﻿namespace A_BASIC_Language;
 
 public class Parser
 {
-    public Stage2.ParseResult Result { get; }
+    public Parsing.ParseResult Result { get; }
 
     public Parser(string source)
     {
-        Tokenizer t = new(source);
-        Stage2.Parser p = new(t.Result);
+        Parsing.Parser p = new(source);
         Result = p.Result;
     }
 }

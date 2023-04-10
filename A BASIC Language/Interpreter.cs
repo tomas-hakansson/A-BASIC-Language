@@ -10,7 +10,7 @@ public class Interpreter
     private readonly bool _empty;
     const string TheProgramHasEnded = "The program has ended";
     Terminal? _terminal;
-    readonly Stage2.ParseResult _parseResult;
+    readonly Parsing.ParseResult _parseResult;
     readonly Dictionary<string, ValueBase?> _variables;//Ponder: do the value need to be nullable?
     readonly Dictionary<string, Dimension> _dimVariables;
     readonly Stack<ValueBase> _data;
@@ -24,6 +24,19 @@ public class Interpreter
         _empty = string.IsNullOrWhiteSpace(source);
         Parser parser = new(source);
         _parseResult = parser.Result;
+
+        //{//Note: for comparing the old and new parser.
+        //    Parser parser_old = new(source);
+        //    var old_result = parser_old.Result;
+        //    var parser_equal_length = old_result.EvalValues.Count == _parseResult.EvalValues.Count;
+        //    if (parser_equal_length)
+        //    {
+        //        var newResult = _parseResult.ToString(Parsing.PrintThe.EvalValues);
+        //        var oldResult = old_result.ToString(Stage2.PrintThe.EvalValues);
+        //        var areEqual = newResult == oldResult;
+        //    }
+        //}
+
         _variables = new Dictionary<string, ValueBase?>();
         _dimVariables = new Dictionary<string, Dimension>();
         _data = new Stack<ValueBase>();
@@ -296,9 +309,7 @@ public class Interpreter
                                             await _terminal.Write("Enter a numeric value: ");
                                         }
                                         else
-                                        {
                                             return;
-                                        }
                                     }
 
                                 } while (!happy);
@@ -381,6 +392,7 @@ public class Interpreter
                             break;
                         default:
                             //todo :error handling.
+                            var forDebugging = 42;
                             throw new NotImplementedException("The procedure has either not been implemented or there's another bug");
                     }
                     break;
@@ -412,6 +424,6 @@ public class Interpreter
         await _terminal.WriteLine(string.IsNullOrWhiteSpace(message) ? TheProgramHasEnded : message);
         await _terminal.WriteLine();
         await _terminal.WriteLine("Ready. Type RESTART, SOURCE, LOAD or QUIT.");
-            _terminal.End();
+        _terminal.End();
     }
 }
