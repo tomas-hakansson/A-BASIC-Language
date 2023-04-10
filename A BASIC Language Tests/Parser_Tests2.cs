@@ -475,6 +475,16 @@ public class Parser_Tests2
         Assert.AreEqual("(10, 0)", indices);
     }
 
+    [TestMethod]
+    public void BugFix_IF_SometimesBreaksTheNextLine()
+    {
+        var source = @"10 IF K <= 0 THEN 42
+20 N = N - K";
+        (var values, string indices) = Parse(source);
+        Assert.AreEqual("L(10) V(K) N(0) P(<=) N(-1) P(#IF-FALSE-GOTO) N(42) P(GOTO) N(-2) P(GOTO) L(-1) L(-2) L(20) V(N) V(K) P(-) =(N)", values);
+        Assert.AreEqual("(-2, 11) ++ (-1, 10) ++ (10, 0) ++ (20, 12)", indices);
+    }
+
     //[TestMethod]
     //public void BugFixTest_4_5_shouldBe_45()
     //{

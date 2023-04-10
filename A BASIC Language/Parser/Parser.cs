@@ -867,7 +867,8 @@ partial class Parser
     bool OneOf(out string outValue, params string[] values)
     {
         outValue = string.Empty;
-        foreach (var value in values)
+        var orderedValues = values.OrderByDescending(v => v);
+        foreach (var value in orderedValues)
         {
             if (value.Length == 1)
             {
