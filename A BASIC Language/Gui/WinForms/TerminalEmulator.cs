@@ -92,6 +92,7 @@ public partial class TerminalEmulator : Form
         _consoleControl.Visible = false;
         _consoleControl.Enabled = false;
         Controls.Add(_consoleControl);
+        _consoleControl.KeyDown += ConsoleForm_KeyDown;
     }
 
     public void EndLineInput()
@@ -368,13 +369,14 @@ public partial class TerminalEmulator : Form
         await WriteLine("?User break.");
     }
 
-    private void ConsoleForm_KeyDown(object sender, KeyEventArgs e)
+    private void ConsoleForm_KeyDown(object? sender, KeyEventArgs e)
     {
         if (!_consoleControl.Visible)
             return;
 
-        if (_consoleControl.State.CurrentForm is ViewSourceForm)
+        if (_consoleControl.State.CurrentForm is ViewSourceForm && e.KeyCode == Keys.Escape)
         {
+            _consoleControl.KeyDown -= ConsoleForm_KeyDown;
             _consoleControl.Visible = false;
             _consoleControl.Enabled = false;
         }
@@ -466,8 +468,8 @@ public partial class TerminalEmulator : Form
 
                     _consoleControl.Visible = true;
                     _consoleControl.Enabled = true;
-                    //TODO Map correct events
                     _consoleControl.Focus();
+                    ((ViewSourceForm)_consoleControl.State.CurrentForm).SetFocusToList();
                 }
                 else
                 {
