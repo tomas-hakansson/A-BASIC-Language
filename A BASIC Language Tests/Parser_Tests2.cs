@@ -457,6 +457,15 @@ public class Parser_Tests2
         Assert.AreEqual("(10, 0)", indices);
     }
 
+    [TestMethod]
+    public void BugFix_CorrectlyParseSQR()
+    {
+        var source = "10 i=sqr(sqr(n))";
+        (var values, string indices) = Parse(source);
+        Assert.AreEqual("L(10) V(N) P(SQR) P(SQR) =(I)", values);
+        Assert.AreEqual("(10, 0)", indices);
+    }
+
     //[TestMethod]
     //public void BugFixTest_4_5_shouldBe_45()
     //{

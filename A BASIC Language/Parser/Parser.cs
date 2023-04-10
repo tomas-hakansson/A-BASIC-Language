@@ -632,25 +632,13 @@ partial class Parser
             return;
         }
 
-        var isVariable = VariableRegex().Match(_source, _index);
-        if (isVariable.Success)
-        {
-            if (ASetVariable().success)
-            {
-                //Note: We do nothing because ASetVariable() handles everything.
-            }
-            else
-            {
-                //ToDo: Handle error.
-            }
-            return;
-        }
-
         //Note: If function
         Regex regex = new(@"\G(?<fun>ABS|ASC|ATN|CHR\$|COS|EXP|INT|LEFT\$|LEN|LOG|MID\$|RND|RIGHT\$|SGN|SIN|SQR|STR\$|TAB|TAN|VAL)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         var isFunction = regex.Match(_source, _index);
         if (isFunction.Success)
         {//e.g. sqr(n)
+            var match = isFunction.Groups.Cast<Group>().First(g => g.Name == "fun");
+            _index += match.Length;
             if (!Maybe('('))
             {
                 ParseError("Expected opening parenthesis sign in Atom");
@@ -670,8 +658,21 @@ partial class Parser
                     SkipStatement();
                 return;
             }
-            var match = isFunction.Groups.Cast<Group>().First(g => g.Name == "fun");
             Generate(new ABL_Procedure(match.Value));
+            return;
+        }
+
+        var isVariable = VariableRegex().Match(_source, _index);
+        if (isVariable.Success)
+        {
+            if (ASetVariable().success)
+            {
+                //Note: We do nothing because ASetVariable() handles everything.
+            }
+            else
+            {
+                //ToDo: Handle error.
+            }
             return;
         }
 
