@@ -12,7 +12,7 @@ Of the 101 games, we support the ones followed by a 1:
 
 | games:            | supported: |
 |-------------------|------------|
-| 23matches   		  |     1      |
+| 23matches         |     1      |
 | 3dplot            |     0      |
 | aceyducey         |     1      |
 | amazing           |     0      |

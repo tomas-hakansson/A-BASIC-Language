@@ -29,6 +29,7 @@ partial class Parser
             if (_parseErrors.Any())
             {
                 //ToDo: Handle parse errors
+                Result.Success = false;
             }
             else
             {
@@ -40,6 +41,7 @@ partial class Parser
                         labelIndex.Add(label.Value, i);
                 }
 
+                Result.Success = true;
                 Result.EvalValues = evalValues;
                 Result.LabelIndex = labelIndex;
             }
