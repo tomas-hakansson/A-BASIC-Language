@@ -81,7 +81,8 @@ partial class Parser
 
     bool ALabel()
     {
-        var match = LabelRegex().Match(_source, _index);
+        Regex isLabel = new(@"\G(?<label>\d+)\s*[A-Za-z]", RegexOptions.CultureInvariant);
+        var match = isLabel.Match(_source, _index);
         if (match.Success)
         {
             var matched = false;
@@ -889,11 +890,9 @@ partial class Parser
         return false;
     }
 
-    [GeneratedRegex("\\G(?<label>\\d+)\\s*[A-Z]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
-    private static partial Regex LabelRegex();
+    static Regex StatementRegex() =>
+        new(@"\G(?<statement>DIM|END|GO|IF|INPUT|LET|PRINT|REM|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
-    [GeneratedRegex("\\G(?<statement>DIM|END|GO|IF|INPUT|LET|PRINT|REM|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
-    private static partial Regex StatementRegex();
-    [GeneratedRegex("\\G(?<var>[A-Z][A-Z0-9]*)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
-    private static partial Regex VariableRegex();
+    static Regex VariableRegex() =>
+        new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);
 }
