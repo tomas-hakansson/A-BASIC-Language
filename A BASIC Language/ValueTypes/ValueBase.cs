@@ -126,9 +126,7 @@ public abstract class ValueBase
     {
         if (x is null || y is null)
             return false;
-        dynamic dx = x;
-        dynamic dy = y;
-        return dx == dy || dx > dy;
+        return x == y || x > y;
     }
     public static bool operator <=(ValueBase? x, ValueBase? y) => !(x > y);
 
