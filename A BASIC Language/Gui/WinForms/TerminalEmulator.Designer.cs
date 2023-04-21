@@ -32,6 +32,7 @@ namespace A_BASIC_Language.Gui.WinForms
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TerminalEmulator));
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.tmrRestoreForm = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // timer1
@@ -47,6 +48,10 @@ namespace A_BASIC_Language.Gui.WinForms
             this.imageList1.Images.SetKeyName(0, "status_icon_empty.png");
             this.imageList1.Images.SetKeyName(1, "status_icon_running.png");
             this.imageList1.Images.SetKeyName(2, "status_icon_done.png");
+            // 
+            // tmrRestoreForm
+            // 
+            this.tmrRestoreForm.Tick += new System.EventHandler(this.tmrRestoreForm_Tick);
             // 
             // TerminalEmulator
             // 
@@ -74,5 +79,6 @@ namespace A_BASIC_Language.Gui.WinForms
 
         private System.Windows.Forms.Timer timer1;
         private ImageList imageList1;
+        private System.Windows.Forms.Timer tmrRestoreForm;
     }
 }

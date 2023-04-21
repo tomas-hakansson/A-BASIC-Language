@@ -8,6 +8,7 @@ namespace A_BASIC_Language.Gui.WinForms;
 
 public partial class TerminalEmulator : Form
 {
+    private int _restoreFormState = 0;
     private readonly TerminalEmulatorStateStructure _ts;
     private string SourceCode { get; set; }
     private delegate void DirectInputHandlerDelegate(string command);
@@ -374,12 +375,8 @@ public partial class TerminalEmulator : Form
         if (!_consoleControl.Visible)
             return;
 
-        if (_consoleControl.State.CurrentForm is ViewSourceForm && e.KeyCode == Keys.Escape)
-        {
-            _consoleControl.KeyDown -= ConsoleForm_KeyDown;
-            _consoleControl.Visible = false;
-            _consoleControl.Enabled = false;
-        }
+        if (_consoleControl.State.CurrentForm is ViewSourceForm && e.KeyCode == Keys.Escape && tmrRestoreForm.Enabled == false)
+            tmrRestoreForm.Enabled = true;
     }
 
     private void MoveLineInputLeft() =>
@@ -575,5 +572,25 @@ public partial class TerminalEmulator : Form
     {
         QuitFlag = true;
         _ts.Quit();
+    }
+
+    private void tmrRestoreForm_Tick(object sender, EventArgs e)
+    {
+        switch (_restoreFormState)
+        {
+            case 0:
+                _consoleControl.KeyDown -= ConsoleForm_KeyDown;
+                _restoreFormState++;
+                break;
+            case 1:
+                _consoleControl.Visible = false;
+                _consoleControl.Enabled = false;
+                _restoreFormState++;
+                break;
+            default:
+                tmrRestoreForm.Enabled = false;
+                _restoreFormState = 0;
+                break;
+        }
     }
 }
