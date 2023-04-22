@@ -52,7 +52,6 @@ namespace A_BASIC_Language.Gui.WinForms
             // tmrRestoreForm
             // 
             this.tmrRestoreForm.Interval = 20;
-            this.tmrRestoreForm.Tick += new System.EventHandler(this.tmrRestoreForm_Tick);
             // 
             // TerminalEmulator
             // 

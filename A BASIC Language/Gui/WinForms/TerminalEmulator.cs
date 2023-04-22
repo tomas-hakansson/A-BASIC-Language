@@ -1,5 +1,6 @@
 using System.Text;
 using A_BASIC_Language.Gui.WinForms.PseudoGraphics;
+using A_BASIC_Language.Gui.WinForms.TerminalSubControllers;
 using A_BASIC_Language.IO;
 using CharacterMatrix;
 using ConsoleControlLibrary;
@@ -8,7 +9,6 @@ namespace A_BASIC_Language.Gui.WinForms;
 
 public partial class TerminalEmulator : Form
 {
-    private int _restoreFormState;
     private readonly TerminalEmulatorStateStructure _ts;
     private string SourceCode { get; set; }
     private delegate void DirectInputHandlerDelegate(string command);
@@ -16,6 +16,7 @@ public partial class TerminalEmulator : Form
     private readonly OverlayRenderer _overlayRenderer;
     private readonly KeyboardController _keyboardController;
     private readonly ConsoleControl _consoleControl;
+    private readonly ConsoleHook _consoleHook;
     private bool? _isActive;
     private bool FullScreen { get; set; }
     private Rectangle OldPosition { get; set; }
@@ -40,15 +41,15 @@ public partial class TerminalEmulator : Form
         ProgramRepository = new ProgramRepository();
     }
 
-#pragma warning disable CS8618 // Initializes from method.
     public TerminalEmulator()
-#pragma warning restore CS8618
     {
         InitializeComponent();
+        LineInputResult = "";
         SourceCode = "";
         ProgramFilename = "";
 
         _consoleControl = new ConsoleControl();
+        _consoleHook = new ConsoleHook(_consoleControl, this, tmrRestoreForm);
 
         var columnCountConfigValue = System.Configuration.ConfigurationManager.AppSettings["columnCount"];
         var columnCount = 60;
@@ -85,15 +86,7 @@ public partial class TerminalEmulator : Form
         var width = _pixelsWidth + marginX;
         var height = 25 * CharacterHeight + marginY;
         MinimumSize = new Size(width, height);
-
-        _consoleControl.ColumnCount = _ts.ColumnCount;
-        _consoleControl.RowCount = _ts.RowCount;
-        _consoleControl.Dock = DockStyle.Fill;
-        _consoleControl.State.CurrentForm = new LoadForm(Handle, _consoleControl);
-        _consoleControl.Visible = false;
-        _consoleControl.Enabled = false;
-        Controls.Add(_consoleControl);
-        _consoleControl.KeyDown += ConsoleForm_KeyDown;
+        _consoleHook.Hook(Handle, Controls, _ts);
     }
 
     public void EndLineInput() =>
@@ -347,10 +340,8 @@ public partial class TerminalEmulator : Form
         _overlayRenderer.Render(e.Graphics, active, CursorBlink, ClientRectangle, _ts.State);
     }
 
-    private void TerminalEmulator_Resize(object sender, EventArgs e)
-    {
+    private void TerminalEmulator_Resize(object sender, EventArgs e) =>
         Invalidate();
-    }
 
     private async void TerminalEmulator_KeyDown(object sender, KeyEventArgs e)
     {
@@ -365,15 +356,6 @@ public partial class TerminalEmulator : Form
         Console.WriteLine(_ts.LineInputMode);
 
         await WriteLine("?User break.");
-    }
-
-    private void ConsoleForm_KeyDown(object? sender, KeyEventArgs e)
-    {
-        if (!_consoleControl.Visible)
-            return;
-
-        if (_consoleControl.State.CurrentForm is ViewSourceForm && e.KeyCode == Keys.Escape && tmrRestoreForm.Enabled == false)
-            tmrRestoreForm.Enabled = true;
     }
 
     private void MoveLineInputLeft() =>
@@ -450,25 +432,9 @@ public partial class TerminalEmulator : Form
                 break;
             case "SOURCE":
                 if (_ts.State == TerminalState.Ended)
-                {
-                    _consoleControl.State.CurrentForm = new ViewSourceForm(
-                        _consoleControl.Handle,
-                        _consoleControl,
-                        SourceCode,
-                        ProgramFilename
-                    );
-
-                    _consoleControl.SetDefaultColorScheme(new ControlColorScheme());
-
-                    _consoleControl.Visible = true;
-                    _consoleControl.Enabled = true;
-                    _consoleControl.Focus();
-                    ((ViewSourceForm)_consoleControl.State.CurrentForm).SetFocusToList();
-                }
+                    _consoleHook.ShowSourceForm(SourceCode, ProgramFilename);
                 else
-                {
                     await WriteLine("Invalid state for source.");
-                }
                 break;
             case "LOAD":
                 {
@@ -569,25 +535,5 @@ public partial class TerminalEmulator : Form
     {
         QuitFlag = true;
         _ts.Quit();
-    }
-
-    private void tmrRestoreForm_Tick(object sender, EventArgs e)
-    {
-        switch (_restoreFormState)
-        {
-            case 0:
-                _restoreFormState++;
-                break;
-            case 1:
-                _consoleControl.Visible = false;
-                _consoleControl.Enabled = false;
-                _restoreFormState++;
-                break;
-            default:
-                tmrRestoreForm.Enabled = false;
-                _restoreFormState = 0;
-                Focus();
-                break;
-        }
     }
 }
