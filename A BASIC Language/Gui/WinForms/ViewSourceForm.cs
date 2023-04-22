@@ -11,7 +11,7 @@ public class ViewSourceForm : ConsoleForm
     {
         var labelText = string.IsNullOrWhiteSpace(filename) ? "Current source code:" : $"Source: {filename}";
 
-        AddControl(new ConsoleControlLibrary.Controls.Label(this, 0, 0, parentConsole.Width, labelText));
+        AddControl(new ConsoleControlLibrary.Controls.Label(this, 0, 0, parentConsole.ColumnCount, labelText));
 
         var rows = sourceCode.Split(
             new [] { Environment.NewLine },
@@ -21,7 +21,7 @@ public class ViewSourceForm : ConsoleForm
         if (rows.Length <= 0)
             return;
 
-        var listHeight = parentConsole.Height - 1;
+        var listHeight = parentConsole.RowCount - 1;
         
         if (rows.Length < listHeight)
             listHeight = rows.Length;

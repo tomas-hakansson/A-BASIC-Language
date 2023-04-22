@@ -4,12 +4,12 @@ namespace A_BASIC_Language.Gui.WinForms.TerminalSubControllers;
 
 public class ConsoleHook
 {
-    private readonly Form _parentForm;
+    private readonly TerminalEmulator _parentForm;
     private readonly ConsoleControl _c;
     private readonly System.Windows.Forms.Timer _restoreTimer;
     private int _restoreFormState;
 
-    public ConsoleHook(ConsoleControl consoleControl, Form parentForm, System.Windows.Forms.Timer restoreTimer)
+    public ConsoleHook(ConsoleControl consoleControl, TerminalEmulator parentForm, System.Windows.Forms.Timer restoreTimer)
     {
         _c = consoleControl;
         _parentForm = parentForm;
@@ -43,6 +43,9 @@ public class ConsoleHook
     {
         if (!_c.Visible)
             return;
+
+        if (e.KeyCode == Keys.F11)
+            _parentForm.ToggleFullScreen();
 
         if (_c.State.CurrentForm is ViewSourceForm && e.KeyCode == Keys.Escape && _restoreTimer.Enabled == false)
             _restoreTimer.Enabled = true;

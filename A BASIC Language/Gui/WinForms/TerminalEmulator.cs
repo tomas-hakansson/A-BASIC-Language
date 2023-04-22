@@ -9,9 +9,9 @@ namespace A_BASIC_Language.Gui.WinForms;
 
 public partial class TerminalEmulator : Form
 {
+    private delegate void DirectInputHandlerDelegate(string command);
     private readonly TerminalEmulatorStateStructure _ts;
     private string SourceCode { get; set; }
-    private delegate void DirectInputHandlerDelegate(string command);
     private readonly CharacterRenderer _characterRenderer;
     private readonly OverlayRenderer _overlayRenderer;
     private readonly KeyboardController _keyboardController;
@@ -95,7 +95,7 @@ public partial class TerminalEmulator : Form
     public bool IsFullScreen() =>
         FullScreen;
 
-    private void ToggleFullScreen() =>
+    internal void ToggleFullScreen() =>
         SetFullScreen(!FullScreen);
 
     public void SetFullScreen(bool fullScreen)
