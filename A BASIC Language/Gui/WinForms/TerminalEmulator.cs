@@ -8,7 +8,7 @@ namespace A_BASIC_Language.Gui.WinForms;
 
 public partial class TerminalEmulator : Form
 {
-    private int _restoreFormState = 0;
+    private int _restoreFormState;
     private readonly TerminalEmulatorStateStructure _ts;
     private string SourceCode { get; set; }
     private delegate void DirectInputHandlerDelegate(string command);
@@ -96,10 +96,8 @@ public partial class TerminalEmulator : Form
         _consoleControl.KeyDown += ConsoleForm_KeyDown;
     }
 
-    public void EndLineInput()
-    {
+    public void EndLineInput() =>
         _ts.LineInputMode = false;
-    }
 
     public bool IsFullScreen() =>
         FullScreen;
@@ -162,7 +160,6 @@ public partial class TerminalEmulator : Form
         FullScreen = false;
         OldWindowState = FormWindowState.Normal;
         OldPosition = new Rectangle(50, 50, 200, 200);
-
         Invalidate();
         timer1.Enabled = true;
     }
@@ -579,7 +576,6 @@ public partial class TerminalEmulator : Form
         switch (_restoreFormState)
         {
             case 0:
-                _consoleControl.KeyDown -= ConsoleForm_KeyDown;
                 _restoreFormState++;
                 break;
             case 1:
@@ -590,6 +586,7 @@ public partial class TerminalEmulator : Form
             default:
                 tmrRestoreForm.Enabled = false;
                 _restoreFormState = 0;
+                Focus();
                 break;
         }
     }
