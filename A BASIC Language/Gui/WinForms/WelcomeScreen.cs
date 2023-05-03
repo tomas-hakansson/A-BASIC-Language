@@ -44,6 +44,15 @@ public class WelcomeScreen
             _writeEmptyLine();
         }
 
+        if (Configuration.ConfigurationMessages.Count > 0)
+        {
+            foreach (var configurationMessage in Configuration.ConfigurationMessages)
+            {
+                _writeLine(configurationMessage);
+                _writeEmptyLine();
+            }
+        }
+
         if (!string.IsNullOrWhiteSpace(programFilename))
         {
             _writeLine("Ready.");

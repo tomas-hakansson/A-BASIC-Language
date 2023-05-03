@@ -37,7 +37,7 @@ public partial class TerminalEmulator : Form
 
     static TerminalEmulator()
     {
-        VectorGraphicsPen = new Pen(Color.FromArgb(100, 100, 0));
+        VectorGraphicsPen = new Pen(Configuration.PrimaryVectorGraphicsColor);
         ProgramRepository = new ProgramRepository();
     }
 
