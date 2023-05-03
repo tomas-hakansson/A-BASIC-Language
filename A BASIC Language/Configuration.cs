@@ -6,6 +6,7 @@ public class Configuration
 {
     public static List<string> ConfigurationMessages { get; }
     public static int ColumnCount { get; private set; }
+    public static Color EmulatorBackgroundColor { get; set; }
     public static Color PrimaryVectorGraphicsColor { get; private set; }
 
     static Configuration()
@@ -24,6 +25,7 @@ public class Configuration
             ColumnCount = 60;
         }
 
+        EmulatorBackgroundColor = ParseColor("emulatorBackgroundColor", "#000000");
         PrimaryVectorGraphicsColor = ParseColor("primaryVectorGraphicsColor", "#a0a000");
     }
 

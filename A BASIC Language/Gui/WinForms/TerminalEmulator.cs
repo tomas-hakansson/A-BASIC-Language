@@ -328,12 +328,13 @@ public partial class TerminalEmulator : Form
 
         e.Graphics.ScaleTransform(scaleX, scaleY);
 
-        e.Graphics.FillRectangle(Brushes.Black, ClientRectangle);
+        using var backgroundColor = new SolidBrush(Configuration.EmulatorBackgroundColor);
+        e.Graphics.FillRectangle(backgroundColor, ClientRectangle);
 
         foreach (var graphicalElement in _graphicalElements)
             graphicalElement.Draw(e.Graphics, CharacterWidth, CharacterHeight, ClientRectangle.Width, ClientRectangle.Height);
 
-        _characterRenderer.Render(e.Graphics, _ts.LineInputMode, active, CursorBlink, _ts.CursorPosition, _ts.LineInputPosition.X, _ts.LineInputPosition.Y);
+        _characterRenderer.Render(e.Graphics, backgroundColor, _ts.LineInputMode, active, CursorBlink, _ts.CursorPosition, _ts.LineInputPosition.X, _ts.LineInputPosition.Y);
 
         e.Graphics.ResetTransform();
 

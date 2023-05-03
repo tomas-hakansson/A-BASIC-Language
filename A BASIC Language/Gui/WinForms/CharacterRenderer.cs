@@ -21,7 +21,7 @@ public class CharacterRenderer : IDisposable
         Font = new Font("Courier New", 6.0f);
     }
 
-    public void Render(Graphics g, bool lineInputMode, bool showCursor, bool cursorBlink, Point cursorPosition, int lineInputX, int lineInputY)
+    public void Render(Graphics g, SolidBrush backgroundBrush, bool lineInputMode, bool showCursor, bool cursorBlink, Point cursorPosition, int lineInputX, int lineInputY)
     {
         var pixelX = 0;
         var pixelY = 0;
@@ -40,7 +40,7 @@ public class CharacterRenderer : IDisposable
                         g.FillRectangle(b, pixelX, pixelY, CharacterWidth, CharacterHeight);
 
                         if (_characters.GetAt(x, y) > 0)
-                            g.DrawString(_characters.GetAt(x, y).ToString(), Font, Brushes.Black, pixelX, pixelY);
+                            g.DrawString(_characters.GetAt(x, y).ToString(), Font, backgroundBrush, pixelX, pixelY);
                     }
                     else
                     {
@@ -67,7 +67,7 @@ public class CharacterRenderer : IDisposable
                         g.FillRectangle(OutputBrush, pixelX, pixelY, CharacterWidth, CharacterHeight);
 
                         if (_characters.GetAt(x, y) > 0)
-                            g.DrawString(_characters.GetAt(x, y).ToString(), Font, Brushes.Black, pixelX, pixelY);
+                            g.DrawString(_characters.GetAt(x, y).ToString(), Font, backgroundBrush, pixelX, pixelY);
                     }
                     else
                     {
