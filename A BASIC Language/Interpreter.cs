@@ -2,6 +2,7 @@
 using A_BASIC_Language.Gui;
 using A_BASIC_Language.SpecificExecutors;
 using A_BASIC_Language.ValueTypes;
+using TerminalMatrix;
 
 namespace A_BASIC_Language;
 
@@ -48,7 +49,7 @@ public class Interpreter
     {
         _terminal = terminal;
 
-        if (_terminal.State != TerminalState.Running)
+        if (_terminal.Runtime)
             return;
 
         await Eval();
@@ -81,7 +82,7 @@ public class Interpreter
             if (_terminal.UserBreak)
                 _terminal.UserBreak = false;
 
-            if (_terminal.State != TerminalState.Running)
+            if (!_terminal.Runtime)
                 return;
 
             switch (_parseResult.EvalValues[i])
@@ -286,7 +287,7 @@ public class Interpreter
                                 bool happy;
                                 do
                                 {
-                                    if (_terminal.QuitFlag || _terminal.State != TerminalState.Running)
+                                    if (_terminal.QuitFlag || !_terminal.Runtime)
                                         return;
 
                                     happy = false;
@@ -296,17 +297,17 @@ public class Interpreter
                                     {
                                         var floatValue = new FloatValue((double)value.GetValueAsType<FloatValue>());
 
-                                        if (!_terminal.QuitFlag && _terminal.State == TerminalState.Running)
+                                        if (!_terminal.QuitFlag && _terminal.Runtime)
                                             _data.Push(floatValue);
 
                                         happy = true;
                                     }
                                     else
                                     {
-                                        if (!_terminal.QuitFlag && _terminal.State == TerminalState.Running)
+                                        if (!_terminal.QuitFlag && _terminal.Runtime)
                                         {
-                                            await _terminal.WriteLine("?Redo from start");
-                                            await _terminal.Write("Enter a numeric value: ");
+                                            _terminal.WriteLine("?Redo from start"); // TODO: Await?
+                                            _terminal.Write("Enter a numeric value: "); // TODO: Await?
                                         }
                                         else
                                             return;
@@ -317,12 +318,12 @@ public class Interpreter
                             break;
                         case "#INPUT-STRING":
                             {
-                                if (_terminal.QuitFlag || _terminal.State != TerminalState.Running)
+                                if (_terminal.QuitFlag || !_terminal.Runtime)
                                     return;
 
                                 var value = ValueBase.GetValueType(_terminal.ReadLine());
 
-                                if (!_terminal.QuitFlag && _terminal.State == TerminalState.Running)
+                                if (!_terminal.QuitFlag && _terminal.Runtime)
                                     _data.Push(value);
                             }
                             break;
@@ -384,7 +385,7 @@ public class Interpreter
                                 if (_data.Count > 0)
                                 {
                                     var value = _data.Pop();
-                                    await _terminal.Write(value.ToString() ?? "");
+                                    _terminal.Write(value.ToString() ?? ""); // TODO: await?
                                 }
                                 else
                                     Debug.Fail("The stack is empty");
@@ -404,8 +405,8 @@ public class Interpreter
 
         if (!EndMessageDisplayed && !_empty)
             await End("Program has run through.");
-        else if (_empty)
-            _terminal.State = TerminalState.Empty;
+        //else if (_empty)
+        //    _terminal.State = TerminalState.Empty; // TODO: What?!
     }
 
     async Task End(string message)
@@ -420,10 +421,10 @@ public class Interpreter
 
         _terminal.Title = "Simple direct mode";
 
-        await _terminal.WriteLine();
-        await _terminal.WriteLine(string.IsNullOrWhiteSpace(message) ? TheProgramHasEnded : message);
-        await _terminal.WriteLine();
-        await _terminal.WriteLine("Ready. Type RESTART, SOURCE, LOAD or QUIT.");
+        _terminal.WriteLine(); // TODO: await?
+        _terminal.WriteLine(string.IsNullOrWhiteSpace(message) ? TheProgramHasEnded : message); // TODO: await?
+        _terminal.WriteLine(); // TODO: await?
+        _terminal.WriteLine("Ready. Type RESTART, SOURCE, LOAD or QUIT."); // TODO: await?
         _terminal.End();
     }
 }

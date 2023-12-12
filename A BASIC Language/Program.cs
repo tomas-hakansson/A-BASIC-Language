@@ -1,4 +1,4 @@
-﻿using A_BASIC_Language.Gui.WinForms;
+﻿using A_BASIC_Language.Gui;
 
 Application.SetCompatibleTextRenderingDefault(false);
 Application.EnableVisualStyles();

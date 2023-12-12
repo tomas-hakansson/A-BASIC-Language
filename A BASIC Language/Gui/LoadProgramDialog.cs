@@ -1,6 +1,4 @@
-﻿using A_BASIC_Language.Gui.WinForms;
-
-namespace A_BASIC_Language.Gui;
+﻿namespace A_BASIC_Language.Gui;
 
 public partial class LoadProgramDialog : Form
 {

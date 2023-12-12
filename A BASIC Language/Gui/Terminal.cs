@@ -1,105 +1,42 @@
-using A_BASIC_Language.Gui.WinForms;
+﻿namespace A_BASIC_Language.Gui;
 
-namespace A_BASIC_Language.Gui;
-
-public class Terminal : IDisposable
+public class Terminal
 {
-    private TerminalEmulator Emu { get; }
-    private readonly TerminalEmulatorStateStructure _ts;
+    private readonly TerminalEmulator _terminalEmulator;
+    public bool QuitFlag { get; set; } //TODO!
+    public bool UserBreak { get; set; } //TODO!
+    public bool Runtime { get; set; }
 
-    public Terminal(TerminalEmulator emu, TerminalEmulatorStateStructure ts)
+    public Terminal(TerminalEmulator terminalEmulator)
     {
-        Emu = emu;
-        _ts = ts;
-    }
-
-    public void Run(string title, string programName, bool clear)
-    {
-        Title = title;
-        Emu.BringToFront();
-
-        if (clear)
-        {
-            Emu.Clear();
-            Emu.ShowWelcome(programName);
-        }
-
-        _ts.State = TerminalState.Running;
-    }
-
-    public bool QuitFlag =>
-        Emu.QuitFlag;
-
-    public TerminalState State
-    {
-        get => _ts.State;
-        set => _ts.State = value;
-    }
-
-    public void End()
-    {
-        Emu.EndLineInput();
-        _ts.State = TerminalState.Ended;
-    }
-
-    public bool UserBreak
-    {
-        get => _ts.UserBreak;
-        set => _ts.UserBreak = value;
+        _terminalEmulator = terminalEmulator;
+        Runtime = false;
     }
 
     public bool FullScreen
     {
-        get => Emu.IsFullScreen();
-        set => Emu.SetFullScreen(value);
+        get => _terminalEmulator.IsFullScreen();
+        set => _terminalEmulator.SetFullScreen(value);
     }
 
     public string Title
     {
-        get => Emu.Text;
-        set => Emu.Text = value;
+        get => _terminalEmulator.Text;
+        set => _terminalEmulator.Text = value;
     }
 
-    public async Task NextTab(string s) =>
-        await Emu.NextTab(s);
-
-    public async Task NextTab() =>
-        await Emu.NextTab();
-
-    public async Task Write(string s) =>
-        await Emu.Write(s);
-
-    public async Task WriteLine() =>
-        await Emu.WriteLine();
-
-    public async Task WriteLine(string s) =>
-        await Emu.WriteLine(s);
-
-    public async Task<string> ReadLine(string prompt)
+    public void WriteLine(string text)
     {
-        await Write(prompt);
-        return ReadLine();
+        _terminalEmulator.WriteLine(text);
     }
 
-    public string ReadLine()
+    public void WriteLine()
     {
-        Emu.BeginLineInput();
-
-        do
-        {
-            Application.DoEvents();
-
-            if (_ts.State != TerminalState.Running || QuitFlag)
-                return "";
-
-        } while (_ts.LineInputMode);
-
-        return Emu.LineInputResult;
+        _terminalEmulator.WriteLine();
     }
 
-    public void Dispose()
+    public void Write(string text)
     {
-        Emu.Close();
-        Emu.Dispose();
+        _terminalEmulator.Write(text);
     }
 }
