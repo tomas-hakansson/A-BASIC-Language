@@ -1,4 +1,5 @@
 using A_BASIC_Language.IO;
+using TerminalMatrix.TerminalColor;
 
 namespace A_BASIC_Language.Gui;
 
@@ -32,13 +33,6 @@ public partial class TerminalEmulator : Form
 
     }
 
-    public async void ShowEmptyTerminal()
-    {
-        Interpreter eval = new(SourceCode);
-        Terminal.Run("A BASIC Language", "", true);
-        await eval.Run(Terminal);
-    }
-
     public async void Run(bool clear)
     {
         Cursor = Cursors.WaitCursor;
@@ -61,7 +55,44 @@ public partial class TerminalEmulator : Form
 
     public void ShowWelcome(string programName)
     {
-        // TODO: Write something on screen
+        const int spaces = 28;
+        terminalMatrixControl1.WriteLine("");
+        terminalMatrixControl1.WriteLine($"{new string(' ', spaces)}*** A BASIC LANGUAGE ***");
+        terminalMatrixControl1.WriteLine("");
+        terminalMatrixControl1.WriteLine($"{new string(' ', spaces + 1)}Altair BASIC Emulator");
+
+        if (string.IsNullOrWhiteSpace(programName))
+        {
+            terminalMatrixControl1.WriteLine($"{new string(' ', spaces - 1)}written by Tomas Hakansson");
+            terminalMatrixControl1.WriteLine($"{new string(' ', spaces + 2)}and Anders Hesselbom");
+            terminalMatrixControl1.WriteLine("");
+        }
+        else
+        {
+            terminalMatrixControl1.WriteLine("");
+        }
+
+        if (Configuration.ConfigurationMessages.Count > 0)
+        {
+            foreach (var configurationMessage in Configuration.ConfigurationMessages)
+            {
+                terminalMatrixControl1.WriteLine(configurationMessage);
+                terminalMatrixControl1.WriteLine("");
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(programName))
+        {
+            terminalMatrixControl1.WriteLine("Ready.");
+            terminalMatrixControl1.WriteLine("");
+            terminalMatrixControl1.WriteLine("Loaded programFilename:");
+            terminalMatrixControl1.WriteLine(programName);
+            terminalMatrixControl1.WriteLine("");
+        }
+        else
+        {
+            terminalMatrixControl1.WriteLine("Ready. Type LOAD or QUIT.");
+        }
     }
 
     public void Clear()
@@ -121,6 +152,7 @@ public partial class TerminalEmulator : Form
         OldWindowState = FormWindowState.Normal;
         OldPosition = new Rectangle(50, 50, 200, 200);
         Invalidate();
+        ShowWelcome(ProgramFilename);
     }
 
     public void WriteLine(string text)
@@ -148,5 +180,10 @@ public partial class TerminalEmulator : Form
 
     private void TerminalEmulator_FormClosed(object sender, FormClosedEventArgs e)
     {
+    }
+
+    private void terminalMatrixControl1_TypedLine(object sender, TerminalMatrix.Events.TypedLineEventArgs e)
+    {
+
     }
 }

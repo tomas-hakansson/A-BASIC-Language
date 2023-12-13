@@ -4,14 +4,7 @@ Application.SetCompatibleTextRenderingDefault(false);
 Application.EnableVisualStyles();
 var main = new TerminalEmulator();
 main.ProgramFilename = args.FirstOrDefault() ?? "";
-
-if (string.IsNullOrWhiteSpace(main.ProgramFilename))
-    main.ShowEmptyTerminal();
-else
-{
-    main.Show();
-    main.Run(true);
-}
+main.Show();
 
 try
 {

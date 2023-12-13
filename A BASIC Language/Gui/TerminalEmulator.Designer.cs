@@ -51,6 +51,7 @@ namespace A_BASIC_Language.Gui
             terminalMatrixControl1.Name = "terminalMatrixControl1";
             terminalMatrixControl1.Size = new Size(759, 498);
             terminalMatrixControl1.TabIndex = 1;
+            terminalMatrixControl1.TypedLine += terminalMatrixControl1_TypedLine;
             // 
             // TerminalEmulator
             // 
