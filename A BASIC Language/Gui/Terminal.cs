@@ -13,6 +13,20 @@ public class Terminal
         Runtime = false;
     }
 
+
+    public void Run(string title, string programName, bool clear)
+    {
+        Title = title;
+
+        if (clear)
+        {
+            _terminalEmulator.Clear();
+            _terminalEmulator.ShowWelcome(programName);
+        }
+
+        _terminalEmulator.Run(clear);
+    }
+
     public bool FullScreen
     {
         get => _terminalEmulator.IsFullScreen();
@@ -38,5 +52,20 @@ public class Terminal
     public void Write(string text)
     {
         _terminalEmulator.Write(text);
+    }
+
+    public string ReadLine()
+    {
+        return "Hello"; // TODO
+    }
+
+    public void NextTab()
+    {
+        // TODO
+    }
+
+    public void End()
+    {
+        Runtime = false;
     }
 }

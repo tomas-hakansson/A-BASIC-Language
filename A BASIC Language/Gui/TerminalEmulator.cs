@@ -8,6 +8,7 @@ public partial class TerminalEmulator : Form
     private bool FullScreen { get; set; }
     private Rectangle OldPosition { get; set; }
     private FormWindowState OldWindowState { get; set; }
+    private Terminal Terminal { get; }
     public static ProgramRepository ProgramRepository { get; }
     public string ProgramFilename { get; set; }
     public string LineInputResult { get; private set; }
@@ -23,11 +24,49 @@ public partial class TerminalEmulator : Form
         LineInputResult = "";
         SourceCode = "";
         ProgramFilename = "";
+        Terminal = new Terminal(this);
     }
 
     private void TerminalEmulator_Load(object sender, EventArgs e)
     {
 
+    }
+
+    public async void ShowEmptyTerminal()
+    {
+        Interpreter eval = new(SourceCode);
+        Terminal.Run("A BASIC Language", "", true);
+        await eval.Run(Terminal);
+    }
+
+    public async void Run(bool clear)
+    {
+        Cursor = Cursors.WaitCursor;
+
+        var source = await ProgramRepository.GetProgram(this, ProgramFilename);
+
+        if (string.IsNullOrWhiteSpace(source.SourceCode))
+        {
+            Terminal.WriteLine("Load failed.");
+            return;
+        }
+
+        SourceCode = source.SourceCode;
+
+        Interpreter eval = new(SourceCode);
+        Cursor = Cursors.Default;
+        Terminal.Run(source.Filename, ProgramFilename, clear);
+        await eval.Run(Terminal);
+    }
+
+    public void ShowWelcome(string programName)
+    {
+        // TODO: Write something on screen
+    }
+
+    public void Clear()
+    {
+        // TODO
     }
 
     public bool IsFullScreen() =>

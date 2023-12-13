@@ -253,7 +253,7 @@ public class Interpreter
                                 bool happy;
                                 do
                                 {
-                                    if (_terminal.QuitFlag || _terminal.State != TerminalState.Running)
+                                    if (_terminal.QuitFlag || !_terminal.Runtime)
                                         return;
 
                                     happy = false;
@@ -263,17 +263,17 @@ public class Interpreter
                                     {
                                         var intValue = new IntValue((int)value.GetValueAsType<IntValue>());
 
-                                        if (!_terminal.QuitFlag && _terminal.State == TerminalState.Running)
+                                        if (!_terminal.QuitFlag && _terminal.Runtime)
                                             _data.Push(intValue);
 
                                         happy = true;
                                     }
                                     else
                                     {
-                                        if (!_terminal.QuitFlag && _terminal.State == TerminalState.Running)
+                                        if (!_terminal.QuitFlag && _terminal.Runtime)
                                         {
-                                            await _terminal.WriteLine("?Redo from start");
-                                            await _terminal.Write("Enter a numeric value: ");
+                                            _terminal.WriteLine("?Redo from start"); // TODO await?
+                                            _terminal.Write("Enter a numeric value: "); // TODO await?
                                         }
                                         else
                                             return;
@@ -335,10 +335,10 @@ public class Interpreter
                             }
                             break;
                         case "#NEXT-LINE":
-                            await _terminal.WriteLine();
+                            _terminal.WriteLine(); // TODO await?
                             break;
                         case "#NEXT-TAB-POSITION":
-                            await _terminal.NextTab();
+                            _terminal.NextTab();
                             break;
                         case "RND":
                             //ToDo: implement this properly.
@@ -404,12 +404,12 @@ public class Interpreter
         }
 
         if (!EndMessageDisplayed && !_empty)
-            await End("Program has run through.");
+            End("Program has run through.");
         //else if (_empty)
         //    _terminal.State = TerminalState.Empty; // TODO: What?!
     }
 
-    async Task End(string message)
+    void End(string message)
     {
         EndMessageDisplayed = true;
 

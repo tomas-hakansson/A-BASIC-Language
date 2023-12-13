@@ -6,7 +6,7 @@ var main = new TerminalEmulator();
 main.ProgramFilename = args.FirstOrDefault() ?? "";
 
 if (string.IsNullOrWhiteSpace(main.ProgramFilename))
-    await main.ShowEmptyTerminal();
+    main.ShowEmptyTerminal();
 else
 {
     main.Show();
