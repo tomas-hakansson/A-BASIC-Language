@@ -21,7 +21,7 @@
 	<ItemGroup>
 	  <PackageReference Include="SelectListLibrary" Version="1.0.3" />
 	  <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
-	  <PackageReference Include="TerminalMatrix" Version="1.4.0" />
+	  <PackageReference Include="TerminalMatrix" Version="1.5.0" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -180,6 +180,7 @@ public partial class TerminalEmulator : Form
 
     private void TerminalEmulator_FormClosed(object sender, FormClosedEventArgs e)
     {
+        terminalMatrixControl1.Quit();
     }
 
     private void terminalMatrixControl1_TypedLine(object sender, TerminalMatrix.Events.TypedLineEventArgs e)
