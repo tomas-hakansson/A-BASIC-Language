@@ -45,6 +45,8 @@ namespace A_BASIC_Language.Gui
             // 
             // terminalMatrixControl1
             // 
+            terminalMatrixControl1.BorderHeight = 0;
+            terminalMatrixControl1.BorderWidth = 0;
             terminalMatrixControl1.CurrentCursorColor = 1;
             terminalMatrixControl1.Dock = DockStyle.Fill;
             terminalMatrixControl1.Location = new Point(0, 0);
@@ -57,6 +59,7 @@ namespace A_BASIC_Language.Gui
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.Black;
             ClientSize = new Size(759, 498);
             Controls.Add(terminalMatrixControl1);
             DoubleBuffered = true;

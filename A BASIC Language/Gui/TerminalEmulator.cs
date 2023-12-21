@@ -1,4 +1,5 @@
 using A_BASIC_Language.IO;
+using TerminalMatrix;
 using TerminalMatrix.TerminalColor;
 
 namespace A_BASIC_Language.Gui;
@@ -30,7 +31,19 @@ public partial class TerminalEmulator : Form
 
     private void TerminalEmulator_Load(object sender, EventArgs e)
     {
+        switch (Configuration.ColumnCount)
+        {
+            case 60:
+                terminalMatrixControl1.SetResolution(Resolution.Pixels480x200Characters60x25);
+                break;
+            case 80:
+                terminalMatrixControl1.SetResolution(Resolution.Pixels640x200Characters80x25);
+                break;
+        }
 
+        terminalMatrixControl1.CurrentCursorColor = (int)ColorName.Orange;
+        terminalMatrixControl1.BorderWidth = 10;
+        terminalMatrixControl1.BorderHeight = 10;
     }
 
     public async void Run(bool clear)
@@ -55,7 +68,18 @@ public partial class TerminalEmulator : Form
 
     public void ShowWelcome(string programName)
     {
-        const int spaces = 28;
+        var spaces = 28;
+
+        switch (terminalMatrixControl1.Resolution)
+        {
+            case Resolution.Pixels320x200Characters40x25:
+                spaces = 8;
+                break;
+            case Resolution.Pixels480x200Characters60x25:
+                spaces = 18;
+                break;
+        }
+
         terminalMatrixControl1.WriteLine("");
         terminalMatrixControl1.WriteLine($"{new string(' ', spaces)}*** A BASIC LANGUAGE ***");
         terminalMatrixControl1.WriteLine("");
