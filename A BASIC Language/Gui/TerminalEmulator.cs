@@ -121,7 +121,7 @@ public partial class TerminalEmulator : Form
 
     public void Clear()
     {
-        // TODO
+        terminalMatrixControl1.Clear();
     }
 
     public bool IsFullScreen() =>
@@ -209,6 +209,56 @@ public partial class TerminalEmulator : Form
 
     private void terminalMatrixControl1_TypedLine(object sender, TerminalMatrix.Events.TypedLineEventArgs e)
     {
+        if (Terminal.Runtime)
+            return;
 
+        switch (e.InputValue.Trim().ToUpper())
+        {
+            case "":
+                break;
+            case "RESTART":
+                //if (_ts.State == TerminalState.Ended)
+                //{
+                //    _ts.State = TerminalState.Ended;
+                //    Application.DoEvents();
+                //    Run(false);
+                //}
+                //else
+                //{
+                //    await WriteLine("Invalid state for restart.");
+                //}
+                break;
+            case "SOURCE":
+                //if (_ts.State == TerminalState.Ended)
+                //    _consoleHook.ShowSourceForm(SourceCode, ProgramFilename);
+                //else
+                //    await WriteLine("Invalid state for source.");
+                break;
+            case "LOAD":
+            {
+                using var x = new LoadProgramDialog();
+
+                if (x.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                var f = x.Filename ?? "";
+
+                if (f.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase) || f.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase))
+                    ProgramFilename = f;
+                else
+                    ProgramFilename = Path.GetFullPath(x.Filename!);
+
+                Run(false);
+            }
+                break;
+            case "QUIT":
+                //_ts.State = TerminalState.Ended;
+                //Application.DoEvents();
+                //Close();
+                break;
+            default:
+                WriteLine("Invalid simple direct mode input.");
+                break;
+        }
     }
 }
