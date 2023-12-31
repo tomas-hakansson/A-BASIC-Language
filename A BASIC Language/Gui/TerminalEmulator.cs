@@ -127,9 +127,6 @@ public partial class TerminalEmulator : Form
     public bool IsFullScreen() =>
         FullScreen;
 
-    internal void ToggleFullScreen() =>
-        SetFullScreen(!FullScreen);
-
     public void SetFullScreen(bool fullScreen)
     {
         if (fullScreen & !FullScreen)
@@ -146,7 +143,6 @@ public partial class TerminalEmulator : Form
         OldPosition = new Rectangle(Left, Top, Width, Height);
         WindowState = FormWindowState.Normal;
         FormBorderStyle = FormBorderStyle.None;
-        TopMost = true;
         Top = s.Bounds.Top;
         Left = s.Bounds.Left;
         Width = s.Bounds.Width;
@@ -235,21 +231,21 @@ public partial class TerminalEmulator : Form
                 //    await WriteLine("Invalid state for source.");
                 break;
             case "LOAD":
-            {
-                using var x = new LoadProgramDialog();
+                {
+                    using var x = new LoadProgramDialog();
 
-                if (x.ShowDialog(this) != DialogResult.OK)
-                    return;
+                    if (x.ShowDialog(this) != DialogResult.OK)
+                        return;
 
-                var f = x.Filename ?? "";
+                    var f = x.Filename ?? "";
 
-                if (f.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase) || f.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase))
-                    ProgramFilename = f;
-                else
-                    ProgramFilename = Path.GetFullPath(x.Filename!);
+                    if (f.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase) || f.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase))
+                        ProgramFilename = f;
+                    else
+                        ProgramFilename = Path.GetFullPath(x.Filename!);
 
-                Run(false);
-            }
+                    Run(false);
+                }
                 break;
             case "QUIT":
                 //_ts.State = TerminalState.Ended;
@@ -261,4 +257,7 @@ public partial class TerminalEmulator : Form
                 break;
         }
     }
+
+    private void terminalMatrixControl1_RequestToggleFullscreen(object sender, EventArgs e) =>
+        SetFullScreen(!FullScreen);
 }
