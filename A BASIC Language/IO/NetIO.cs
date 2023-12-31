@@ -11,16 +11,30 @@ public class NetIo : IoBase
             ? Filename.Split("/").LastOrDefault() ?? ""
             : Filename;
 
-    public override async Task<LoadResult> Load()
+    public override LoadResult Load()
     {
         try
         {
             var httpClient = new HttpClient();
-            var response = await httpClient.GetStringAsync(Filename);
+            var token = httpClient.GetStringAsync(Filename);
+            while (!token.IsCompleted)
+            {
+                Thread.Sleep(500);
+                Application.DoEvents();
+            }
 
-            return string.IsNullOrWhiteSpace(response)
-                ? LoadResult.Fail() 
-                : LoadResult.Success(response ?? "");
+            if (token.IsCompletedSuccessfully)
+            {
+                var response = token.Result;
+                
+                return string.IsNullOrWhiteSpace(response)
+                    ? LoadResult.Fail()
+                    : LoadResult.Success(response ?? "");
+            }
+            else
+            {
+                return LoadResult.Fail();
+            }
         }
         catch
         {

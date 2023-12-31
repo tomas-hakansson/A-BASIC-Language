@@ -9,7 +9,7 @@ public class ProgramRepository
         ProgramCache = new Dictionary<string, string>();
     }
 
-    public async Task<BasicProgram> GetProgram(IWin32Window owner, string pathAndName)
+    public BasicProgram GetProgram(IWin32Window owner, string pathAndName)
     {
         var ioDispatcher = new Dispatcher();
         var io = ioDispatcher.GetIo(pathAndName);
@@ -18,7 +18,7 @@ public class ProgramRepository
         if (ProgramCache.ContainsKey(name))
             return new BasicProgram(ProgramCache.GetValueOrDefault(name) ?? "", name);
 
-        var source = await io.Load();
+        var source = io.Load();
 
         if (!source.Result)
         {

@@ -46,11 +46,9 @@ public partial class TerminalEmulator : Form
         terminalMatrixControl1.BorderHeight = 10;
     }
 
-    public async void Run(bool clear)
+    public void Run(bool clear)
     {
-        Cursor = Cursors.WaitCursor;
-
-        var source = await ProgramRepository.GetProgram(this, ProgramFilename);
+        var source = ProgramRepository.GetProgram(this, ProgramFilename);
 
         if (string.IsNullOrWhiteSpace(source.SourceCode))
         {
@@ -61,9 +59,8 @@ public partial class TerminalEmulator : Form
         SourceCode = source.SourceCode;
 
         Interpreter eval = new(SourceCode);
-        Cursor = Cursors.Default;
         Terminal.Run(source.Filename, ProgramFilename, clear);
-        await eval.Run(Terminal);
+        eval.Run(Terminal);
     }
 
     public void ShowWelcome(string programName)
@@ -248,9 +245,9 @@ public partial class TerminalEmulator : Form
                 }
                 break;
             case "QUIT":
-                //_ts.State = TerminalState.Ended;
-                //Application.DoEvents();
-                //Close();
+                Terminal.QuitFlag = true;
+                Application.DoEvents();
+                Close();
                 break;
             default:
                 WriteLine("Invalid simple direct mode input.");

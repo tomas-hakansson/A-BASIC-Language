@@ -45,23 +45,24 @@ public class Interpreter
         _currentLineNumber = 0;
     }
 
-    public async Task Run(Terminal terminal)
+    public void Run(Terminal terminal)
     {
         _terminal = terminal;
 
         if (_terminal.Runtime)
             return;
 
-        await Eval();
+        Eval();
     }
 
-    async Task Eval()
+    void Eval()
     {
         EndMessageDisplayed = false;
 
         if (_terminal == null)
             throw new SystemException("Terminal not initialized.");
 
+        _terminal.Runtime = true;
         Application.DoEvents();
 
         var addExecutor = new AddExecutor(_data);
@@ -416,11 +417,7 @@ public class Interpreter
         if (_terminal == null)
             return;
 
-        if (_terminal.FullScreen)
-            _terminal.FullScreen = false;
-
         _terminal.Title = "Simple direct mode";
-
         _terminal.WriteLine(); // TODO: await?
         _terminal.WriteLine(string.IsNullOrWhiteSpace(message) ? TheProgramHasEnded : message); // TODO: await?
         _terminal.WriteLine(); // TODO: await?

@@ -25,12 +25,12 @@ public class FileIo : IoBase
         return nameOnly;
     }
 
-    public override async Task<LoadResult> Load()
+    public override LoadResult Load()
     {
         try
         {
             using var x = new StreamReader(Filename, Encoding.UTF8);
-            var source = await x.ReadToEndAsync();
+            var source = x.ReadToEnd();
             x.Close();
             return LoadResult.Success(source);
         }

@@ -57,14 +57,14 @@ public partial class LoadProgramDialog : Form
         contextMenuStrip1.Show(listView1, e.X, e.Y);
     }
 
-    private async void viewSourceToolStripMenuItem_Click(object sender, EventArgs e)
+    private void viewSourceToolStripMenuItem_Click(object sender, EventArgs e)
     {
         if (listView1.SelectedItem == null)
             return;
 
-        var n = (string)listView1.SelectedItem.Tag;
+        var n = listView1.SelectedItem.Tag as string;
 
-        var source = await TerminalEmulator.ProgramRepository.GetProgram(this, n);
+        var source = TerminalEmulator.ProgramRepository.GetProgram(this, n ?? "");
 
         // TODO: Must be able to view source here.
 

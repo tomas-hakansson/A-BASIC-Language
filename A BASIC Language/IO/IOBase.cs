@@ -11,5 +11,5 @@ public abstract class IoBase
 
     public abstract string GetNameOnly();
 
-    public abstract Task<LoadResult> Load();
+    public abstract LoadResult Load();
 }
