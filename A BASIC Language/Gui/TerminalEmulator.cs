@@ -210,16 +210,15 @@ public partial class TerminalEmulator : Form
             case "":
                 break;
             case "RESTART":
-                //if (_ts.State == TerminalState.Ended)
-                //{
-                //    _ts.State = TerminalState.Ended;
-                //    Application.DoEvents();
-                //    Run(false);
-                //}
-                //else
-                //{
-                //    await WriteLine("Invalid state for restart.");
-                //}
+                if (!Terminal.Runtime)
+                {
+                    Application.DoEvents();
+                    Run(false);
+                }
+                else
+                {
+                    WriteLine("Invalid state for restart.");
+                }
                 break;
             case "SOURCE":
                 //if (_ts.State == TerminalState.Ended)
