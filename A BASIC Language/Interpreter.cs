@@ -389,7 +389,7 @@ public class Interpreter
                                 if (_data.Count > 0)
                                 {
                                     var value = _data.Pop();
-                                    _terminal.Write(value.ToString() ?? ""); // TODO: await?
+                                    _terminal.Write(value.ToString() ?? "");
                                 }
                                 else
                                     Debug.Fail("The stack is empty");
@@ -429,10 +429,10 @@ public class Interpreter
             return;
 
         _terminal.Title = "Simple direct mode";
-        _terminal.WriteLine(); // TODO: await?
-        _terminal.WriteLine(string.IsNullOrWhiteSpace(message) ? TheProgramHasEnded : message); // TODO: await?
-        _terminal.WriteLine(); // TODO: await?
-        _terminal.WriteLine("Ready. Type RESTART, SOURCE, LOAD or QUIT."); // TODO: await?
+        _terminal.WriteLine();
+        _terminal.WriteLine(string.IsNullOrWhiteSpace(message) ? TheProgramHasEnded : message);
+        _terminal.WriteLine();
+        _terminal.WriteLine("Ready. Type RESTART, SOURCE, LOAD or QUIT.");
         _terminal.End();
     }
 }
