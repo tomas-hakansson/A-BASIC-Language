@@ -257,4 +257,9 @@ public partial class TerminalEmulator : Form
 
     private void terminalMatrixControl1_RequestToggleFullscreen(object sender, EventArgs e) =>
         SetFullScreen(!FullScreen);
+
+    private void terminalMatrixControl1_UserBreak(object sender, EventArgs e)
+    {
+        Terminal.UserBreak = true;
+    }
 }

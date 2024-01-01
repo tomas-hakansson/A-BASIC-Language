@@ -2,7 +2,6 @@
 using A_BASIC_Language.Gui;
 using A_BASIC_Language.SpecificExecutors;
 using A_BASIC_Language.ValueTypes;
-using TerminalMatrix;
 
 namespace A_BASIC_Language;
 
@@ -77,11 +76,15 @@ public class Interpreter
 
         for (int i = 0; i < _parseResult.EvalValues.Count; i++)
         {
+            Application.DoEvents();
+
             if (endProgram)
                 return;
 
             if (_terminal.UserBreak)
-                _terminal.UserBreak = false;
+            {
+                break;
+            }
 
             if (!_terminal.Runtime)
                 return;
@@ -405,9 +408,17 @@ public class Interpreter
         }
 
         if (!EndMessageDisplayed && !_empty)
-            End("Program has run through.");
-        //else if (_empty)
-        //    _terminal.State = TerminalState.Empty; // TODO: What?!
+        {
+            if (_terminal.UserBreak)
+            {
+                _terminal.UserBreak = false;
+                End("User break.");
+            }
+            else
+            {
+                End("Program has run through.");
+            }
+        }
     }
 
     void End(string message)

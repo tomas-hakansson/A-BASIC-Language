@@ -54,6 +54,7 @@ namespace A_BASIC_Language.Gui
             terminalMatrixControl1.Size = new Size(759, 498);
             terminalMatrixControl1.TabIndex = 1;
             terminalMatrixControl1.TypedLine += terminalMatrixControl1_TypedLine;
+            terminalMatrixControl1.UserBreak += terminalMatrixControl1_UserBreak;
             terminalMatrixControl1.RequestToggleFullscreen += terminalMatrixControl1_RequestToggleFullscreen;
             // 
             // TerminalEmulator
