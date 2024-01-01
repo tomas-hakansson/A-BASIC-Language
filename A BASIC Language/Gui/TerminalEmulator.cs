@@ -59,7 +59,7 @@ public partial class TerminalEmulator : Form
         SourceCode = source.SourceCode;
 
         Interpreter eval = new(SourceCode);
-        Terminal.Run(source.Filename, ProgramFilename, clear);
+        Text = ProgramFilename;
         eval.Run(Terminal);
     }
 

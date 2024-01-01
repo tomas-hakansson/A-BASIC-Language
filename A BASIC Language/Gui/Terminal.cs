@@ -13,20 +13,6 @@ public class Terminal
         Runtime = false;
     }
 
-
-    public void Run(string title, string programName, bool clear)
-    {
-        Title = title;
-
-        if (clear)
-        {
-            _terminalEmulator.Clear();
-            _terminalEmulator.ShowWelcome(programName);
-        }
-
-        _terminalEmulator.Run(clear);
-    }
-
     public bool FullScreen
     {
         get => _terminalEmulator.IsFullScreen();
