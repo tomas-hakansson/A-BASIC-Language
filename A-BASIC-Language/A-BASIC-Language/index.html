@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>ABL - A BASIC Language</title>
+    <style>
+        .code {
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>ABL - A BASIC Language</h1>
+    <p>An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom. The initial goal is to be able to run all games in the book <b>101 BASIC Computer Games</b> (1975).</p>
+
+    <h1>Index</h1>
+    <ul>
+        <li><a href="#VersionHistory">Version history</a></li>
+        <li><a href="#Terminilogy">Terminology</a></li>
+        <li><a href="#BasicLanguageReference">BASIC language reference</a></li>
+        <li><a href="#ControlCommands">Control commands</a></li>
+    </ul>
+
+    <a id="VersionHistory"></a>
+    <h2>Version history</h2>
+    <p>Check this <a href="https://github.com/tomas-hakansson/A-BASIC-Language/blob/master/README.md">readme.md</a>.</p>
+
+    <a id="Terminilogy"></a>
+    <h2>Terminology</h2>
+    <ul>
+        <li><b>Immediate</b> - the emulator state while not running any programs</li>
+        <li><b>Run time</b> - the emulator state while running a BASIC program</li>
+    </ul>
+
+    <a id="BasicLanguageReference"></a>
+    <h1>BASIC language reference</h1>
+    <p>This section describes the BASIC language used in ABL.</p>
+
+    <h2>BASIC Commands</h2>
+
+    <h2>Built-in functions</h2>
+
+    <h2>Operators</h2>
+
+    <h2>Other keywords</h2>
+
+    <h2>Constants</h2>
+
+    <h2>System variables</h2>
+
+    <a id="ControlCommands"></a>
+    <h1>Control commands</h1>
+    <p>Control commands can be used in immediate and are used to configure the ABL application. Control commands are not case-sensitive.</p>
+
+    <h2 class="code">!FULLSCREEN</h2>
+    <p>Controls if the application is displayed in screen mode.</p>
+    <p class="code">!FULLSCREEN</p>
+    <p>Toggles fullscreen mode.</p>
+    <p class="code">!FULLSCREEN ON</p>
+    <p>Sets the application to fullscreen mode.</p>
+    <p class="code">!FULLSCREEN OFF</p>
+    <p>Sets the application to windowed mode.</p>
+
+    <h2 class="code">!LOG</h2>
+    <p>Controls if the debug output is rendered on screen.</p>
+    <p class="code">!LOG</p>
+    <p>Toggles debug output rendering.</p>
+    <p class="code">!LOG ON</p>
+    <p>Turns on debug output rendering.</p>
+    <p class="code">!LOG OFF</p>
+    <p>Turns off debug output rendering.</p>
+
+    <h2 class="code">!QUIT</h2>
+    <p>Closes the application immediately.</p>
+
+    <h2 class="code">!RES</h2>
+    <p>Controls the graphical resolution of the ABL application. The supported modes are:</p>
+    <ul>
+        <li>640 * 200 pixels (80 * 25 characters)</li>
+        <li>480 * 200 pixels (60 * 25 characters) - default</li>
+        <li>320 * 200 pixels (40 * 25 characters)</li>
+        <li>160 * 200 pixels (20 * 25 characters)</li>
+    </ul>
+    <p class="code">!RES</p>
+    <p>
+        Toggles the current resolution from the current to the next in the list.
+        The first time <span class="code">!RES</span> is used, the resolution will change from 480 * 200 pixels (60 * 25 characters) to 320 * 200 pixels (40 * 25 characters).
+        The second time <span class="code">!RES</span> is used, the resolution will change to 160 * 200 pixels (20 * 25 characters), and so on.
+    </p>
+    <p class="code">!RES 1</p>
+    <p>
+        Sets the resolution to 640 * 200 pixels (80 * 25 characters), the highest resolution.
+    </p>
+    <p class="code">!RES 2</p>
+    <p>
+        Sets the resolution to 480 * 200 pixels (60 * 25 characters), the default resolution.
+    </p>
+    <p class="code">!RES 3</p>
+    <p>
+        Sets the resolution to 320 * 200 pixels (40 * 25 characters), the resolution used in the Commodore 64.
+    </p>
+    <p class="code">!RES 4</p>
+    <p>
+        Sets the resolution to 160 * 200 pixels (20 * 25 characters), for high speed graphics. The C64 can display multicolor pictures in this resolution.
+    </p>
+</body>
+</html>
