@@ -1,4 +1,6 @@
-﻿namespace A_BASIC_Language.Stage2;
+﻿using A_BASIC_Language.Language;
+
+namespace A_BASIC_Language.Stage2;
 
 public enum PrintThe
 {

@@ -18,7 +18,7 @@ public class BasicParser
     int _generatedLabel = 0;
     public ParseResult Result { get; }
 
-    public Parser(string source)
+    public BasicParser(string source)
     {
         Result = new ParseResult();
         //Note: Initialisation:

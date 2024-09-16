@@ -91,7 +91,7 @@ public partial class MainWindow : Form
             _log.Write(text);
 
         lblUserAction.Text = text;
-        var eval = new Interpretor(text);
+        var eval = new Language.Interpreter(text, xxx); // TODO
         eval.Run(terminalMatrixControl1);
     }
 

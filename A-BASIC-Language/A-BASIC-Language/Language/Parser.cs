@@ -2,7 +2,7 @@
 
 public class Parser
 {
-    public Parsing.ParseResult Result { get; }
+    public ParseResult Result { get; }
 
     public Parser(string source)
     {

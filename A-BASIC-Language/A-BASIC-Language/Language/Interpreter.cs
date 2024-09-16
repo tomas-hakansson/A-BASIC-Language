@@ -83,7 +83,7 @@ public class Interpreter
             if (endProgram)
                 return;
 
-            if (_terminal.UserBreak)
+            if (_terminal.UserBreak) // TODO
             {
                 break;
             }
@@ -327,7 +327,7 @@ public class Interpreter
                                 if (_terminal.QuitFlag || !_runtime)
                                     return;
 
-                                var value = ValueBase.GetValueType(_terminal.ReadLine());
+                                var value = ValueBase.GetValueType(_terminal.InputString(""));
 
                                 if (!_terminal.QuitFlag && _runtime)
                                     _data.Push(value);
@@ -341,10 +341,10 @@ public class Interpreter
                             }
                             break;
                         case "#NEXT-LINE":
-                            _terminal.WriteLine(); // TODO await?
+                            _terminal.WriteLine("");
                             break;
                         case "#NEXT-TAB-POSITION":
-                            _terminal.NextTab();
+                            _terminal.NextTab(); // TODO
                             break;
                         case "RND":
                             //ToDo: implement this properly.
@@ -411,9 +411,9 @@ public class Interpreter
 
         if (!EndMessageDisplayed && !_empty)
         {
-            if (_terminal.UserBreak)
+            if (_terminal.UserBreak) // TODO
             {
-                _terminal.UserBreak = false;
+                _terminal.UserBreak = false; // TODO
                 End("User break.");
             }
             else
@@ -430,11 +430,10 @@ public class Interpreter
         if (_terminal == null)
             return;
 
-        _terminal.Title = "Simple direct mode";
-        _terminal.WriteLine();
+        _terminal.WriteLine("");
         _terminal.WriteLine(string.IsNullOrWhiteSpace(message) ? TheProgramHasEnded : message);
-        _terminal.WriteLine();
+        _terminal.WriteLine("");
         _terminal.WriteLine("Ready. Type RESTART, SOURCE, LOAD or QUIT.");
-        _terminal.End();
+        _terminal.End(); // TODO
     }
 }

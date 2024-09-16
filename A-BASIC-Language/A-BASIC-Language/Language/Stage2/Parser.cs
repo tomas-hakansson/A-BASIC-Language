@@ -1,4 +1,5 @@
-﻿using A_BASIC_Language.Stage1;
+﻿using A_BASIC_Language.Language;
+using A_BASIC_Language.Stage1;
 
 namespace A_BASIC_Language.Stage2;
 
