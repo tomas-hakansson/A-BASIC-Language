@@ -10,6 +10,7 @@ namespace A_BASIC_Language;
 
 public partial class MainWindow : Form
 {
+    private Language.Interpreter? _eval;
     private bool _logVisible;
     private readonly Log _log;
 #if !DEBUG
@@ -91,8 +92,8 @@ public partial class MainWindow : Form
             _log.Write(text);
 
         lblUserAction.Text = text;
-        var eval = new Language.Interpreter(text, xxx); // TODO
-        eval.Run(terminalMatrixControl1);
+        _eval = new Language.Interpreter(text, xxx); // TODO
+        _eval.Run(terminalMatrixControl1);
     }
 
     public void CheckResolutionBox()

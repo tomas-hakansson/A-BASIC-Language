@@ -16,9 +16,9 @@ public class Interpreter
     readonly Dictionary<string, Dimension> _dimVariables;
     readonly Stack<ValueBase> _data;
     bool EndMessageDisplayed { get; set; }
-
     readonly Random _random;//Note: For the RND function.
     int _currentLineNumber;
+    public bool UserBreak {get; set; } // TODO!!!!!!
 
     public Interpreter(string source, bool runtime)
     {
@@ -83,7 +83,7 @@ public class Interpreter
             if (endProgram)
                 return;
 
-            if (_terminal.UserBreak) // TODO
+            if (UserBreak) // TODO
             {
                 break;
             }
@@ -411,9 +411,9 @@ public class Interpreter
 
         if (!EndMessageDisplayed && !_empty)
         {
-            if (_terminal.UserBreak) // TODO
+            if (UserBreak) // TODO
             {
-                _terminal.UserBreak = false; // TODO
+                UserBreak = false; // TODO
                 End("User break.");
             }
             else
