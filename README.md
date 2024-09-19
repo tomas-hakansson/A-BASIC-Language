@@ -121,6 +121,8 @@ Documentation is located here: [https://abl.winsoft.se/](https://abl.winsoft.se/
 
 [https://github.com/tomas-hakansson/A-BASIC-Language](https://github.com/tomas-hakansson/A-BASIC-Language)
 
+This program uses the [TerminalPixelMatrixLibrary](https://github.com/Anders-H/TerminalPixelMatrixLibrary).
+
 ## Version history
 
 ### Version 1.0

@@ -72,6 +72,9 @@ public partial class MainWindow : Form
 
     private void terminalMatrixControl1_TypedLine(object sender, TerminalMatrix.Events.TypedLineEventArgs e)
     {
+        if (e.InputValue.IsEmpty())
+            return;
+
         var preProcessor = e.InputValue.Trim();
 
         if (preProcessor.StartsWith("!"))
@@ -92,7 +95,11 @@ public partial class MainWindow : Form
             _log.Write(text);
 
         lblUserAction.Text = text;
-        _eval = new Language.Interpreter(text, false); // TODO - must know if it is a program start or just an execution of text.
+
+        //TODO: Need better way to figure out if this is a RUN or not.
+
+
+        _eval = new Language.Interpreter(e.InputValue, false); // TODO - must know if it is a program start or just an execution of text.
         _eval.Run(terminalMatrixControl1);
     }
 

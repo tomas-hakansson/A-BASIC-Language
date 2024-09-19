@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using A_BASIC_Language.Language.Parsing;
 using A_BASIC_Language.SpecificExecutors;
 using A_BASIC_Language.StringManipulation;
 using A_BASIC_Language.ValueTypes;
@@ -25,7 +26,7 @@ public class Interpreter
     {
         _runtime = runtime;
         _empty = string.IsNullOrWhiteSpace(source);
-        Parser parser = new(source);
+        var parser = new Parser(source);
         _parseResult = parser.Result;
 
         //{//Note: for comparing the old and new parser.
@@ -443,6 +444,5 @@ public class Interpreter
 
         _terminal.WriteLine("");
         _terminal.WriteLine("Ready.");
-        //_terminal.End(); // TODO
     }
 }
