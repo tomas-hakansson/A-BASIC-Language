@@ -92,7 +92,7 @@ public partial class MainWindow : Form
             _log.Write(text);
 
         lblUserAction.Text = text;
-        _eval = new Language.Interpreter(text, xxx); // TODO
+        _eval = new Language.Interpreter(text, false); // TODO - must know if it is a program start or just an execution of text.
         _eval.Run(terminalMatrixControl1);
     }
 
@@ -112,6 +112,9 @@ public partial class MainWindow : Form
             _log.Write(text);
 
         lblUserAction.Text = text;
+        
+        if (_eval != null)
+            _eval.UserBreak = true;
     }
 
     private void terminalMatrixControl1_Paint(object sender, PaintEventArgs e)

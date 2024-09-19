@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using A_BASIC_Language.SpecificExecutors;
+using A_BASIC_Language.StringManipulation;
 using A_BASIC_Language.ValueTypes;
 using TerminalMatrix;
 
@@ -344,7 +345,7 @@ public class Interpreter
                             _terminal.WriteLine("");
                             break;
                         case "#NEXT-TAB-POSITION":
-                            _terminal.NextTab(); // TODO
+                            //_terminal.NextTab(); // TODO
                             break;
                         case "RND":
                             //ToDo: implement this properly.
@@ -416,9 +417,13 @@ public class Interpreter
                 UserBreak = false; // TODO
                 End("User break.");
             }
-            else
+            else if (_runtime)
             {
                 End("Program has run through.");
+            }
+            else
+            {
+                End("");
             }
         }
     }
@@ -430,10 +435,14 @@ public class Interpreter
         if (_terminal == null)
             return;
 
+        if (!message.IsEmpty())
+        {
+            _terminal.WriteLine("");
+            _terminal.WriteLine(string.IsNullOrWhiteSpace(message) ? TheProgramHasEnded : message);
+        }
+
         _terminal.WriteLine("");
-        _terminal.WriteLine(string.IsNullOrWhiteSpace(message) ? TheProgramHasEnded : message);
-        _terminal.WriteLine("");
-        _terminal.WriteLine("Ready. Type RESTART, SOURCE, LOAD or QUIT.");
-        _terminal.End(); // TODO
+        _terminal.WriteLine("Ready.");
+        //_terminal.End(); // TODO
     }
 }
