@@ -33,4 +33,15 @@ public static class StringExtensions
         var v = (me ?? "").Trim().ToLower();
         return v == "no" || v == "false" || v == "0" || v == "off";
     }
+
+    public static bool Is(this string? me, string? other)
+    {
+        if (IsEmpty(me) && IsEmpty(other))
+            return true;
+
+        if (IsEmpty(me) || IsEmpty(other))
+            return false;
+
+        return string.Compare(me!.Trim(), other!.Trim(), StringComparison.CurrentCultureIgnoreCase) == 0;
+    }
 }

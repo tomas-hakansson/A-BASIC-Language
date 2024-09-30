@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="TerminalMatrix" Version="2.7.1" />
+    <PackageReference Include="TerminalMatrix" Version="2.7.2" />
   </ItemGroup>
 
   <ItemGroup>

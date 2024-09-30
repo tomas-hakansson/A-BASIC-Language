@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Reflection;
 using A_BASIC_Language.Gui;
 using A_BASIC_Language.Gui.Dialogs;
+using A_BASIC_Language.Language;
 using A_BASIC_Language.MainWindowControllers;
 using A_BASIC_Language.StringManipulation;
 using TerminalMatrix;
@@ -96,10 +97,17 @@ public partial class MainWindow : Form
 
         lblUserAction.Text = text;
 
-        //TODO: Need better way to figure out if this is a RUN or not.
+        if (e.InputValue.Is("run")) //TODO: Need better way to figure out if this is a RUN or not.
+        {
+            var code = terminalMatrixControl1.GetProgramAsString();
+            _eval = new Interpreter(code, true);
+        }
+        else
+        {
+            var code = e.InputValue;
+            _eval = new Interpreter(code, false);
+        }
 
-
-        _eval = new Language.Interpreter(e.InputValue, false); // TODO - must know if it is a program start or just an execution of text.
         _eval.Run(terminalMatrixControl1);
     }
 
