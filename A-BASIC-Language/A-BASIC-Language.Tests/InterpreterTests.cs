@@ -30,6 +30,32 @@ public class InterpreterTests
     }
 
     [DataTestMethod]
+    [DataRow("HEJ", "?Syntax error:")]
+    [DataRow("LET A 123", "?Syntax error:")]
+    [DataRow("IF 1 THEN", "?Syntax error:")]
+    [DataRow("PRINT 1/0", "?Error:")]
+    [DataRow("PRINT \"A\"-1", "?Error:")]
+    public void DirectErrorsDoNotExposeSyntheticLineNumbers(string source, string prefix)
+    {
+        var output = Run(source, runtime: false);
+        StringAssert.Contains(output, prefix);
+        Assert.IsFalse(output.Contains("line ", StringComparison.OrdinalIgnoreCase), output);
+        Assert.IsFalse(output.Contains("column ", StringComparison.OrdinalIgnoreCase), output);
+    }
+
+    [DataTestMethod]
+    [DataRow("HEJ", "Line 37,")]
+    [DataRow("IF 1 THEN", "Line 37,")]
+    [DataRow("PRINT 1/0", "in line 37:")]
+    [DataRow("PRINT \"A\"-1", "in line 37:")]
+    public void StoredProgramErrorsRetainTheirLineNumber(string statement, string location)
+    {
+        var output = Run("37 " + statement);
+        StringAssert.Contains(output, location);
+        Assert.IsFalse(output.Contains("Line 0"), output);
+    }
+
+    [DataTestMethod]
     [DataRow("10 PRINT 123", true, "123\n")]
     [DataRow("PRINT 123", false, "123\n")]
     [DataRow("10 PRINT \"HELLO\";\"WORLD\"", true, "HELLOWORLD\n")]

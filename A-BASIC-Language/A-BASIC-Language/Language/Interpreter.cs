@@ -50,7 +50,9 @@ public class Interpreter
         }
         catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or ArithmeticException or NotImplementedException)
         {
-            End($"?Error in line {_currentLineNumber}: {ex.Message}");
+            End(_runtime
+                ? $"?Error in line {_currentLineNumber}: {ex.Message}"
+                : $"?Error: {ex.Message}");
         }
     }
 

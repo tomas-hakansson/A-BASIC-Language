@@ -5,6 +5,7 @@ namespace A_BASIC_Language.Language.Parsing;
 public class BasicParser
 {
     readonly string _source;
+    readonly bool _direct;
     readonly SortedDictionary<int, List<ABL_EvalValue>> _lines;
     int _currentLabel;
     int _index = 0;
@@ -16,6 +17,7 @@ public class BasicParser
     public BasicParser(string source, bool direct = false)
     {
         Result = new ParseResult();
+        _direct = direct;
         //Note: Initialisation:
         // Normalize once: every parser routine sees a single newline convention.
         source = source.Replace("\r\n", "\n").Replace('\r', '\n');
@@ -50,7 +52,7 @@ public class BasicParser
         catch (Exception ex) when (ex is ArgumentException or InvalidOperationException or FormatException or OverflowException or IndexOutOfRangeException or NotImplementedException)
         {
             Result.Success = false;
-            Result.Errors.Add($"Line {_currentLabel}: {ex.Message}");
+            Result.Errors.Add(FormatDiagnostic(ex.Message));
         }
     }
 
@@ -176,8 +178,55 @@ public class BasicParser
                 //something went wrong.
             }
         }
-        else
+        else if (LooksLikeAssignment())
             Let();
+        else
+        {
+            var name = VariableRegex().Match(_source, _index);
+            ParseError(name.Success
+                ? $"Unknown statement '{name.Value}'"
+                : "Expected a BASIC statement or variable assignment");
+            SkipStatement();
+        }
+    }
+
+    // Look ahead without consuming input or generating instructions. LET may be
+    // omitted only when a scalar or indexed variable is followed by '='.
+    bool LooksLikeAssignment()
+    {
+        var name = VariableRegex().Match(_source, _index);
+        if (!name.Success) return false;
+        var position = _index + name.Length;
+        SkipSpaces();
+        if (position < _source.Length && (_source[position] == '$' || _source[position] == '%'))
+            position++;
+        SkipSpaces();
+        if (position < _source.Length && _source[position] == '(')
+        {
+            var depth = 0;
+            var quoted = false;
+            do
+            {
+                var c = _source[position++];
+                if (c == '\n') return false;
+                if (c == '"') quoted = !quoted;
+                if (!quoted)
+                {
+                    if (c == ':') return false;
+                    if (c == '(') depth++;
+                    if (c == ')') depth--;
+                }
+            } while (position < _source.Length && depth > 0);
+            if (depth != 0 || quoted) return false;
+            SkipSpaces();
+        }
+        return position < _source.Length && _source[position] == '=';
+
+        void SkipSpaces()
+        {
+            while (position < _source.Length && _source[position] != '\n' && char.IsWhiteSpace(_source[position]))
+                position++;
+        }
     }
 
     void For()
@@ -342,7 +391,15 @@ public class BasicParser
     }
 
     void ParseError(string message) =>
-        _parseErrors.Add((_index, $"Line {_currentLabel}, column {_index - _source.LastIndexOf('\n', Math.Max(0, _index - 1))}: {message}"));
+        _parseErrors.Add((_index, FormatDiagnostic(message)));
+
+    private string FormatDiagnostic(string message)
+    {
+        // Direct commands have a synthetic label used only for parsing.
+        if (_direct) return message;
+        var column = _index - _source.LastIndexOf('\n', Math.Max(0, _index - 1));
+        return $"Line {_currentLabel}, column {column}: {message}";
+    }
 
     //Note: Made negative because all valid BASIC labels are positive so there won't be a conflict.
     int GetGeneratedLabel() => --_generatedLabel;
@@ -397,7 +454,6 @@ public class BasicParser
     //let => 'LET'? unset-variable = expression
     void Let()
     {
-        Maybe("LET");
         var v = ASetVariable(true);
         if (!v.success)
             return;

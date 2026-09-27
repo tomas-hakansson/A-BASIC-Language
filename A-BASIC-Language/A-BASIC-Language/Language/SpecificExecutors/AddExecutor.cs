@@ -20,7 +20,7 @@ public class AddExecutor : ISubExecutor
             _data.Push(Add(x, y));
         }
         else
-            throw new InvalidOperationException($"Line {lineNumber}: Insufficient items on the stack.");
+            throw new InvalidOperationException("Insufficient items on the stack.");
 
     }
 
