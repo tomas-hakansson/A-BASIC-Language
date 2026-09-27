@@ -1,7 +1,8 @@
-﻿namespace A_BASIC_Language.Language;
+namespace A_BASIC_Language.Language;
 
 public class ParseResult
 {
+    public List<string> Errors { get; } = new();
     public bool Success { get; set; } = false;
     public List<ABL_EvalValue> EvalValues { get; set; } = new List<ABL_EvalValue>();
     public Dictionary<int, int> LabelIndex { get; set; } = new Dictionary<int, int>();

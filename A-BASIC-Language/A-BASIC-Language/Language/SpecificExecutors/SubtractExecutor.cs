@@ -1,4 +1,4 @@
-﻿using A_BASIC_Language.ValueTypes;
+using A_BASIC_Language.ValueTypes;
 
 namespace A_BASIC_Language.SpecificExecutors;
 
@@ -20,7 +20,7 @@ public class SubtractExecutor : ISubExecutor
             _data.Push(Subtract(lineNumber, y, x));
         }
         else
-            throw new SystemException($"Line {lineNumber}: Insufficient items on the stack.");
+            throw new InvalidOperationException($"Line {lineNumber}: Insufficient items on the stack.");
 
     }
 
@@ -33,7 +33,7 @@ public class SubtractExecutor : ISubExecutor
         new FloatValue(x.Value - y.Value);
 
     static ValueBase Subtract(int lineNumber, FloatValue x, StringValue y) =>
-        throw new SystemException($"Line {lineNumber}: Subtract in string scope.");
+        throw new InvalidOperationException($"Line {lineNumber}: Subtract in string scope.");
 
     // Int rules
 
@@ -44,16 +44,16 @@ public class SubtractExecutor : ISubExecutor
         new FloatValue(x.Value - y.Value);
 
     static ValueBase Subtract(int lineNumber, IntValue x, StringValue y) =>
-        throw new SystemException($"Line {lineNumber}: Subtract in string scope.");
+        throw new InvalidOperationException($"Line {lineNumber}: Subtract in string scope.");
 
     // String rules
 
     static ValueBase Subtract(int lineNumber, StringValue x, StringValue y) =>
-        throw new SystemException($"Line {lineNumber}: Subtract in string scope.");
+        throw new InvalidOperationException($"Line {lineNumber}: Subtract in string scope.");
 
     static ValueBase Subtract(int lineNumber, StringValue x, FloatValue y) =>
-        throw new SystemException($"Line {lineNumber}: Subtract in string scope.");
+        throw new InvalidOperationException($"Line {lineNumber}: Subtract in string scope.");
 
     static ValueBase Subtract(int lineNumber, StringValue x, IntValue y) =>
-        throw new SystemException($"Line {lineNumber}: Subtract in string scope.");
+        throw new InvalidOperationException($"Line {lineNumber}: Subtract in string scope.");
 }

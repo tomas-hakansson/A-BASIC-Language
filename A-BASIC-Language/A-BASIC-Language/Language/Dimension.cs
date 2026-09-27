@@ -1,4 +1,4 @@
-﻿using A_BASIC_Language.ValueTypes;
+using A_BASIC_Language.ValueTypes;
 
 namespace A_BASIC_Language.Language;
 
@@ -6,6 +6,7 @@ public class Dimension
 {
     readonly ValueBase[] _atoms;
     readonly int[] _multipliers;
+    readonly int[] _shape;
     public int IndexCount { get; }
 
     /// <summary>
@@ -19,9 +20,12 @@ public class Dimension
         //ToDo: Validate input.
         //Ponder: Maybe have an optimisation that skips all the machinery for one-dimensional arrays?
         //Hack: I first wrote the code under the assumption that the constructor would be given the shape as argument.
-        var shape = maxIndices.Select(x => x + 1).ToList();
-
-        _atoms = new ValueBase[shape.Aggregate((x, y) => x * y)];
+        var bounds = maxIndices.ToArray();
+        if (bounds.Length == 0 || bounds.Any(x => x < 0))
+            throw new ArgumentException("Invalid array dimensions.");
+        var shape = bounds.Select(x => checked(x + 1)).ToList();
+        _shape = shape.ToArray();
+        _atoms = new ValueBase[shape.Aggregate((x, y) => checked(x * y))];
 
         Array.Fill(_atoms, defaultValue);
 
@@ -70,7 +74,16 @@ public class Dimension
 
     int ToOneDimensionalIndex(IEnumerable<int> indices)
     {
-        //ToDo: Validate input.
-        return _multipliers.Zip(indices, (x, y) => x * y).Aggregate((x, y) => x + y);
+        var subscripts = indices.ToArray();
+        if (subscripts.Length != IndexCount)
+            throw new ArgumentException("Wrong number of array subscripts.");
+        var offset = 0;
+        for (var i = 0; i < IndexCount; i++)
+        {
+            if (subscripts[i] < 0 || subscripts[i] >= _shape[i])
+                throw new ArgumentOutOfRangeException(nameof(indices), "Array subscript out of range.");
+            offset += subscripts[i] * _multipliers[i];
+        }
+        return offset;
     }
 }

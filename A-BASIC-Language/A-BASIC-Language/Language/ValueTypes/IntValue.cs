@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 
 namespace A_BASIC_Language.ValueTypes;
 
@@ -29,7 +29,7 @@ public class IntValue : ValueBase
         if (typeof(T) == typeof(StringValue))
             return Value.ToString(CultureInfo.InvariantCulture);
 
-        throw new SystemException("What?!");
+        throw new InvalidOperationException("What?!");
     }
 
     public override bool TryGetAsFloatValue(out FloatValue value)

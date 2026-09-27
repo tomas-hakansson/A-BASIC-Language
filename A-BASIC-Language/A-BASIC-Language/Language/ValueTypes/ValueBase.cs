@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 
 namespace A_BASIC_Language.ValueTypes;
 
@@ -27,7 +27,7 @@ public abstract class ValueBase
     }
 
     public static ValueBase GetValueType(double value) =>
-        value % 1 == 0
+        value % 1 == 0 && value >= int.MinValue && value <= int.MaxValue
             ? new IntValue((int)value)
             : new FloatValue(value);
 
@@ -42,7 +42,7 @@ public abstract class ValueBase
         if (VariableIsDeclaredAsFloat(symbol))
             return new FloatValue(0.0);
 
-        throw new SystemException("This is not good...");
+        throw new InvalidOperationException("This is not good...");
     }
 
     internal static bool VariableIsDeclaredAsString(string symbol) =>
@@ -143,6 +143,19 @@ public abstract class ValueBase
     {
         // ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode
         return base.GetHashCode();
+    }
+
+    public ValueBase ForVariable(string symbol)
+    {
+        if (VariableIsDeclaredAsString(symbol))
+        {
+            if (this is not StringValue) throw new InvalidOperationException("Type mismatch.");
+            return this;
+        }
+        if (this is StringValue) throw new InvalidOperationException("Type mismatch.");
+        return VariableIsDeclaredAsInt(symbol)
+            ? new IntValue(checked((int)(double)GetValueAsType<FloatValue>()))
+            : new FloatValue((double)GetValueAsType<FloatValue>());
     }
 
     public abstract bool FitsInVariable(string symbol);

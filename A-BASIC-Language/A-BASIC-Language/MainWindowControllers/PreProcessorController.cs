@@ -1,4 +1,4 @@
-﻿using A_BASIC_Language.Gui.PreProcessor;
+using A_BASIC_Language.Gui.PreProcessor;
 using A_BASIC_Language.StringManipulation;
 using TerminalMatrix;
 
@@ -134,9 +134,7 @@ public class PreProcessorController
                 _parent.List();
                 break;
             case PreProcessorParserResult.Quit:
-#if !DEBUG
-                    _promptQuit = false;
-#endif
+                _owner.DisableQuitPrompt();
                 quitFlag = true;
                 break;
             default:

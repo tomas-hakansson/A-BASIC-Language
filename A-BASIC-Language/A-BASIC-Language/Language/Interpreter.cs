@@ -1,5 +1,3 @@
-﻿using System.Diagnostics;
-using A_BASIC_Language.Language.Parsing;
 using A_BASIC_Language.SpecificExecutors;
 using A_BASIC_Language.StringManipulation;
 using A_BASIC_Language.ValueTypes;
@@ -12,7 +10,7 @@ public class Interpreter
     private readonly bool _runtime;
     private readonly bool _empty;
     const string TheProgramHasEnded = "The program has ended";
-    TerminalMatrixControl? _terminal;
+    IBasicTerminal? _terminal;
     readonly ParseResult _parseResult;
     readonly Dictionary<string, ValueBase?> _variables;//Ponder: do the value need to be nullable?
     readonly Dictionary<string, Dimension> _dimVariables;
@@ -20,43 +18,43 @@ public class Interpreter
     bool EndMessageDisplayed { get; set; }
     readonly Random _random;//Note: For the RND function.
     int _currentLineNumber;
-    public bool UserBreak {get; set; } // TODO!!!!!!
+    public bool UserBreak { get; set; }
 
-    public Interpreter(string source, bool runtime)
+    public Interpreter(string source, bool runtime, RuntimeState? state = null)
     {
         _runtime = runtime;
         _empty = string.IsNullOrWhiteSpace(source);
-        var parser = new Parser(source);
+        var parser = new Parser(source, direct: !runtime);
         _parseResult = parser.Result;
 
-        //{//Note: for comparing the old and new parser.
-        //    Parser parser_old = new(source);
-        //    var old_result = parser_old.Result;
-        //    var parser_equal_length = old_result.EvalValues.Count == _parseResult.EvalValues.Count;
-        //    if (parser_equal_length)
-        //    {
-        //        var newResult = _parseResult.ToString(Parsing.PrintThe.EvalValues);
-        //        var oldResult = old_result.ToString(Stage2.PrintThe.EvalValues);
-        //        var areEqual = newResult == oldResult;
-        //    }
-        //}
-
-        _variables = new Dictionary<string, ValueBase?>();
-        _dimVariables = new Dictionary<string, Dimension>();
+        _variables = (state ??= new RuntimeState()).Variables;
+        _dimVariables = state.Arrays;
         _data = new Stack<ValueBase>();
         _random = new Random();
         _currentLineNumber = 0;
     }
 
-    public void Run(TerminalMatrixControl terminal)
+    public void Run(TerminalMatrixControl terminal) => Run(new TerminalAdapter(terminal));
+
+    public void Run(IBasicTerminal terminal)
     {
         _terminal = terminal;
-
-        if (_runtime)
+        if (!_parseResult.Success)
+        {
+            End("?Syntax error: " + string.Join("; ", _parseResult.Errors));
             return;
-
-        Eval();
+        }
+        try
+        {
+            Eval();
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or ArithmeticException or NotImplementedException)
+        {
+            End($"?Error in line {_currentLineNumber}: {ex.Message}");
+        }
     }
+
+    private void Fail(string message) => throw new InvalidOperationException(message);
 
     void Eval()
     {
@@ -65,36 +63,62 @@ public class Interpreter
         if (_terminal == null)
             throw new SystemException("Terminal not initialized.");
 
-        //_terminal.Runtime = true;
-        Application.DoEvents();
+        _terminal.PumpEvents();
 
         var addExecutor = new AddExecutor(_data);
         var subtractExecutor = new SubtractExecutor(_data);
         var comparisonExecutor = new ComparisonExecutor(_data);
-        var flatVariableExecutor = new FlatVariableExecutor(_data, End, _variables);
-        var dimExecutor = new DimExecutor(_data, End, _dimVariables);
+        var flatVariableExecutor = new FlatVariableExecutor(_data, Fail, _variables);
+        var dimExecutor = new DimExecutor(_data, Fail, _dimVariables);
 
-        Application.DoEvents();
+        _terminal.PumpEvents();
 
         var endProgram = false;
+        var matchingNext = MatchLoops();
+        var loops = new Stack<LoopFrame>();
 
         for (int i = 0; i < _parseResult.EvalValues.Count; i++)
         {
-            Application.DoEvents();
+            _terminal.PumpEvents();
 
-            if (endProgram)
-                return;
+            if (endProgram || _terminal.QuitFlag)
+                break;
 
-            if (UserBreak) // TODO
+            if (UserBreak)
             {
                 break;
             }
 
-            if (!_runtime)
-                return;
 
             switch (_parseResult.EvalValues[i])
             {
+                case ABL_For loop:
+                {
+                    var step = Number(_data.Pop());
+                    var limit = Number(_data.Pop());
+                    var initial = Number(_data.Pop());
+                    if (step == 0) throw new InvalidOperationException("FOR STEP must not be zero.");
+                    _variables[loop.Symbol] = new FloatValue(initial);
+                    if (step > 0 ? initial > limit : initial < limit)
+                        i = matchingNext[i];
+                    else
+                        loops.Push(new LoopFrame(loop.Symbol, limit, step, i, matchingNext[i]));
+                    break;
+                }
+                case ABL_Next next:
+                {
+                    if (loops.Count == 0) throw new InvalidOperationException("NEXT without FOR.");
+                    var frame = loops.Peek();
+                    if (frame.End != i || (next.Symbol.Length > 0 && next.Symbol != frame.Symbol))
+                        throw new InvalidOperationException("NEXT does not match active FOR.");
+                    var value = Number(_variables[frame.Symbol]!) + frame.Step;
+                    _variables[frame.Symbol] = new FloatValue(value);
+                    if (frame.Step > 0 ? value <= frame.Limit : value >= frame.Limit)
+                        i = frame.Start;
+                    else
+                        loops.Pop();
+                    break;
+                }
                 case ABL_Label lbl:
                     _currentLineNumber = lbl.Value;
                     //Note: NOP.
@@ -123,6 +147,9 @@ public class Interpreter
                 case ABL_Procedure p:
                     switch (p.Name)
                     {
+                        case "#NEGATE":
+                            _data.Push(new FloatValue(-Number(_data.Pop())));
+                            break;
                         case "^":
                             {
                                 if (_data.Count >= 2)
@@ -135,7 +162,7 @@ public class Interpreter
                                     _data.Push(new FloatValue(result));
                                 }
                                 else
-                                    Debug.Fail("Insufficient items on the stack");
+                                    Fail("Insufficient items on the stack");
                             }
                             break;
                         case "*":
@@ -150,7 +177,7 @@ public class Interpreter
                                     _data.Push(new FloatValue(result));
                                 }
                                 else
-                                    Debug.Fail("Insufficient items on the stack");
+                                    Fail("Insufficient items on the stack");
                             }
                             break;
                         case "/":
@@ -161,11 +188,13 @@ public class Interpreter
                                     var y = _data.Pop();
 
                                     //TODO: Type checking
-                                    var result = (double)y.GetValueAsType<FloatValue>() / (double)x.GetValueAsType<FloatValue>();
+                                    var divisor = Number(x);
+                                    if (divisor == 0) throw new DivideByZeroException("Division by zero.");
+                                    var result = Number(y) / divisor;
                                     _data.Push(new FloatValue(result));
                                 }
                                 else
-                                    Debug.Fail("Insufficient items on the stack");
+                                    Fail("Insufficient items on the stack");
                             }
                             break;
                         case "+":
@@ -202,7 +231,7 @@ public class Interpreter
                                     _data.Push(new FloatValue(Math.Abs(asDouble)));
                                 }
                                 else
-                                    Debug.Fail("The stack is empty");
+                                    Fail("The stack is empty");
                             }
                             break;
                         case "#END-PROGRAM":
@@ -221,13 +250,11 @@ public class Interpreter
                                     }
                                     else
                                     {
-                                        Debug.Fail("Something was wrong with the value");//fixme; really bad text.
-                                                                                         ////todo: error handling.
-                                        throw new InvalidOperationException("this is only to get c# to stop complaining.");
+                                        Fail($"Undefined line {(int)label.GetValueAsType<IntValue>()}.");
                                     }
                                 }
                                 else
-                                    Debug.Fail("The stack is empty");
+                                    Fail("The stack is empty");
                             }
                             break;
                         case "#IF-FALSE-GOTO":
@@ -246,14 +273,12 @@ public class Interpreter
                                         }
                                         else
                                         {
-                                            Debug.Fail("Something was wrong with the value");//fixme; really bad text.
-                                                                                             //todo: error handling.
-                                            throw new InvalidOperationException("this is only to get c# to stop complaining.");
+                                            Fail($"Undefined line {(int)label.GetValueAsType<IntValue>()}.");
                                         }
                                     }
                                 }
                                 else
-                                    Debug.Fail("The stack is empty");
+                                    Fail("The stack is empty");
                             }
                             break;
                         case "#INPUT-INT":
@@ -261,7 +286,7 @@ public class Interpreter
                                 bool happy;
                                 do
                                 {
-                                    if (_terminal.QuitFlag || !_runtime)
+                                    if (_terminal.QuitFlag || UserBreak)
                                         return;
 
                                     happy = false;
@@ -271,14 +296,14 @@ public class Interpreter
                                     {
                                         var intValue = new IntValue((int)value.GetValueAsType<IntValue>());
 
-                                        if (!_terminal.QuitFlag && _runtime)
+                                        if (!_terminal.QuitFlag && !UserBreak)
                                             _data.Push(intValue);
 
                                         happy = true;
                                     }
                                     else
                                     {
-                                        if (!_terminal.QuitFlag && _runtime)
+                                        if (!_terminal.QuitFlag && !UserBreak)
                                         {
                                             _terminal.WriteLine("?Redo from start"); // TODO await?
                                             _terminal.Write("Enter a numeric value: "); // TODO await?
@@ -295,7 +320,7 @@ public class Interpreter
                                 bool happy;
                                 do
                                 {
-                                    if (_terminal.QuitFlag || !_runtime)
+                                    if (_terminal.QuitFlag || UserBreak)
                                         return;
 
                                     happy = false;
@@ -305,14 +330,14 @@ public class Interpreter
                                     {
                                         var floatValue = new FloatValue((double)value.GetValueAsType<FloatValue>());
 
-                                        if (!_terminal.QuitFlag && _runtime)
+                                        if (!_terminal.QuitFlag && !UserBreak)
                                             _data.Push(floatValue);
 
                                         happy = true;
                                     }
                                     else
                                     {
-                                        if (!_terminal.QuitFlag && _runtime)
+                                        if (!_terminal.QuitFlag && !UserBreak)
                                         {
                                             _terminal.WriteLine("?Redo from start"); // TODO: Await?
                                             _terminal.Write("Enter a numeric value: "); // TODO: Await?
@@ -326,12 +351,12 @@ public class Interpreter
                             break;
                         case "#INPUT-STRING":
                             {
-                                if (_terminal.QuitFlag || !_runtime)
+                                if (_terminal.QuitFlag || UserBreak)
                                     return;
 
-                                var value = ValueBase.GetValueType(_terminal.InputString(""));
+                                var value = new StringValue(_terminal.InputString(""));
 
-                                if (!_terminal.QuitFlag && _runtime)
+                                if (!_terminal.QuitFlag && !UserBreak)
                                     _data.Push(value);
                             }
                             break;
@@ -346,7 +371,7 @@ public class Interpreter
                             _terminal.WriteLine("");
                             break;
                         case "#NEXT-TAB-POSITION":
-                            //_terminal.NextTab(); // TODO
+                            _terminal.Write(new string(' ', 14 - _terminal.OutputColumn % 14));
                             break;
                         case "RND":
                             //ToDo: implement this properly.
@@ -358,7 +383,7 @@ public class Interpreter
                                     _data.Push(new FloatValue(result));
                                 }
                                 else
-                                    Debug.Fail("The stack is empty");
+                                    Fail("The stack is empty");
                             }
                             break;
                         case "SQR":
@@ -371,7 +396,7 @@ public class Interpreter
                                     _data.Push(new FloatValue(result));
                                 }
                                 else
-                                    Debug.Fail("The stack is empty");
+                                    Fail("The stack is empty");
                             }
                             break;
                         case "TAB":
@@ -385,7 +410,7 @@ public class Interpreter
                                     _data.Push(new StringValue(result));
                                 }
                                 else
-                                    Debug.Fail("The stack is empty");
+                                    Fail("The stack is empty");
                             }
                             break;
                         case "#WRITE":
@@ -396,13 +421,12 @@ public class Interpreter
                                     _terminal.Write(value.ToString() ?? "");
                                 }
                                 else
-                                    Debug.Fail("The stack is empty");
+                                    Fail("The stack is empty");
                             }
                             break;
                         default:
                             //todo :error handling.
-                            var forDebugging = 42;
-                            throw new NotImplementedException("The procedure has either not been implemented or there's another bug");
+                            throw new NotImplementedException($"Unsupported BASIC function: {p.Name}");
                     }
                     break;
                 default:
@@ -411,11 +435,11 @@ public class Interpreter
             }
         }
 
-        if (!EndMessageDisplayed && !_empty)
+        if (!EndMessageDisplayed && !_empty && !_terminal.QuitFlag)
         {
-            if (UserBreak) // TODO
+            if (UserBreak)
             {
-                UserBreak = false; // TODO
+                UserBreak = false;
                 End("User break.");
             }
             else if (_runtime)
@@ -427,6 +451,34 @@ public class Interpreter
                 End("");
             }
         }
+    }
+
+    private sealed record LoopFrame(string Symbol, double Limit, double Step, int Start, int End);
+
+    private Dictionary<int, int> MatchLoops()
+    {
+        var pending = new Stack<(int Index, string Symbol)>();
+        var result = new Dictionary<int, int>();
+        for (var i = 0; i < _parseResult.EvalValues.Count; i++)
+        {
+            if (_parseResult.EvalValues[i] is ABL_For start)
+                pending.Push((i, start.Symbol));
+            else if (_parseResult.EvalValues[i] is ABL_Next end)
+            {
+                if (!pending.TryPop(out var loop) || (end.Symbol.Length > 0 && end.Symbol != loop.Symbol))
+                    throw new InvalidOperationException("NEXT without matching FOR.");
+                result.Add(loop.Index, i);
+            }
+        }
+        if (pending.Count > 0) throw new InvalidOperationException("FOR without NEXT.");
+        return result;
+    }
+
+    private static double Number(ValueBase value)
+    {
+        if (value is StringValue || !value.CanGetAsType<FloatValue>())
+            throw new InvalidOperationException("Type mismatch: expected a number.");
+        return (double)value.GetValueAsType<FloatValue>();
     }
 
     void End(string message)

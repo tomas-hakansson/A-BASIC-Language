@@ -1,4 +1,4 @@
-﻿using A_BASIC_Language.Language;
+using A_BASIC_Language.Language;
 using A_BASIC_Language.ValueTypes;
 
 namespace A_BASIC_Language.SpecificExecutors;
@@ -35,8 +35,7 @@ public class FlatVariableExecutor : VariableExecutor
             var value = Data.Pop();
             var symbol = a.Symbol;
 
-            if (!value.FitsInVariable(symbol))
-                End("Type mismatch."); // TODO: Better error message and also line number.
+            value = value.ForVariable(symbol);
 
             _variables[symbol] = value;
         }

@@ -1,4 +1,4 @@
-﻿using A_BASIC_Language.Language;
+using A_BASIC_Language.Language;
 using A_BASIC_Language.ValueTypes;
 
 namespace A_BASIC_Language.SpecificExecutors;
@@ -72,8 +72,7 @@ public class DimExecutor : VariableExecutor
             var value = Data.Pop();
             var symbol = da.Symbol;
 
-            if (!value.FitsInVariable(symbol))
-                End("Type mismatch."); // TODO: Better error message and also line number.
+            value = value.ForVariable(symbol);
 
             var indexCount = (int)Data.Pop().GetValueAsType<IntValue>();
             List<int> index = new();

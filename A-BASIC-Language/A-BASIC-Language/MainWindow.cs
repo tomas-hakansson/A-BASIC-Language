@@ -11,7 +11,7 @@ namespace A_BASIC_Language;
 
 public partial class MainWindow : Form
 {
-    private Language.Interpreter? _eval;
+    private readonly BasicSession _session = new();
     private bool _logVisible;
     private readonly Log _log;
 #if !DEBUG
@@ -26,6 +26,20 @@ public partial class MainWindow : Form
 #endif
         _logVisible = false;
         _log = new Log(lblUserAction, new Font(FontFamily.GenericMonospace, 9, FontStyle.Regular));
+    }
+
+    internal void DisableQuitPrompt()
+    {
+#if !DEBUG
+        _promptQuit = false;
+#endif
+    }
+
+    protected override void OnFormClosed(FormClosedEventArgs e)
+    {
+        _session.Break();
+        terminalMatrixControl1.Quit();
+        base.OnFormClosed(e);
     }
 
     private void MainWindow_Load(object sender, EventArgs e) =>
@@ -97,18 +111,8 @@ public partial class MainWindow : Form
 
         lblUserAction.Text = text;
 
-        if (e.InputValue.Is("run")) //TODO: Need better way to figure out if this is a RUN or not.
-        {
-            var code = terminalMatrixControl1.GetProgramAsString();
-            _eval = new Interpreter(code, true);
-        }
-        else
-        {
-            var code = e.InputValue;
-            _eval = new Interpreter(code, false);
-        }
-
-        _eval.Run(terminalMatrixControl1);
+        _session.Execute(e.InputValue, new TerminalAdapter(terminalMatrixControl1),
+            terminalMatrixControl1.GetProgramAsString, terminalMatrixControl1.List, terminalMatrixControl1.New);
     }
 
     public void CheckResolutionBox()
@@ -128,8 +132,7 @@ public partial class MainWindow : Form
 
         lblUserAction.Text = text;
         
-        if (_eval != null)
-            _eval.UserBreak = true;
+        _session.Break();
     }
 
     private void terminalMatrixControl1_Paint(object sender, PaintEventArgs e)
@@ -220,7 +223,7 @@ public partial class MainWindow : Form
 
         MessageBox.Show(this, $@"ABL - A BASIC Language v{v[0]}.{v[1]}
 
-An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom", @"About ABL", MessageBoxButtons.OK,
+An Altair BASIC player, written by Tomas HÃ¥kansson and Anders Hesselbom", @"About ABL", MessageBoxButtons.OK,
             MessageBoxIcon.Information);
     }
 

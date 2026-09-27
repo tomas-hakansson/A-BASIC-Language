@@ -1,4 +1,4 @@
-﻿using A_BASIC_Language.Language.Parsing;
+using A_BASIC_Language.Language.Parsing;
 
 namespace A_BASIC_Language.Language;
 
@@ -6,9 +6,9 @@ public class Parser
 {
     public ParseResult Result { get; }
 
-    public Parser(string source)
+    public Parser(string source, bool direct = false)
     {
-        var p = new BasicParser(source);
+        var p = new BasicParser(source, direct);
         Result = p.Result;
     }
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace A_BASIC_Language.Language.Parsing;
 
@@ -18,11 +13,13 @@ public class BasicParser
     int _generatedLabel = 0;
     public ParseResult Result { get; }
 
-    public BasicParser(string source)
+    public BasicParser(string source, bool direct = false)
     {
         Result = new ParseResult();
         //Note: Initialisation:
-        _source = source;
+        // Normalize once: every parser routine sees a single newline convention.
+        source = source.Replace("\r\n", "\n").Replace('\r', '\n');
+        _source = direct ? "0 " + source : source;
         _lines = new SortedDictionary<int, List<ABL_EvalValue>>();
         _parseErrors = new List<(int index, string message)>();
 
@@ -32,8 +29,8 @@ public class BasicParser
             AProgram();
             if (_parseErrors.Any())
             {
-                //ToDo: Handle parse errors
                 Result.Success = false;
+                Result.Errors.AddRange(_parseErrors.Select(e => e.message));
             }
             else
             {
@@ -50,37 +47,37 @@ public class BasicParser
                 Result.LabelIndex = labelIndex;
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException or FormatException or OverflowException or IndexOutOfRangeException or NotImplementedException)
         {
-            //this is a bug.
-            var message = ex.Message;
+            Result.Success = false;
+            Result.Errors.Add($"Line {_currentLabel}: {ex.Message}");
         }
     }
 
     //program => line*
     private void AProgram()
     {
-        bool more;
-        do more = ALine();
-        while (more);
-    }
-
-    //line     => aLabel oneOrMoreStatements
-    //line     => aComment
-    //aComment => A valid line of code starts with a positive integer
-    //              followed by a letter, anything else is a comment.
-    bool ALine()
-    {
-        if (!ALabel())
+        while (_index < _source.Length)
         {
-            //this is a comment line. unless last line, skip to next.
-            SkipLine();
-            return _index < _source.Length - 1;
+            SkipWhitespace();
+            if (Maybe('\n'))
+                continue;
+            if (_index >= _source.Length)
+                break;
+            if (!ALabel())
+            {
+                ParseError("Expected a numbered BASIC line");
+                SkipLine();
+                continue;
+            }
+            OneOrMoreStatements();
+            SkipWhitespace();
+            if (_index < _source.Length && _source[_index] != '\n')
+            {
+                ParseError("Unexpected text after statement");
+                SkipLine();
+            }
         }
-
-        OneOrMoreStatements();
-
-        return _index < _source.Length - 1;
     }
 
     bool ALabel()
@@ -132,6 +129,12 @@ public class BasicParser
                 }
                 switch (statement)
                 {
+                    case "FOR":
+                        For();
+                        break;
+                    case "NEXT":
+                        Next();
+                        break;
                     case "DIM":
                         Dim();
                         break;
@@ -177,6 +180,41 @@ public class BasicParser
             Let();
     }
 
+    void For()
+    {
+        var variable = ASetVariable(true);
+        if (!variable.success || variable.dimVariable || variable.typeSpecifier == "$")
+        {
+            ParseError("FOR requires a numeric scalar variable");
+            SkipStatement();
+            return;
+        }
+        if (!Maybe('=')) { ParseError("Expected = after FOR variable"); SkipStatement(); return; }
+        Expression();
+        if (!Maybe("TO")) { ParseError("Expected TO in FOR"); SkipStatement(); return; }
+        Expression();
+        if (Maybe("STEP")) Expression();
+        else Generate(new ABL_Number(1));
+        Generate(new ABL_For(variable.fullName));
+    }
+
+    void Next()
+    {
+        do
+        {
+            var match = VariableRegex().Match(_source, _index);
+            var name = "";
+            if (match.Success)
+            {
+                name = match.Groups["var"].Value;
+                _index += name.Length;
+                if (Maybe('%')) name += "%";
+                SkipWhitespace();
+            }
+            Generate(new ABL_Next(name));
+        } while (Maybe(','));
+    }
+
     //dim => DIM unset-variable ("," unset-variable)*
     void Dim()
     {
@@ -214,8 +252,7 @@ public class BasicParser
         }
         Expression();
         Generate(new ABL_Procedure("GOTO"));
-        if (!_parsingIf)
-            SkipLine();
+
     }
 
     //if         => IF boolean-expr THEN body (ELSE body)?
@@ -305,7 +342,7 @@ public class BasicParser
     }
 
     void ParseError(string message) =>
-        _parseErrors.Add((_index, message));
+        _parseErrors.Add((_index, $"Line {_currentLabel}, column {_index - _source.LastIndexOf('\n', Math.Max(0, _index - 1))}: {message}"));
 
     //Note: Made negative because all valid BASIC labels are positive so there won't be a conflict.
     int GetGeneratedLabel() => --_generatedLabel;
@@ -489,6 +526,7 @@ public class BasicParser
         var shouldPrintNewline = true;
         while (true)
         {
+            var previous = _index;
             if (Maybe(','))
             {
                 Generate(new ABL_Procedure("#NEXT-TAB-POSITION"));
@@ -499,8 +537,8 @@ public class BasicParser
             else if (_parsingIf && Maybe("ELSE", incrementIfFound: false) ||
                      _index >= _source.Length ||//EOF
                      _index < _source.Length//EOS
-                        && _source[_index] == Environment.NewLine[0]
-                        && Maybe(Environment.NewLine) ||
+                        && _source[_index] == '\n'
+                         ||
                      Maybe(':', false))//EOS
                 break;
             else
@@ -508,6 +546,12 @@ public class BasicParser
                 Expression();
                 Generate(new ABL_Procedure("#WRITE"));
                 shouldPrintNewline = true;
+            }
+            if (_index == previous)
+            {
+                ParseError("Expected PRINT expression or separator");
+                SkipStatement();
+                break;
             }
             //If the end of the file is a whitespace, this pushes the _index over EOF.
             if (_index == _source.Length - 1 && char.IsWhiteSpace(_source[_index]))
@@ -556,8 +600,16 @@ public class BasicParser
     }
 
     void Precedence_2_Operator()
-    {//todo: negation
-        Precedence_1_Operator();
+    {
+        if (Maybe('-'))
+        {
+            Precedence_2_Operator();
+            Generate(new ABL_Procedure("#NEGATE"));
+        }
+        else if (Maybe('+'))
+            Precedence_2_Operator();
+        else
+            Precedence_1_Operator();
     }
 
     void Precedence_1_Operator()
@@ -565,14 +617,19 @@ public class BasicParser
         Atom();
         while (Maybe('^'))
         {
-            //exponentiate
-            Atom();
+            // Exponentiation binds more tightly than unary minus.
+            Precedence_2_Operator();
             Generate(new ABL_Procedure("^"));
         }
     }
 
     void Atom()
     {//Note: This method is Factor in Crenshaw's book.
+        if (_index >= _source.Length || _source[_index] == '\n')
+        {
+            ParseError("Expected an expression");
+            return;
+        }
         if (Maybe('('))
         {
             Expression();
@@ -634,7 +691,8 @@ public class BasicParser
             }
             else
             {
-                //ToDo: Handle error.
+                ParseError("Unterminated string");
+                SkipStatement();
             }
             return;
         }
@@ -700,47 +758,12 @@ public class BasicParser
     // ANumber => digit* '.'? digit+
     string ANumber()
     {
-        var result = string.Empty;
-        var cc = _source[_index];
-
-        while (char.IsDigit(cc))
-        {
-            result += cc;
-            _index++;
-
-            // Note: Checks for eos.
-            if (_index >= _source.Length)
-                break;
-            cc = _source[_index];
-        }
-
+        var match = Regex.Match(_source[_index..], @"^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[Ee][+-]?[0-9]+)?");
+        if (!match.Success)
+            return "";
+        _index += match.Length;
         SkipWhitespace();
-
-        if (cc == '.')
-        {
-            result += cc;
-            _index++;
-
-            SkipWhitespace();
-
-            // Note: Checks for eos.
-            if (_index >= _source.Length)
-                return string.Empty;
-            cc = _source[_index];
-            if (!char.IsDigit(cc))
-                return string.Empty;
-            while (char.IsDigit(cc))
-            {
-                result += cc;
-                _index++;
-
-                // Note: Checks for eos.
-                if (_index >= _source.Length)
-                    break;
-                cc = _source[_index];
-            }
-        }
-        return result;
+        return match.Value;
     }
 
     bool AString(out string value)
@@ -784,48 +807,28 @@ public class BasicParser
     /// </summary>
     void SkipWhitespace()
     {
-        var index = GetNextNonWhitespaceIndex();
-        if (index != -1)
-            _index = index;
+        while (_index < _source.Length && _source[_index] != '\n' && char.IsWhiteSpace(_source[_index]))
+            _index++;
     }
 
     int GetNextNonWhitespaceIndex(int? startAt = null)
     {
-        startAt ??= _index;
-        if (startAt >= _source.Length - 1)
-            return -1;
-        for (; startAt.Value < _source.Length; startAt++)
-        {
-            var cc = _source[startAt.Value];
-
-            if (!char.IsWhiteSpace(cc) ||
-                cc == Environment.NewLine[0] && Maybe(Environment.NewLine, false))
-                return startAt.Value;
-        }
-        return -1;
+        var index = startAt ?? _index;
+        while (index < _source.Length && _source[index] != '\n' && char.IsWhiteSpace(_source[index]))
+            index++;
+        return index < _source.Length ? index : -1;
     }
 
     void SkipStatement()
     {
-        for (; _index < _source.Length; _index++)
-        {
-            if (_index >= _source.Length - 1 ||//EOF.
-                _source[_index] == Environment.NewLine[0] && Maybe(Environment.NewLine) ||//Just after newline.
-                Maybe(':', false))//New statement.
-                break;
-        }
+        while (_index < _source.Length && _source[_index] != '\n' && _source[_index] != ':')
+            _index++;
     }
 
     void SkipLine()
     {
-        for (; _index < _source.Length; _index++)
-        {
-            if (_index >= _source.Length - 1)
-                break;
-            var cc = _source[_index];
-            if (cc == Environment.NewLine[0] && Maybe(Environment.NewLine))
-                break;
-        }
+        while (_index < _source.Length && _source[_index] != '\n')
+            _index++;
     }
 
     /// <summary>
@@ -845,7 +848,7 @@ public class BasicParser
             var match = isValue.Groups.Cast<Group>().First(g => g.Name == "value");
             if (incrementIfFound)
                 _index += match.Length;
-            if (skipWhitespace)
+            if (skipWhitespace && incrementIfFound)
                 SkipWhitespace();
             return match.Success;
         }
@@ -865,7 +868,8 @@ public class BasicParser
         {
             if (incrementIfFound)
                 _index++;
-            SkipWhitespace();
+            if (incrementIfFound)
+                SkipWhitespace();
             return true;
         }
         return false;
@@ -874,7 +878,7 @@ public class BasicParser
     bool OneOf(out string outValue, params string[] values)
     {
         outValue = string.Empty;
-        var orderedValues = values.OrderByDescending(v => v);
+        var orderedValues = values.OrderByDescending(v => v.Length);
         foreach (var value in orderedValues)
         {
             if (value.Length == 1)
@@ -895,7 +899,7 @@ public class BasicParser
     }
 
     static Regex StatementRegex() =>
-        new(@"\G(?<statement>DIM|END|GO|IF|INPUT|LET|PRINT|REM|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>FOR|NEXT|DIM|END|GO|IF|INPUT|LET|PRINT|REM|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

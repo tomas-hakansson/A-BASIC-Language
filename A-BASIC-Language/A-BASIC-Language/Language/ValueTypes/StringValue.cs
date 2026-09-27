@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 
 namespace A_BASIC_Language.ValueTypes;
 
@@ -37,7 +37,7 @@ public class StringValue : ValueBase
         if (typeof(T) == typeof(FloatValue))
             return double.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out _);
 
-        throw new SystemException("What?!");
+        throw new InvalidOperationException("What?!");
     }
 
     public override object GetValueAsType<T>()
@@ -57,7 +57,7 @@ public class StringValue : ValueBase
         if (typeof(T) == typeof(FloatValue) && double.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var d2))
             return d2;
 
-        throw new SystemException("What?!");
+        throw new InvalidOperationException("What?!");
     }
 
     public override bool TryGetAsFloatValue(out FloatValue value)
