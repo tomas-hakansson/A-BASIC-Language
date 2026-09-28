@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Reflection;
+using A_BASIC_Language.Games;
 using A_BASIC_Language.Gui;
 using A_BASIC_Language.Gui.Dialogs;
 using A_BASIC_Language.Language;
@@ -131,7 +132,7 @@ public partial class MainWindow : Form
             _log.Write(text);
 
         lblUserAction.Text = text;
-        
+
         _session.Break();
     }
 
@@ -248,7 +249,7 @@ An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom", @"Abo
     {
         using var x = new OptionsDialog();
         x.Resolution = terminalMatrixControl1.Resolution;
-        
+
         if (x.ShowDialog(this) != DialogResult.OK)
             return;
 
@@ -261,4 +262,13 @@ An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom", @"Abo
 
     private void btnOptions_Click(object sender, EventArgs e) =>
         optionsToolStripMenuItem_Click(sender, e);
+
+    private void LoadProgram(string source)
+    {
+        terminalMatrixControl1.ProgramLines.Clear();
+        terminalMatrixControl1.SetProgramLines(source);
+    }
+
+    private void aceyDuceyToolStripMenuItem_Click(object sender, EventArgs e) =>
+        LoadProgram(BasicPrograms.AceyDucey);
 }

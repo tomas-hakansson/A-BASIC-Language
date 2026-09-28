@@ -32,26 +32,29 @@
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             exitToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem1 = new ToolStripSeparator();
             viewToolStripMenuItem = new ToolStripMenuItem();
             fullscreenToolStripMenuItem = new ToolStripMenuItem();
             debugOutputToolStripMenuItem = new ToolStripMenuItem();
             resolutionToolStripMenuItem = new ToolStripMenuItem();
             highQualityRenderingToolStripMenuItem = new ToolStripMenuItem();
+            toolsToolStripMenuItem = new ToolStripMenuItem();
+            optionsToolStripMenuItem = new ToolStripMenuItem();
             helpToolStripMenuItem = new ToolStripMenuItem();
             onlineHelpToolStripMenuItem = new ToolStripMenuItem();
             versionHistoryToolStripMenuItem = new ToolStripMenuItem();
             aboutToolStripMenuItem = new ToolStripMenuItem();
             toolStrip1 = new ToolStrip();
             btnDebug = new ToolStripButton();
+            toolStripSeparator1 = new ToolStripSeparator();
+            btnOptions = new ToolStripButton();
             statusStrip1 = new StatusStrip();
             lblCursPos = new ToolStripStatusLabel();
             toolStripStatusLabel1 = new ToolStripStatusLabel();
             lblUserAction = new ToolStripStatusLabel();
             terminalMatrixControl1 = new TerminalMatrix.TerminalMatrixControl();
-            toolsToolStripMenuItem = new ToolStripMenuItem();
-            optionsToolStripMenuItem = new ToolStripMenuItem();
-            toolStripSeparator1 = new ToolStripSeparator();
-            btnOptions = new ToolStripButton();
+            openFrom101BASICComputerGamesToolStripMenuItem = new ToolStripMenuItem();
+            aceyDuceyToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
@@ -68,7 +71,7 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { exitToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { exitToolStripMenuItem, toolStripMenuItem1, openFrom101BASICComputerGamesToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 20);
             fileToolStripMenuItem.Text = "&File";
@@ -76,9 +79,14 @@
             // exitToolStripMenuItem
             // 
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(180, 22);
+            exitToolStripMenuItem.Size = new Size(284, 22);
             exitToolStripMenuItem.Text = "&Exit";
             exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
+            // 
+            // toolStripMenuItem1
+            // 
+            toolStripMenuItem1.Name = "toolStripMenuItem1";
+            toolStripMenuItem1.Size = new Size(281, 6);
             // 
             // viewToolStripMenuItem
             // 
@@ -116,6 +124,21 @@
             highQualityRenderingToolStripMenuItem.Size = new Size(193, 22);
             highQualityRenderingToolStripMenuItem.Text = "High quality rendering";
             highQualityRenderingToolStripMenuItem.Click += highQualityRenderingToolStripMenuItem_Click;
+            // 
+            // toolsToolStripMenuItem
+            // 
+            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { optionsToolStripMenuItem });
+            toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            toolsToolStripMenuItem.Size = new Size(47, 20);
+            toolsToolStripMenuItem.Text = "&Tools";
+            // 
+            // optionsToolStripMenuItem
+            // 
+            optionsToolStripMenuItem.Image = Properties.Resources.settings;
+            optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            optionsToolStripMenuItem.Size = new Size(125, 22);
+            optionsToolStripMenuItem.Text = "Options...";
+            optionsToolStripMenuItem.Click += optionsToolStripMenuItem_Click;
             // 
             // helpToolStripMenuItem
             // 
@@ -164,6 +187,21 @@
             btnDebug.Size = new Size(23, 22);
             btnDebug.Text = "Debug output";
             btnDebug.Click += btnDebug_Click;
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(6, 25);
+            // 
+            // btnOptions
+            // 
+            btnOptions.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnOptions.Image = Properties.Resources.settings;
+            btnOptions.ImageTransparentColor = Color.Magenta;
+            btnOptions.Name = "btnOptions";
+            btnOptions.Size = new Size(23, 22);
+            btnOptions.Text = "Options...";
+            btnOptions.Click += btnOptions_Click;
             // 
             // statusStrip1
             // 
@@ -219,35 +257,19 @@
             terminalMatrixControl1.Paint += terminalMatrixControl1_Paint;
             terminalMatrixControl1.Leave += terminalMatrixControl1_Leave;
             // 
-            // toolsToolStripMenuItem
+            // openFrom101BASICComputerGamesToolStripMenuItem
             // 
-            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { optionsToolStripMenuItem });
-            toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            toolsToolStripMenuItem.Size = new Size(46, 20);
-            toolsToolStripMenuItem.Text = "&Tools";
+            openFrom101BASICComputerGamesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { aceyDuceyToolStripMenuItem });
+            openFrom101BASICComputerGamesToolStripMenuItem.Name = "openFrom101BASICComputerGamesToolStripMenuItem";
+            openFrom101BASICComputerGamesToolStripMenuItem.Size = new Size(284, 22);
+            openFrom101BASICComputerGamesToolStripMenuItem.Text = "Open from 101 BASIC Computer Games";
             // 
-            // optionsToolStripMenuItem
+            // aceyDuceyToolStripMenuItem
             // 
-            optionsToolStripMenuItem.Image = Properties.Resources.settings;
-            optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            optionsToolStripMenuItem.Size = new Size(180, 22);
-            optionsToolStripMenuItem.Text = "Options...";
-            optionsToolStripMenuItem.Click += optionsToolStripMenuItem_Click;
-            // 
-            // toolStripSeparator1
-            // 
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(6, 25);
-            // 
-            // btnOptions
-            // 
-            btnOptions.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnOptions.Image = Properties.Resources.settings;
-            btnOptions.ImageTransparentColor = Color.Magenta;
-            btnOptions.Name = "btnOptions";
-            btnOptions.Size = new Size(23, 22);
-            btnOptions.Text = "Options...";
-            btnOptions.Click += btnOptions_Click;
+            aceyDuceyToolStripMenuItem.Name = "aceyDuceyToolStripMenuItem";
+            aceyDuceyToolStripMenuItem.Size = new Size(180, 22);
+            aceyDuceyToolStripMenuItem.Text = "Acey-Ducey";
+            aceyDuceyToolStripMenuItem.Click += aceyDuceyToolStripMenuItem_Click;
             // 
             // MainWindow
             // 
@@ -300,5 +322,8 @@
         private ToolStripMenuItem optionsToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripButton btnOptions;
+        private ToolStripSeparator toolStripMenuItem1;
+        private ToolStripMenuItem openFrom101BASICComputerGamesToolStripMenuItem;
+        private ToolStripMenuItem aceyDuceyToolStripMenuItem;
     }
 }
