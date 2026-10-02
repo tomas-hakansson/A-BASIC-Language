@@ -1,4 +1,6 @@
-﻿namespace A_BASIC_Language.Stage1;
+﻿using System.Collections.Generic;
+
+namespace A_BASIC_Language.Stage1;
 
 internal class ReservedWords
 {

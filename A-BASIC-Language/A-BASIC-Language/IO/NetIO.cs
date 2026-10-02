@@ -1,4 +1,10 @@
-﻿namespace A_BASIC_Language.IO;
+﻿#nullable enable
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Windows.Forms;
+
+namespace A_BASIC_Language.IO;
 
 public class NetIo : IoBase
 {
@@ -8,7 +14,7 @@ public class NetIo : IoBase
 
     public override string GetNameOnly() =>
         Filename.Contains('/')
-            ? Filename.Split("/").LastOrDefault() ?? ""
+            ? Filename.Split('/').LastOrDefault() ?? ""
             : Filename;
 
     public override LoadResult Load()
@@ -23,7 +29,7 @@ public class NetIo : IoBase
                 Application.DoEvents();
             }
 
-            if (token.IsCompletedSuccessfully)
+            if (token.IsCompleted && !token.IsFaulted)
             {
                 var response = token.Result;
                 

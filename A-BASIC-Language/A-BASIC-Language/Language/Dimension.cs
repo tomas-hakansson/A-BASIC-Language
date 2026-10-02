@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using A_BASIC_Language.Language.ValueTypes;
 using A_BASIC_Language.ValueTypes;
 
 namespace A_BASIC_Language.Language;
@@ -21,22 +25,26 @@ public class Dimension
         //Ponder: Maybe have an optimisation that skips all the machinery for one-dimensional arrays?
         //Hack: I first wrote the code under the assumption that the constructor would be given the shape as argument.
         var bounds = maxIndices.ToArray();
+
         if (bounds.Length == 0 || bounds.Any(x => x < 0))
             throw new ArgumentException("Invalid array dimensions.");
-        var shape = bounds.Select(x => checked(x + 1)).ToList();
+        
+        var shape = new IntegerList(bounds.Select(x => checked(x + 1)).ToList());
         _shape = shape.ToArray();
         _atoms = new ValueBase[shape.Aggregate((x, y) => checked(x * y))];
-
-        Array.Fill(_atoms, defaultValue);
-
+        Fill(ref _atoms, defaultValue);
         IndexCount = shape.Count;
-
         _multipliers = new int[IndexCount];
-
         _multipliers[IndexCount - 1] = 1;
 
         for (int i = 1, j = IndexCount - 2; i < IndexCount; i++, j--)
             _multipliers[j] = shape.TakeLast(i).Aggregate((x, y) => x * y);
+    }
+
+    private static void Fill(ref ValueBase[] array, ValueBase value)
+    {
+        for (var i = 0; i < array.Length; i++)
+            array[i] = value;
     }
 
     /// <summary>
@@ -72,18 +80,23 @@ public class Dimension
     public ValueBase Get(List<int> indices) =>
         _atoms[ToOneDimensionalIndex(indices)];
 
-    int ToOneDimensionalIndex(IEnumerable<int> indices)
+    private int ToOneDimensionalIndex(IEnumerable<int> indices)
     {
         var subscripts = indices.ToArray();
+        
         if (subscripts.Length != IndexCount)
             throw new ArgumentException("Wrong number of array subscripts.");
+        
         var offset = 0;
+        
         for (var i = 0; i < IndexCount; i++)
         {
             if (subscripts[i] < 0 || subscripts[i] >= _shape[i])
-                throw new ArgumentOutOfRangeException(nameof(indices), "Array subscript out of range.");
+                throw new ArgumentOutOfRangeException(nameof(indices), @"Array subscript out of range.");
+            
             offset += subscripts[i] * _multipliers[i];
         }
+
         return offset;
     }
 }

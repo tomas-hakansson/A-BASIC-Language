@@ -1,4 +1,6 @@
-﻿using A_BASIC_Language.Language;
+﻿using System;
+using System.Collections.Generic;
+using A_BASIC_Language.Language;
 using A_BASIC_Language.Stage1;
 
 namespace A_BASIC_Language.Stage2;

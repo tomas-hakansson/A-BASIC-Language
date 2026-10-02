@@ -1,37 +1,158 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E53E225A-6F21-403B-AF6B-0D76D8D974CA}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
     <RootNamespace>A_BASIC_Language</RootNamespace>
-    <Nullable>enable</Nullable>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <ApplicationIcon>program_icon.ico</ApplicationIcon>
-    <Copyright>Tomas Håkansson, Anders Hesselbom</Copyright>
+    <AssemblyName>A-BASIC-Language</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
-
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
   <ItemGroup>
-    <Content Include="program_icon.ico" />
+    <Reference Include="PixelmapLibraryNetFramework, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TerminalMatrixNetFramework.1.0.0\lib\net48\PixelmapLibraryNetFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TerminalMatrixNetFramework, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TerminalMatrixNetFramework.1.0.0\lib\net48\TerminalMatrixNetFramework.dll</HintPath>
+    </Reference>
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="TerminalMatrix" Version="2.7.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
+    <Compile Include="BasicProgram.cs" />
+    <Compile Include="Games\BasicPrograms.cs" />
+    <Compile Include="Games\GamesList.cs" />
+    <Compile Include="Gui\Dialogs\OptionsDialog.cs" />
+    <Compile Include="Gui\Dialogs\OptionsDialog.Designer.cs">
+      <DependentUpon>OptionsDialog.cs</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
+    <Compile Include="Gui\MsgBox.cs" />
+    <Compile Include="Gui\PreProcessor\PreProcessorParser.cs" />
+    <Compile Include="Gui\PreProcessor\PreProcessorParserResult.cs" />
+    <Compile Include="Gui\StartScreen.cs" />
+    <Compile Include="Gui\TerminalResolution.cs" />
+    <Compile Include="Gui\TerminalResolutionList.cs" />
+    <Compile Include="Gui\UserControls\TerminalResolutionComboBox.cs" />
+    <Compile Include="IntegerList.cs" />
+    <Compile Include="IO\Dispatcher.cs" />
+    <Compile Include="IO\FileIO.cs" />
+    <Compile Include="IO\IOBase.cs" />
+    <Compile Include="IO\LoadResult.cs" />
+    <Compile Include="IO\NetIO.cs" />
+    <Compile Include="IO\ProgramRepository.cs" />
+    <Compile Include="Language\ABL_EvalValue.cs" />
+    <Compile Include="Language\ABL_Label.cs" />
+    <Compile Include="Language\BasicSession.cs" />
+    <Compile Include="Language\Dimension.cs" />
+    <Compile Include="Language\IBasicTerminal.cs" />
+    <Compile Include="Language\Interpreter.cs" />
+    <Compile Include="Language\LoopInstructions.cs" />
+    <Compile Include="Language\Parser.cs" />
+    <Compile Include="Language\ParseResult.cs" />
+    <Compile Include="Language\Parsing\BasicParser.cs" />
+    <Compile Include="Language\PrintThe.cs" />
+    <Compile Include="Language\RuntimeState.cs" />
+    <Compile Include="Language\SpecificExecutors\AddExecutor.cs" />
+    <Compile Include="Language\SpecificExecutors\ComparisonExecutor.cs" />
+    <Compile Include="Language\SpecificExecutors\DimExecutor.cs" />
+    <Compile Include="Language\SpecificExecutors\FlatVariableExecutor.cs" />
+    <Compile Include="Language\SpecificExecutors\ISubExecutor.cs" />
+    <Compile Include="Language\SpecificExecutors\SubtractExecutor.cs" />
+    <Compile Include="Language\SpecificExecutors\VariableExecutor.cs" />
+    <Compile Include="Language\Stage1\ReservedWords.cs" />
+    <Compile Include="Language\Stage1\Tokenizer.cs" />
+    <Compile Include="Language\Stage1\TokenizeResult.cs" />
+    <Compile Include="Language\Stage1\TokenType.cs" />
+    <Compile Include="Language\Stage2\Parser.cs" />
+    <Compile Include="Language\Stage2\ParseResult.cs" />
+    <Compile Include="Language\TerminalAdapter.cs" />
+    <Compile Include="Language\ValueTypes\FloatValue.cs" />
+    <Compile Include="Language\ValueTypes\IntValue.cs" />
+    <Compile Include="Language\ValueTypes\StringValue.cs" />
+    <Compile Include="Language\ValueTypes\ValueBase.cs" />
+    <Compile Include="Log.cs" />
+    <Compile Include="MainWindow.cs" />
+    <Compile Include="MainWindow.Designer.cs">
+      <DependentUpon>MainWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainWindowControllers\FullScreenController.cs" />
+    <Compile Include="MainWindowControllers\PreProcessorController.cs" />
+    <Compile Include="MainWindowControllers\WindowConfigurator.cs" />
+    <Compile Include="PendingSymbolsStack.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="ProgramCacheDictionary.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StringManipulation\StringExtensions.cs" />
+    <EmbeddedResource Include="Gui\Dialogs\OptionsDialog.resx">
+      <DependentUpon>OptionsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainWindow.resx">
+      <DependentUpon>MainWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
   </ItemGroup>
-
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\debug.png" />
+    <Content Include="Resources\settings.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

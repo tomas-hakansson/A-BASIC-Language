@@ -1,11 +1,14 @@
+using System;
+using System.Collections.Generic;
 using A_BASIC_Language.Language;
+using A_BASIC_Language.Language.ValueTypes;
 using A_BASIC_Language.ValueTypes;
 
 namespace A_BASIC_Language.SpecificExecutors;
 
 public class FlatVariableExecutor : VariableExecutor
 {
-    private readonly Dictionary<string, ValueBase?> _variables;
+    private readonly Dictionary<string, ValueBase> _variables;
 
     public FlatVariableExecutor(Stack<ValueBase> data, Action<string> end, Dictionary<string, ValueBase?> variables) : base(data, end)
     {

@@ -1,4 +1,6 @@
-﻿using TerminalMatrix;
+﻿using System;
+using System.Windows.Forms;
+using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language.Gui.Dialogs;
 

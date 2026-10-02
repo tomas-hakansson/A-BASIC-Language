@@ -1,4 +1,7 @@
-﻿namespace A_BASIC_Language.MainWindowControllers;
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace A_BASIC_Language.MainWindowControllers;
 
 public class FullScreenController
 {

@@ -1,4 +1,6 @@
-﻿namespace A_BASIC_Language.Games;
+﻿using System.Collections.Generic;
+
+namespace A_BASIC_Language.Games;
 
 public class GamesList : List<string>
 {

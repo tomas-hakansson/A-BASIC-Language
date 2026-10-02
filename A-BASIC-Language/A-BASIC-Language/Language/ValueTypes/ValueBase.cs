@@ -1,6 +1,10 @@
+#nullable enable
+using System;
 using System.Globalization;
+using System.Linq;
+using A_BASIC_Language.ValueTypes;
 
-namespace A_BASIC_Language.ValueTypes;
+namespace A_BASIC_Language.Language.ValueTypes;
 
 public abstract class ValueBase
 {
@@ -17,7 +21,7 @@ public abstract class ValueBase
 
     public static ValueBase GetValueType(string value)
     {
-        if (value.Contains('.') && double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var f))
+        if (value.Contains(".") && double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var f))
             return GetValueType(f);
 
         if (int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var i))
@@ -52,7 +56,7 @@ public abstract class ValueBase
         IsName(symbol, out _) && symbol.EndsWith("%");
 
     internal static bool VariableIsDeclaredAsFloat(string symbol) =>
-        IsName(symbol, out var n) && MiddleCharacterOfName.Contains(n[^1]);
+        IsName(symbol, out var n) && MiddleCharacterOfName.Contains(n[n.Length - 1]);
 
     static bool IsName(string symbol, out string symbolName)
     {
@@ -64,7 +68,7 @@ public abstract class ValueBase
         if (!FirstCharacterOfName.Contains(symbolName[0]))
             return false;
 
-        if (!LastCharacterOfName.Contains(symbolName[^1]))
+        if (!LastCharacterOfName.Contains(symbolName[symbolName.Length - 1]))
             return false;
 
         return true;
@@ -108,6 +112,7 @@ public abstract class ValueBase
 
     static bool GreaterThan(StringValue x, StringValue y) =>
         throw new NotImplementedException();//ToDo: Check how this works in BASIC.
+
     static bool GreaterThan(StringValue x, FloatValue y) => x.TryGetAsFloatValue(out var nx) && GreaterThan(nx, y);
     static bool GreaterThan(StringValue x, IntValue y) => x.TryGetAsIntValue(out var nx) && GreaterThan(nx, y);
 

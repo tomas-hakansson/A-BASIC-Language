@@ -1,4 +1,6 @@
-﻿namespace A_BASIC_Language.IO;
+﻿using System;
+
+namespace A_BASIC_Language.IO;
 
 public class Dispatcher
 {

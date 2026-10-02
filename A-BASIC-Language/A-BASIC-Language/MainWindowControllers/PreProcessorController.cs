@@ -1,6 +1,8 @@
+using System;
+using System.Linq;
 using A_BASIC_Language.Gui.PreProcessor;
 using A_BASIC_Language.StringManipulation;
-using TerminalMatrix;
+using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language.MainWindowControllers;
 
@@ -18,7 +20,7 @@ public class PreProcessorController
     public void Run(string preProcessor, out bool quitFlag)
     {
         quitFlag = false;
-        preProcessor = preProcessor[1..].Trim();
+        preProcessor = preProcessor.First().ToString();
 
         if (preProcessor.IsEmpty())
         {
@@ -61,7 +63,7 @@ public class PreProcessorController
                     _owner.ToggleFullscreen(false);
                 break;
             case PreProcessorParserResult.ToggleLog:
-                _owner.debugOutputToolStripMenuItem_Click(this, EventArgs.Empty);
+                _owner.debugOutputToolStripMenuItem_Click(this, new EventArgs());
                 break;
             case PreProcessorParserResult.LogOn:
                 if (_owner.debugOutputToolStripMenuItem.Checked)

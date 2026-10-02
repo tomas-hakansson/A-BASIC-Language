@@ -1,4 +1,7 @@
-﻿using TerminalMatrix;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language.Gui;
 

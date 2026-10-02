@@ -1,7 +1,11 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using A_BASIC_Language.Language.ValueTypes;
 using A_BASIC_Language.SpecificExecutors;
 using A_BASIC_Language.StringManipulation;
 using A_BASIC_Language.ValueTypes;
-using TerminalMatrix;
+using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language.Language;
 
@@ -12,7 +16,7 @@ public class Interpreter
     const string TheProgramHasEnded = "The program has ended";
     IBasicTerminal? _terminal;
     readonly ParseResult _parseResult;
-    readonly Dictionary<string, ValueBase?> _variables;//Ponder: do the value need to be nullable?
+    readonly Dictionary<string, ValueBase>? _variables;//Ponder: do the value need to be nullable?
     readonly Dictionary<string, Dimension> _dimVariables;
     readonly Stack<ValueBase> _data;
     bool EndMessageDisplayed { get; set; }
@@ -26,8 +30,7 @@ public class Interpreter
         _empty = string.IsNullOrWhiteSpace(source);
         var parser = new Parser(source, direct: !runtime);
         _parseResult = parser.Result;
-
-        _variables = (state ??= new RuntimeState()).Variables;
+        _variables = state == null ? new Dictionary<string, ValueBase>() : state.Variables;
         _dimVariables = state.Arrays;
         _data = new Stack<ValueBase>();
         _random = new Random();
@@ -39,6 +42,7 @@ public class Interpreter
     public void Run(IBasicTerminal terminal)
     {
         _terminal = terminal;
+
         if (!_parseResult.Success)
         {
             End("?Syntax error: " + string.Join("; ", _parseResult.Errors));
@@ -56,7 +60,8 @@ public class Interpreter
         }
     }
 
-    private void Fail(string message) => throw new InvalidOperationException(message);
+    private void Fail(string message) =>
+        throw new InvalidOperationException(message);
 
     void Eval()
     {
@@ -70,7 +75,7 @@ public class Interpreter
         var addExecutor = new AddExecutor(_data);
         var subtractExecutor = new SubtractExecutor(_data);
         var comparisonExecutor = new ComparisonExecutor(_data);
-        var flatVariableExecutor = new FlatVariableExecutor(_data, Fail, _variables);
+        var flatVariableExecutor = new FlatVariableExecutor(_data, Fail, _variables ?? new Dictionary<string, ValueBase>());
         var dimExecutor = new DimExecutor(_data, Fail, _dimVariables);
 
         _terminal.PumpEvents();
@@ -455,24 +460,50 @@ public class Interpreter
         }
     }
 
-    private sealed record LoopFrame(string Symbol, double Limit, double Step, int Start, int End);
+    //private sealed record LoopFrame(string Symbol, double Limit, double Step, int Start, int End);
+
+    private sealed record LoopFrame
+    {
+        public string Symbol { get; }
+        public double Limit { get; }
+        public double Step { get; }
+        public int Start { get; }
+        public int End { get; }
+
+        public LoopFrame(string symbol, double limit, double step, int start, int end)
+        {
+            Symbol = symbol;
+            Limit = limit;
+            Step = step;
+            Start = start;
+            End = end;
+        }
+    }
+
 
     private Dictionary<int, int> MatchLoops()
     {
-        var pending = new Stack<(int Index, string Symbol)>();
+        var pending = new PendingSymbolsStack();
         var result = new Dictionary<int, int>();
+
         for (var i = 0; i < _parseResult.EvalValues.Count; i++)
         {
             if (_parseResult.EvalValues[i] is ABL_For start)
+            {
                 pending.Push((i, start.Symbol));
+            }
             else if (_parseResult.EvalValues[i] is ABL_Next end)
             {
                 if (!pending.TryPop(out var loop) || (end.Symbol.Length > 0 && end.Symbol != loop.Symbol))
                     throw new InvalidOperationException("NEXT without matching FOR.");
+
                 result.Add(loop.Index, i);
             }
         }
-        if (pending.Count > 0) throw new InvalidOperationException("FOR without NEXT.");
+
+        if (pending.Count > 0)
+            throw new InvalidOperationException("FOR without NEXT.");
+
         return result;
     }
 
@@ -480,6 +511,7 @@ public class Interpreter
     {
         if (value is StringValue || !value.CanGetAsType<FloatValue>())
             throw new InvalidOperationException("Type mismatch: expected a number.");
+
         return (double)value.GetValueAsType<FloatValue>();
     }
 

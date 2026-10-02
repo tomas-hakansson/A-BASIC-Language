@@ -1,4 +1,7 @@
-﻿namespace A_BASIC_Language
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace A_BASIC_Language
 {
     partial class MainWindow
     {
@@ -29,272 +32,297 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            menuStrip1 = new MenuStrip();
-            fileToolStripMenuItem = new ToolStripMenuItem();
-            exitToolStripMenuItem = new ToolStripMenuItem();
-            toolStripMenuItem1 = new ToolStripSeparator();
-            viewToolStripMenuItem = new ToolStripMenuItem();
-            fullscreenToolStripMenuItem = new ToolStripMenuItem();
-            debugOutputToolStripMenuItem = new ToolStripMenuItem();
-            resolutionToolStripMenuItem = new ToolStripMenuItem();
-            highQualityRenderingToolStripMenuItem = new ToolStripMenuItem();
-            toolsToolStripMenuItem = new ToolStripMenuItem();
-            optionsToolStripMenuItem = new ToolStripMenuItem();
-            helpToolStripMenuItem = new ToolStripMenuItem();
-            onlineHelpToolStripMenuItem = new ToolStripMenuItem();
-            versionHistoryToolStripMenuItem = new ToolStripMenuItem();
-            aboutToolStripMenuItem = new ToolStripMenuItem();
-            toolStrip1 = new ToolStrip();
-            btnDebug = new ToolStripButton();
-            toolStripSeparator1 = new ToolStripSeparator();
-            btnOptions = new ToolStripButton();
-            statusStrip1 = new StatusStrip();
-            lblCursPos = new ToolStripStatusLabel();
-            toolStripStatusLabel1 = new ToolStripStatusLabel();
-            lblUserAction = new ToolStripStatusLabel();
-            terminalMatrixControl1 = new TerminalMatrix.TerminalMatrixControl();
-            openFrom101BASICComputerGamesToolStripMenuItem = new ToolStripMenuItem();
-            aceyDuceyToolStripMenuItem = new ToolStripMenuItem();
-            menuStrip1.SuspendLayout();
-            toolStrip1.SuspendLayout();
-            statusStrip1.SuspendLayout();
-            SuspendLayout();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.openFrom101BASICComputerGamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aceyDuceyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fullscreenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.debugOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resolutionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.highQualityRenderingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.onlineHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.versionHistoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.btnDebug = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnOptions = new System.Windows.Forms.ToolStripButton();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.lblCursPos = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblUserAction = new System.Windows.Forms.ToolStripStatusLabel();
+            this.terminalMatrixControl1 = new TerminalMatrixNetFramework.TerminalMatrixControl();
+            this.menuStrip1.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
+            this.SuspendLayout();
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, viewToolStripMenuItem, toolsToolStripMenuItem, helpToolStripMenuItem });
-            menuStrip1.Location = new Point(0, 0);
-            menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(917, 24);
-            menuStrip1.TabIndex = 1;
-            menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.viewToolStripMenuItem,
+            this.toolsToolStripMenuItem,
+            this.helpToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(786, 24);
+            this.menuStrip1.TabIndex = 1;
+            this.menuStrip1.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { exitToolStripMenuItem, toolStripMenuItem1, openFrom101BASICComputerGamesToolStripMenuItem });
-            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            fileToolStripMenuItem.Size = new Size(37, 20);
-            fileToolStripMenuItem.Text = "&File";
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exitToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.openFrom101BASICComputerGamesToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "&File";
             // 
             // exitToolStripMenuItem
             // 
-            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(284, 22);
-            exitToolStripMenuItem.Text = "&Exit";
-            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(284, 22);
+            this.exitToolStripMenuItem.Text = "&Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
-            toolStripMenuItem1.Name = "toolStripMenuItem1";
-            toolStripMenuItem1.Size = new Size(281, 6);
-            // 
-            // viewToolStripMenuItem
-            // 
-            viewToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { fullscreenToolStripMenuItem, debugOutputToolStripMenuItem, resolutionToolStripMenuItem, highQualityRenderingToolStripMenuItem });
-            viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            viewToolStripMenuItem.Size = new Size(44, 20);
-            viewToolStripMenuItem.Text = "&View";
-            // 
-            // fullscreenToolStripMenuItem
-            // 
-            fullscreenToolStripMenuItem.Name = "fullscreenToolStripMenuItem";
-            fullscreenToolStripMenuItem.Size = new Size(193, 22);
-            fullscreenToolStripMenuItem.Text = "Fullscreen";
-            fullscreenToolStripMenuItem.Click += fullscreenToolStripMenuItem_Click;
-            // 
-            // debugOutputToolStripMenuItem
-            // 
-            debugOutputToolStripMenuItem.Image = Properties.Resources.debug;
-            debugOutputToolStripMenuItem.Name = "debugOutputToolStripMenuItem";
-            debugOutputToolStripMenuItem.Size = new Size(193, 22);
-            debugOutputToolStripMenuItem.Text = "Debug output";
-            debugOutputToolStripMenuItem.Click += debugOutputToolStripMenuItem_Click;
-            // 
-            // resolutionToolStripMenuItem
-            // 
-            resolutionToolStripMenuItem.Name = "resolutionToolStripMenuItem";
-            resolutionToolStripMenuItem.Size = new Size(193, 22);
-            resolutionToolStripMenuItem.Text = "Resolution";
-            // 
-            // highQualityRenderingToolStripMenuItem
-            // 
-            highQualityRenderingToolStripMenuItem.Checked = true;
-            highQualityRenderingToolStripMenuItem.CheckState = CheckState.Checked;
-            highQualityRenderingToolStripMenuItem.Name = "highQualityRenderingToolStripMenuItem";
-            highQualityRenderingToolStripMenuItem.Size = new Size(193, 22);
-            highQualityRenderingToolStripMenuItem.Text = "High quality rendering";
-            highQualityRenderingToolStripMenuItem.Click += highQualityRenderingToolStripMenuItem_Click;
-            // 
-            // toolsToolStripMenuItem
-            // 
-            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { optionsToolStripMenuItem });
-            toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            toolsToolStripMenuItem.Size = new Size(47, 20);
-            toolsToolStripMenuItem.Text = "&Tools";
-            // 
-            // optionsToolStripMenuItem
-            // 
-            optionsToolStripMenuItem.Image = Properties.Resources.settings;
-            optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            optionsToolStripMenuItem.Size = new Size(125, 22);
-            optionsToolStripMenuItem.Text = "Options...";
-            optionsToolStripMenuItem.Click += optionsToolStripMenuItem_Click;
-            // 
-            // helpToolStripMenuItem
-            // 
-            helpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { onlineHelpToolStripMenuItem, versionHistoryToolStripMenuItem, aboutToolStripMenuItem });
-            helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            helpToolStripMenuItem.Size = new Size(44, 20);
-            helpToolStripMenuItem.Text = "&Help";
-            // 
-            // onlineHelpToolStripMenuItem
-            // 
-            onlineHelpToolStripMenuItem.Name = "onlineHelpToolStripMenuItem";
-            onlineHelpToolStripMenuItem.Size = new Size(160, 22);
-            onlineHelpToolStripMenuItem.Text = "Online help...";
-            onlineHelpToolStripMenuItem.Click += onlineHelpToolStripMenuItem_Click;
-            // 
-            // versionHistoryToolStripMenuItem
-            // 
-            versionHistoryToolStripMenuItem.Name = "versionHistoryToolStripMenuItem";
-            versionHistoryToolStripMenuItem.Size = new Size(160, 22);
-            versionHistoryToolStripMenuItem.Text = "Version history...";
-            versionHistoryToolStripMenuItem.Click += versionHistoryToolStripMenuItem_Click;
-            // 
-            // aboutToolStripMenuItem
-            // 
-            aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            aboutToolStripMenuItem.Size = new Size(160, 22);
-            aboutToolStripMenuItem.Text = "About...";
-            aboutToolStripMenuItem.Click += aboutToolStripMenuItem_Click;
-            // 
-            // toolStrip1
-            // 
-            toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
-            toolStrip1.Items.AddRange(new ToolStripItem[] { btnDebug, toolStripSeparator1, btnOptions });
-            toolStrip1.Location = new Point(0, 24);
-            toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(917, 25);
-            toolStrip1.TabIndex = 2;
-            toolStrip1.Text = "toolStrip1";
-            // 
-            // btnDebug
-            // 
-            btnDebug.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnDebug.Image = Properties.Resources.debug;
-            btnDebug.ImageTransparentColor = Color.Magenta;
-            btnDebug.Name = "btnDebug";
-            btnDebug.Size = new Size(23, 22);
-            btnDebug.Text = "Debug output";
-            btnDebug.Click += btnDebug_Click;
-            // 
-            // toolStripSeparator1
-            // 
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(6, 25);
-            // 
-            // btnOptions
-            // 
-            btnOptions.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnOptions.Image = Properties.Resources.settings;
-            btnOptions.ImageTransparentColor = Color.Magenta;
-            btnOptions.Name = "btnOptions";
-            btnOptions.Size = new Size(23, 22);
-            btnOptions.Text = "Options...";
-            btnOptions.Click += btnOptions_Click;
-            // 
-            // statusStrip1
-            // 
-            statusStrip1.Items.AddRange(new ToolStripItem[] { lblCursPos, toolStripStatusLabel1, lblUserAction });
-            statusStrip1.Location = new Point(0, 600);
-            statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(917, 22);
-            statusStrip1.TabIndex = 3;
-            statusStrip1.Text = "statusStrip1";
-            // 
-            // lblCursPos
-            // 
-            lblCursPos.BorderStyle = Border3DStyle.Sunken;
-            lblCursPos.Name = "lblCursPos";
-            lblCursPos.Size = new Size(25, 17);
-            lblCursPos.Text = "0, 0";
-            // 
-            // toolStripStatusLabel1
-            // 
-            toolStripStatusLabel1.BorderStyle = Border3DStyle.Sunken;
-            toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            toolStripStatusLabel1.Size = new Size(69, 17);
-            toolStripStatusLabel1.Text = "User action:";
-            // 
-            // lblUserAction
-            // 
-            lblUserAction.BorderStyle = Border3DStyle.Sunken;
-            lblUserAction.Name = "lblUserAction";
-            lblUserAction.Size = new Size(16, 17);
-            lblUserAction.Text = "   ";
-            // 
-            // terminalMatrixControl1
-            // 
-            terminalMatrixControl1.AutoProgramManagement = true;
-            terminalMatrixControl1.BorderHeight = 10;
-            terminalMatrixControl1.BorderWidth = 10;
-            terminalMatrixControl1.ControlOverlayPainter = null;
-            terminalMatrixControl1.CurrentCursorColor = 1;
-            terminalMatrixControl1.Dock = DockStyle.Fill;
-            terminalMatrixControl1.Location = new Point(0, 49);
-            terminalMatrixControl1.Name = "terminalMatrixControl1";
-            terminalMatrixControl1.RenderingMode = TerminalMatrix.RenderingMode.HighQuality;
-            terminalMatrixControl1.Size = new Size(917, 551);
-            terminalMatrixControl1.TabIndex = 0;
-            terminalMatrixControl1.UnlimitedInput = false;
-            terminalMatrixControl1.Use32BitForeground = false;
-            terminalMatrixControl1.UseBackground24Bit = false;
-            terminalMatrixControl1.TypedLine += terminalMatrixControl1_TypedLine;
-            terminalMatrixControl1.InputCompleted += terminalMatrixControl1_InputCompleted;
-            terminalMatrixControl1.UserBreak += terminalMatrixControl1_UserBreak;
-            terminalMatrixControl1.RequestToggleFullscreen += terminalMatrixControl1_RequestToggleFullscreen;
-            terminalMatrixControl1.Tick += terminalMatrixControl1_Tick;
-            terminalMatrixControl1.Paint += terminalMatrixControl1_Paint;
-            terminalMatrixControl1.Leave += terminalMatrixControl1_Leave;
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(281, 6);
             // 
             // openFrom101BASICComputerGamesToolStripMenuItem
             // 
-            openFrom101BASICComputerGamesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { aceyDuceyToolStripMenuItem });
-            openFrom101BASICComputerGamesToolStripMenuItem.Name = "openFrom101BASICComputerGamesToolStripMenuItem";
-            openFrom101BASICComputerGamesToolStripMenuItem.Size = new Size(284, 22);
-            openFrom101BASICComputerGamesToolStripMenuItem.Text = "Open from 101 BASIC Computer Games";
+            this.openFrom101BASICComputerGamesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aceyDuceyToolStripMenuItem});
+            this.openFrom101BASICComputerGamesToolStripMenuItem.Name = "openFrom101BASICComputerGamesToolStripMenuItem";
+            this.openFrom101BASICComputerGamesToolStripMenuItem.Size = new System.Drawing.Size(284, 22);
+            this.openFrom101BASICComputerGamesToolStripMenuItem.Text = "Open from 101 BASIC Computer Games";
             // 
             // aceyDuceyToolStripMenuItem
             // 
-            aceyDuceyToolStripMenuItem.Name = "aceyDuceyToolStripMenuItem";
-            aceyDuceyToolStripMenuItem.Size = new Size(180, 22);
-            aceyDuceyToolStripMenuItem.Text = "Acey-Ducey";
-            aceyDuceyToolStripMenuItem.Click += aceyDuceyToolStripMenuItem_Click;
+            this.aceyDuceyToolStripMenuItem.Name = "aceyDuceyToolStripMenuItem";
+            this.aceyDuceyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aceyDuceyToolStripMenuItem.Text = "Acey-Ducey";
+            this.aceyDuceyToolStripMenuItem.Click += new System.EventHandler(this.aceyDuceyToolStripMenuItem_Click);
+            // 
+            // viewToolStripMenuItem
+            // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fullscreenToolStripMenuItem,
+            this.debugOutputToolStripMenuItem,
+            this.resolutionToolStripMenuItem,
+            this.highQualityRenderingToolStripMenuItem});
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Text = "&View";
+            // 
+            // fullscreenToolStripMenuItem
+            // 
+            this.fullscreenToolStripMenuItem.Name = "fullscreenToolStripMenuItem";
+            this.fullscreenToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.fullscreenToolStripMenuItem.Text = "Fullscreen";
+            this.fullscreenToolStripMenuItem.Click += new System.EventHandler(this.fullscreenToolStripMenuItem_Click);
+            // 
+            // debugOutputToolStripMenuItem
+            // 
+            this.debugOutputToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.debug;
+            this.debugOutputToolStripMenuItem.Name = "debugOutputToolStripMenuItem";
+            this.debugOutputToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.debugOutputToolStripMenuItem.Text = "Debug output";
+            this.debugOutputToolStripMenuItem.Click += new System.EventHandler(this.debugOutputToolStripMenuItem_Click);
+            // 
+            // resolutionToolStripMenuItem
+            // 
+            this.resolutionToolStripMenuItem.Name = "resolutionToolStripMenuItem";
+            this.resolutionToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.resolutionToolStripMenuItem.Text = "Resolution";
+            // 
+            // highQualityRenderingToolStripMenuItem
+            // 
+            this.highQualityRenderingToolStripMenuItem.Checked = true;
+            this.highQualityRenderingToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.highQualityRenderingToolStripMenuItem.Name = "highQualityRenderingToolStripMenuItem";
+            this.highQualityRenderingToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.highQualityRenderingToolStripMenuItem.Text = "High quality rendering";
+            this.highQualityRenderingToolStripMenuItem.Click += new System.EventHandler(this.highQualityRenderingToolStripMenuItem_Click);
+            // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.optionsToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.toolsToolStripMenuItem.Text = "&Tools";
+            // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.settings;
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.optionsToolStripMenuItem.Text = "Options...";
+            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.onlineHelpToolStripMenuItem,
+            this.versionHistoryToolStripMenuItem,
+            this.aboutToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "&Help";
+            // 
+            // onlineHelpToolStripMenuItem
+            // 
+            this.onlineHelpToolStripMenuItem.Name = "onlineHelpToolStripMenuItem";
+            this.onlineHelpToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.onlineHelpToolStripMenuItem.Text = "Online help...";
+            this.onlineHelpToolStripMenuItem.Click += new System.EventHandler(this.onlineHelpToolStripMenuItem_Click);
+            // 
+            // versionHistoryToolStripMenuItem
+            // 
+            this.versionHistoryToolStripMenuItem.Name = "versionHistoryToolStripMenuItem";
+            this.versionHistoryToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.versionHistoryToolStripMenuItem.Text = "Version history...";
+            this.versionHistoryToolStripMenuItem.Click += new System.EventHandler(this.versionHistoryToolStripMenuItem_Click);
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.aboutToolStripMenuItem.Text = "About...";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnDebug,
+            this.toolStripSeparator1,
+            this.btnOptions});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(786, 25);
+            this.toolStrip1.TabIndex = 2;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // btnDebug
+            // 
+            this.btnDebug.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnDebug.Image = global::A_BASIC_Language.Properties.Resources.debug;
+            this.btnDebug.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnDebug.Name = "btnDebug";
+            this.btnDebug.Size = new System.Drawing.Size(23, 22);
+            this.btnDebug.Text = "Debug output";
+            this.btnDebug.Click += new System.EventHandler(this.btnDebug_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // btnOptions
+            // 
+            this.btnOptions.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnOptions.Image = global::A_BASIC_Language.Properties.Resources.settings;
+            this.btnOptions.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnOptions.Name = "btnOptions";
+            this.btnOptions.Size = new System.Drawing.Size(23, 22);
+            this.btnOptions.Text = "Options...";
+            this.btnOptions.Click += new System.EventHandler(this.btnOptions_Click);
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.lblCursPos,
+            this.toolStripStatusLabel1,
+            this.lblUserAction});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 517);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 12, 0);
+            this.statusStrip1.Size = new System.Drawing.Size(786, 22);
+            this.statusStrip1.TabIndex = 3;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // lblCursPos
+            // 
+            this.lblCursPos.BorderStyle = System.Windows.Forms.Border3DStyle.Sunken;
+            this.lblCursPos.Name = "lblCursPos";
+            this.lblCursPos.Size = new System.Drawing.Size(25, 17);
+            this.lblCursPos.Text = "0, 0";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.BorderStyle = System.Windows.Forms.Border3DStyle.Sunken;
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(69, 17);
+            this.toolStripStatusLabel1.Text = "User action:";
+            // 
+            // lblUserAction
+            // 
+            this.lblUserAction.BorderStyle = System.Windows.Forms.Border3DStyle.Sunken;
+            this.lblUserAction.Name = "lblUserAction";
+            this.lblUserAction.Size = new System.Drawing.Size(16, 17);
+            this.lblUserAction.Text = "   ";
+            // 
+            // terminalMatrixControl1
+            // 
+            this.terminalMatrixControl1.AutoProgramManagement = true;
+            this.terminalMatrixControl1.BorderHeight = 10;
+            this.terminalMatrixControl1.BorderWidth = 10;
+            this.terminalMatrixControl1.ControlOverlayPainter = null;
+            this.terminalMatrixControl1.CurrentCursorColor = ((byte)(1));
+            this.terminalMatrixControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.terminalMatrixControl1.Location = new System.Drawing.Point(0, 49);
+            this.terminalMatrixControl1.Name = "terminalMatrixControl1";
+            this.terminalMatrixControl1.RenderingMode = TerminalMatrixNetFramework.RenderingMode.HighQuality;
+            this.terminalMatrixControl1.Size = new System.Drawing.Size(786, 468);
+            this.terminalMatrixControl1.TabIndex = 0;
+            this.terminalMatrixControl1.UnlimitedInput = false;
+            this.terminalMatrixControl1.Use32BitForeground = false;
+            this.terminalMatrixControl1.UseBackground24Bit = false;
+            this.terminalMatrixControl1.TypedLine += new TerminalMatrixNetFramework.Events.TypedLineDelegate(this.terminalMatrixControl1_TypedLine);
+            this.terminalMatrixControl1.InputCompleted += new TerminalMatrixNetFramework.Events.InputCompletedDelegate(this.terminalMatrixControl1_InputCompleted);
+            this.terminalMatrixControl1.UserBreak += new TerminalMatrixNetFramework.Events.UserBreakDelegate(this.terminalMatrixControl1_UserBreak);
+            this.terminalMatrixControl1.RequestToggleFullscreen += new TerminalMatrixNetFramework.Events.RequestToggleFullscreenDelegate(this.terminalMatrixControl1_RequestToggleFullscreen);
+            this.terminalMatrixControl1.Tick += new TerminalMatrixNetFramework.Events.TickDelegate(this.terminalMatrixControl1_Tick);
+            this.terminalMatrixControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.terminalMatrixControl1_Paint);
+            this.terminalMatrixControl1.Leave += new System.EventHandler(this.terminalMatrixControl1_Leave);
             // 
             // MainWindow
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(917, 622);
-            Controls.Add(terminalMatrixControl1);
-            Controls.Add(statusStrip1);
-            Controls.Add(toolStrip1);
-            Controls.Add(menuStrip1);
-            Icon = (Icon)resources.GetObject("$this.Icon");
-            MainMenuStrip = menuStrip1;
-            Name = "MainWindow";
-            Text = "A-BASIC-Language";
-            FormClosing += MainWindow_FormClosing;
-            Load += MainWindow_Load;
-            Shown += MainWindow_Shown;
-            menuStrip1.ResumeLayout(false);
-            menuStrip1.PerformLayout();
-            toolStrip1.ResumeLayout(false);
-            toolStrip1.PerformLayout();
-            statusStrip1.ResumeLayout(false);
-            statusStrip1.PerformLayout();
-            ResumeLayout(false);
-            PerformLayout();
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(786, 539);
+            this.Controls.Add(this.terminalMatrixControl1);
+            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.toolStrip1);
+            this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MainMenuStrip = this.menuStrip1;
+            this.Name = "MainWindow";
+            this.Text = "A-BASIC-Language";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
+            this.Load += new System.EventHandler(this.MainWindow_Load);
+            this.Shown += new System.EventHandler(this.MainWindow_Shown);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
         #endregion
@@ -304,7 +332,7 @@
         private StatusStrip statusStrip1;
         private ToolStripMenuItem fileToolStripMenuItem;
         private ToolStripMenuItem exitToolStripMenuItem;
-        private TerminalMatrix.TerminalMatrixControl terminalMatrixControl1;
+        private TerminalMatrixNetFramework.TerminalMatrixControl terminalMatrixControl1;
         private ToolStripMenuItem viewToolStripMenuItem;
         public ToolStripMenuItem debugOutputToolStripMenuItem;
         private ToolStripStatusLabel toolStripStatusLabel1;

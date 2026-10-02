@@ -1,4 +1,7 @@
-﻿namespace A_BASIC_Language.Stage1;
+﻿using System;
+using System.Collections.Generic;
+
+namespace A_BASIC_Language.Stage1;
 
 public class TokenizeResult
 {

@@ -1,12 +1,15 @@
+using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Reflection;
+using System.Windows.Forms;
 using A_BASIC_Language.Games;
 using A_BASIC_Language.Gui;
 using A_BASIC_Language.Gui.Dialogs;
 using A_BASIC_Language.Language;
 using A_BASIC_Language.MainWindowControllers;
 using A_BASIC_Language.StringManipulation;
-using TerminalMatrix;
+using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language;
 
@@ -86,7 +89,7 @@ public partial class MainWindow : Form
         lblUserAction.Text = text.MaxLength(10, 30);
     }
 
-    private void terminalMatrixControl1_TypedLine(object sender, TerminalMatrix.Events.TypedLineEventArgs e)
+    private void terminalMatrixControl1_TypedLine(object sender, TerminalMatrixNetFramework.Events.TypedLineEventArgs e)
     {
         if (e.InputValue.IsEmpty())
             return;
@@ -151,10 +154,10 @@ public partial class MainWindow : Form
     private void terminalMatrixControl1_Leave(object sender, EventArgs e) =>
         terminalMatrixControl1.Focus();
 
-    private void terminalMatrixControl1_Tick(object sender, TerminalMatrix.Events.TickEventArgs e) =>
+    private void terminalMatrixControl1_Tick(object sender, TerminalMatrixNetFramework.Events.TickEventArgs e) =>
         lblCursPos.Text = $@"Cursor: {e.CursorX}, {e.CursorY}";
 
-    private void terminalMatrixControl1_InputCompleted(object sender, TerminalMatrix.Events.TypedLineEventArgs e)
+    private void terminalMatrixControl1_InputCompleted(object sender, TerminalMatrixNetFramework.Events.TypedLineEventArgs e)
     {
         var text = $"{DateTime.Now:mm:HH:ss} - Input command completed.";
 
@@ -267,6 +270,9 @@ An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom", @"Abo
     {
         terminalMatrixControl1.ProgramLines.Clear();
         terminalMatrixControl1.SetProgramLines(source);
+        terminalMatrixControl1.List();
+        terminalMatrixControl1.WriteLine("");
+        terminalMatrixControl1.WriteLine("Ready.");
     }
 
     private void aceyDuceyToolStripMenuItem_Click(object sender, EventArgs e) =>

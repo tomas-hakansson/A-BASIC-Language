@@ -1,12 +1,14 @@
-﻿namespace A_BASIC_Language.IO;
+﻿using System.Windows.Forms;
+
+namespace A_BASIC_Language.IO;
 
 public class ProgramRepository
 {
-    private static Dictionary<string, string> ProgramCache { get; }
+    private static ProgramCacheDictionary ProgramCache { get; }
 
     static ProgramRepository()
     {
-        ProgramCache = new Dictionary<string, string>();
+        ProgramCache = new ProgramCacheDictionary();
     }
 
     public BasicProgram GetProgram(IWin32Window owner, string pathAndName)
@@ -16,7 +18,7 @@ public class ProgramRepository
         var name = io.GetNameOnly();
 
         if (ProgramCache.ContainsKey(name))
-            return new BasicProgram(ProgramCache.GetValueOrDefault(name) ?? "", name);
+            return ProgramCache.GetValueOrDefault(name);
 
         var source = io.Load();
 

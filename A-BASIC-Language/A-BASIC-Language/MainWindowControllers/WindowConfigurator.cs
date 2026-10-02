@@ -1,5 +1,6 @@
-﻿using A_BASIC_Language.Gui;
-using TerminalMatrix;
+﻿using System.Windows.Forms;
+using A_BASIC_Language.Gui;
+using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language.MainWindowControllers;
 

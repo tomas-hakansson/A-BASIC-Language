@@ -1,4 +1,7 @@
-﻿namespace A_BASIC_Language.Gui.Dialogs
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace A_BASIC_Language.Gui.Dialogs
 {
     partial class OptionsDialog
     {
@@ -49,7 +52,7 @@
             terminalResolutionComboBox1.FormattingEnabled = true;
             terminalResolutionComboBox1.Location = new Point(8, 24);
             terminalResolutionComboBox1.Name = "terminalResolutionComboBox1";
-            terminalResolutionComboBox1.Resolution = TerminalMatrix.Resolution.Pixels480x200Characters60x25;
+            terminalResolutionComboBox1.Resolution = TerminalMatrixNetFramework.Resolution.Pixels480x200Characters60x25;
             terminalResolutionComboBox1.Size = new Size(328, 23);
             terminalResolutionComboBox1.TabIndex = 1;
             // 

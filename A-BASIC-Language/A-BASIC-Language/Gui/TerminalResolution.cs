@@ -1,4 +1,5 @@
-﻿using TerminalMatrix;
+﻿using System;
+using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language.Gui;
 

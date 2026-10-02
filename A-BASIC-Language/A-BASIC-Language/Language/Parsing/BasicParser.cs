@@ -1,3 +1,7 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace A_BASIC_Language.Language.Parsing;
@@ -8,10 +12,10 @@ public class BasicParser
     readonly bool _direct;
     readonly SortedDictionary<int, List<ABL_EvalValue>> _lines;
     int _currentLabel;
-    int _index = 0;
+    int _index;
     readonly List<(int index, string message)> _parseErrors;
-    bool _parsingIf = false;
-    int _generatedLabel = 0;
+    bool _parsingIf;
+    int _generatedLabel;
     public ParseResult Result { get; }
 
     public BasicParser(string source, bool direct = false)
@@ -337,10 +341,10 @@ public class BasicParser
             Body();
 
         Generate(new ABL_Label(endBranchLabel));
+        return;
 
         void Body()
         {
-            var cc = _source[_index];
             //Note: The body can contain either a statement, a variable or an expression.
             var isStatement = StatementRegex().Match(_source, _index);
             if (isStatement.Success)
@@ -379,7 +383,6 @@ public class BasicParser
                 else if (char.IsWhiteSpace(_source[_index]))
                 {
                     ParseError("Expected an IF body");
-                    return;
                 }
                 else
                 {
@@ -542,7 +545,7 @@ public class BasicParser
                 return true;
             }
             dimVariable = true;
-            Index_Value();
+            IndexValue();
             if (!Maybe(')'))
             {
                 ParseError($"Expected closing parenthesis sign in {nameof(ASetVariable)}");
@@ -554,15 +557,17 @@ public class BasicParser
             Generate(new ABL_DIM_Variable(fullName));
             return true;
 
-            void Index_Value()
+            void IndexValue()
             {
                 Expression();
-                int dimensionCount = 1;
+                var dimensionCount = 1;
+
                 while (Maybe(','))
                 {
                     Expression();
                     dimensionCount++;
                 }
+
                 Generate(new ABL_Number(dimensionCount));
             }
         }
@@ -699,38 +704,40 @@ public class BasicParser
             }
             return;
         }
-        else if (Maybe("FN"))//Note: user defined function.
-        {//todo: Implement.
-            var isVar = VariableRegex().Match(_source, _index);
-            if (isVar.Success)
-            {
-                var match = isVar.Groups.Cast<Group>().First(g => g.Name == "var");
-                var userDefinedFunctionName = ("FN" + match.Value);
-                if (!Maybe('('))
+        else
+        {
+            if (Maybe("FN"))//Note: user defined function.
+            {//todo: Implement.
+                var isVar = VariableRegex().Match(_source, _index);
+
+                if (isVar.Success)
                 {
-                    ParseError("Expected opening parenthesis sign in Atom");
-                    if (_parsingIf)
-                        SkipLine();
-                    else
-                        SkipStatement();
+                    //var match = isVar.Groups.Cast<Group>().First(g => g.Name == "var");
+
+                    if (!Maybe('('))
+                    {
+                        ParseError("Expected opening parenthesis sign in Atom");
+                        if (_parsingIf)
+                            SkipLine();
+                        else
+                            SkipStatement();
+                        return;
+                    }
+                    Expression();
+
+                    if (!Maybe(')'))
+                    {
+                        ParseError("Expected closing parenthesis sign in Atom");
+                        if (_parsingIf)
+                            SkipLine();
+                        else
+                            SkipStatement();
+                    }
+                    //todo: generate for user defined functions.
+                    //Generate($"userDefinedFunction({name})");
                     return;
                 }
-                Expression();
-                if (!Maybe(')'))
-                {
-                    ParseError("Expected closing parenthesis sign in Atom");
-                    if (_parsingIf)
-                        SkipLine();
-                    else
-                        SkipStatement();
-                    return;
-                }
-                //todo: generate for user defined functions.
-                //Generate($"userDefinedFunction({name})");
-                return;
-            }
-            else
-            {
+
                 ParseError("Expected user defined function in Atom");
                 if (_parsingIf)
                     SkipLine();
@@ -738,24 +745,27 @@ public class BasicParser
                     SkipStatement();
                 return;
             }
-        }
-        else if (Maybe('"', false))
-        {
-            if (AString(out var newString))
+
+            if (Maybe('"', false))
             {
-                Generate(new ABL_String(newString));
+                if (AString(out var newString))
+                {
+                    Generate(new ABL_String(newString));
+                }
+                else
+                {
+                    ParseError("Unterminated string");
+                    SkipStatement();
+                }
+
+                return;
             }
-            else
-            {
-                ParseError("Unterminated string");
-                SkipStatement();
-            }
-            return;
         }
 
         //Note: If function
         Regex regex = new(@"\G(?<fun>ABS|ASC|ATN|CHR\$|COS|EXP|INT|LEFT\$|LEN|LOG|MID\$|RND|RIGHT\$|SGN|SIN|SQR|STR\$|TAB|TAN|VAL)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         var isFunction = regex.Match(_source, _index);
+
         if (isFunction.Success)
         {//e.g. sqr(n)
             var match = isFunction.Groups.Cast<Group>().First(g => g.Name == "fun");
@@ -805,18 +815,21 @@ public class BasicParser
                 SkipLine();
             else
                 SkipStatement();
-            return;
         }
         else
+        {
             Generate(new ABL_Number(maybeNumber));
+        }
     }
 
     // ANumber => digit* '.'? digit+
     string ANumber()
     {
-        var match = Regex.Match(_source[_index..], @"^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[Ee][+-]?[0-9]+)?");
+        var match = Regex.Match(_source.Substring(_index, _source.Length - _index), @"^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[Ee][+-]?[0-9]+)?");
+        
         if (!match.Success)
             return "";
+        
         _index += match.Length;
         SkipWhitespace();
         return match.Value;
@@ -825,9 +838,9 @@ public class BasicParser
     bool AString(out string value)
     {
         value = string.Empty;
-
         Regex regex = new(@"\G""(?<string>.*?)""", RegexOptions.CultureInvariant);
         var isString = regex.Match(_source, _index);
+        
         if (isString.Success)
         {
             var match = isString.Groups.Cast<Group>().First(g => g.Name == "string");
@@ -836,7 +849,6 @@ public class BasicParser
             SkipWhitespace();
             return true;
         }
-        else
             return false;
 
         //ToDo: Implement string parsing properly.
@@ -891,6 +903,8 @@ public class BasicParser
     /// Compares the source with the given string at the current index. Returns true and updates index if matching.
     /// </summary>
     /// <param name="value"></param>
+    /// <param name="skipWhitespace"></param>
+    /// <param name="incrementIfFound"></param>
     /// <returns></returns>
     bool Maybe(string value, bool skipWhitespace = true, bool incrementIfFound = true)
     {
@@ -915,6 +929,7 @@ public class BasicParser
     /// Tries to parse source at the current index with the given value. Skips whitespace after match.
     /// </summary>
     /// <param name="value"></param>
+    /// <param name="incrementIfFound"></param>
     /// <returns></returns>
     bool Maybe(char value, bool incrementIfFound = true)
     {

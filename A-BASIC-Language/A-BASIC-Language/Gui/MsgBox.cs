@@ -1,4 +1,6 @@
-﻿namespace A_BASIC_Language.Gui;
+﻿using System.Windows.Forms;
+
+namespace A_BASIC_Language.Gui;
 
 public static class MsgBox
 {

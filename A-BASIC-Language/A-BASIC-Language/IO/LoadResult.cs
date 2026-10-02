@@ -1,4 +1,8 @@
-﻿namespace A_BASIC_Language.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace A_BASIC_Language.IO;
 
 public class LoadResult
 {
@@ -15,7 +19,7 @@ public class LoadResult
         string.IsNullOrWhiteSpace(Data);
 
     public List<string> DataAsList() =>
-        Data.Split(new[] { Environment.NewLine }, StringSplitOptions.None).ToList();
+        Data.Split([Environment.NewLine], StringSplitOptions.None).ToList();
 
     public static LoadResult Fail() =>
         new(false, "");

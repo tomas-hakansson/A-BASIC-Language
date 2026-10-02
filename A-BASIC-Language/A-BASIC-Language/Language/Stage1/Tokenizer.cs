@@ -1,4 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace A_BASIC_Language.Stage1;
 
@@ -232,6 +236,7 @@ class Tokenizer
         SortedDictionary<int, (List<string>, List<TokenType>)> sortedLines = new();
         List<string> lineValues = new();
         List<TokenType> lineTypes = new();
+
         foreach ((_, (TokenType type, _, string value)) in sortedTokens)
         {
             if (isBeginning)
@@ -343,5 +348,14 @@ class Tokenizer
         }
 
         return (indices, lengths, values);
+    }
+}
+
+public static class KeyValuePairExtensions
+{
+    public static void Deconstruct<TKey, TValue>(this KeyValuePair<TKey, TValue> kvp, out TKey key, out TValue value)
+    {
+        key = kvp.Key;
+        value = kvp.Value;
     }
 }

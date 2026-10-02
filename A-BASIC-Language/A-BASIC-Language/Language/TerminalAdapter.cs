@@ -1,6 +1,8 @@
+using System;
 using System.Text;
-using TerminalMatrix;
-using TerminalMatrix.Definitions;
+using System.Windows.Forms;
+using TerminalMatrixNetFramework;
+using TerminalMatrixNetFramework.Definitions;
 
 namespace A_BASIC_Language.Language;
 
@@ -15,9 +17,15 @@ public sealed class TerminalAdapter(TerminalMatrixControl terminal) : IBasicTerm
     {
         foreach (var c in text.Replace("\r\n", "\n").Replace('\r', '\n'))
         {
-            if (c == '\n') { WriteLine(""); continue; }
+            if (c == '\n')
+            {
+                WriteLine("");
+                continue;
+            }
+
             if (_line.Length == CharacterMatrixDefinition.Width)
                 WriteLine("");
+            
             terminal.Write(_line.Length, c.ToString());
             _line.Append(c);
             terminal.SetStartPosition(Math.Min(_line.Length, CharacterMatrixDefinition.Width - 1), terminal.CursorPosition.Y);
@@ -35,7 +43,8 @@ public sealed class TerminalAdapter(TerminalMatrixControl terminal) : IBasicTerm
     {
         if (_line.Length >= CharacterMatrixDefinition.Width - 2)
             WriteLine("");
-        var value = terminal.InputString(_line.ToString() + prompt);
+
+        var value = terminal.InputString($"{_line}{prompt}");
         _line.Clear();
         return value;
     }

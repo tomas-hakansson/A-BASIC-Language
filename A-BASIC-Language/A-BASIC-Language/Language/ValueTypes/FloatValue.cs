@@ -1,4 +1,6 @@
+using System;
 using System.Globalization;
+using A_BASIC_Language.Language.ValueTypes;
 
 namespace A_BASIC_Language.ValueTypes;
 
@@ -77,7 +79,14 @@ public class FloatValue : ValueBase
     public override int GetHashCode()
     {
         // ReSharper disable once NonReadonlyMemberInGetHashCode
-        var bits = BitConverter.DoubleToUInt64Bits(Value);
+        var bits = DoubleToUInt64Bits(Value);
         return (int)bits % int.MaxValue;
+    }
+
+    [CLSCompliant(false)]
+    public static ulong DoubleToUInt64Bits(double value)
+    {
+        // Använder .NET Frameworks inbyggda metod och kastar om
+        return (ulong)BitConverter.DoubleToInt64Bits(value);
     }
 }
