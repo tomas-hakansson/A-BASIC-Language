@@ -20,7 +20,7 @@ public class Interpreter
     readonly Dictionary<string, Dimension> _dimVariables;
     readonly Stack<ValueBase> _data;
     bool EndMessageDisplayed { get; set; }
-    readonly Random _random;//Note: For the RND function.
+    Random _random;//Note: For the RND function.
     int _currentLineNumber;
     public bool UserBreak { get; set; }
 
@@ -379,6 +379,9 @@ public class Interpreter
                             break;
                         case "#NEXT-TAB-POSITION":
                             _terminal.Write(new string(' ', 14 - _terminal.OutputColumn % 14));
+                            break;
+                        case "RANDOMIZE":
+                            _random = new Random();
                             break;
                         case "RND":
                             //ToDo: implement this properly.

@@ -167,6 +167,9 @@ public class BasicParser
                     case "PRINT":
                         Print();
                         break;
+                    case "RANDOMIZE":
+                        Generate(new ABL_Procedure("RANDOMIZE"));
+                        break;
                     case "REM":
                         SkipLine();
                         break;
@@ -770,8 +773,15 @@ public class BasicParser
         {//e.g. sqr(n)
             var match = isFunction.Groups.Cast<Group>().First(g => g.Name == "fun");
             _index += match.Length;
+            var functionName = match.Value.ToUpperInvariant();
             if (!Maybe('('))
             {
+                // Bare RND uses the same default argument as RND(1).
+                if (functionName == "RND")
+                {
+                    Generate(new ABL_Number(1), new ABL_Procedure("RND"));
+                    return;
+                }
                 ParseError("Expected opening parenthesis sign in Atom");
                 if (_parsingIf)
                     SkipLine();
@@ -789,7 +799,7 @@ public class BasicParser
                     SkipStatement();
                 return;
             }
-            Generate(new ABL_Procedure(match.Value));
+            Generate(new ABL_Procedure(functionName));
             return;
         }
 
@@ -970,7 +980,7 @@ public class BasicParser
     }
 
     static Regex StatementRegex() =>
-        new(@"\G(?<statement>FOR|NEXT|DIM|END|GO|IF|INPUT|LET|PRINT|REM|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>FOR|NEXT|DIM|END|GO|IF|INPUT|LET|PRINT|RANDOMIZE|REM|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);
