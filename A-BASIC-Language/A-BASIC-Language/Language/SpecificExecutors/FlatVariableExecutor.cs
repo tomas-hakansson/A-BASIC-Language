@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
-using A_BASIC_Language.Language;
 using A_BASIC_Language.Language.ValueTypes;
-using A_BASIC_Language.ValueTypes;
+using A_BASIC_Language.SpecificExecutors;
 
-namespace A_BASIC_Language.SpecificExecutors;
+namespace A_BASIC_Language.Language.SpecificExecutors;
 
 public class FlatVariableExecutor : VariableExecutor
 {
     private readonly Dictionary<string, ValueBase> _variables;
 
-    public FlatVariableExecutor(Stack<ValueBase> data, Action<string> end, Dictionary<string, ValueBase?> variables) : base(data, end)
+    public FlatVariableExecutor(Stack<ValueBase> data, Action<string> end, Dictionary<string, ValueBase> variables) : base(data, end)
     {
         _variables = variables;
     }
@@ -19,9 +18,7 @@ public class FlatVariableExecutor : VariableExecutor
     {
         if (_variables.TryGetValue(v.Symbol, out var value))
         {
-            if (value is null)
-                value = ValueBase.GetDefaultValueFor(v.Symbol);
-
+            value ??= ValueBase.GetDefaultValueFor(v.Symbol);
             Data.Push(value);
         }
         else

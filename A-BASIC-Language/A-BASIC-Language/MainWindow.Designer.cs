@@ -58,6 +58,7 @@ namespace A_BASIC_Language
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblUserAction = new System.Windows.Forms.ToolStripStatusLabel();
             this.terminalMatrixControl1 = new TerminalMatrixNetFramework.TerminalMatrixControl();
+            this.amazinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -102,7 +103,8 @@ namespace A_BASIC_Language
             // openFrom101BASICComputerGamesToolStripMenuItem
             // 
             this.openFrom101BASICComputerGamesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aceyDuceyToolStripMenuItem});
+            this.aceyDuceyToolStripMenuItem,
+            this.amazinToolStripMenuItem});
             this.openFrom101BASICComputerGamesToolStripMenuItem.Name = "openFrom101BASICComputerGamesToolStripMenuItem";
             this.openFrom101BASICComputerGamesToolStripMenuItem.Size = new System.Drawing.Size(284, 22);
             this.openFrom101BASICComputerGamesToolStripMenuItem.Text = "Open from 101 BASIC Computer Games";
@@ -298,6 +300,13 @@ namespace A_BASIC_Language
             this.terminalMatrixControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.terminalMatrixControl1_Paint);
             this.terminalMatrixControl1.Leave += new System.EventHandler(this.terminalMatrixControl1_Leave);
             // 
+            // amazinToolStripMenuItem
+            // 
+            this.amazinToolStripMenuItem.Name = "amazinToolStripMenuItem";
+            this.amazinToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.amazinToolStripMenuItem.Text = "Amazin";
+            this.amazinToolStripMenuItem.Click += new System.EventHandler(this.amazinToolStripMenuItem_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -353,5 +362,6 @@ namespace A_BASIC_Language
         private ToolStripSeparator toolStripMenuItem1;
         private ToolStripMenuItem openFrom101BASICComputerGamesToolStripMenuItem;
         private ToolStripMenuItem aceyDuceyToolStripMenuItem;
+        private ToolStripMenuItem amazinToolStripMenuItem;
     }
 }
