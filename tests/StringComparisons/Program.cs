@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using A_BASIC_Language.Language;
 using A_BASIC_Language.Language.ValueTypes;
-using A_BASIC_Language.SpecificExecutors;
+using A_BASIC_Language.Language.SpecificExecutors;
 using A_BASIC_Language.ValueTypes;
 
 // Dependency-free regression checks: dotnet run --project tests/StringComparisons
@@ -24,10 +24,17 @@ foreach (var op in operators)
         Require(parsed.EvalValues.OfType<ABL_Procedure>().Any(p => p.Name == op.Symbol), "Missing comparison instruction");
         Require(parsed.EvalValues.OfType<ABL_Procedure>().Any(p => p.Name == "GOTO"), "Missing implicit GOTO");
         Check(new StringValue(pair.Item1), new StringValue(pair.Item2), op.Compare,
-            op.Compare(string.CompareOrdinal(pair.Item1, pair.Item2), 0));
+            op.Compare(string.Compare(pair.Item1, pair.Item2, StringComparison.OrdinalIgnoreCase), 0));
     }
     Check(new IntValue(5), new IntValue(5), op.Compare, op.Compare(5, 5));
     Check(new FloatValue(4.5), new IntValue(5), op.Compare, op.Compare(4.5, 5));
+}
+// Explicit expectations ensure case variants remain equal for every operator.
+var caseInsensitiveResults = new[] { true, false, false, false, true, true };
+for (var i = 0; i < operators.Length; i++)
+{
+    Check(new StringValue("hej"), new StringValue("HEJ"), operators[i].Compare, caseInsensitiveResults[i]);
+    Check(new StringValue("HEJ"), new StringValue("hej"), operators[i].Compare, caseInsensitiveResults[i]);
 }
 Require(new Parser("10 IF A=5 THEN 100\n100 END").Result.Success, "Numeric IF failed");
 Require(new Parser("10 IF \"HEJ\"=A$ THEN 100\n100 END").Result.Success, "Reversed string IF failed");
