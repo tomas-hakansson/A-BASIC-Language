@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using A_BASIC_Language.ValueTypes;
 using System.Diagnostics;
 using A_BASIC_Language.Language.ValueTypes;
+using A_BASIC_Language.ValueTypes;
 
-namespace A_BASIC_Language.SpecificExecutors;
+namespace A_BASIC_Language.Language.SpecificExecutors;
 
 public class ComparisonExecutor
 {
@@ -22,7 +22,16 @@ public class ComparisonExecutor
             var x = _data.Pop();
             var y = _data.Pop();
 
-            if (x.IsOfType<IntValue>() && y.IsOfType<IntValue>())
+            if (x is StringValue right && y is StringValue left)
+            {
+                var comparison = string.Compare(left.Value, right.Value, StringComparison.OrdinalIgnoreCase);
+                _data.Push(new FloatValue(f(comparison, 0) ? -1 : 0));
+            }
+            else if (x is StringValue || y is StringValue)
+            {
+                throw new InvalidOperationException("Type mismatch.");
+            }
+            else if (x.IsOfType<IntValue>() && y.IsOfType<IntValue>())
             {
                 var i2 = (int)x.GetValueAsType<IntValue>();
                 var i1 = (int)y.GetValueAsType<IntValue>();
@@ -36,6 +45,8 @@ public class ComparisonExecutor
             }
         }
         else
+        {
             Debug.Fail($"Insufficient items on the stack on line {lineNumber}.");
+        }
     }
 }

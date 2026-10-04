@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../A-BASIC-Language/A-BASIC-Language/Language/Parsing/BasicParser.cs" />
+    <Compile Include="../../A-BASIC-Language/A-BASIC-Language/Language/Parser.cs" />
+    <Compile Include="../../A-BASIC-Language/A-BASIC-Language/Language/ParseResult.cs" />
+    <Compile Include="../../A-BASIC-Language/A-BASIC-Language/Language/PrintThe.cs" />
+    <Compile Include="../../A-BASIC-Language/A-BASIC-Language/Language/ABL_*.cs" />
+    <Compile Include="../../A-BASIC-Language/A-BASIC-Language/Language/LoopInstructions.cs" />
+    <Compile Include="../../A-BASIC-Language/A-BASIC-Language/Language/ValueTypes/*.cs" />
+    <Compile Include="../../A-BASIC-Language/A-BASIC-Language/Language/SpecificExecutors/ComparisonExecutor.cs" />
+  </ItemGroup>
+</Project>

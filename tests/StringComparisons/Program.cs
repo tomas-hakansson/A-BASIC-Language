@@ -1,0 +1,58 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using A_BASIC_Language.Language;
+using A_BASIC_Language.Language.ValueTypes;
+using A_BASIC_Language.SpecificExecutors;
+using A_BASIC_Language.ValueTypes;
+
+// Dependency-free regression checks: dotnet run --project tests/StringComparisons
+var operators = new (string Symbol, Func<double, double, bool> Compare)[]
+{
+    ("=", (a, b) => Math.Abs(a - b) < 0.00001),
+    ("<>", (a, b) => Math.Abs(a - b) > 0.00001),
+    ("<", (a, b) => a < b), (">", (a, b) => a > b),
+    ("<=", (a, b) => a <= b), (">=", (a, b) => a >= b)
+};
+foreach (var op in operators)
+{
+    foreach (var pair in new[] { ("HEJ", "HEJ"), ("HEJ", "NEJ"), ("hej", "HEJ"),
+        ("", ""), ("", "HEJ"), ("01", "1"), ("10", "2") })
+    {
+        var parsed = new Parser($"10 IF A${op.Symbol}\"{pair.Item2}\" THEN 100\n100 END").Result;
+        Require(parsed.Success, string.Join("; ", parsed.Errors));
+        Require(parsed.EvalValues.OfType<ABL_Procedure>().Any(p => p.Name == op.Symbol), "Missing comparison instruction");
+        Require(parsed.EvalValues.OfType<ABL_Procedure>().Any(p => p.Name == "GOTO"), "Missing implicit GOTO");
+        Check(new StringValue(pair.Item1), new StringValue(pair.Item2), op.Compare,
+            op.Compare(string.CompareOrdinal(pair.Item1, pair.Item2), 0));
+    }
+    Check(new IntValue(5), new IntValue(5), op.Compare, op.Compare(5, 5));
+    Check(new FloatValue(4.5), new IntValue(5), op.Compare, op.Compare(4.5, 5));
+}
+Require(new Parser("10 IF A=5 THEN 100\n100 END").Result.Success, "Numeric IF failed");
+Require(new Parser("10 IF \"HEJ\"=A$ THEN 100\n100 END").Result.Success, "Reversed string IF failed");
+foreach (var reversed in new[] { false, true })
+{
+    try
+    {
+        Check(reversed ? new IntValue(5) : new StringValue("5"),
+            reversed ? new StringValue("5") : new IntValue(5), operators[0].Compare, true);
+        throw new Exception("Mixed types should fail");
+    }
+    catch (InvalidOperationException ex) when (ex.Message == "Type mismatch.") { }
+}
+Console.WriteLine("All string comparison regression checks passed.");
+
+static void Check(ValueBase left, ValueBase right, Func<double, double, bool> compare, bool expected)
+{
+    var stack = new Stack<ValueBase>();
+    stack.Push(left);
+    stack.Push(right);
+    new ComparisonExecutor(stack).Run(10, compare);
+    Require(stack.Count == 1, "Invalid result stack");
+    Require((double)stack.Pop().GetValueAsType<FloatValue>() == (expected ? -1 : 0), "Wrong comparison result");
+}
+static void Require(bool condition, string message)
+{
+    if (!condition) throw new Exception(message);
+}
