@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Text.RegularExpressions;
 
 namespace A_BASIC_Language.Language;
 
@@ -13,7 +14,7 @@ public sealed class BasicSession
     public void Break() =>
         _interpreter?.UserBreak = true;
 
-    public void Execute(string command, Log log, IBasicTerminal terminal, Func<string> getProgram, Action listProgram, Action clearProgram)
+    public void Execute(string command, Log log, IBasicTerminal terminal, Func<string> getProgram, Action<int?, int?> listProgram, Action clearProgram)
     {
         // WinForms message pumping can deliver another Enter while a program is running.
         if (IsRunning || string.IsNullOrWhiteSpace(command))
@@ -21,14 +22,19 @@ public sealed class BasicSession
 
         command = command.Trim();
         
-        if (command.Equals("LIST", StringComparison.OrdinalIgnoreCase))
+        if (command.Equals("LIST", StringComparison.OrdinalIgnoreCase) ||
+            (command.StartsWith("LIST", StringComparison.OrdinalIgnoreCase) &&
+             command.Length > 4 && char.IsWhiteSpace(command[4])))
         {
-            listProgram();
+            if (TryParseListRange(command.Substring(4), out var first, out var last))
+                listProgram(first, last);
+            else
+                terminal.WriteLine("?Invalid LIST range");
             terminal.WriteLine("");
             terminal.WriteLine("Ready.");
             return;
         }
-        
+
         if (command.Equals("NEW", StringComparison.OrdinalIgnoreCase))
         {
             clearProgram();
@@ -54,5 +60,44 @@ public sealed class BasicSession
             _interpreter = null;
             IsRunning = false;
         }
+    }
+
+    private static bool TryParseListRange(string argument, out int? first, out int? last)
+    {
+        first = last = null;
+        argument = argument.Trim();
+        if (argument.Length == 0)
+            return true;
+
+        var match = Regex.Match(argument, @"\A(?:([0-9]+)|([0-9]*)\s*-\s*([0-9]*))\z");
+        if (!match.Success)
+            return false;
+
+        if (match.Groups[1].Success)
+        {
+            if (!int.TryParse(match.Groups[1].Value, out var line))
+                return false;
+            first = last = line;
+            return true;
+        }
+
+        var firstText = match.Groups[2].Value;
+        var lastText = match.Groups[3].Value;
+        if (firstText.Length == 0 && lastText.Length == 0)
+            return false;
+
+        if (firstText.Length > 0)
+        {
+            if (!int.TryParse(firstText, out var line))
+                return false;
+            first = line;
+        }
+        if (lastText.Length > 0)
+        {
+            if (!int.TryParse(lastText, out var line))
+                return false;
+            last = line;
+        }
+        return !first.HasValue || !last.HasValue || first.Value <= last.Value;
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using A_BASIC_Language.Games;
@@ -120,7 +121,19 @@ public partial class MainWindow : Form
             _log,
             new TerminalAdapter(terminalMatrixControl1),
             terminalMatrixControl1.GetProgramAsString,
-            terminalMatrixControl1.List,
+            (first, last) =>
+            {
+                if (!first.HasValue && !last.HasValue)
+                {
+                    terminalMatrixControl1.List();
+                    return;
+                }
+                foreach (var line in terminalMatrixControl1.ProgramLines
+                             .Where(line => (!first.HasValue || line.Key >= first.Value) &&
+                                            (!last.HasValue || line.Key <= last.Value))
+                             .OrderBy(line => line.Key))
+                    terminalMatrixControl1.WriteLine(line.Value.RawString);
+            },
             terminalMatrixControl1.New);
     }
 

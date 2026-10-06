@@ -15,6 +15,36 @@ internal static class Program
         using var status = new ToolStripStatusLabel();
         using var font = new Font(FontFamily.GenericMonospace, 10);
         var log = new Log(status, font);
+        var listCases = new[]
+        {
+            ("LIST", (int?)null, (int?)null), ("LIST 10", (int?)10, (int?)10),
+            ("LIST 100-", (int?)100, (int?)null), ("LIST -100", (int?)null, (int?)100),
+            ("LIST - 100", (int?)null, (int?)100), ("LIST 100-200", (int?)100, (int?)200),
+            ("  list  100 - 200  ", (int?)100, (int?)200),
+            ("LIST\t100\t-\t", (int?)100, (int?)null)
+        };
+        foreach (var test in listCases)
+        {
+            var terminal = new FakeTerminal(() => throw new Exception("LIST requested input."));
+            var calls = 0;
+            new BasicSession().Execute(test.Item1, log, terminal,
+                () => throw new Exception("LIST tried to run the program."),
+                (first, last) =>
+                {
+                    calls++;
+                    Require(first == test.Item2 && last == test.Item3, "Wrong LIST bounds.");
+                }, () => throw new Exception("LIST cleared the program."));
+            Require(calls == 1, "LIST did not call listing exactly once.");
+            Require(terminal.Lines.SequenceEqual(new[] { "", "Ready." }), "Wrong LIST completion.");
+        }
+        foreach (var command in new[] { "LIST -", "LIST 200-100", "LIST 1-2-3", "LIST abc", "LIST 999999999999", "LIST 1 00" })
+        {
+            var terminal = new FakeTerminal(() => throw new Exception("Invalid LIST requested input."));
+            new BasicSession().Execute(command, log, terminal, () => "",
+                (_, _) => throw new Exception("Invalid LIST was accepted."), () => { });
+            Require(terminal.Lines.SequenceEqual(new[] { "?Invalid LIST range", "", "Ready." }), "Missing LIST error.");
+        }
+        Console.WriteLine("All LIST regression checks passed (8 valid cases, 6 invalid cases).");
         foreach (var variable in new[] { "A%", "A", "A$" })
         {
             foreach (var returnedInput in new[] { "", "123" })
