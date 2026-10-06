@@ -115,8 +115,13 @@ public partial class MainWindow : Form
 
         lblUserAction.Text = text;
 
-        _session.Execute(e.InputValue, new TerminalAdapter(terminalMatrixControl1),
-            terminalMatrixControl1.GetProgramAsString, terminalMatrixControl1.List, terminalMatrixControl1.New);
+        _session.Execute(
+            e.InputValue,
+            _log,
+            new TerminalAdapter(terminalMatrixControl1),
+            terminalMatrixControl1.GetProgramAsString,
+            terminalMatrixControl1.List,
+            terminalMatrixControl1.New);
     }
 
     public void CheckResolutionBox()

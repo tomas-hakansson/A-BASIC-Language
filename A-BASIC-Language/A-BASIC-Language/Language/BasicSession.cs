@@ -9,9 +9,11 @@ public sealed class BasicSession
     private readonly RuntimeState _state = new();
     private Interpreter? _interpreter;
     public bool IsRunning { get; private set; }
-    public void Break() { if (_interpreter != null) _interpreter.UserBreak = true; }
 
-    public void Execute(string command, IBasicTerminal terminal, Func<string> getProgram, Action listProgram, Action clearProgram)
+    public void Break() =>
+        _interpreter?.UserBreak = true;
+
+    public void Execute(string command, Log log, IBasicTerminal terminal, Func<string> getProgram, Action listProgram, Action clearProgram)
     {
         // WinForms message pumping can deliver another Enter while a program is running.
         if (IsRunning || string.IsNullOrWhiteSpace(command))
@@ -44,7 +46,7 @@ public sealed class BasicSession
         
         try
         {
-            _interpreter = new Interpreter(runtime ? getProgram() : command, runtime, _state);
+            _interpreter = new Interpreter(runtime ? getProgram() : command, runtime, log, _state);
             _interpreter.Run(terminal);
         }
         finally

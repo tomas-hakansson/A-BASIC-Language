@@ -12,6 +12,7 @@ namespace A_BASIC_Language.Language;
 
 public class Interpreter
 {
+    private readonly Log _log;
     private readonly bool _runtime;
     private readonly bool _empty;
     const string TheProgramHasEnded = "The program has ended";
@@ -25,8 +26,9 @@ public class Interpreter
     int _currentLineNumber;
     public bool UserBreak { get; set; }
 
-    public Interpreter(string source, bool runtime, RuntimeState? state = null)
+    public Interpreter(string source, bool runtime, Log log, RuntimeState? state = null)
     {
+        _log = log;
         _runtime = runtime;
         _empty = string.IsNullOrWhiteSpace(source);
         var parser = new Parser(source, direct: !runtime);
@@ -38,7 +40,8 @@ public class Interpreter
         _currentLineNumber = 0;
     }
 
-    public void Run(TerminalMatrixControl terminal) => Run(new TerminalAdapter(terminal));
+    public void Run(TerminalMatrixControl terminal) =>
+        Run(new TerminalAdapter(terminal));
 
     public void Run(IBasicTerminal terminal)
     {
@@ -47,6 +50,7 @@ public class Interpreter
         if (!_parseResult.Success)
         {
             End("?Syntax error: " + string.Join("; ", _parseResult.Errors));
+            _log.Write("Syntax error: " + string.Join("; ", _parseResult.Errors));
             return;
         }
         try
@@ -55,6 +59,7 @@ public class Interpreter
         }
         catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or ArithmeticException or NotImplementedException)
         {
+            _log.Write("Error, check terminal window.");
             End(_runtime
                 ? $"?Error in line {_currentLineNumber}: {ex.Message}"
                 : $"?Error: {ex.Message}");
@@ -85,28 +90,38 @@ public class Interpreter
         var matchingNext = MatchLoops();
         var loops = new Stack<LoopFrame>();
 
-        for (int i = 0; i < _parseResult.EvalValues.Count; i++)
+        for (var i = 0; i < _parseResult.EvalValues.Count; i++)
         {
             _terminal.PumpEvents();
 
             if (endProgram || _terminal.QuitFlag)
-                break;
-
-            if (UserBreak)
             {
+                _log.Write("Program ended.");
                 break;
             }
 
+            if (UserBreak)
+            {
+                _log.Write("User break.");
+                break;
+            }
 
-            switch (_parseResult.EvalValues[i])
+            var e = _parseResult.EvalValues[i];
+            _log.Write(e.ToString());
+
+            switch (e)
             {
                 case ABL_For loop:
                 {
                     var step = Number(_data.Pop());
                     var limit = Number(_data.Pop());
                     var initial = Number(_data.Pop());
-                    if (step == 0) throw new InvalidOperationException("FOR STEP must not be zero.");
-                    _variables[loop.Symbol] = new FloatValue(initial);
+
+                    if (step == 0)
+                        throw new InvalidOperationException("FOR STEP must not be zero.");
+
+                    _variables?[loop.Symbol] = new FloatValue(initial);
+
                     if (step > 0 ? initial > limit : initial < limit)
                         i = matchingNext[i];
                     else
@@ -115,12 +130,17 @@ public class Interpreter
                 }
                 case ABL_Next next:
                 {
-                    if (loops.Count == 0) throw new InvalidOperationException("NEXT without FOR.");
+                    if (loops.Count == 0)
+                        throw new InvalidOperationException("NEXT without FOR.");
+                    
                     var frame = loops.Peek();
+                    
                     if (frame.End != i || (next.Symbol.Length > 0 && next.Symbol != frame.Symbol))
                         throw new InvalidOperationException("NEXT does not match active FOR.");
-                    var value = Number(_variables[frame.Symbol]!) + frame.Step;
-                    _variables[frame.Symbol] = new FloatValue(value);
+                    
+                    var value = Number(_variables?[frame.Symbol]!) + frame.Step;
+                    _variables?[frame.Symbol] = new FloatValue(value);
+                    
                     if (frame.Step > 0 ? value <= frame.Limit : value >= frame.Limit)
                         i = frame.Start;
                     else
@@ -202,7 +222,9 @@ public class Interpreter
                                     _data.Push(new FloatValue(result));
                                 }
                                 else
+                                {
                                     Fail("Insufficient items on the stack");
+                                }
                             }
                             break;
                         case "+":
@@ -239,7 +261,9 @@ public class Interpreter
                                     _data.Push(new FloatValue(Math.Abs(asDouble)));
                                 }
                                 else
+                                {
                                     Fail("The stack is empty");
+                                }
                             }
                             break;
                         case "#END-PROGRAM":
@@ -262,7 +286,9 @@ public class Interpreter
                                     }
                                 }
                                 else
+                                {
                                     Fail("The stack is empty");
+                                }
                             }
                             break;
                         case "#IF-FALSE-GOTO":
@@ -286,7 +312,9 @@ public class Interpreter
                                     }
                                 }
                                 else
+                                {
                                     Fail("The stack is empty");
+                                }
                             }
                             break;
                         case "#INPUT-INT":
@@ -317,7 +345,9 @@ public class Interpreter
                                             _terminal.Write("Enter a numeric value: "); // TODO await?
                                         }
                                         else
+                                        {
                                             return;
+                                        }
                                     }
 
                                 } while (!happy);
@@ -326,6 +356,7 @@ public class Interpreter
                         case "#INPUT-FLOAT":
                             {
                                 bool happy;
+
                                 do
                                 {
                                     if (_terminal.QuitFlag || UserBreak)
@@ -407,7 +438,9 @@ public class Interpreter
                                     _data.Push(new FloatValue(result));
                                 }
                                 else
+                                {
                                     Fail("The stack is empty");
+                                }
                             }
                             break;
                         case "TAB":
@@ -421,7 +454,9 @@ public class Interpreter
                                     _data.Push(new StringValue(result));
                                 }
                                 else
+                                {
                                     Fail("The stack is empty");
+                                }
                             }
                             break;
                         case "#WRITE":
@@ -432,7 +467,9 @@ public class Interpreter
                                     _terminal.Write(value.ToString() ?? "");
                                 }
                                 else
+                                {
                                     Fail("The stack is empty");
+                                }
                             }
                             break;
                         default:
