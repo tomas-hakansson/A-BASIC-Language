@@ -323,10 +323,14 @@ public class Interpreter
                                 do
                                 {
                                     if (_terminal.QuitFlag || UserBreak)
-                                        return;
+                                        break;
 
                                     happy = false;
-                                    var value = ValueBase.GetValueType(_terminal.InputString(""));
+                                    var input = _terminal.InputString("");
+                                    if (_terminal.QuitFlag || UserBreak)
+                                        break;
+
+                                    var value = ValueBase.GetValueType(input);
 
                                     if (value.CanGetAsType<IntValue>())
                                     {
@@ -346,7 +350,7 @@ public class Interpreter
                                         }
                                         else
                                         {
-                                            return;
+                                            break;
                                         }
                                     }
 
@@ -360,10 +364,14 @@ public class Interpreter
                                 do
                                 {
                                     if (_terminal.QuitFlag || UserBreak)
-                                        return;
+                                        break;
 
                                     happy = false;
-                                    var value = ValueBase.GetValueType(_terminal.InputString(""));
+                                    var input = _terminal.InputString("");
+                                    if (_terminal.QuitFlag || UserBreak)
+                                        break;
+
+                                    var value = ValueBase.GetValueType(input);
 
                                     if (value.CanGetAsType<FloatValue>())
                                     {
@@ -382,7 +390,7 @@ public class Interpreter
                                             _terminal.Write("Enter a numeric value: "); // TODO: Await?
                                         }
                                         else
-                                            return;
+                                            break;
                                     }
 
                                 } while (!happy);
