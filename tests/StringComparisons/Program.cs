@@ -50,6 +50,19 @@ foreach (var reversed in new[] { false, true })
 }
 Console.WriteLine("All string comparison regression checks passed.");
 
+// Statement and grammar keywords do not require separating whitespace.
+foreach (var source in new[] {
+    "10 FORA=1TO10\n20 PRINTA\n30 NEXTA",
+    "10 FORA=1TO10STEP2\n20 PRINTA\n30 NEXTA",
+    "10 IFA=1THENPRINT\"YES\"\n20 END",
+    "10 LETA=1\n20 GOTO30\n30 END"
+})
+{
+    var result = new Parser(source).Result;
+    Require(result.Success, source + ": " + string.Join("; ", result.Errors));
+}
+Console.WriteLine("All compact keyword parsing checks passed.");
+
 static void Check(ValueBase left, ValueBase right, Func<double, double, bool> compare, bool expected)
 {
     var stack = new Stack<ValueBase>();

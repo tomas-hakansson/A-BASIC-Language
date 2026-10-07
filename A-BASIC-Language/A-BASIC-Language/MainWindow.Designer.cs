@@ -38,6 +38,7 @@ namespace A_BASIC_Language
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.openFrom101BASICComputerGamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aceyDuceyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.amazinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fullscreenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,7 +59,7 @@ namespace A_BASIC_Language
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblUserAction = new System.Windows.Forms.ToolStripStatusLabel();
             this.terminalMatrixControl1 = new TerminalMatrixNetFramework.TerminalMatrixControl();
-            this.amazinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.animalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -104,7 +105,8 @@ namespace A_BASIC_Language
             // 
             this.openFrom101BASICComputerGamesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aceyDuceyToolStripMenuItem,
-            this.amazinToolStripMenuItem});
+            this.amazinToolStripMenuItem,
+            this.animalToolStripMenuItem});
             this.openFrom101BASICComputerGamesToolStripMenuItem.Name = "openFrom101BASICComputerGamesToolStripMenuItem";
             this.openFrom101BASICComputerGamesToolStripMenuItem.Size = new System.Drawing.Size(284, 22);
             this.openFrom101BASICComputerGamesToolStripMenuItem.Text = "Open from 101 BASIC Computer Games";
@@ -115,6 +117,13 @@ namespace A_BASIC_Language
             this.aceyDuceyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.aceyDuceyToolStripMenuItem.Text = "Acey-Ducey";
             this.aceyDuceyToolStripMenuItem.Click += new System.EventHandler(this.aceyDuceyToolStripMenuItem_Click);
+            // 
+            // amazinToolStripMenuItem
+            // 
+            this.amazinToolStripMenuItem.Name = "amazinToolStripMenuItem";
+            this.amazinToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.amazinToolStripMenuItem.Text = "Amazin";
+            this.amazinToolStripMenuItem.Click += new System.EventHandler(this.amazinToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -300,12 +309,12 @@ namespace A_BASIC_Language
             this.terminalMatrixControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.terminalMatrixControl1_Paint);
             this.terminalMatrixControl1.Leave += new System.EventHandler(this.terminalMatrixControl1_Leave);
             // 
-            // amazinToolStripMenuItem
+            // animalToolStripMenuItem
             // 
-            this.amazinToolStripMenuItem.Name = "amazinToolStripMenuItem";
-            this.amazinToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.amazinToolStripMenuItem.Text = "Amazin";
-            this.amazinToolStripMenuItem.Click += new System.EventHandler(this.amazinToolStripMenuItem_Click);
+            this.animalToolStripMenuItem.Name = "animalToolStripMenuItem";
+            this.animalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.animalToolStripMenuItem.Text = "Animal";
+            this.animalToolStripMenuItem.Click += new System.EventHandler(this.animalToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -363,5 +372,6 @@ namespace A_BASIC_Language
         private ToolStripMenuItem openFrom101BASICComputerGamesToolStripMenuItem;
         private ToolStripMenuItem aceyDuceyToolStripMenuItem;
         private ToolStripMenuItem amazinToolStripMenuItem;
+        private ToolStripMenuItem animalToolStripMenuItem;
     }
 }

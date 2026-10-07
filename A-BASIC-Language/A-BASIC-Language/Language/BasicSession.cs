@@ -24,7 +24,8 @@ public sealed class BasicSession
         
         if (command.Equals("LIST", StringComparison.OrdinalIgnoreCase) ||
             (command.StartsWith("LIST", StringComparison.OrdinalIgnoreCase) &&
-             command.Length > 4 && char.IsWhiteSpace(command[4])))
+             command.Length > 4 && (char.IsWhiteSpace(command[4]) ||
+                                    (command[4] >= '0' && command[4] <= '9') || command[4] == '-')))
         {
             if (TryParseListRange(command.Substring(4), out var first, out var last))
                 listProgram(first, last);

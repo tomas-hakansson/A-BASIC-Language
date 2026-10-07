@@ -21,7 +21,9 @@ internal static class Program
             ("LIST 100-", (int?)100, (int?)null), ("LIST -100", (int?)null, (int?)100),
             ("LIST - 100", (int?)null, (int?)100), ("LIST 100-200", (int?)100, (int?)200),
             ("  list  100 - 200  ", (int?)100, (int?)200),
-            ("LIST\t100\t-\t", (int?)100, (int?)null)
+            ("LIST\t100\t-\t", (int?)100, (int?)null),
+            ("LIST50", (int?)50, (int?)50), ("LIST50-100", (int?)50, (int?)100),
+            ("LIST50-", (int?)50, (int?)null), ("LIST-100", (int?)null, (int?)100)
         };
         foreach (var test in listCases)
         {
@@ -44,7 +46,7 @@ internal static class Program
                 (_, _) => throw new Exception("Invalid LIST was accepted."), () => { });
             Require(terminal.Lines.SequenceEqual(new[] { "?Invalid LIST range", "", "Ready." }), "Missing LIST error.");
         }
-        Console.WriteLine("All LIST regression checks passed (8 valid cases, 6 invalid cases).");
+        Console.WriteLine("All LIST regression checks passed (12 valid cases, 6 invalid cases).");
         foreach (var variable in new[] { "A%", "A", "A$" })
         {
             foreach (var returnedInput in new[] { "", "123" })

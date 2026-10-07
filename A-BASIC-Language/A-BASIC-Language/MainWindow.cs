@@ -298,4 +298,7 @@ An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom", @"Abo
 
     private void amazinToolStripMenuItem_Click(object sender, EventArgs e) =>
         LoadProgram(BasicPrograms.Amazin);
+
+    private void animalToolStripMenuItem_Click(object sender, EventArgs e) =>
+        LoadProgram(BasicPrograms.Animal);
 }
