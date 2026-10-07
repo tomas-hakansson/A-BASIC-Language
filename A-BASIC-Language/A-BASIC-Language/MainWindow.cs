@@ -296,30 +296,39 @@ An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom", @"Abo
 
     private void openFrom101BASICComputerGamesToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        var process = Process.GetCurrentProcess();
-        
-        if (process.MainModule == null)
+        try
         {
-            MessageBox.Show(this, @"Failed to open the BASIC source files from running process.", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return;
+            var process = Process.GetCurrentProcess();
+
+            if (process.MainModule == null)
+            {
+                MessageBox.Show(this, @"Failed to open the BASIC source files from running process.", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var exeFolder = new FileInfo(process.MainModule.FileName).Directory?.FullName ?? "";
+
+            if (string.IsNullOrWhiteSpace(exeFolder))
+            {
+                MessageBox.Show(this, @"Failed to open the BASIC source files from directory of running process.", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var fullPath = Path.Combine(exeFolder, "Games\\Source\\");
+            using var x = new OpenFileDialog();
+            x.InitialDirectory = fullPath;
+            x.Filter = @"BASIC source files (*.bas)|*.bas|All files (*.*)|*.*";
+
+            if (x.ShowDialog(this) != DialogResult.OK)
+                return;
+
+            var fileInfo = new FileInfo(x.FileName);
+            var source = File.ReadAllText(fileInfo.FullName);
+            LoadProgram(source);
         }
-
-        var exeFolder = new FileInfo(process.MainModule.FileName).Directory?.FullName ?? "";
-
-        if (string.IsNullOrWhiteSpace(exeFolder))
+        catch (Exception exception)
         {
-            MessageBox.Show(this, @"Failed to open the BASIC source files from directory of running process.", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return;
-        }
-
-        var fullPath = Path.Combine(exeFolder, "Games\\Source\\");
-        using var x = new OpenFileDialog();
-        x.InitialDirectory = fullPath;
-        x.Filter = @"BASIC source files (*.bas)|*.bas|All files (*.*)|*.*";
-
-        if (x.ShowDialog(this) == DialogResult.OK)
-        {
-
+            MessageBox.Show(this, exception.Message, @"Failed to open BASIC source files", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
