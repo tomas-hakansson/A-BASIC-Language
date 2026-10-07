@@ -1,16 +1,17 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using A_BASIC_Language.Games;
 using A_BASIC_Language.Gui;
 using A_BASIC_Language.Gui.Dialogs;
 using A_BASIC_Language.Language;
 using A_BASIC_Language.MainWindowControllers;
 using A_BASIC_Language.StringManipulation;
 using TerminalMatrixNetFramework;
+using TerminalMatrixNetFramework.Events;
 
 namespace A_BASIC_Language;
 
@@ -274,11 +275,11 @@ An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom", @"Abo
         if (x.ShowDialog(this) != DialogResult.OK)
             return;
 
-        if (terminalMatrixControl1.Resolution != x.Resolution)
-        {
-            terminalMatrixControl1.SetResolution(x.Resolution);
-            terminalMatrixControl1.WriteLine("Changed resolution.");
-        }
+        if (terminalMatrixControl1.Resolution == x.Resolution)
+            return;
+
+        terminalMatrixControl1.SetResolution(x.Resolution);
+        terminalMatrixControl1.WriteLine("Changed resolution.");
     }
 
     private void btnOptions_Click(object sender, EventArgs e) =>
@@ -293,12 +294,41 @@ An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom", @"Abo
         terminalMatrixControl1.WriteLine("Ready.");
     }
 
-    private void aceyDuceyToolStripMenuItem_Click(object sender, EventArgs e) =>
-        LoadProgram(BasicPrograms.AceyDucey);
+    private void openFrom101BASICComputerGamesToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        var process = Process.GetCurrentProcess();
+        
+        if (process.MainModule == null)
+        {
+            MessageBox.Show(this, @"Failed to open the BASIC source files from running process.", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
+        }
 
-    private void amazinToolStripMenuItem_Click(object sender, EventArgs e) =>
-        LoadProgram(BasicPrograms.Amazin);
+        var exeFolder = new FileInfo(process.MainModule.FileName).Directory?.FullName ?? "";
 
-    private void animalToolStripMenuItem_Click(object sender, EventArgs e) =>
-        LoadProgram(BasicPrograms.Animal);
+        if (string.IsNullOrWhiteSpace(exeFolder))
+        {
+            MessageBox.Show(this, @"Failed to open the BASIC source files from directory of running process.", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
+        }
+
+        var fullPath = Path.Combine(exeFolder, "Games\\Source\\");
+        using var x = new OpenFileDialog();
+        x.InitialDirectory = fullPath;
+        x.Filter = @"BASIC source files (*.bas)|*.bas|All files (*.*)|*.*";
+
+        if (x.ShowDialog(this) == DialogResult.OK)
+        {
+
+        }
+    }
+
+    private void runToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        terminalMatrixControl1.WriteLine("RUN");
+        terminalMatrixControl1_TypedLine(sender, new TypedLineEventArgs("RUN"));
+    }
+
+    private void btnPlay_Click(object sender, EventArgs e) =>
+        runToolStripMenuItem_Click(sender, e);
 }
