@@ -67,10 +67,7 @@ public partial class MainWindow : Form
         debugOutputToolStripMenuItem.Checked = !debugOutputToolStripMenuItem.Checked;
         btnDebug.Checked = debugOutputToolStripMenuItem.Checked;
         _logVisible = debugOutputToolStripMenuItem.Checked;
-
-        if (_logVisible)
-            _log.Clear();
-
+        _log.ClearIf(_logVisible);
         var text = $"{DateTime.Now:mm:HH:ss} - Logging {(debugOutputToolStripMenuItem.Checked ? "enabled" : "disabled")}.";
         _log.Write(text);
         lblUserAction.Text = text;
@@ -83,10 +80,7 @@ public partial class MainWindow : Form
     private void terminalMatrixControl1_RequestToggleFullscreen(object sender, EventArgs e)
     {
         var text = $"{DateTime.Now:mm:HH:ss} - Toggle full screen";
-
-        if (_logVisible)
-            _log.Write(text);
-
+        _log.WriteIf(_logVisible, text);
         fullscreenToolStripMenuItem_Click(sender, e);
         lblUserAction.Text = text.MaxLength(10, 30);
     }
@@ -112,9 +106,7 @@ public partial class MainWindow : Form
             ? $"{DateTime.Now:mm:HH:ss} - Press enter"
             : $"{DateTime.Now:mm:HH:ss} - Typed: {e.InputValue}";
 
-        if (_logVisible)
-            _log.Write(text);
-
+        _log.WriteIf(_logVisible, text);
         lblUserAction.Text = text;
 
         _session.Execute(
@@ -129,13 +121,15 @@ public partial class MainWindow : Form
                     terminalMatrixControl1.List();
                     return;
                 }
-                foreach (var line in terminalMatrixControl1.ProgramLines
-                             .Where(line => (!first.HasValue || line.Key >= first.Value) &&
-                                            (!last.HasValue || line.Key <= last.Value))
-                             .OrderBy(line => line.Key))
+
+                var lines = terminalMatrixControl1.ProgramLines
+                    .Where(line => (!first.HasValue || line.Key >= first.Value) && (!last.HasValue || line.Key <= last.Value))
+                    .OrderBy(line => line.Key);
+
+                foreach (var line in lines)
                     terminalMatrixControl1.WriteLine(line.Value.RawString);
-            },
-            terminalMatrixControl1.New);
+
+            }, terminalMatrixControl1.New);
     }
 
     public void CheckResolutionBox()
@@ -149,20 +143,13 @@ public partial class MainWindow : Form
     private void terminalMatrixControl1_UserBreak(object sender, EventArgs e)
     {
         var text = $"{DateTime.Now:mm:HH:ss} - User break";
-
-        if (_logVisible)
-            _log.Write(text);
-
+        _log.WriteIf(_logVisible, text);
         lblUserAction.Text = text;
-
         _session.Break();
     }
 
-    private void terminalMatrixControl1_Paint(object sender, PaintEventArgs e)
-    {
-        if (_logVisible)
-            _log.Paint(e.Graphics, terminalMatrixControl1);
-    }
+    private void terminalMatrixControl1_Paint(object sender, PaintEventArgs e) =>
+        _log.PaintIf(_logVisible, e.Graphics, terminalMatrixControl1);
 
     private void MainWindow_Shown(object sender, EventArgs e)
     {
@@ -179,10 +166,7 @@ public partial class MainWindow : Form
     private void terminalMatrixControl1_InputCompleted(object sender, TypedLineEventArgs e)
     {
         var text = $"{DateTime.Now:mm:HH:ss} - Input command completed.";
-
-        if (_logVisible)
-            _log.Write(text);
-
+        _log.WriteIf(_logVisible, text);
         lblUserAction.Text = text;
     }
 
@@ -198,11 +182,13 @@ public partial class MainWindow : Form
 
     public void ToggleFullscreen(bool warn)
     {
-        if (warn)
+        if (warn && !fullscreenToolStripMenuItem.Checked)
         {
             if (MsgBox.Ask(this, "Enter fullscreen mode? Use F11 to exit."))
             {
+                new FullScreenController(this, menuStrip1, toolStrip1, statusStrip1).Set(true, terminalMatrixControl1);
                 fullscreenToolStripMenuItem.Checked = !fullscreenToolStripMenuItem.Checked;
+                _log.Write("Enter fullscreen (F11 to exit)");
                 return;
             }
         }

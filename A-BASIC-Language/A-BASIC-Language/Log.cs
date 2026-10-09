@@ -32,6 +32,12 @@ public class Log
         StartPointer = 0;
     }
 
+    public void ClearIf(bool clear)
+    {
+        if (clear)
+            Clear();
+    }
+
     public void Write(string text)
     {
         _statusLabel.Text = text.MaxLength(10, 30);
@@ -40,6 +46,12 @@ public class Log
 
         if (StartPointer >= LogRows.Length)
             StartPointer = 0;
+    }
+
+    public void WriteIf(bool write, string text)
+    {
+        if (write)
+            Write(text);
     }
 
     public string GetStringNumber(int number)
@@ -65,5 +77,11 @@ public class Log
 
         g.ResetClip();
         g.DrawRectangle(Pens.White, x, y, LogWidth, LogHeight);
+    }
+
+    public void PaintIf(bool paint, Graphics g, Control terminalControl)
+    {
+        if (paint)
+            Paint(g, terminalControl);
     }
 }
