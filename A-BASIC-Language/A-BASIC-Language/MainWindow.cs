@@ -91,7 +91,7 @@ public partial class MainWindow : Form
         lblUserAction.Text = text.MaxLength(10, 30);
     }
 
-    private void terminalMatrixControl1_TypedLine(object sender, TerminalMatrixNetFramework.Events.TypedLineEventArgs e)
+    private void terminalMatrixControl1_TypedLine(object sender, TypedLineEventArgs e)
     {
         if (e.InputValue.IsEmpty())
             return;
@@ -173,10 +173,10 @@ public partial class MainWindow : Form
     private void terminalMatrixControl1_Leave(object sender, EventArgs e) =>
         terminalMatrixControl1.Focus();
 
-    private void terminalMatrixControl1_Tick(object sender, TerminalMatrixNetFramework.Events.TickEventArgs e) =>
+    private void terminalMatrixControl1_Tick(object sender, TickEventArgs e) =>
         lblCursPos.Text = $@"Cursor: {e.CursorX}, {e.CursorY}";
 
-    private void terminalMatrixControl1_InputCompleted(object sender, TerminalMatrixNetFramework.Events.TypedLineEventArgs e)
+    private void terminalMatrixControl1_InputCompleted(object sender, TypedLineEventArgs e)
     {
         var text = $"{DateTime.Now:mm:HH:ss} - Input command completed.";
 
@@ -200,7 +200,7 @@ public partial class MainWindow : Form
     {
         if (warn)
         {
-            if (MessageBox.Show(this, @"Enter fullscreen mode? Use F11 to exit.", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+            if (MsgBox.Ask(this, "Enter fullscreen mode? Use F11 to exit."))
             {
                 fullscreenToolStripMenuItem.Checked = !fullscreenToolStripMenuItem.Checked;
                 return;
@@ -234,7 +234,7 @@ public partial class MainWindow : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, ex.Message, @"Failed to open online help", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MsgBox.Fail(this, ex.Message, @"Failed to open online help");
         }
     }
 
@@ -244,10 +244,9 @@ public partial class MainWindow : Form
         var vInfo = FileVersionInfo.GetVersionInfo(asm.Location);
         var v = vInfo.ProductVersion!.Split(['.', '+']);
 
-        MessageBox.Show(this, $@"ABL - A BASIC Language v{v[0]}.{v[1]}
+        MsgBox.Tell(this, $@"ABL - A BASIC Language v{v[0]}.{v[1]}
 
-An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom", @"About ABL", MessageBoxButtons.OK,
-            MessageBoxIcon.Information);
+An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom", @"About ABL");
     }
 
     private void versionHistoryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -263,7 +262,7 @@ An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom", @"Abo
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, ex.Message, @"Failed to open version history", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MsgBox.Fail(this, ex.Message, @"Failed to open version history");
         }
     }
 
@@ -302,7 +301,7 @@ An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom", @"Abo
 
             if (process.MainModule == null)
             {
-                MessageBox.Show(this, @"Failed to open the BASIC source files from running process.", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MsgBox.Fail(this, @"Failed to open the BASIC source files from running process.", @"Failed to open BASIC source files");
                 return;
             }
 
@@ -310,7 +309,7 @@ An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom", @"Abo
 
             if (string.IsNullOrWhiteSpace(exeFolder))
             {
-                MessageBox.Show(this, @"Failed to open the BASIC source files from directory of running process.", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MsgBox.Fail(this, @"Failed to open the BASIC source files from directory of running process.", @"Failed to open BASIC source files");
                 return;
             }
 
@@ -328,7 +327,7 @@ An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom", @"Abo
         }
         catch (Exception exception)
         {
-            MessageBox.Show(this, exception.Message, @"Failed to open BASIC source files", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MsgBox.Fail(this, exception.Message, @"Failed to open BASIC source files");
         }
     }
 

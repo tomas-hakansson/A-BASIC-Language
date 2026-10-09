@@ -74,7 +74,6 @@
     <Compile Include="IO\IOBase.cs" />
     <Compile Include="IO\LoadResult.cs" />
     <Compile Include="IO\NetIO.cs" />
-    <Compile Include="IO\ProgramRepository.cs" />
     <Compile Include="Language\ABL_EvalValue.cs" />
     <Compile Include="Language\ABL_Label.cs" />
     <Compile Include="Language\BasicSession.cs" />
