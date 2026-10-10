@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using A_BASIC_Language.Gui;
+using A_BASIC_Language.Properties;
 using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language.MainWindowControllers;
@@ -15,12 +16,12 @@ public class WindowConfigurator
         _log = log;
     }
 
-    public void Configure(Form owner, ToolStripMenuItem resolutionToolStripMenuItem)
+    public void Configure(Form owner, ToolStripMenuItem resolutionToolStripMenuItem, Resolution? suggestedResolution)
     {
         _terminalMatrixControl.CurrentCursorColor = 5;
-
         var resolutions = new TerminalResolutionList();
-        var resolution = resolutions.Get(Resolution.Pixels480x200Characters60x25);
+        suggestedResolution ??= Resolution.Pixels480x200Characters60x25;
+        var resolution = resolutions.Get(suggestedResolution.Value);
         _terminalMatrixControl.BorderWidth = resolution.BorderWidth;
         _terminalMatrixControl.BorderHeight = resolution.BorderHeight;
         _terminalMatrixControl.SetResolution(resolution.Resolution);
@@ -55,6 +56,7 @@ public class WindowConfigurator
                     i.Checked = true;
                     var iTag = (TerminalResolution)i.Tag!;
                     _terminalMatrixControl.SetResolution(iTag.Resolution);
+                    Settings.Default.Resolution = iTag.Resolution;
                     _terminalMatrixControl.BorderWidth = iTag.BorderWidth;
                     _terminalMatrixControl.BorderHeight = iTag.BorderHeight;
                     Application.DoEvents();

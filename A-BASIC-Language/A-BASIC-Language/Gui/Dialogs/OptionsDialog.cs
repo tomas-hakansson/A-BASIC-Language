@@ -6,9 +6,16 @@ namespace A_BASIC_Language.Gui.Dialogs;
 
 public partial class OptionsDialog : Form
 {
+    public bool HighQualityRendering { get; set; }
+
     public OptionsDialog()
     {
         InitializeComponent();
+    }
+
+    private void OptionsDialog_Load(object sender, EventArgs e)
+    {
+        chkHighQualityRendering.Checked = HighQualityRendering;
     }
 
     public Resolution Resolution
@@ -19,6 +26,7 @@ public partial class OptionsDialog : Form
 
     private void btnOk_Click(object sender, EventArgs e)
     {
+        HighQualityRendering = chkHighQualityRendering.Checked;
         DialogResult = DialogResult.OK;
     }
 }

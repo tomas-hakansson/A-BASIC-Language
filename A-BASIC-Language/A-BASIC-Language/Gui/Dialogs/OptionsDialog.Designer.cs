@@ -31,70 +31,85 @@ namespace A_BASIC_Language.Gui.Dialogs
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new Label();
-            terminalResolutionComboBox1 = new UserControls.TerminalResolutionComboBox();
-            btnOk = new Button();
-            btnCancel = new Button();
-            SuspendLayout();
+            this.label1 = new System.Windows.Forms.Label();
+            this.terminalResolutionComboBox1 = new A_BASIC_Language.Gui.UserControls.TerminalResolutionComboBox();
+            this.btnOk = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.chkHighQualityRendering = new System.Windows.Forms.CheckBox();
+            this.SuspendLayout();
             // 
             // label1
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(8, 8);
-            label1.Name = "label1";
-            label1.Size = new Size(111, 15);
-            label1.TabIndex = 0;
-            label1.Text = "Terminal resolution:";
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(7, 7);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(98, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Terminal resolution:";
             // 
             // terminalResolutionComboBox1
             // 
-            terminalResolutionComboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
-            terminalResolutionComboBox1.FormattingEnabled = true;
-            terminalResolutionComboBox1.Location = new Point(8, 24);
-            terminalResolutionComboBox1.Name = "terminalResolutionComboBox1";
-            terminalResolutionComboBox1.Resolution = TerminalMatrixNetFramework.Resolution.Pixels480x200Characters60x25;
-            terminalResolutionComboBox1.Size = new Size(328, 23);
-            terminalResolutionComboBox1.TabIndex = 1;
+            this.terminalResolutionComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.terminalResolutionComboBox1.FormattingEnabled = true;
+            this.terminalResolutionComboBox1.Location = new System.Drawing.Point(7, 21);
+            this.terminalResolutionComboBox1.Name = "terminalResolutionComboBox1";
+            this.terminalResolutionComboBox1.Resolution = TerminalMatrixNetFramework.Resolution.Pixels480x200Characters60x25;
+            this.terminalResolutionComboBox1.Size = new System.Drawing.Size(282, 21);
+            this.terminalResolutionComboBox1.TabIndex = 1;
             // 
             // btnOk
             // 
-            btnOk.Location = new Point(180, 76);
-            btnOk.Name = "btnOk";
-            btnOk.Size = new Size(75, 23);
-            btnOk.TabIndex = 2;
-            btnOk.Text = "OK";
-            btnOk.UseVisualStyleBackColor = true;
-            btnOk.Click += btnOk_Click;
+            this.btnOk.Location = new System.Drawing.Point(154, 88);
+            this.btnOk.Name = "btnOk";
+            this.btnOk.Size = new System.Drawing.Size(64, 20);
+            this.btnOk.TabIndex = 3;
+            this.btnOk.Text = "OK";
+            this.btnOk.UseVisualStyleBackColor = true;
+            this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
             // 
             // btnCancel
             // 
-            btnCancel.Location = new Point(260, 76);
-            btnCancel.Name = "btnCancel";
-            btnCancel.Size = new Size(75, 23);
-            btnCancel.TabIndex = 3;
-            btnCancel.Text = "Cancel";
-            btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnCancel.Location = new System.Drawing.Point(223, 88);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(64, 20);
+            this.btnCancel.TabIndex = 4;
+            this.btnCancel.Text = "Cancel";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            // 
+            // chkHighQualityRendering
+            // 
+            this.chkHighQualityRendering.AutoSize = true;
+            this.chkHighQualityRendering.Location = new System.Drawing.Point(12, 52);
+            this.chkHighQualityRendering.Name = "chkHighQualityRendering";
+            this.chkHighQualityRendering.Size = new System.Drawing.Size(128, 17);
+            this.chkHighQualityRendering.TabIndex = 2;
+            this.chkHighQualityRendering.Text = "High quality rendering";
+            this.chkHighQualityRendering.UseVisualStyleBackColor = true;
             // 
             // OptionsDialog
             // 
-            AcceptButton = btnOk;
-            AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
-            CancelButton = btnCancel;
-            ClientSize = new Size(343, 106);
-            Controls.Add(btnCancel);
-            Controls.Add(btnOk);
-            Controls.Add(terminalResolutionComboBox1);
-            Controls.Add(label1);
-            FormBorderStyle = FormBorderStyle.FixedDialog;
-            MaximizeBox = false;
-            MinimizeBox = false;
-            Name = "OptionsDialog";
-            ShowInTaskbar = false;
-            StartPosition = FormStartPosition.CenterParent;
-            Text = "Options";
-            ResumeLayout(false);
-            PerformLayout();
+            this.AcceptButton = this.btnOk;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.btnCancel;
+            this.ClientSize = new System.Drawing.Size(294, 113);
+            this.Controls.Add(this.chkHighQualityRendering);
+            this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.btnOk);
+            this.Controls.Add(this.terminalResolutionComboBox1);
+            this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "OptionsDialog";
+            this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Options";
+            this.Load += new System.EventHandler(this.OptionsDialog_Load);
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
         #endregion
@@ -103,5 +118,6 @@ namespace A_BASIC_Language.Gui.Dialogs
         private UserControls.TerminalResolutionComboBox terminalResolutionComboBox1;
         private Button btnOk;
         private Button btnCancel;
+        private CheckBox chkHighQualityRendering;
     }
 }

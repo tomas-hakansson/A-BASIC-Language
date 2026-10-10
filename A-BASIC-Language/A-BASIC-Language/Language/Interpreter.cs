@@ -507,6 +507,12 @@ public class Interpreter
                 End("");
             }
         }
+
+        if (_empty)
+        {
+            _terminal.WriteLine("");
+            _terminal.WriteLine("Ready.");
+        }
     }
 
     //private sealed record LoopFrame(string Symbol, double Limit, double Step, int Start, int End);

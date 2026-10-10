@@ -1,15 +1,15 @@
+using A_BASIC_Language.Gui;
+using A_BASIC_Language.Gui.Dialogs;
+using A_BASIC_Language.Language;
+using A_BASIC_Language.MainWindowControllers;
+using A_BASIC_Language.Properties;
+using A_BASIC_Language.StringManipulation;
 using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Windows.Forms;
-using A_BASIC_Language.Gui;
-using A_BASIC_Language.Gui.Dialogs;
-using A_BASIC_Language.Language;
-using A_BASIC_Language.MainWindowControllers;
-using A_BASIC_Language.StringManipulation;
 using TerminalMatrixNetFramework;
 using TerminalMatrixNetFramework.Events;
 
@@ -48,8 +48,13 @@ public partial class MainWindow : Form
         base.OnFormClosed(e);
     }
 
-    private void MainWindow_Load(object sender, EventArgs e) =>
-        new WindowConfigurator(terminalMatrixControl1, _log).Configure(this, resolutionToolStripMenuItem);
+    private void MainWindow_Load(object sender, EventArgs e)
+    {
+        var highQualityRendering = Settings.Default.HighQualityRendering;
+        highQualityRenderingToolStripMenuItem.Checked = highQualityRendering;
+        terminalMatrixControl1.RenderingMode = highQualityRendering ? RenderingMode.HighQuality : RenderingMode.HighSpeed;
+        new WindowConfigurator(terminalMatrixControl1, _log).Configure(this, resolutionToolStripMenuItem, Settings.Default.Resolution);
+    }
 
     private void exitToolStripMenuItem_Click(object sender, EventArgs e) =>
         Close();
@@ -174,6 +179,7 @@ public partial class MainWindow : Form
     {
         highQualityRenderingToolStripMenuItem.Checked = !highQualityRenderingToolStripMenuItem.Checked;
         terminalMatrixControl1.RenderingMode = highQualityRenderingToolStripMenuItem.Checked ? RenderingMode.HighQuality : RenderingMode.HighSpeed;
+        Settings.Default.HighQualityRendering = highQualityRenderingToolStripMenuItem.Checked;
         Refresh();
     }
 
@@ -182,15 +188,19 @@ public partial class MainWindow : Form
 
     public void ToggleFullscreen(bool warn)
     {
-        if (warn && !fullscreenToolStripMenuItem.Checked)
+        if (warn)
         {
-            if (MsgBox.Ask(this, "Enter fullscreen mode? Use F11 to exit."))
+            if (!fullscreenToolStripMenuItem.Checked)
             {
-                new FullScreenController(this, menuStrip1, toolStrip1, statusStrip1).Set(true, terminalMatrixControl1);
-                fullscreenToolStripMenuItem.Checked = !fullscreenToolStripMenuItem.Checked;
-                _log.Write("Enter fullscreen (F11 to exit)");
-                return;
+                if (MsgBox.Ask(this, "Enter fullscreen mode? Use F11 to exit."))
+                {
+                    new FullScreenController(this, menuStrip1, toolStrip1, statusStrip1).Set(true, terminalMatrixControl1);
+                    fullscreenToolStripMenuItem.Checked = !fullscreenToolStripMenuItem.Checked;
+                    _log.Write("Enter fullscreen (F11 to exit)");
+                }
             }
+
+            return;
         }
 
         fullscreenToolStripMenuItem.Checked = !fullscreenToolStripMenuItem.Checked;
@@ -207,64 +217,34 @@ public partial class MainWindow : Form
         }
     }
 
-    private void onlineHelpToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-        try
-        {
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = "https://abl.winsoft.se/",
-                UseShellExecute = true
-            };
-            Process.Start(startInfo);
-        }
-        catch (Exception ex)
-        {
-            MsgBox.Fail(this, ex.Message, @"Failed to open online help");
-        }
-    }
+    private void onlineHelpToolStripMenuItem_Click(object sender, EventArgs e) =>
+        VersionService.GetOnlineHelp(this);
 
-    private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-        var asm = Assembly.GetExecutingAssembly();
-        var vInfo = FileVersionInfo.GetVersionInfo(asm.Location);
-        var v = vInfo.ProductVersion!.Split(['.', '+']);
+    private void aboutToolStripMenuItem_Click(object sender, EventArgs e) =>
+        MsgBox.Tell(this, VersionService.GetAboutBoxText(), @"About ABL");
 
-        MsgBox.Tell(this, $@"ABL - A BASIC Language v{v[0]}.{v[1]}
-
-An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom", @"About ABL");
-    }
-
-    private void versionHistoryToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-        try
-        {
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = "https://github.com/tomas-hakansson/A-BASIC-Language/blob/master/README.md",
-                UseShellExecute = true
-            };
-            Process.Start(startInfo);
-        }
-        catch (Exception ex)
-        {
-            MsgBox.Fail(this, ex.Message, @"Failed to open version history");
-        }
-    }
+    private void versionHistoryToolStripMenuItem_Click(object sender, EventArgs e) =>
+        VersionService.GetVersionHistory(this);
 
     private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
     {
         using var x = new OptionsDialog();
         x.Resolution = terminalMatrixControl1.Resolution;
+        x.HighQualityRendering = highQualityRenderingToolStripMenuItem.Checked;
 
         if (x.ShowDialog(this) != DialogResult.OK)
             return;
 
-        if (terminalMatrixControl1.Resolution == x.Resolution)
-            return;
+        if (terminalMatrixControl1.Resolution != x.Resolution)
+        {
+            terminalMatrixControl1.SetResolution(x.Resolution);
+            terminalMatrixControl1.WriteLine("Changed resolution.");
+        }
 
-        terminalMatrixControl1.SetResolution(x.Resolution);
-        terminalMatrixControl1.WriteLine("Changed resolution.");
+        if (x.HighQualityRendering != highQualityRenderingToolStripMenuItem.Checked)
+        {
+            highQualityRenderingToolStripMenuItem_Click(sender, e);
+        }
     }
 
     private void btnOptions_Click(object sender, EventArgs e) =>
@@ -325,4 +305,16 @@ An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom", @"Abo
 
     private void btnPlay_Click(object sender, EventArgs e) =>
         runToolStripMenuItem_Click(sender, e);
+
+    private void MainWindow_FormClosed(object sender, FormClosedEventArgs e)
+    {
+        try
+        {
+            Settings.Default.Save();
+        }
+        catch
+        {
+            // ignored
+        }
+    }
 }
