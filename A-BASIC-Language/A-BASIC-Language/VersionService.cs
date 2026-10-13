@@ -6,9 +6,16 @@ using System.Windows.Forms;
 
 namespace A_BASIC_Language;
 
-public static class VersionService
+public class VersionService
 {
-    public static string GetCurrentVersion()
+    private readonly MsgBox _msgBox;
+
+    public VersionService(Form owner)
+    {
+        _msgBox = new MsgBox(owner);
+    }
+
+    public string GetCurrentVersion()
     {
         var asm = Assembly.GetExecutingAssembly();
         var vInfo = FileVersionInfo.GetVersionInfo(asm.Location);
@@ -16,7 +23,7 @@ public static class VersionService
         return $"{v[0]}.{v[1]}";
     }
 
-    public static string GetAboutBoxText()
+    public string GetAboutBoxText()
     {
         var v = GetCurrentVersion();
         return $@"ABL - A BASIC Language v{v}
@@ -24,7 +31,7 @@ public static class VersionService
 An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom";
     }
 
-    public static void GetOnlineHelp(Form owner)
+    public void GetOnlineHelp()
     {
         try
         {
@@ -37,11 +44,11 @@ An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom";
         }
         catch (Exception ex)
         {
-            MsgBox.Fail(owner, ex.Message, @"Failed to open online help");
+            _msgBox.Fail(ex.Message, @"Failed to open online help");
         }
     }
 
-    public static void GetVersionHistory(Form owner)
+    public void GetVersionHistory()
     {
         try
         {
@@ -54,7 +61,7 @@ An Altair BASIC player, written by Tomas Håkansson and Anders Hesselbom";
         }
         catch (Exception ex)
         {
-            MsgBox.Fail(owner, ex.Message, @"Failed to open version history");
+            _msgBox.Fail(ex.Message, @"Failed to open version history");
         }
     }
 }

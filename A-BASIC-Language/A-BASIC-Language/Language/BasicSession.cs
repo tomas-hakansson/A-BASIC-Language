@@ -22,15 +22,13 @@ public sealed class BasicSession
 
         command = command.Trim();
         
-        if (command.Equals("LIST", StringComparison.OrdinalIgnoreCase) ||
-            (command.StartsWith("LIST", StringComparison.OrdinalIgnoreCase) &&
-             command.Length > 4 && (char.IsWhiteSpace(command[4]) ||
-                                    (command[4] >= '0' && command[4] <= '9') || command[4] == '-')))
+        if (command.Equals("LIST", StringComparison.OrdinalIgnoreCase) || (command.StartsWith("LIST", StringComparison.OrdinalIgnoreCase) && command.Length > 4 && (char.IsWhiteSpace(command[4]) || (command[4] >= '0' && command[4] <= '9') || command[4] == '-')))
         {
             if (TryParseListRange(command.Substring(4), out var first, out var last))
                 listProgram(first, last);
             else
                 terminal.WriteLine("?Invalid LIST range");
+
             terminal.WriteLine("");
             terminal.WriteLine("Ready.");
             return;
@@ -44,6 +42,7 @@ public sealed class BasicSession
             terminal.WriteLine("Ready.");
             return;
         }
+
         var runtime = command.Equals("RUN", StringComparison.OrdinalIgnoreCase);
         
         if (runtime)
@@ -67,10 +66,12 @@ public sealed class BasicSession
     {
         first = last = null;
         argument = argument.Trim();
+        
         if (argument.Length == 0)
             return true;
 
         var match = Regex.Match(argument, @"\A(?:([0-9]+)|([0-9]*)\s*-\s*([0-9]*))\z");
+
         if (!match.Success)
             return false;
 
@@ -78,12 +79,14 @@ public sealed class BasicSession
         {
             if (!int.TryParse(match.Groups[1].Value, out var line))
                 return false;
+
             first = last = line;
             return true;
         }
 
         var firstText = match.Groups[2].Value;
         var lastText = match.Groups[3].Value;
+
         if (firstText.Length == 0 && lastText.Length == 0)
             return false;
 

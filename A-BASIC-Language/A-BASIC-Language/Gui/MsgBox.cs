@@ -2,20 +2,36 @@
 
 namespace A_BASIC_Language.Gui;
 
-public static class MsgBox
+public interface IMsgBox
 {
-    public static bool Ask(Form owner, string prompt) =>
-        MessageBox.Show(owner, prompt, owner.Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes;
+    bool Ask(string prompt);
+    void Fail(string prompt);
+    void Fail(string prompt, string text);
+    void Tell(string prompt);
+    void Tell(string prompt, string text);
+}
 
-    public static void Fail(Form owner, string prompt) =>
-        MessageBox.Show(owner, prompt, owner.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+public class MsgBox : IMsgBox
+{
+    private readonly Form _owner;
 
-    public static void Fail(Form owner, string prompt, string text) =>
-        MessageBox.Show(owner, prompt, text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+    public MsgBox(Form owner)
+    {
+        _owner = owner;
+    }
 
-    public static void Tell(Form owner, string prompt) =>
-        MessageBox.Show(owner, prompt, owner.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+    public bool Ask(string prompt) =>
+        MessageBox.Show(_owner, prompt, _owner.Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes;
 
-    public static void Tell(Form owner, string prompt, string text) =>
-        MessageBox.Show(owner, prompt, text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+    public void Fail(string prompt) =>
+        MessageBox.Show(_owner, prompt, _owner.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+    public void Fail(string prompt, string text) =>
+        MessageBox.Show(_owner, prompt, text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+    public void Tell(string prompt) =>
+        MessageBox.Show(_owner, prompt, _owner.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+    public void Tell(string prompt, string text) =>
+        MessageBox.Show(_owner, prompt, text, MessageBoxButtons.OK, MessageBoxIcon.Information);
 }

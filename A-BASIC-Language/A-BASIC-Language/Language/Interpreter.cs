@@ -472,7 +472,11 @@ public class Interpreter
                                 if (_data.Count > 0)
                                 {
                                     var value = _data.Pop();
-                                    _terminal.Write(value.ToString() ?? "");
+                                    var text = value.ToString() ?? "";
+                                    // PRINT reserves a sign position and adds a trailing space for numbers.
+                                    if (value is IntValue || value is FloatValue)
+                                        text = (text.StartsWith("-", StringComparison.Ordinal) ? "" : " ") + text + " ";
+                                    _terminal.Write(text);
                                 }
                                 else
                                 {

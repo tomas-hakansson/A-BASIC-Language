@@ -15,6 +15,27 @@ internal static class Program
         using var status = new ToolStripStatusLabel();
         using var font = new Font(FontFamily.GenericMonospace, 10);
         var log = new Log(status, font);
+        foreach (var test in new[]
+        {
+            ("A%=42", "A%", "text 42 text"),
+            ("A%=-42", "A%", "text-42 text"),
+            ("A%=0", "A%", "text 0 text"),
+            ("A=2.5", "A", "text 2.5 text"),
+            ("A=-2.5", "A", "text-2.5 text"),
+            ("A$=\"42\"", "A$", "text42text")
+        })
+        {
+            var terminal = new FakeTerminal(() => throw new Exception("PRINT requested input."));
+            new Interpreter($"10 LET {test.Item1}\n20 PRINT \"text\";{test.Item2};\"text\"", true, log, new RuntimeState()).Run(terminal);
+            Require(terminal.Lines.Contains(test.Item3), "Wrong PRINT formatting for " + test.Item1);
+        }
+        {
+            var terminal = new FakeTerminal(() => throw new Exception("PRINT requested input."));
+            new Interpreter("10 PRINT 4;2;\n20 PRINT \"X\"\n30 PRINT 1,2", true, log, new RuntimeState()).Run(terminal);
+            Require(terminal.Lines.Contains(" 4  2 X"), "Wrong PRINT spacing or trailing semicolon.");
+            Require(terminal.Lines.Contains(" 1 " + new string(' ', 11) + " 2 "), "Wrong PRINT comma zone.");
+        }
+        Console.WriteLine("All PRINT formatting regression checks passed (8 cases).");
         var listCases = new[]
         {
             ("LIST", (int?)null, (int?)null), ("LIST 10", (int?)10, (int?)10),

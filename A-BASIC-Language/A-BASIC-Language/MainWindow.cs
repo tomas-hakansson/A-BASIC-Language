@@ -17,6 +17,8 @@ namespace A_BASIC_Language;
 
 public partial class MainWindow : Form
 {
+    private readonly IMsgBox _msgBox;
+    private readonly VersionService _versionService;
     private readonly BasicSession _session = new();
     private bool _logVisible;
     private readonly Log _log;
@@ -30,6 +32,8 @@ public partial class MainWindow : Form
 #if !DEBUG
         _promptQuit = true;
 #endif
+        _msgBox = new MsgBox(this);
+        _versionService = new VersionService(this);
         _logVisible = false;
         _log = new Log(lblUserAction, new Font(FontFamily.GenericMonospace, 9, FontStyle.Regular));
     }
@@ -192,7 +196,7 @@ public partial class MainWindow : Form
         {
             if (!fullscreenToolStripMenuItem.Checked)
             {
-                if (MsgBox.Ask(this, "Enter fullscreen mode? Use F11 to exit."))
+                if (_msgBox.Ask("Enter fullscreen mode? Use F11 to exit."))
                 {
                     new FullScreenController(this, menuStrip1, toolStrip1, statusStrip1).Set(true, terminalMatrixControl1);
                     fullscreenToolStripMenuItem.Checked = !fullscreenToolStripMenuItem.Checked;
@@ -218,13 +222,13 @@ public partial class MainWindow : Form
     }
 
     private void onlineHelpToolStripMenuItem_Click(object sender, EventArgs e) =>
-        VersionService.GetOnlineHelp(this);
+        _versionService.GetOnlineHelp();
 
     private void aboutToolStripMenuItem_Click(object sender, EventArgs e) =>
-        MsgBox.Tell(this, VersionService.GetAboutBoxText(), @"About ABL");
+        _msgBox.Tell(_versionService.GetAboutBoxText(), @"About ABL");
 
     private void versionHistoryToolStripMenuItem_Click(object sender, EventArgs e) =>
-        VersionService.GetVersionHistory(this);
+        _versionService.GetVersionHistory();
 
     private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
     {
@@ -267,7 +271,7 @@ public partial class MainWindow : Form
 
             if (process.MainModule == null)
             {
-                MsgBox.Fail(this, @"Failed to open the BASIC source files from running process.", @"Failed to open BASIC source files");
+                _msgBox.Fail(@"Failed to open the BASIC source files from running process.", @"Failed to open BASIC source files");
                 return;
             }
 
@@ -275,7 +279,7 @@ public partial class MainWindow : Form
 
             if (string.IsNullOrWhiteSpace(exeFolder))
             {
-                MsgBox.Fail(this, @"Failed to open the BASIC source files from directory of running process.", @"Failed to open BASIC source files");
+                _msgBox.Fail(@"Failed to open the BASIC source files from directory of running process.", @"Failed to open BASIC source files");
                 return;
             }
 
@@ -293,7 +297,7 @@ public partial class MainWindow : Form
         }
         catch (Exception exception)
         {
-            MsgBox.Fail(this, exception.Message, @"Failed to open BASIC source files");
+            _msgBox.Fail(exception.Message, @"Failed to open BASIC source files");
         }
     }
 
