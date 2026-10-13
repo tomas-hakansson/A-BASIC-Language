@@ -34,7 +34,7 @@ public class Interpreter
         var parser = new Parser(source, direct: !runtime);
         _parseResult = parser.Result;
         _variables = state == null ? new Dictionary<string, ValueBase>() : state.Variables;
-        _dimVariables = state.Arrays;
+        _dimVariables = state == null ? new Dictionary<string, Dimension>() : state.Arrays;
         _data = new Stack<ValueBase>();
         _random = new Random();
         _currentLineNumber = 0;
@@ -368,6 +368,7 @@ public class Interpreter
 
                                     happy = false;
                                     var input = _terminal.InputString("");
+
                                     if (_terminal.QuitFlag || UserBreak)
                                         break;
 
@@ -473,9 +474,10 @@ public class Interpreter
                                 {
                                     var value = _data.Pop();
                                     var text = value.ToString() ?? "";
-                                    // PRINT reserves a sign position and adds a trailing space for numbers.
+                                    
                                     if (value is IntValue || value is FloatValue)
                                         text = (text.StartsWith("-", StringComparison.Ordinal) ? "" : " ") + text + " ";
+                                    
                                     _terminal.Write(text);
                                 }
                                 else
@@ -519,8 +521,6 @@ public class Interpreter
         }
     }
 
-    //private sealed record LoopFrame(string Symbol, double Limit, double Step, int Start, int End);
-
     private sealed record LoopFrame
     {
         public string Symbol { get; }
@@ -538,7 +538,6 @@ public class Interpreter
             End = end;
         }
     }
-
 
     private Dictionary<int, int> MatchLoops()
     {
@@ -560,10 +559,7 @@ public class Interpreter
             }
         }
 
-        if (pending.Count > 0)
-            throw new InvalidOperationException("FOR without NEXT.");
-
-        return result;
+        return pending.Count > 0 ? throw new InvalidOperationException("FOR without NEXT.") : result;
     }
 
     private static double Number(ValueBase value)
@@ -574,7 +570,7 @@ public class Interpreter
         return (double)value.GetValueAsType<FloatValue>();
     }
 
-    void End(string message, bool showReady = true)
+    private void End(string message, bool showReady = true)
     {
         EndMessageDisplayed = true;
 
