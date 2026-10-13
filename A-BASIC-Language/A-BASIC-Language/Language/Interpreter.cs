@@ -504,7 +504,7 @@ public class Interpreter
             }
             else if (_runtime)
             {
-                End("Program has run through.");
+                End("Program has run through.", showReady: false);
             }
             else
             {
@@ -574,7 +574,7 @@ public class Interpreter
         return (double)value.GetValueAsType<FloatValue>();
     }
 
-    void End(string message)
+    void End(string message, bool showReady = true)
     {
         EndMessageDisplayed = true;
 
@@ -587,7 +587,10 @@ public class Interpreter
             _terminal.WriteLine(string.IsNullOrWhiteSpace(message) ? TheProgramHasEnded : message);
         }
 
-        _terminal.WriteLine("");
-        _terminal.WriteLine("Ready.");
+        if (showReady)
+        {
+            _terminal.WriteLine("");
+            _terminal.WriteLine("Ready.");
+        }
     }
 }

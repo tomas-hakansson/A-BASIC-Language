@@ -36,6 +36,15 @@ internal static class Program
             Require(terminal.Lines.Contains(" 1 " + new string(' ', 11) + " 2 "), "Wrong PRINT comma zone.");
         }
         Console.WriteLine("All PRINT formatting regression checks passed (8 cases).");
+        foreach (var runtime in new[] { false, true })
+        {
+            var terminal = new FakeTerminal(() => throw new Exception("Completion requested input."));
+            new Interpreter(runtime ? "10 PRINT \"DONE\"" : "PRINT \"DONE\"", runtime, log, new RuntimeState()).Run(terminal);
+            Require(terminal.Lines.Contains("DONE"), "Program did not execute.");
+            Require(terminal.Lines.Count(s => s == "Program has run through.") == (runtime ? 1 : 0), "Wrong completion message.");
+            Require(terminal.Lines.Count(s => s == "Ready.") == (runtime ? 0 : 1), "Wrong completion prompt.");
+        }
+        Console.WriteLine("All completion message regression checks passed (2 cases).");
         var listCases = new[]
         {
             ("LIST", (int?)null, (int?)null), ("LIST 10", (int?)10, (int?)10),
@@ -98,7 +107,8 @@ internal static class Program
             Require(terminal.InputCalls == 2, "Invalid numeric input did not retry.");
             Require(terminal.Lines.Any(s => s.Contains("Redo")), "Missing retry message.");
             Require(terminal.Lines.Any(s => s.Contains("AFTER")), "Valid input did not continue execution.");
-            Require(terminal.Lines.Contains("Ready."), "Normal execution did not finish.");
+            Require(terminal.Lines.Contains("Program has run through."), "Normal execution did not finish.");
+            Require(!terminal.Lines.Contains("Ready."), "Normal execution printed an extra ready message.");
         }
         Console.WriteLine("All input break regression checks passed (6 break cases, 2 retry cases).");
     }
