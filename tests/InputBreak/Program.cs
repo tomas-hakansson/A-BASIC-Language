@@ -17,6 +17,45 @@ internal static class Program
         var log = new Log(status, font);
         foreach (var test in new[]
         {
+            ("10 DEF FNA(Z)=30*EXP(-Z*Z/100)\n20 PRINT FNA(0)", " 30 "),
+            ("10 DEF FN A(Z)=Z*Z\n20 PRINT FN A(2+3)", " 25 "),
+            ("10 Z=99\n20 DEF FNA(Z)=Z+1\n30 PRINT FNA(4);Z", " 5  99 "),
+            ("10 K=2\n20 DEF FNA(Z)=Z*K\n30 K=3\n40 PRINT FNA(4)", " 12 "),
+            ("10 DEF FNA(Z)=Z+1\n20 DEF FNB(Z)=FNA(Z*2)+Z\n30 PRINT 10+FNB(3)*2", " 30 "),
+            ("10 DEF FNA(Z)=Z+1\n20 PRINT FNA(FNA(2))", " 4 "),
+            ("10 PRINT FNA(1)", "Undefined function FN A."),
+            ("10 DEF FNA(Z)=Z\n20 PRINT FNA(\"X\")", "Type mismatch"),
+            ("10 DEF FNA(Z)=\"X\"\n20 PRINT FNA(1)", "Type mismatch"),
+            ("10 DEF FNA(Z)=FNA(Z)\n20 PRINT FNA(1)", "nesting limit"),
+            ("10 DEF FNA(Z)=Z+1\n20 DEF FNA(Z)=Z+2\n30 PRINT FNA(1)", " 3 ")
+        })
+        {
+            var terminal = new FakeTerminal(() => throw new Exception("FN requested input."));
+            new Interpreter(test.Item1, true, log, new RuntimeState()).Run(terminal);
+            Require(terminal.Lines.Any(line => line.Contains(test.Item2)), "FN failed: " + test.Item1 + " => " + string.Join("|", terminal.Lines));
+        }
+        foreach (var source in new[] { "10 DEF FNA(Z)=", "10 DEF FNA(Z$)=Z", "10 DEF A(Z)=Z", "10 PRINT FNA(1,2)" })
+            Require(!new Parser(source).Result.Success, "Invalid FN syntax accepted: " + source);
+        {
+            var state = new RuntimeState();
+            var terminal = new FakeTerminal(() => throw new Exception("FN requested input."));
+            new Interpreter("DEF FN a(z)=1/z", false, log, state).Run(terminal);
+            Require(!terminal.Lines.Any(line => line.StartsWith("?")), "DEF evaluated its body prematurely.");
+            new Interpreter("PRINT FN A(2)", false, log, state).Run(terminal);
+            Require(terminal.Lines.Contains(" 0.5 "), "Direct FN definition did not persist.");
+            state.Clear();
+            Require(state.Functions.Count == 0, "Session clear retained FN definitions.");
+        }
+        {
+            var terminal = new FakeTerminal(() => throw new Exception("3dplot requested input."));
+            var source = System.IO.File.ReadAllText("A-BASIC-Language/A-BASIC-Language/Games/Source/3dplot.bas");
+            new Interpreter(source, true, log, new RuntimeState()).Run(terminal);
+            Require(!terminal.Lines.Any(line => line.StartsWith("?")), "3dplot failed: " + string.Join("|", terminal.Lines));
+            Require(terminal.Lines.Count(line => line.Contains("*")) == 41, "3dplot did not produce all plot rows.");
+        }
+        Console.WriteLine("All DEF FN checks passed, including 3dplot.bas.");
+        foreach (var test in new[]
+        {
             ("A%=42", "A%", "text 42 text"),
             ("A%=-42", "A%", "text-42 text"),
             ("A%=0", "A%", "text 0 text"),

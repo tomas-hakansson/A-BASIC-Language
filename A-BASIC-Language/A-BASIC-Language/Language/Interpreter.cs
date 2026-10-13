@@ -21,6 +21,7 @@ public class Interpreter
     readonly Dictionary<string, ValueBase>? _variables;//Ponder: do the value need to be nullable?
     readonly Dictionary<string, Dimension> _dimVariables;
     readonly Stack<ValueBase> _data;
+    readonly Dictionary<string, ABL_FunctionDefinition> _functions;
     bool EndMessageDisplayed { get; set; }
     Random _random;//Note: For the RND function.
     int _currentLineNumber;
@@ -36,6 +37,7 @@ public class Interpreter
         _variables = state == null ? new Dictionary<string, ValueBase>() : state.Variables;
         _dimVariables = state == null ? new Dictionary<string, Dimension>() : state.Arrays;
         _data = new Stack<ValueBase>();
+        _functions = state == null ? new Dictionary<string, ABL_FunctionDefinition>(StringComparer.OrdinalIgnoreCase) : state.Functions;
         _random = new Random();
         _currentLineNumber = 0;
     }
@@ -90,8 +92,21 @@ public class Interpreter
         var matchingNext = MatchLoops();
         var loops = new Stack<LoopFrame>();
 
-        for (var i = 0; i < _parseResult.EvalValues.Count; i++)
+        var instructions = _parseResult.EvalValues;
+        // Switch instruction streams on FN calls; return with one numeric result.
+        var calls = new Stack<(List<ABL_EvalValue> Instructions, int Index, string Parameter, ValueBase Argument, int StackDepth)>();
+        for (var i = 0; i < instructions.Count || calls.Count > 0; i++)
         {
+            if (i >= instructions.Count)
+            {
+                var frame = calls.Pop();
+                if (_data.Count != frame.StackDepth + 1)
+                    throw new InvalidOperationException("Invalid FN result stack.");
+                Number(_data.Peek());
+                instructions = frame.Instructions;
+                i = frame.Index;
+                continue;
+            }
             _terminal.PumpEvents();
 
             if (endProgram || _terminal.QuitFlag)
@@ -106,11 +121,26 @@ public class Interpreter
                 break;
             }
 
-            var e = _parseResult.EvalValues[i];
+            var e = instructions[i];
             _log.Write(e.ToString());
 
             switch (e)
             {
+                case ABL_FunctionDefinition definition:
+                    _functions[definition.Name] = definition;
+                    break;
+                case ABL_FunctionCall call:
+                {
+                    if (!_functions.TryGetValue(call.Name, out var function))
+                        throw new InvalidOperationException($"Undefined function FN {call.Name}.");
+                    if (calls.Count >= 256)
+                        throw new InvalidOperationException("FN call nesting limit exceeded.");
+                    var argument = new FloatValue(Number(_data.Pop()));
+                    calls.Push((instructions, i, function.Parameter, argument, _data.Count));
+                    instructions = function.Body;
+                    i = -1;
+                    break;
+                }
                 case ABL_For loop:
                 {
                     var step = Number(_data.Pop());
@@ -161,7 +191,11 @@ public class Interpreter
                     dimExecutor.Create(dc);
                     break;
                 case ABL_Variable v:
-                    flatVariableExecutor.Create(v);
+                    // Only the current function's parameter shadows a global variable.
+                    if (calls.Count > 0 && calls.Peek().Parameter == v.Symbol)
+                        _data.Push(calls.Peek().Argument);
+                    else
+                        flatVariableExecutor.Create(v);
                     break;
                 case ABL_DIM_Variable dv:
                     dimExecutor.Read(dv);
@@ -265,6 +299,9 @@ public class Interpreter
                                     Fail("The stack is empty");
                                 }
                             }
+                            break;
+                        case "EXP":
+                            _data.Push(new FloatValue(Math.Exp(Number(_data.Pop()))));
                             break;
                         case "#END-PROGRAM":
                             endProgram = true;

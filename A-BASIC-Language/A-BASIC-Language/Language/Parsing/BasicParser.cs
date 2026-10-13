@@ -16,6 +16,7 @@ public class BasicParser
     readonly List<(int index, string message)> _parseErrors;
     bool _parsingIf;
     int _generatedLabel;
+    List<ABL_EvalValue>? _expressionTarget;
     public ParseResult Result { get; }
 
     public BasicParser(string source, bool direct = false)
@@ -135,6 +136,9 @@ public class BasicParser
                 }
                 switch (statement)
                 {
+                    case "DEF":
+                        DefineFunction();
+                        break;
                     case "FOR":
                         For();
                         break;
@@ -625,9 +629,31 @@ public class BasicParser
             Generate(new ABL_Procedure("#NEXT-LINE"));
     }
 
-    /// <summary>
-    /// Calls the operator of the lowest precedence.
-    /// </summary>
+    void DefineFunction()
+    {
+        if (!Maybe("FN")) throw new InvalidOperationException("Expected FN after DEF.");
+        var name = ReadFunctionSymbol();
+        if (!Maybe('(')) throw new InvalidOperationException("Expected function parameter.");
+        var parameter = ReadFunctionSymbol();
+        if (!Maybe(')') || !Maybe('=')) throw new InvalidOperationException("Expected )= in DEF FN.");
+        var body = new List<ABL_EvalValue>();
+        // Compile the body once, using the ordinary expression grammar.
+        _expressionTarget = body;
+        try { Expression(); }
+        finally { _expressionTarget = null; }
+        Generate(new ABL_FunctionDefinition(name, parameter, body));
+    }
+
+    string ReadFunctionSymbol()
+    {
+        var match = VariableRegex().Match(_source, _index);
+        if (!match.Success) throw new InvalidOperationException("Expected numeric function name or parameter.");
+        _index += match.Length;
+        SkipWhitespace();
+        return match.Value.ToUpperInvariant();
+    }
+
+    /// <summary>Calls the operator of the lowest precedence.</summary>
     void Expression() => Precedence_5_Operator();
 
     void Precedence_5_Operator()
@@ -710,45 +736,14 @@ public class BasicParser
         else
         {
             if (Maybe("FN"))//Note: user defined function.
-            {//todo: Implement.
-                var isVar = VariableRegex().Match(_source, _index);
-
-                if (isVar.Success)
-                {
-                    //var match = isVar.Groups.Cast<Group>().First(g => g.Name == "var");
-
-                    if (!Maybe('('))
-                    {
-                        ParseError("Expected opening parenthesis sign in Atom");
-                        if (_parsingIf)
-                            SkipLine();
-                        else
-                            SkipStatement();
-                        return;
-                    }
-                    Expression();
-
-                    if (!Maybe(')'))
-                    {
-                        ParseError("Expected closing parenthesis sign in Atom");
-                        if (_parsingIf)
-                            SkipLine();
-                        else
-                            SkipStatement();
-                    }
-                    //todo: generate for user defined functions.
-                    //Generate($"userDefinedFunction({name})");
-                    return;
-                }
-
-                ParseError("Expected user defined function in Atom");
-                if (_parsingIf)
-                    SkipLine();
-                else
-                    SkipStatement();
+            {
+                var name = ReadFunctionSymbol();
+                if (!Maybe('(')) throw new InvalidOperationException("Expected ( in FN call.");
+                Expression();
+                if (!Maybe(')')) throw new InvalidOperationException("Expected ) in FN call.");
+                Generate(new ABL_FunctionCall(name));
                 return;
             }
-
             if (Maybe('"', false))
             {
                 if (AString(out var newString))
@@ -872,6 +867,11 @@ public class BasicParser
 
     void Generate(params ABL_EvalValue[] values)
     {
+        if (_expressionTarget != null)
+        {
+            _expressionTarget.AddRange(values);
+            return;
+        }
         List<ABL_EvalValue> evalValues = new();
         foreach (ABL_EvalValue value in values)
             evalValues.Add(value);
@@ -980,7 +980,7 @@ public class BasicParser
     }
 
     static Regex StatementRegex() =>
-        new(@"\G(?<statement>FOR|NEXT|DIM|END|GO|IF|INPUT|LET|PRINT|RANDOMIZE|REM|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>DEF|FOR|NEXT|DIM|END|GO|IF|INPUT|LET|PRINT|RANDOMIZE|REM|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);
