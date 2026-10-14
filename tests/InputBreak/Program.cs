@@ -75,6 +75,27 @@ internal static class Program
             Require(terminal.Lines.Contains(" 1 " + new string(' ', 11) + " 2 "), "Wrong PRINT comma zone.");
         }
         Console.WriteLine("All PRINT formatting regression checks passed (8 cases).");
+        foreach (var test in new[]
+        {
+            ("10 PRINT TAB(5);\"*\";TAB(10);\"*\"", new[] { "    *    *" }),
+            ("10 PRINT \"AB\";\n20 PRINT TAB(5);\"*\"", new[] { "AB  *" }),
+            ("10 PRINT \"AB\";TAB(3);\"*\"", new[] { "AB*" }),
+            ("10 PRINT \"AB\";TAB(1);\"*\"", new[] { "AB", "*" })
+        })
+        {
+            var terminal = new FakeTerminal(() => throw new Exception("TAB requested input."));
+            new Interpreter(test.Item1, true, log, new RuntimeState()).Run(terminal);
+            Require(terminal.Lines.Take(test.Item2.Length).SequenceEqual(test.Item2), "Wrong absolute TAB positioning.");
+        }
+        {
+            var terminal = new FakeTerminal(() => throw new Exception("3D plot requested input."));
+            var source = System.IO.File.ReadAllText("A-BASIC-Language/A-BASIC-Language/Games/Source/3dplot.bas");
+            new Interpreter(source, true, log, new RuntimeState()).Run(terminal);
+            var plot = terminal.Lines.Where(line => line.Contains("*")).ToArray();
+            Require(plot.Length == 41, "3D plot should have 41 rows.");
+            Require(plot.All(line => line.Length <= 55), "3D plot exceeds its expected width.");
+        }
+        Console.WriteLine("All TAB and 3D plot regression checks passed.");
         foreach (var runtime in new[] { false, true })
         {
             var terminal = new FakeTerminal(() => throw new Exception("Completion requested input."));

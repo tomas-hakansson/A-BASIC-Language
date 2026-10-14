@@ -496,7 +496,11 @@ public class Interpreter
                                     var x = _data.Pop();
                                     //TODO: Type checking
                                     var count = (int)x.GetValueAsType<IntValue>();
-                                    var result = new string(' ', count);
+                                    // BASIC TAB uses one-based absolute columns.
+                                    var targetColumn = Math.Max(0, count - 1);
+                                    if (targetColumn < _terminal.OutputColumn)
+                                        _terminal.WriteLine("");
+                                    var result = new string(' ', targetColumn - _terminal.OutputColumn);
                                     _data.Push(new StringValue(result));
                                 }
                                 else
