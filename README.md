@@ -112,8 +112,8 @@ Of the 101 games, we support the ones followed by a 1:
 | train             |           |
 | trap              |           |
 | war               |           |
-| wekday            |           |
-| word              |           |
+| weekday           |     0     |
+| word              |     0     |
 
 ## Documentation
 
