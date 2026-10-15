@@ -39,28 +39,30 @@ namespace A_BASIC_Language
             this.openFrom101BASICComputerGamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fullscreenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.debugOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resolutionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.highQualityRenderingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.programToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.runToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.onlineHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.versionHistoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.btnDebug = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.btnPlay = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.btnOptions = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblCursPos = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblUserAction = new System.Windows.Forms.ToolStripStatusLabel();
             this.terminalMatrixControl1 = new TerminalMatrixNetFramework.TerminalMatrixControl();
+            this.btnDebug = new System.Windows.Forms.ToolStripButton();
+            this.btnPlay = new System.Windows.Forms.ToolStripButton();
+            this.btnOptions = new System.Windows.Forms.ToolStripButton();
+            this.debugOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.runToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.textEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -129,14 +131,6 @@ namespace A_BASIC_Language
             this.fullscreenToolStripMenuItem.Text = "Fullscreen";
             this.fullscreenToolStripMenuItem.Click += new System.EventHandler(this.fullscreenToolStripMenuItem_Click);
             // 
-            // debugOutputToolStripMenuItem
-            // 
-            this.debugOutputToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.debug;
-            this.debugOutputToolStripMenuItem.Name = "debugOutputToolStripMenuItem";
-            this.debugOutputToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-            this.debugOutputToolStripMenuItem.Text = "Debug output";
-            this.debugOutputToolStripMenuItem.Click += new System.EventHandler(this.debugOutputToolStripMenuItem_Click);
-            // 
             // resolutionToolStripMenuItem
             // 
             this.resolutionToolStripMenuItem.Name = "resolutionToolStripMenuItem";
@@ -160,30 +154,14 @@ namespace A_BASIC_Language
             this.programToolStripMenuItem.Size = new System.Drawing.Size(65, 20);
             this.programToolStripMenuItem.Text = "Program";
             // 
-            // runToolStripMenuItem
-            // 
-            this.runToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.PlayHS;
-            this.runToolStripMenuItem.Name = "runToolStripMenuItem";
-            this.runToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.runToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
-            this.runToolStripMenuItem.Text = "Run";
-            this.runToolStripMenuItem.Click += new System.EventHandler(this.runToolStripMenuItem_Click);
-            // 
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.textEditorToolStripMenuItem,
             this.optionsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.toolsToolStripMenuItem.Text = "&Tools";
-            // 
-            // optionsToolStripMenuItem
-            // 
-            this.optionsToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.settings;
-            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.optionsToolStripMenuItem.Text = "Options...";
-            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -224,6 +202,7 @@ namespace A_BASIC_Language
             this.toolStripSeparator2,
             this.btnPlay,
             this.toolStripSeparator1,
+            this.toolStripButton1,
             this.btnOptions});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
@@ -231,45 +210,15 @@ namespace A_BASIC_Language
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // btnDebug
-            // 
-            this.btnDebug.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnDebug.Image = global::A_BASIC_Language.Properties.Resources.debug;
-            this.btnDebug.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnDebug.Name = "btnDebug";
-            this.btnDebug.Size = new System.Drawing.Size(23, 22);
-            this.btnDebug.Text = "Debug output";
-            this.btnDebug.Click += new System.EventHandler(this.btnDebug_Click);
-            // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
-            // btnPlay
-            // 
-            this.btnPlay.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnPlay.Image = global::A_BASIC_Language.Properties.Resources.PlayHS;
-            this.btnPlay.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnPlay.Name = "btnPlay";
-            this.btnPlay.Size = new System.Drawing.Size(23, 22);
-            this.btnPlay.Text = "Run";
-            this.btnPlay.Click += new System.EventHandler(this.btnPlay_Click);
-            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
-            // btnOptions
-            // 
-            this.btnOptions.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnOptions.Image = global::A_BASIC_Language.Properties.Resources.settings;
-            this.btnOptions.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnOptions.Name = "btnOptions";
-            this.btnOptions.Size = new System.Drawing.Size(23, 22);
-            this.btnOptions.Text = "Options...";
-            this.btnOptions.Click += new System.EventHandler(this.btnOptions_Click);
             // 
             // statusStrip1
             // 
@@ -328,6 +277,79 @@ namespace A_BASIC_Language
             this.terminalMatrixControl1.Tick += new TerminalMatrixNetFramework.Events.TickDelegate(this.terminalMatrixControl1_Tick);
             this.terminalMatrixControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.terminalMatrixControl1_Paint);
             this.terminalMatrixControl1.Leave += new System.EventHandler(this.terminalMatrixControl1_Leave);
+            // 
+            // btnDebug
+            // 
+            this.btnDebug.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnDebug.Image = global::A_BASIC_Language.Properties.Resources.debug;
+            this.btnDebug.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnDebug.Name = "btnDebug";
+            this.btnDebug.Size = new System.Drawing.Size(23, 22);
+            this.btnDebug.Text = "Debug output";
+            this.btnDebug.Click += new System.EventHandler(this.btnDebug_Click);
+            // 
+            // btnPlay
+            // 
+            this.btnPlay.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnPlay.Image = global::A_BASIC_Language.Properties.Resources.PlayHS;
+            this.btnPlay.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnPlay.Name = "btnPlay";
+            this.btnPlay.Size = new System.Drawing.Size(23, 22);
+            this.btnPlay.Text = "Run";
+            this.btnPlay.Click += new System.EventHandler(this.btnPlay_Click);
+            // 
+            // btnOptions
+            // 
+            this.btnOptions.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnOptions.Image = global::A_BASIC_Language.Properties.Resources.settings;
+            this.btnOptions.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnOptions.Name = "btnOptions";
+            this.btnOptions.Size = new System.Drawing.Size(23, 22);
+            this.btnOptions.Text = "Options...";
+            this.btnOptions.Click += new System.EventHandler(this.btnOptions_Click);
+            // 
+            // debugOutputToolStripMenuItem
+            // 
+            this.debugOutputToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.debug;
+            this.debugOutputToolStripMenuItem.Name = "debugOutputToolStripMenuItem";
+            this.debugOutputToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.debugOutputToolStripMenuItem.Text = "Debug output";
+            this.debugOutputToolStripMenuItem.Click += new System.EventHandler(this.debugOutputToolStripMenuItem_Click);
+            // 
+            // runToolStripMenuItem
+            // 
+            this.runToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.PlayHS;
+            this.runToolStripMenuItem.Name = "runToolStripMenuItem";
+            this.runToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+            this.runToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.runToolStripMenuItem.Text = "Run";
+            this.runToolStripMenuItem.Click += new System.EventHandler(this.runToolStripMenuItem_Click);
+            // 
+            // textEditorToolStripMenuItem
+            // 
+            this.textEditorToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.TextboxHS;
+            this.textEditorToolStripMenuItem.Name = "textEditorToolStripMenuItem";
+            this.textEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.textEditorToolStripMenuItem.Text = "Text editor...";
+            this.textEditorToolStripMenuItem.Click += new System.EventHandler(this.textEditorToolStripMenuItem_Click);
+            // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.settings;
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.optionsToolStripMenuItem.Text = "Options...";
+            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton1.Image = global::A_BASIC_Language.Properties.Resources.TextboxHS;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton1.Text = "Text editor...";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // MainWindow
             // 
@@ -388,5 +410,7 @@ namespace A_BASIC_Language
         private ToolStripMenuItem runToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripButton btnPlay;
+        private ToolStripMenuItem textEditorToolStripMenuItem;
+        private ToolStripButton toolStripButton1;
     }
 }

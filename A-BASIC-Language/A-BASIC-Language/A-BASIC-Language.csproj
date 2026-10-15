@@ -64,6 +64,12 @@
     <Compile Include="Gui\MsgBox.cs" />
     <Compile Include="Gui\PreProcessor\PreProcessorParser.cs" />
     <Compile Include="Gui\PreProcessor\PreProcessorParserResult.cs" />
+    <Compile Include="Gui\SourceCodeDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\SourceCodeDialog.Designer.cs">
+      <DependentUpon>SourceCodeDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Gui\StartScreen.cs" />
     <Compile Include="Gui\TerminalResolution.cs" />
     <Compile Include="Gui\TerminalResolutionList.cs" />
@@ -120,6 +126,9 @@
     <Compile Include="VersionService.cs" />
     <EmbeddedResource Include="Gui\Dialogs\OptionsDialog.resx">
       <DependentUpon>OptionsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\SourceCodeDialog.resx">
+      <DependentUpon>SourceCodeDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
@@ -456,6 +465,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\debug.png" />
+    <None Include="Resources\TextboxHS.png" />
     <None Include="Resources\PlayHS.png" />
     <Content Include="Resources\settings.png" />
   </ItemGroup>

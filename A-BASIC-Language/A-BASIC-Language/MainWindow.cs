@@ -321,4 +321,16 @@ public partial class MainWindow : Form
             // ignored
         }
     }
+
+    private void textEditorToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        using var x = new SourceCodeDialog();
+        x.SourceCode = terminalMatrixControl1.GetProgramAsString();
+        
+        if (x.ShowDialog(this) == DialogResult.OK)
+            terminalMatrixControl1.SetProgramLines(x.SourceCode);
+    }
+
+    private void toolStripButton1_Click(object sender, EventArgs e) =>
+        textEditorToolStripMenuItem_Click(sender, e);
 }
