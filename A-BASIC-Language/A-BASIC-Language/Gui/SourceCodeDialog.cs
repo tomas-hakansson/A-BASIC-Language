@@ -14,6 +14,8 @@ public partial class SourceCodeDialog : Form
     private void SourceCodeDialog_Load(object sender, System.EventArgs e)
     {
         textBox1.Text = SourceCode;
+        textBox1.SelectionStart = 0;
+        textBox1.SelectionLength = 0;
     }
 
     private void btnOk_Click(object sender, System.EventArgs e)

@@ -2,7 +2,6 @@ using System;
 using System.Text;
 using System.Windows.Forms;
 using TerminalMatrixNetFramework;
-using TerminalMatrixNetFramework.Definitions;
 
 namespace A_BASIC_Language.Language;
 
@@ -23,12 +22,12 @@ public sealed class TerminalAdapter(TerminalMatrixControl terminal) : IBasicTerm
                 continue;
             }
 
-            if (_line.Length == CharacterMatrixDefinition.Width)
+            if (_line.Length == terminal.CharacterWidth)
                 WriteLine("");
             
             terminal.Write(_line.Length, c.ToString());
             _line.Append(c);
-            terminal.SetStartPosition(Math.Min(_line.Length, CharacterMatrixDefinition.Width - 1), terminal.CursorPosition.Y);
+            terminal.SetStartPosition(Math.Min(_line.Length, terminal.CharacterWidth - 1), terminal.CursorPosition.Y);
         }
     }
 
@@ -41,7 +40,7 @@ public sealed class TerminalAdapter(TerminalMatrixControl terminal) : IBasicTerm
 
     public string InputString(string prompt)
     {
-        if (_line.Length >= CharacterMatrixDefinition.Width - 2)
+        if (_line.Length >= terminal.CharacterWidth - 2)
             WriteLine("");
 
         var value = terminal.InputString($"{_line}{prompt}");

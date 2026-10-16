@@ -47,7 +47,7 @@ Of the 101 games, we support the ones followed by a 1:
 | depthcharge       |           |
 | diamond           |           |
 | dice              |           |
-| digits            |           |
+| digits            |     0     |
 | evenwins          |           |
 | flipflop          |           |
 | football          |           |
