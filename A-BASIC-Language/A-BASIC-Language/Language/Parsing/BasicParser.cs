@@ -174,6 +174,16 @@ public class BasicParser
                     case "RANDOMIZE":
                         Generate(new ABL_Procedure("RANDOMIZE"));
                         break;
+                    case "SAVE":
+                        if (!_direct)
+                        {
+                            ParseError("SAVE is only allowed in direct mode");
+                            SkipStatement();
+                            break;
+                        }
+                        Expression();
+                        Generate(new ABL_Procedure("SAVE"));
+                        break;
                     case "REM":
                         SkipLine();
                         break;
@@ -980,7 +990,7 @@ public class BasicParser
     }
 
     static Regex StatementRegex() =>
-        new(@"\G(?<statement>DEF|FOR|NEXT|DIM|END|GO|IF|INPUT|LET|PRINT|RANDOMIZE|REM|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>DEF|FOR|NEXT|DIM|END|GO|IF|INPUT|LET|PRINT|RANDOMIZE|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

@@ -63,6 +63,22 @@ foreach (var source in new[] {
 }
 Console.WriteLine("All compact keyword parsing checks passed.");
 
+foreach (var command in new[] { "SAVE \"demo.bas\"", "save \"\"", "SAVE A$", "SAVE \"dir/\"+\"demo.bas\"" })
+{
+    var result = new Parser(command, direct: true).Result;
+    Require(result.Success, command + ": " + string.Join("; ", result.Errors));
+    Require(result.EvalValues.OfType<ABL_Procedure>().Any(p => p.Name == "SAVE"), "Missing SAVE instruction");
+}
+foreach (var command in new[] { "SAVE", "SAVE \"demo.bas\",\"extra\"", "SAVE \"unterminated" })
+    Require(!new Parser(command, direct: true).Result.Success, "Invalid SAVE accepted: " + command);
+foreach (var source in new[] { "10 SAVE \"demo.bas\"", "10 PRINT 1:SAVE \"demo.bas\"", "10 IF 1 THEN SAVE \"demo.bas\"" })
+{
+    var result = new Parser(source).Result;
+    Require(!result.Success && result.Errors.Any(e => e.Contains("SAVE is only allowed in direct mode")),
+        "Program SAVE should be rejected: " + source);
+}
+Console.WriteLine("All SAVE parsing checks passed.");
+
 static void Check(ValueBase left, ValueBase right, Func<double, double, bool> compare, bool expected)
 {
     var stack = new Stack<ValueBase>();

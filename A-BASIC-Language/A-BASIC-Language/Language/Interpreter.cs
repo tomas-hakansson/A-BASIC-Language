@@ -71,6 +71,12 @@ public class Interpreter
     private void Fail(string message) =>
         throw new InvalidOperationException(message);
 
+    private void Save(string fileName)
+    {
+        // TODO: Implement saving the current program to fileName here.
+        throw new NotImplementedException("SAVE is not implemented yet.");
+    }
+
     void Eval()
     {
         EndMessageDisplayed = false;
@@ -460,6 +466,13 @@ public class Interpreter
                             break;
                         case "RANDOMIZE":
                             _random = new Random();
+                            break;
+                        case "SAVE":
+                            if (_runtime)
+                                throw new InvalidOperationException("SAVE is only allowed in direct mode.");
+                            if (_data.Count == 0 || _data.Pop() is not StringValue fileName)
+                                throw new InvalidOperationException("SAVE requires a string argument.");
+                            Save(fileName.Value);
                             break;
                         case "RND":
                             //ToDo: implement this properly.
