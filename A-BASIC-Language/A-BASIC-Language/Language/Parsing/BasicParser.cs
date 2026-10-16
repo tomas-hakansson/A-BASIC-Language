@@ -1,4 +1,5 @@
 #nullable enable
+using A_BASIC_Language.Language.LanguageParts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +46,7 @@ public class BasicParser
                 Dictionary<int, int> labelIndex = new();
                 for (int i = 0; i < evalValues.Count; i++)
                 {
-                    if (evalValues[i] is ABL_Label label)
+                    if (evalValues[i] is AblLabel label)
                         labelIndex.Add(label.Value, i);
                 }
 
@@ -101,7 +102,7 @@ public class BasicParser
                 _index += mg.Length;
                 _currentLabel = int.Parse(mg.Value);
                 //Note: We prime the next line by adding a new label to _lines.
-                _lines.Add(_currentLabel, new List<ABL_EvalValue>() { new ABL_Label(_currentLabel) });
+                _lines.Add(_currentLabel, new List<ABL_EvalValue>() { new AblLabel(_currentLabel) });
                 SkipWhitespace();
             }
             return matched;
@@ -352,12 +353,12 @@ public class BasicParser
         Body();
         var endBranchLabel = GetGeneratedLabel();
         Generate(new ABL_Number(endBranchLabel), new ABL_Procedure("GOTO"));
-        Generate(new ABL_Label(falseBranchLabel));
+        Generate(new AblLabel(falseBranchLabel));
 
         if (Maybe("ELSE"))
             Body();
 
-        Generate(new ABL_Label(endBranchLabel));
+        Generate(new AblLabel(endBranchLabel));
         return;
 
         void Body()

@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using A_BASIC_Language.Language;
+using A_BASIC_Language.Language.LanguageParts;
 using A_BASIC_Language.Stage1;
 
-namespace A_BASIC_Language.Stage2;
+namespace A_BASIC_Language.Language.Stage2;
 
-class Parser
+public class Parser
 {
-    public ParseResult Result { get; set; } = new ParseResult();
+    public A_BASIC_Language.Stage2.ParseResult Result { get; set; } = new A_BASIC_Language.Stage2.ParseResult();
 
-    readonly TokenizeResult _tokenizeResult;
-    readonly List<ABL_EvalValue> _evalValues;
-    readonly Dictionary<int, int> _labelIndex;
-    int _index = 0;
-    string _currentTokenValue = string.Empty;
-    TokenType _currentTokenType = default;
-
-    bool _parsingIf = false;
-    int _generatedLabel = 0;
+    private readonly TokenizeResult _tokenizeResult;
+    private readonly List<ABL_EvalValue> _evalValues;
+    private readonly Dictionary<int, int> _labelIndex;
+    private int _index;
+    private string _currentTokenValue = string.Empty;
+    private TokenType _currentTokenType;
+    private bool _parsingIf;
+    private int _generatedLabel;
 
     public Parser(TokenizeResult tokenizeResult)
     {
@@ -34,11 +33,16 @@ class Parser
             Result.EvalValues = _evalValues;
             Result.LabelIndex = _labelIndex;
         }
-        catch (Exception ex)
+        catch //(Exception ex)
         {
             //this try catch is for development but might find use in final program.
-            var message = ex.Message;
+            //var message = ex.Message;
         }
+    }
+
+    public Parser(Dictionary<int, int> labelIndex)
+    {
+        _labelIndex = labelIndex;
     }
 
     private void AProgram()
@@ -262,11 +266,11 @@ class Parser
     {
         if (value == null)
         {
-            Generate(new ABL_Label(_currentTokenValue));
+            Generate(new AblLabel(_currentTokenValue));
             value = int.Parse(_currentTokenValue);
         }
         else
-            Generate(new ABL_Label(value.Value));
+            Generate(new AblLabel(value.Value));
         _labelIndex.Add(value.Value, _evalValues.Count - 1);
     }
 
@@ -425,16 +429,19 @@ class Parser
                 return;
             }
             dimVariable = true;
-            Index_Value();
+            IndexValue();
             MustMatch(TokenType.ClosingParenthesis);
+
             if (assignmentMode)
                 return;
+            
             Generate(new ABL_DIM_Variable(fullName));
+            return;
 
-            void Index_Value()
+            void IndexValue()
             {
                 Expression();
-                int dimensionCount = 1;
+                var dimensionCount = 1;
                 while (MightMatch(TokenType.Comma))
                 {
                     Expression();
@@ -647,7 +654,7 @@ class Parser
                 {
                     Next();
                     MustMatch(TokenType.UserDefinedName);
-                    var name = _currentTokenValue;
+                    //var name = _currentTokenValue;
                     MustMatch(TokenType.OpeningParenthesis);
                     Expression();
                     MustMatch(TokenType.ClosingParenthesis);
@@ -660,13 +667,13 @@ class Parser
         }
     }
 
-    void Generate(params ABL_EvalValue[] values)
+    private void Generate(params ABL_EvalValue[] values)
     {
         foreach (ABL_EvalValue value in values)
             _evalValues.Add(value);
     }
 
-    void MustMatch_wws(TokenType tokenType)//deleteMe: if not in use once parser is finished.
+    private void MustMatch_wws(TokenType tokenType)//deleteMe: if not in use once parser is finished.
     {
         if (tokenType == _currentTokenType)
         {
@@ -678,13 +685,13 @@ class Parser
         }
     }
 
-    void MustMatch(TokenType tokenType)//deleteMe: if not in use once parser is finished.
+    private void MustMatch(TokenType tokenType)//deleteMe: if not in use once parser is finished.
     {
         MustMatch_wws(tokenType);
         SkipWhitespace();
     }
 
-    void MustMatch_wws(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
+    private void MustMatch_wws(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
     {
         if (tokenType == _currentTokenType)
         {
@@ -695,13 +702,13 @@ class Parser
             throw new Exception("placeholder #3");//todo: proper error handling.
     }
 
-    void MustMatch(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
+    private void MustMatch(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
     {
         MustMatch_wws(tokenType, out tokenValue);
         SkipWhitespace();
     }
 
-    void MustMatch_wws(string tokenValue)//deleteMe: if not in use once parser is finished.
+    private void MustMatch_wws(string tokenValue)//deleteMe: if not in use once parser is finished.
     {
         if (tokenValue == _currentTokenValue)
         {
@@ -711,7 +718,7 @@ class Parser
             throw new Exception("placeholder #1");//todo: proper error handling.
     }
 
-    void MustMatch(string tokenValue)//deleteMe: if not in use once parser is finished.
+    private void MustMatch(string tokenValue)//deleteMe: if not in use once parser is finished.
     {
         MustMatch_wws(tokenValue);
         SkipWhitespace();

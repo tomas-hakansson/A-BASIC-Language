@@ -1,11 +1,12 @@
 #nullable enable
-using System;
-using System.Collections.Generic;
+using A_BASIC_Language.Language.LanguageParts;
 using A_BASIC_Language.Language.SpecificExecutors;
 using A_BASIC_Language.Language.ValueTypes;
 using A_BASIC_Language.SpecificExecutors;
 using A_BASIC_Language.StringManipulation;
 using A_BASIC_Language.ValueTypes;
+using System;
+using System.Collections.Generic;
 using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language.Language;
@@ -183,9 +184,8 @@ public class Interpreter
                         loops.Pop();
                     break;
                 }
-                case ABL_Label lbl:
+                case AblLabel lbl:
                     _currentLineNumber = lbl.Value;
-                    //Note: NOP.
                     break;
                 case ABL_Number n:
                     _data.Push(ValueBase.GetValueType(n.Value));

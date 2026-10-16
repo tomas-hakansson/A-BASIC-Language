@@ -3,29 +3,6 @@ using System.Globalization;
 
 namespace A_BASIC_Language.Language;
 
-public class ABL_Label : ABL_EvalValue
-{
-    public int Value { get; private set; }
-
-    public ABL_Label(int value)
-    {
-        Value = value;
-    }
-
-    public ABL_Label(string value)//DeleteMe: Once the new parser replaces the old.
-    {
-        if (int.TryParse(value, out int parsedInt))
-            Value = parsedInt;
-        else
-            throw new ArgumentException($@"Expected an int but got: ({value})", nameof(value));
-    }
-
-    public override string ToString()
-    {
-        return $"L({Value})";
-    }
-}
-
 public class ABL_Number : ABL_EvalValue
 {
     public double Value { get; private set; }
