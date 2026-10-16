@@ -25,6 +25,16 @@ public partial class MainWindow : Form
 #if !DEBUG
     private bool _promptQuit;
 #endif
+    public static string UserDataPath { get; set; }
+
+    static MainWindow()
+    {
+        UserDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "A-BASIC-Language");
+        var d = new DirectoryInfo(UserDataPath);
+
+        if (!d.Exists)
+            d.Create();
+    }
 
     public MainWindow()
     {

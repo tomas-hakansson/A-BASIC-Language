@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using A_BASIC_Language.Gui.PreProcessor;
 using A_BASIC_Language.StringManipulation;
 using TerminalMatrixNetFramework;
@@ -20,7 +19,7 @@ public class PreProcessorController
     public void Run(string preProcessor, out bool quitFlag)
     {
         quitFlag = false;
-        preProcessor = preProcessor.First().ToString();
+        preProcessor = preProcessor.Substring(1).Trim();
 
         if (preProcessor.IsEmpty())
         {
