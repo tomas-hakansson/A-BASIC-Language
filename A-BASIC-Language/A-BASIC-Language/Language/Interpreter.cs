@@ -103,7 +103,7 @@ public class Interpreter
 
         var instructions = _parseResult.EvalValues;
         // Switch instruction streams on FN calls; return with one numeric result.
-        var calls = new Stack<(List<ABL_EvalValue> Instructions, int Index, string Parameter, ValueBase Argument, int StackDepth)>();
+        var calls = new Stack<(List<AblEvalValue> Instructions, int Index, string Parameter, ValueBase Argument, int StackDepth)>();
         for (var i = 0; i < instructions.Count || calls.Count > 0; i++)
         {
             if (i >= instructions.Count)

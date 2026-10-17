@@ -12,13 +12,13 @@ public class BasicParser
 {
     readonly string _source;
     readonly bool _direct;
-    readonly SortedDictionary<int, List<ABL_EvalValue>> _lines;
+    readonly SortedDictionary<int, List<AblEvalValue>> _lines;
     int _currentLabel;
     int _index;
     readonly List<(int index, string message)> _parseErrors;
     bool _parsingIf;
     int _generatedLabel;
-    List<ABL_EvalValue>? _expressionTarget;
+    List<AblEvalValue>? _expressionTarget;
     public ParseResult Result { get; }
 
     public BasicParser(string source, bool direct = false)
@@ -29,7 +29,7 @@ public class BasicParser
         // Normalize once: every parser routine sees a single newline convention.
         source = source.Replace("\r\n", "\n").Replace('\r', '\n');
         _source = direct ? "0 " + source : source;
-        _lines = new SortedDictionary<int, List<ABL_EvalValue>>();
+        _lines = new SortedDictionary<int, List<AblEvalValue>>();
         _parseErrors = new List<(int index, string message)>();
 
         //Note: The parsing begins:
@@ -107,7 +107,7 @@ public class BasicParser
         _index += mg.Length;
         _currentLabel = int.Parse(mg.Value);
         //Note: We prime the next line by adding a new label to _lines.
-        _lines.Add(_currentLabel, new List<ABL_EvalValue>() { new AblLabel(_currentLabel) });
+        _lines.Add(_currentLabel, new List<AblEvalValue>() { new AblLabel(_currentLabel) });
         SkipWhitespace();
         return matched;
     }
@@ -546,7 +546,7 @@ public class BasicParser
         Generate(ASetVariable_Helper(v));
     }
 
-    static ABL_EvalValue ASetVariable_Helper(ParseResultSet r)
+    static AblEvalValue ASetVariable_Helper(ParseResultSet r)
     {
         var fullName = r.FullName;
 
@@ -708,7 +708,7 @@ public class BasicParser
         if (!Maybe('(')) throw new InvalidOperationException("Expected function parameter.");
         var parameter = ReadFunctionSymbol();
         if (!Maybe(')') || !Maybe('=')) throw new InvalidOperationException("Expected )= in DEF FN.");
-        var body = new List<ABL_EvalValue>();
+        var body = new List<AblEvalValue>();
         // Compile the body once, using the ordinary expression grammar.
         _expressionTarget = body;
         try { Expression(); }
@@ -871,6 +871,7 @@ public class BasicParser
         }
 
         var isVariable = VariableRegex().Match(_source, _index);
+
         if (isVariable.Success)
         {
             if (ASetVariable().Success)
@@ -881,6 +882,7 @@ public class BasicParser
             {
                 //ToDo: Handle error.
             }
+
             return;
         }
 
@@ -888,6 +890,7 @@ public class BasicParser
         if (maybeNumber == string.Empty)
         {
             ParseError("Expected a number Atom");
+
             if (_parsingIf)
                 SkipLine();
             else
@@ -926,7 +929,8 @@ public class BasicParser
             SkipWhitespace();
             return true;
         }
-            return false;
+        
+        return false;
 
         //ToDo: Implement string parsing properly.
         //for (; _index < _source.Length; _index++)
@@ -937,16 +941,19 @@ public class BasicParser
         //return result;
     }
 
-    void Generate(params ABL_EvalValue[] values)
+    private void Generate(params AblEvalValue[] values)
     {
         if (_expressionTarget != null)
         {
             _expressionTarget.AddRange(values);
             return;
         }
-        List<ABL_EvalValue> evalValues = new();
-        foreach (ABL_EvalValue value in values)
+
+        List<AblEvalValue> evalValues = [];
+
+        foreach (AblEvalValue value in values)
             evalValues.Add(value);
+        
         var v = _lines[_currentLabel];
         v.AddRange(evalValues);
         _lines[_currentLabel] = v;

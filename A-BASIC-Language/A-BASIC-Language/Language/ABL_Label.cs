@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace A_BASIC_Language.Language;
 
-public class ABL_Number : ABL_EvalValue
+public class ABL_Number : AblEvalValue
 {
     public double Value { get; private set; }
 
@@ -26,7 +26,7 @@ public class ABL_Number : ABL_EvalValue
     }
 }
 
-public class ABL_String : ABL_EvalValue
+public class ABL_String : AblEvalValue
 {
     public string Value { get; private set; }
 
@@ -41,7 +41,7 @@ public class ABL_String : ABL_EvalValue
     }
 }
 
-public class ABL_DIM_Creation : ABL_EvalValue
+public class ABL_DIM_Creation : AblEvalValue
 {
     public string Symbol { get; private set; }
 
@@ -56,7 +56,7 @@ public class ABL_DIM_Creation : ABL_EvalValue
     }
 }
 
-public class ABL_Variable : ABL_EvalValue
+public class ABL_Variable : AblEvalValue
 {
     public string Symbol { get; private set; }
 
@@ -71,7 +71,7 @@ public class ABL_Variable : ABL_EvalValue
     }
 }
 
-public class ABL_DIM_Variable : ABL_EvalValue
+public class ABL_DIM_Variable : AblEvalValue
 {
     public string Symbol { get; private set; }
 
@@ -86,7 +86,7 @@ public class ABL_DIM_Variable : ABL_EvalValue
     }
 }
 
-public class ABL_Assignment : ABL_EvalValue
+public class ABL_Assignment : AblEvalValue
 {
     public string Symbol { get; private set; }
     public ABL_Assignment(string symbol)
@@ -100,7 +100,7 @@ public class ABL_Assignment : ABL_EvalValue
     }
 }
 
-public class ABL_DIM_Assignment : ABL_EvalValue
+public class ABL_DIM_Assignment : AblEvalValue
 {
     public string Symbol { get; private set; }
 

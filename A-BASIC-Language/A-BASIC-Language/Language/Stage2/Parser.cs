@@ -10,7 +10,7 @@ public class Parser
     public A_BASIC_Language.Stage2.ParseResult Result { get; set; } = new A_BASIC_Language.Stage2.ParseResult();
 
     private readonly TokenizeResult _tokenizeResult;
-    private readonly List<ABL_EvalValue> _evalValues;
+    private readonly List<AblEvalValue> _evalValues;
     private readonly Dictionary<int, int> _labelIndex;
     private int _index;
     private string _currentTokenValue = string.Empty;
@@ -375,7 +375,7 @@ public class Parser
         Generate(ASetVariable_Helper(v));
     }
 
-    static ABL_EvalValue ASetVariable_Helper((string fullName, string _, bool dimVariable) v)
+    static AblEvalValue ASetVariable_Helper((string fullName, string _, bool dimVariable) v)
     {
         var fullName = v.fullName;
         if (v.dimVariable)
@@ -671,9 +671,9 @@ public class Parser
         }
     }
 
-    private void Generate(params ABL_EvalValue[] values)
+    private void Generate(params AblEvalValue[] values)
     {
-        foreach (ABL_EvalValue value in values)
+        foreach (AblEvalValue value in values)
             _evalValues.Add(value);
     }
 

@@ -2,7 +2,7 @@
 
 namespace A_BASIC_Language.Language.LanguageParts;
 
-public class AblLabel : ABL_EvalValue
+public class AblLabel : AblEvalValue
 {
     public int Value { get; private set; }
 

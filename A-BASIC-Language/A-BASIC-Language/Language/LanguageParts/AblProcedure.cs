@@ -1,6 +1,6 @@
 ﻿namespace A_BASIC_Language.Language.LanguageParts;
 
-public class AblProcedure : ABL_EvalValue
+public class AblProcedure : AblEvalValue
 {
     public string Name { get; private set; }
 

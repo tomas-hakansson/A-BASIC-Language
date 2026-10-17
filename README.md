@@ -79,8 +79,8 @@ Of the 101 games, we support the ones followed by a 1:
 | mastermind        |     0     |
 | mathdice          |           |
 | mugwump           |           |
-| name              |           |
-| nicomachus        |           |
+| name              |     0     |
+| nicomachus        |     1     |
 | nim               |           |
 | number            |           |
 | onecheck          |           |
