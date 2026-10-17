@@ -88,10 +88,12 @@
     <Compile Include="Language\Interpreter.cs" />
     <Compile Include="Language\LanguageParts\AblLabel.cs" />
     <Compile Include="Language\LanguageParts\AblProcedure.cs" />
-    <Compile Include="Language\LoopInstructions.cs" />
+    <Compile Include="Language\LoopInstructions\AblFor.cs" />
+    <Compile Include="Language\LoopInstructions\AblNext.cs" />
     <Compile Include="Language\Parser.cs" />
     <Compile Include="Language\ParseResult.cs" />
     <Compile Include="Language\Parsing\BasicParser.cs" />
+    <Compile Include="Language\Parsing\ParseResultSet.cs" />
     <Compile Include="Language\PrintThe.cs" />
     <Compile Include="Language\RuntimeState.cs" />
     <Compile Include="Language\SpecificExecutors\AddExecutor.cs" />

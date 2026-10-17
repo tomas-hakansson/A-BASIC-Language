@@ -8,6 +8,7 @@ using A_BASIC_Language.ValueTypes;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using A_BASIC_Language.Language.LoopInstructions;
 using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language.Language;
@@ -149,7 +150,7 @@ public class Interpreter
                     i = -1;
                     break;
                 }
-                case ABL_For loop:
+                case AblFor loop:
                 {
                     var step = Number(_data.Pop());
                     var limit = Number(_data.Pop());
@@ -166,7 +167,7 @@ public class Interpreter
                         loops.Push(new LoopFrame(loop.Symbol, limit, step, i, matchingNext[i]));
                     break;
                 }
-                case ABL_Next next:
+                case AblNext next:
                 {
                     if (loops.Count == 0)
                         throw new InvalidOperationException("NEXT without FOR.");
@@ -601,11 +602,11 @@ public class Interpreter
 
         for (var i = 0; i < _parseResult.EvalValues.Count; i++)
         {
-            if (_parseResult.EvalValues[i] is ABL_For start)
+            if (_parseResult.EvalValues[i] is AblFor start)
             {
                 pending.Push((i, start.Symbol));
             }
-            else if (_parseResult.EvalValues[i] is ABL_Next end)
+            else if (_parseResult.EvalValues[i] is AblNext end)
             {
                 if (!pending.TryPop(out var loop) || (end.Symbol.Length > 0 && end.Symbol != loop.Symbol))
                     throw new InvalidOperationException("NEXT without matching FOR.");

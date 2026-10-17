@@ -22,7 +22,7 @@ public class Parser
     {
         //Note: Initialisation:
         _tokenizeResult = tokenizeResult;
-        _evalValues = new List<ABL_EvalValue>();
+        _evalValues = [];
         _labelIndex = new Dictionary<int, int>();
         Next_wws();
 
@@ -83,7 +83,7 @@ public class Parser
         while (more);
     }
 
-    bool ALine()
+    private bool ALine()
     {
         //line => aLabel oneOrMoreStatements
 
@@ -95,26 +95,30 @@ public class Parser
         //Ponder: should these checks be done in AStatementPlusParts?
         if (_currentTokenType == TokenType.Label)
             return true;
-        else if (_currentTokenType == TokenType.EOF)
+        
+        if (_currentTokenType == TokenType.EOF)
             return false;
-        else
-            return true;
+        
+        return true;
     }
 
-    bool ALabel()
+    private bool ALabel()
     {
         if (_currentTokenType != TokenType.Label)
             return false;
+
         GenerateLabel();
         Next();
         return true;
     }
 
-    void AStatementPlusParts()
+    private void AStatementPlusParts()
     {
         //This is the tricky part.
         if (_currentTokenType == TokenType.UserDefinedName)
+        {
             Let();
+        }
         else if (_currentTokenType == TokenType.Statement)
         {
             switch (_currentTokenValue)
@@ -551,7 +555,7 @@ public class Parser
                     goto END;
             }
         }
-    END:;
+        END:;
     }
 
     void Add()
@@ -585,7 +589,7 @@ public class Parser
                     goto END;
             }
         }
-    END:;
+        END:;
     }
 
     void Multiply()
@@ -699,7 +703,9 @@ public class Parser
             Next_wws();
         }
         else
-            throw new Exception("placeholder #3");//todo: proper error handling.
+        {
+            throw new Exception("placeholder #3"); //todo: proper error handling.
+        }
     }
 
     private void MustMatch(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
@@ -722,14 +728,8 @@ public class Parser
         SkipWhitespace();
     }
 
-    bool MightMatch_wws(TokenType tokenType)//deleteMe: if not in use once parser is finished.
-    {
-        if (tokenType != _currentTokenType)
-            return false;
-
-        Next_wws();
-        return true;
-    }
+    private bool MightMatch_wws(TokenType tokenType) => //deleteMe: if not in use once parser is finished.
+        tokenType == _currentTokenType && Next_wws();
 
     bool MightMatch(TokenType tokenType)//deleteMe: if not in use once parser is finished.
     {
@@ -748,18 +748,11 @@ public class Parser
             return false;
 
         tokenValue = _currentTokenValue;
-        Next_wws();
-        return true;
+        return Next_wws();
     }
 
-    bool MightMatch(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
-    {
-        if (!MightMatch_wws(tokenType, out tokenValue))
-            return false;
-
-        SkipWhitespace();
-        return true;
-    }
+    private bool MightMatch(TokenType tokenType, out string tokenValue) => //deleteMe: if not in use once parser is finished.
+        MightMatch_wws(tokenType, out tokenValue) && SkipWhitespace();
 
     private bool MightMatch_wws(string tokenValue) =>//deleteMe: if not in use once parser is finished.
         tokenValue == _currentTokenValue && Next_wws();
@@ -767,7 +760,7 @@ public class Parser
     private bool MightMatch(string tokenValue) =>//deleteMe: if not in use once parser is finished.
         MightMatch_wws(tokenValue) && SkipWhitespace();
 
-    void Next()
+    private void Next()
     {
         Next_wws();
         SkipWhitespace();

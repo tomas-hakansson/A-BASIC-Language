@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using A_BASIC_Language.Language.LoopInstructions;
 
 namespace A_BASIC_Language.Language.Parsing;
 
@@ -88,26 +89,27 @@ public class BasicParser
         }
     }
 
-    bool ALabel()
+    private bool ALabel()
     {
         Regex isLabel = new(@"\G(?<label>\d+)\s*[A-Za-z]", RegexOptions.CultureInvariant);
         var match = isLabel.Match(_source, _index);
-        if (match.Success)
-        {
-            var matched = false;
-            var mg = match.Groups.Cast<Group>().First(g => g.Name == "label");
-            if (mg != null)
-            {
-                matched = true;
-                _index += mg.Length;
-                _currentLabel = int.Parse(mg.Value);
-                //Note: We prime the next line by adding a new label to _lines.
-                _lines.Add(_currentLabel, new List<ABL_EvalValue>() { new AblLabel(_currentLabel) });
-                SkipWhitespace();
-            }
+
+        if (!match.Success)
+            return false;
+
+        var matched = false;
+        var mg = match.Groups.Cast<Group>().First(g => g.Name == "label");
+
+        if (mg == null)
             return matched;
-        }
-        else return false;
+
+        matched = true;
+        _index += mg.Length;
+        _currentLabel = int.Parse(mg.Value);
+        //Note: We prime the next line by adding a new label to _lines.
+        _lines.Add(_currentLabel, new List<ABL_EvalValue>() { new AblLabel(_currentLabel) });
+        SkipWhitespace();
+        return matched;
     }
 
     //OneOrMoreStatements => aStatementWithParts (: aStatementWithParts)*
@@ -214,15 +216,21 @@ public class BasicParser
 
     // Look ahead without consuming input or generating instructions. LET may be
     // omitted only when a scalar or indexed variable is followed by '='.
-    bool LooksLikeAssignment()
+    private bool LooksLikeAssignment()
     {
         var name = VariableRegex().Match(_source, _index);
-        if (!name.Success) return false;
+        
+        if (!name.Success)
+            return false;
+        
         var position = _index + name.Length;
         SkipSpaces();
+        
         if (position < _source.Length && (_source[position] == '$' || _source[position] == '%'))
             position++;
+        
         SkipSpaces();
+
         if (position < _source.Length && _source[position] == '(')
         {
             var depth = 0;
@@ -239,9 +247,13 @@ public class BasicParser
                     if (c == ')') depth--;
                 }
             } while (position < _source.Length && depth > 0);
-            if (depth != 0 || quoted) return false;
+            
+            if (depth != 0 || quoted)
+                return false;
+            
             SkipSpaces();
         }
+        
         return position < _source.Length && _source[position] == '=';
 
         void SkipSpaces()
@@ -251,66 +263,96 @@ public class BasicParser
         }
     }
 
-    void For()
+    private void For()
     {
         var variable = ASetVariable(true);
-        if (!variable.success || variable.dimVariable || variable.typeSpecifier == "$")
+        
+        if (!variable.Success || variable.DimVariable || variable.TypeSpecifier == "$")
         {
             ParseError("FOR requires a numeric scalar variable");
             SkipStatement();
             return;
         }
-        if (!Maybe('=')) { ParseError("Expected = after FOR variable"); SkipStatement(); return; }
+
+        if (!Maybe('='))
+        {
+            ParseError("Expected = after FOR variable");
+            SkipStatement();
+            return;
+        }
+        
         Expression();
-        if (!Maybe("TO")) { ParseError("Expected TO in FOR"); SkipStatement(); return; }
+
+        if (!Maybe("TO"))
+        {
+            ParseError("Expected TO in FOR");
+            SkipStatement();
+            return;
+        }
+        
         Expression();
-        if (Maybe("STEP")) Expression();
-        else Generate(new ABL_Number(1));
-        Generate(new ABL_For(variable.fullName));
+        
+        if
+            (Maybe("STEP")) Expression();
+        else
+            Generate(new ABL_Number(1));
+        
+        Generate(new AblFor(variable.FullName));
     }
 
-    void Next()
+    private void Next()
     {
         do
         {
             var match = VariableRegex().Match(_source, _index);
             var name = "";
+
             if (match.Success)
             {
                 name = match.Groups["var"].Value;
                 _index += name.Length;
-                if (Maybe('%')) name += "%";
+                
+                if (Maybe('%'))
+                    name += "%";
+
                 SkipWhitespace();
             }
-            Generate(new ABL_Next(name));
+
+            Generate(new AblNext(name));
         } while (Maybe(','));
     }
 
     //dim => DIM unset-variable ("," unset-variable)*
-    void Dim()
+    private void Dim()
     {
         UnsetVariable();
+
         while (Maybe(','))
             UnsetVariable();
 
+        return;
+
         void UnsetVariable()
         {
-            var (success, fullName, _, dimVariable) = ASetVariable(true);
-            if (!success)
+            var result = ASetVariable(true);
+            
+            if (!result.Success)
                 return;
-            if (dimVariable)
-                Generate(new ABL_DIM_Creation(fullName));
+            
+            if (result.DimVariable)
+                Generate(new ABL_DIM_Creation(result.FullName));
             else
-                Generate(new ABL_Variable(fullName));
+                Generate(new ABL_Variable(result.FullName));
         }
     }
 
-    void Goto()
+    private void Goto()
     {
         if (!Maybe("GOTO"))
         {//Note: GO TO
             _index += 2;//Note; It would be wasteful to reparse GO just to get the length.
             SkipWhitespace();
+            
             if (!Maybe("TO"))
             {
                 ParseError("Expected 'TO' in GO TO");
@@ -318,12 +360,13 @@ public class BasicParser
                     SkipStatement();
                 else
                     SkipLine();
+                
                 return;
             }
         }
+
         Expression();
         Generate(new AblProcedure("GOTO"));
-
     }
 
     //if         => IF boolean-expr THEN body (ELSE body)?
@@ -365,11 +408,15 @@ public class BasicParser
         {
             //Note: The body can contain either a statement, a variable or an expression.
             var isStatement = StatementRegex().Match(_source, _index);
+
             if (isStatement.Success)
+            {
                 OneOrMoreStatements(isStatement);
+            }
             else
             {
                 var isVariable = VariableRegex().Match(_source, _index);
+                
                 if (isVariable.Success)
                 {
                     var match = isVariable.Groups.Cast<Group>().First(g => g.Name == "var");
@@ -426,37 +473,45 @@ public class BasicParser
     int GetGeneratedLabel() => --_generatedLabel;
 
     //input => INPUT (prompt-string [;])? unset-variable (, unset-variable)*
-    void Input()
+    private void Input()
     {
         Prompt();
         Generate(new ABL_String("? "), new AblProcedure("#WRITE"));
+        
         if (!UnsetVariable())
             return;
+        
         while (Maybe(','))
+        {
             if (!UnsetVariable())
                 return;
+        }
 
         void Prompt()
         {
-            if (AString(out var newString))
+            if (!AString(out var newString))
+                return;
+
+            if (!Maybe(';'))
             {
-                if (!Maybe(';'))
-                {
-                    ParseError("Expected semicolon in 'INPUT' statement");
-                    SkipStatement();
-                    return;
-                }
-                Generate(new ABL_String(newString), new AblProcedure("#WRITE"));
+                ParseError("Expected semicolon in 'INPUT' statement");
+                SkipStatement();
+                return;
             }
+
+            Generate(new ABL_String(newString), new AblProcedure("#WRITE"));
         }
 
         bool UnsetVariable()
         {
             var v = ASetVariable(true);
-            if (!v.success)
+            
+            if (!v.Success)
                 return false;
+            
             var assignmentType = ASetVariable_Helper(v);
-            switch (v.typeSpecifier)
+            
+            switch (v.TypeSpecifier)
             {
                 case "$":
                     Generate(new AblProcedure("#INPUT-STRING"), assignmentType);
@@ -473,28 +528,32 @@ public class BasicParser
     }
 
     //let => 'LET'? unset-variable = expression
-    void Let()
+    private void Let()
     {
         var v = ASetVariable(true);
-        if (!v.success)
+
+        if (!v.Success)
             return;
+        
         if (!Maybe('='))
         {
             ParseError("Expected equal sign in 'LET' statement");
             SkipStatement();
             return;
         }
+
         Expression();
         Generate(ASetVariable_Helper(v));
     }
 
-    static ABL_EvalValue ASetVariable_Helper((bool _1, string fullName, string _2, bool dimVariable) v)
+    static ABL_EvalValue ASetVariable_Helper(ParseResultSet r)
     {
-        var fullName = v.fullName;
-        if (v.dimVariable)
+        var fullName = r.FullName;
+
+        if (r.DimVariable)
             return new ABL_DIM_Assignment(fullName);
-        else
-            return new ABL_Assignment(fullName);
+        
+        return new ABL_Assignment(fullName);
     }
 
     // set-variable => name index?
@@ -504,7 +563,7 @@ public class BasicParser
     /// <summary>
     /// A variable with a value.
     /// </summary>
-    (bool success, string fullName, string typeSpecifier, bool dimVariable) ASetVariable(bool assignmentMode = false)
+    private ParseResultSet ASetVariable(bool assignmentMode = false)
     {
         /*
         What's a set variable? It's a variable that has a value, together with an optional index.
@@ -523,32 +582,34 @@ public class BasicParser
         Naturally this to can have arbitrary depth and complexity.
          */
 
-
         string fullName, typeSpecifier;
-        bool dimVariable = false;
-        if (!Name())
-            return (false, "", "", false);
-        if (!Index())
-            return (false, "", "", false);
-        return (true, fullName, typeSpecifier, dimVariable);
+        var dimVariable = false;
+
+        if (!Name() || !Index())
+            return new ParseResultSet(false, "", "", false);
+        
+        return new ParseResultSet(true, fullName, typeSpecifier, dimVariable);
 
         bool Name()
         {
             fullName = string.Empty;
             typeSpecifier = string.Empty;
             var isVariable = VariableRegex().Match(_source, _index);
+            
             if (!isVariable.Success)
             {
                 ParseError($"Expected variable in {nameof(ASetVariable)}");
                 SkipStatement();
                 return false;
             }
+            
             var varMatch = isVariable.Groups.Cast<Group>().First(g => g.Name == "var");
             _index += varMatch.Length;
             SkipWhitespace();
 
             if (OneOf(out var ts, "$", "%"))
                 typeSpecifier = ts;
+            
             fullName = varMatch.Value + typeSpecifier;
             SkipWhitespace();
             return true;
@@ -812,7 +873,7 @@ public class BasicParser
         var isVariable = VariableRegex().Match(_source, _index);
         if (isVariable.Success)
         {
-            if (ASetVariable().success)
+            if (ASetVariable().Success)
             {
                 //Note: We do nothing because ASetVariable() handles everything.
             }
