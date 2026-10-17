@@ -115,17 +115,4 @@ public class ABL_DIM_Assignment : ABL_EvalValue
     }
 }
 
-public class ABL_Procedure : ABL_EvalValue
-{
-    public string Name { get; private set; }
 
-    public ABL_Procedure(string name)
-    {
-        Name = name.ToUpper();
-    }
-
-    public override string ToString()
-    {
-        return $"P({Name})";
-    }
-}

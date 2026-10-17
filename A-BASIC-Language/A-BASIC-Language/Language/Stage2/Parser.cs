@@ -124,7 +124,7 @@ public class Parser
                     break;
                 case "END":
                     Next();
-                    Generate(new ABL_Procedure("#END-PROGRAM"));
+                    Generate(new AblProcedure("#END-PROGRAM"));
                     break;
                 case "GOTO":
                     Goto();
@@ -156,7 +156,7 @@ public class Parser
                     break;
                 case "STOP":
                     Next();
-                    Generate(new ABL_Procedure("#END-PROGRAM"));
+                    Generate(new AblProcedure("#END-PROGRAM"));
                     break;
                 default:
                     throw new NotImplementedException("the given statement has not been implemented yet.");
@@ -200,11 +200,11 @@ public class Parser
         var falseBranchLabel = GetGeneratedLabel();//Note: Made negative because all valid BASIC labels are positive so there won't be a conflict.
         Next();
         Expression();
-        Generate(new ABL_Number(falseBranchLabel), new ABL_Procedure("#IF-FALSE-GOTO"));
+        Generate(new ABL_Number(falseBranchLabel), new AblProcedure("#IF-FALSE-GOTO"));
         MustMatch("THEN");
         Body();
         var endBranchLabel = GetGeneratedLabel();//Note: Se above.
-        Generate(new ABL_Number(endBranchLabel), new ABL_Procedure("GOTO"));
+        Generate(new ABL_Number(endBranchLabel), new AblProcedure("GOTO"));
         GenerateLabel(falseBranchLabel);
         if (MightMatch("ELSE"))
             Body();
@@ -223,13 +223,13 @@ public class Parser
                 else
                 {
                     Expression();
-                    Generate(new ABL_Procedure("GOTO"));
+                    Generate(new AblProcedure("GOTO"));
                 }
             }
             else
             {
                 Expression();
-                Generate(new ABL_Procedure("GOTO"));
+                Generate(new AblProcedure("GOTO"));
             }
         }
 
@@ -295,7 +295,7 @@ public class Parser
             switch (_currentTokenType)
             {
                 case TokenType.Comma:
-                    Generate(new ABL_Procedure("#NEXT-TAB-POSITION"));
+                    Generate(new AblProcedure("#NEXT-TAB-POSITION"));
                     shouldPrintNewline = false;
                     Next();
                     continue;
@@ -305,11 +305,11 @@ public class Parser
                     continue;
             }
             Expression();
-            Generate(new ABL_Procedure("#WRITE"));
+            Generate(new AblProcedure("#WRITE"));
             shouldPrintNewline = true;
         }
         if (shouldPrintNewline)
-            Generate(new ABL_Procedure("#NEXT-LINE"));
+            Generate(new AblProcedure("#NEXT-LINE"));
     }
 
     void Input()
@@ -318,7 +318,7 @@ public class Parser
 
         Next();
         Prompt();
-        Generate(new ABL_String("? "), new ABL_Procedure("#WRITE"));
+        Generate(new ABL_String("? "), new AblProcedure("#WRITE"));
         UnsetVariable();
         while (MightMatch(TokenType.Comma))
             UnsetVariable();
@@ -328,7 +328,7 @@ public class Parser
             if (MightMatch(TokenType.String, out var prompt))
             {
                 MustMatch(TokenType.Semicolon);
-                Generate(new ABL_String(prompt), new ABL_Procedure("#WRITE"));
+                Generate(new ABL_String(prompt), new AblProcedure("#WRITE"));
             }
         }
 
@@ -339,13 +339,13 @@ public class Parser
             switch (v.typeSpecifier)
             {
                 case "$":
-                    Generate(new ABL_Procedure("#INPUT-STRING"), assignmentType);
+                    Generate(new AblProcedure("#INPUT-STRING"), assignmentType);
                     break;
                 case "%":
-                    Generate(new ABL_Procedure("#INPUT-INT"), assignmentType);
+                    Generate(new AblProcedure("#INPUT-INT"), assignmentType);
                     break;
                 default:
-                    Generate(new ABL_Procedure("#INPUT-FLOAT"), assignmentType);
+                    Generate(new AblProcedure("#INPUT-FLOAT"), assignmentType);
                     break;
             }
         }
@@ -355,7 +355,7 @@ public class Parser
     {
         Next();
         Expression();
-        Generate(new ABL_Procedure("GOTO"));
+        Generate(new AblProcedure("GOTO"));
         if (!_parsingIf)
             SkipLine();
     }
@@ -496,42 +496,42 @@ public class Parser
     {
         Next();
         Precedence_4_Operator();
-        Generate(new ABL_Procedure("="));
+        Generate(new AblProcedure("="));
     }
 
     private void NotEqual()
     {
         Next();
         Precedence_4_Operator();
-        Generate(new ABL_Procedure("<>"));
+        Generate(new AblProcedure("<>"));
     }
 
     private void LessThan()
     {
         Next();
         Precedence_4_Operator();
-        Generate(new ABL_Procedure("<"));
+        Generate(new AblProcedure("<"));
     }
 
     private void GreaterThan()
     {
         Next();
         Precedence_4_Operator();
-        Generate(new ABL_Procedure(">"));
+        Generate(new AblProcedure(">"));
     }
 
     private void LessThanOrEqual()
     {
         Next();
         Precedence_4_Operator();
-        Generate(new ABL_Procedure("<="));
+        Generate(new AblProcedure("<="));
     }
 
     private void GreaterThanOrEqual()
     {
         Next();
         Precedence_4_Operator();
-        Generate(new ABL_Procedure(">="));
+        Generate(new AblProcedure(">="));
     }
 
     void Precedence_4_Operator()
@@ -558,14 +558,14 @@ public class Parser
     {
         Next();
         Precedence_3_Operator();
-        Generate(new ABL_Procedure("+"));
+        Generate(new AblProcedure("+"));
     }
 
     void Subtract()
     {
         Next();
         Precedence_3_Operator();
-        Generate(new ABL_Procedure("-"));
+        Generate(new AblProcedure("-"));
     }
 
     void Precedence_3_Operator()
@@ -592,14 +592,14 @@ public class Parser
     {
         Next();
         Precedence_2_Operator();
-        Generate(new ABL_Procedure("*"));
+        Generate(new AblProcedure("*"));
     }
 
     void Divide()
     {
         Next();
         Precedence_2_Operator();
-        Generate(new ABL_Procedure("/"));
+        Generate(new AblProcedure("/"));
     }
 
     void Precedence_2_Operator()
@@ -615,7 +615,7 @@ public class Parser
             //exponentiate
             Next();
             Atom();
-            Generate(new ABL_Procedure("^"));
+            Generate(new AblProcedure("^"));
         }
     }
 
@@ -635,7 +635,7 @@ public class Parser
                 MustMatch(TokenType.OpeningParenthesis);
                 Expression();
                 MustMatch(TokenType.ClosingParenthesis);
-                Generate(new ABL_Procedure(functionName));
+                Generate(new AblProcedure(functionName));
                 break;
             case TokenType.Float://todo: float tokens.
             case TokenType.Number:
@@ -711,9 +711,7 @@ public class Parser
     private void MustMatch_wws(string tokenValue)//deleteMe: if not in use once parser is finished.
     {
         if (tokenValue == _currentTokenValue)
-        {
             Next_wws();
-        }
         else
             throw new Exception("placeholder #1");//todo: proper error handling.
     }
@@ -726,65 +724,48 @@ public class Parser
 
     bool MightMatch_wws(TokenType tokenType)//deleteMe: if not in use once parser is finished.
     {
-        if (tokenType == _currentTokenType)
-        {
-            Next_wws();
-            return true;
-        }
-        return false;
+        if (tokenType != _currentTokenType)
+            return false;
+
+        Next_wws();
+        return true;
     }
 
     bool MightMatch(TokenType tokenType)//deleteMe: if not in use once parser is finished.
     {
-        if (MightMatch_wws(tokenType))
-        {
-            SkipWhitespace();
-            return true;
-        }
-        return false;
+        if (!MightMatch_wws(tokenType))
+            return false;
+
+        SkipWhitespace();
+        return true;
     }
 
     bool MightMatch_wws(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
     {
         tokenValue = string.Empty;
-        if (tokenType == _currentTokenType)
-        {
-            tokenValue = _currentTokenValue;
-            Next_wws();
-            return true;
-        }
-        return false;
+
+        if (tokenType != _currentTokenType)
+            return false;
+
+        tokenValue = _currentTokenValue;
+        Next_wws();
+        return true;
     }
 
     bool MightMatch(TokenType tokenType, out string tokenValue)//deleteMe: if not in use once parser is finished.
     {
-        if (MightMatch_wws(tokenType, out tokenValue))
-        {
-            SkipWhitespace();
-            return true;
-        }
-        return false;
+        if (!MightMatch_wws(tokenType, out tokenValue))
+            return false;
+
+        SkipWhitespace();
+        return true;
     }
 
-    bool MightMatch_wws(string tokenValue)//deleteMe: if not in use once parser is finished.
-    {
-        if (tokenValue == _currentTokenValue)
-        {
-            Next_wws();
-            return true;
-        }
-        return false;
-    }
+    private bool MightMatch_wws(string tokenValue) =>//deleteMe: if not in use once parser is finished.
+        tokenValue == _currentTokenValue && Next_wws();
 
-    bool MightMatch(string tokenValue)//deleteMe: if not in use once parser is finished.
-    {
-        if (MightMatch_wws(tokenValue))
-        {
-            SkipWhitespace();
-            return true;
-        }
-        return false;
-    }
+    private bool MightMatch(string tokenValue) =>//deleteMe: if not in use once parser is finished.
+        MightMatch_wws(tokenValue) && SkipWhitespace();
 
     void Next()
     {
@@ -792,26 +773,28 @@ public class Parser
         SkipWhitespace();
     }
 
-    void SkipWhitespace()
+    private bool SkipWhitespace()
     {
         while (_currentTokenType == TokenType.Space)
             Next_wws();
+
+        return true;
     }
 
-    void SkipLine()
+    private void SkipLine()
     {
-        while (_currentTokenType != TokenType.Label &&
-            _currentTokenType != TokenType.EOF)
+        while (_currentTokenType != TokenType.Label && _currentTokenType != TokenType.EOF)
             Next_wws();
     }
 
-    void Next_wws()
+    private bool Next_wws()
     {
         if (_currentTokenType == TokenType.EOF)
-            return;
+            return true;
 
         _currentTokenType = _tokenizeResult.TokenTypes[_index];
         _currentTokenValue = _tokenizeResult.TokenValues[_index];
         _index++;
+        return true;
     }
 }

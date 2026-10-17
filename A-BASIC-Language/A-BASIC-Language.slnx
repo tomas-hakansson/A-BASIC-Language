@@ -1,7 +1,7 @@
 <Solution>
   <Folder Name="/Solution Items/">
+    <File Path="../index.html" />
     <File Path="../README.md" />
-    <File Path="A-BASIC-Language/index.html" />
   </Folder>
   <Project Path="A-BASIC-Language/A-BASIC-Language.csproj" Id="e53e225a-6f21-403b-af6b-0d76d8d974ca" />
 </Solution>

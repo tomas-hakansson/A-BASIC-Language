@@ -150,7 +150,7 @@ public class BasicParser
                         Dim();
                         break;
                     case "END":
-                        Generate(new ABL_Procedure("#END-PROGRAM"));
+                        Generate(new AblProcedure("#END-PROGRAM"));
                         break;
                     case "GO":
                         Goto();//Note: Handles both GOTO and GO TO.
@@ -173,7 +173,7 @@ public class BasicParser
                         Print();
                         break;
                     case "RANDOMIZE":
-                        Generate(new ABL_Procedure("RANDOMIZE"));
+                        Generate(new AblProcedure("RANDOMIZE"));
                         break;
                     case "SAVE":
                         if (!_direct)
@@ -183,13 +183,13 @@ public class BasicParser
                             break;
                         }
                         Expression();
-                        Generate(new ABL_Procedure("SAVE"));
+                        Generate(new AblProcedure("SAVE"));
                         break;
                     case "REM":
                         SkipLine();
                         break;
                     case "STOP":
-                        Generate(new ABL_Procedure("#END-PROGRAM"));
+                        Generate(new AblProcedure("#END-PROGRAM"));
                         break;
                     default:
                         throw new NotImplementedException("the given statement has not been implemented yet.");
@@ -322,7 +322,7 @@ public class BasicParser
             }
         }
         Expression();
-        Generate(new ABL_Procedure("GOTO"));
+        Generate(new AblProcedure("GOTO"));
 
     }
 
@@ -339,7 +339,7 @@ public class BasicParser
 
         var falseBranchLabel = GetGeneratedLabel();
         Expression();
-        Generate(new ABL_Number(falseBranchLabel), new ABL_Procedure("#IF-FALSE-GOTO"));
+        Generate(new ABL_Number(falseBranchLabel), new AblProcedure("#IF-FALSE-GOTO"));
         if (!Maybe("THEN"))
         {
             ParseError("Expected 'THEN' statement in 'IF' statement");
@@ -352,7 +352,7 @@ public class BasicParser
         }
         Body();
         var endBranchLabel = GetGeneratedLabel();
-        Generate(new ABL_Number(endBranchLabel), new ABL_Procedure("GOTO"));
+        Generate(new ABL_Number(endBranchLabel), new AblProcedure("GOTO"));
         Generate(new AblLabel(falseBranchLabel));
 
         if (Maybe("ELSE"))
@@ -377,7 +377,7 @@ public class BasicParser
                     {
                         //Note: this is a user defined function.
                         Expression();
-                        Generate(new ABL_Procedure("GOTO"));
+                        Generate(new AblProcedure("GOTO"));
                     }
                     else
                     {
@@ -394,7 +394,7 @@ public class BasicParser
                         else
                         {
                             Expression();
-                            Generate(new ABL_Procedure("GOTO"));
+                            Generate(new AblProcedure("GOTO"));
                         }
                     }
                 }
@@ -405,7 +405,7 @@ public class BasicParser
                 else
                 {
                     Expression();
-                    Generate(new ABL_Procedure("GOTO"));
+                    Generate(new AblProcedure("GOTO"));
                 }
             }
         }
@@ -429,7 +429,7 @@ public class BasicParser
     void Input()
     {
         Prompt();
-        Generate(new ABL_String("? "), new ABL_Procedure("#WRITE"));
+        Generate(new ABL_String("? "), new AblProcedure("#WRITE"));
         if (!UnsetVariable())
             return;
         while (Maybe(','))
@@ -446,7 +446,7 @@ public class BasicParser
                     SkipStatement();
                     return;
                 }
-                Generate(new ABL_String(newString), new ABL_Procedure("#WRITE"));
+                Generate(new ABL_String(newString), new AblProcedure("#WRITE"));
             }
         }
 
@@ -459,13 +459,13 @@ public class BasicParser
             switch (v.typeSpecifier)
             {
                 case "$":
-                    Generate(new ABL_Procedure("#INPUT-STRING"), assignmentType);
+                    Generate(new AblProcedure("#INPUT-STRING"), assignmentType);
                     break;
                 case "%":
-                    Generate(new ABL_Procedure("#INPUT-INT"), assignmentType);
+                    Generate(new AblProcedure("#INPUT-INT"), assignmentType);
                     break;
                 default:
-                    Generate(new ABL_Procedure("#INPUT-FLOAT"), assignmentType);
+                    Generate(new AblProcedure("#INPUT-FLOAT"), assignmentType);
                     break;
             }
             return true;
@@ -608,7 +608,7 @@ public class BasicParser
             var previous = _index;
             if (Maybe(','))
             {
-                Generate(new ABL_Procedure("#NEXT-TAB-POSITION"));
+                Generate(new AblProcedure("#NEXT-TAB-POSITION"));
                 shouldPrintNewline = false;
             }
             else if (Maybe(';'))
@@ -623,7 +623,7 @@ public class BasicParser
             else
             {
                 Expression();
-                Generate(new ABL_Procedure("#WRITE"));
+                Generate(new AblProcedure("#WRITE"));
                 shouldPrintNewline = true;
             }
             if (_index == previous)
@@ -637,7 +637,7 @@ public class BasicParser
                 _index++;
         }
         if (shouldPrintNewline)
-            Generate(new ABL_Procedure("#NEXT-LINE"));
+            Generate(new AblProcedure("#NEXT-LINE"));
     }
 
     void DefineFunction()
@@ -674,9 +674,9 @@ public class BasicParser
         {
             Precedence_4_Operator();
             if (op == "!=")
-                Generate(new ABL_Procedure("<>"));
+                Generate(new AblProcedure("<>"));
             else
-                Generate(new ABL_Procedure(op));
+                Generate(new AblProcedure(op));
         }
     }
 
@@ -686,7 +686,7 @@ public class BasicParser
         while (OneOf(out var op, "+", "-"))
         {
             Precedence_3_Operator();
-            Generate(new ABL_Procedure(op));
+            Generate(new AblProcedure(op));
         }
     }
 
@@ -696,7 +696,7 @@ public class BasicParser
         while (OneOf(out var op, "*", "/"))
         {
             Precedence_2_Operator();
-            Generate(new ABL_Procedure(op));
+            Generate(new AblProcedure(op));
         }
     }
 
@@ -705,7 +705,7 @@ public class BasicParser
         if (Maybe('-'))
         {
             Precedence_2_Operator();
-            Generate(new ABL_Procedure("#NEGATE"));
+            Generate(new AblProcedure("#NEGATE"));
         }
         else if (Maybe('+'))
             Precedence_2_Operator();
@@ -720,7 +720,7 @@ public class BasicParser
         {
             // Exponentiation binds more tightly than unary minus.
             Precedence_2_Operator();
-            Generate(new ABL_Procedure("^"));
+            Generate(new AblProcedure("^"));
         }
     }
 
@@ -785,7 +785,7 @@ public class BasicParser
                 // Bare RND uses the same default argument as RND(1).
                 if (functionName == "RND")
                 {
-                    Generate(new ABL_Number(1), new ABL_Procedure("RND"));
+                    Generate(new ABL_Number(1), new AblProcedure("RND"));
                     return;
                 }
                 ParseError("Expected opening parenthesis sign in Atom");
@@ -805,7 +805,7 @@ public class BasicParser
                     SkipStatement();
                 return;
             }
-            Generate(new ABL_Procedure(functionName));
+            Generate(new AblProcedure(functionName));
             return;
         }
 

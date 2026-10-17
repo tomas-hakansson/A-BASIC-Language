@@ -7,6 +7,7 @@ using A_BASIC_Language.StringManipulation;
 using A_BASIC_Language.ValueTypes;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language.Language;
@@ -74,8 +75,8 @@ public class Interpreter
 
     private void Save(string fileName)
     {
-        // TODO: Implement saving the current program to fileName here.
-        throw new NotImplementedException("SAVE is not implemented yet.");
+        var fi = new FileInfo(Path.Combine(MainWindow.UserDataPath, $"{fileName}.bas"));
+        
     }
 
     void Eval()
@@ -212,7 +213,7 @@ public class Interpreter
                 case ABL_DIM_Assignment da:
                     dimExecutor.Write(da); //Note: E.g. 10 dimvariable(1, 2) = 42.
                     break;
-                case ABL_Procedure p:
+                case AblProcedure p:
                     switch (p.Name)
                     {
                         case "#NEGATE":
