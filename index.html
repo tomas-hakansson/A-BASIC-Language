@@ -180,6 +180,7 @@
                 <li><a href="#syntax">Syntax, variabler och typer</a></li>
                 <li><a href="#operators">Uttryck och operatorer</a></li>
                 <li><a href="#statements">Programsatsreferens</a></li>
+                <li><a href="#on-goto">ON … GOTO – välj hoppmål</a></li>
                 <li><a href="#functions">Fungerande funktioner</a></li>
                 <li><a href="#missing">Funktionsnamn utan körstöd</a></li>
                 <li><a href="#examples">Programexempel</a></li>
@@ -247,6 +248,7 @@
             <h3>Direktläge, eller immediate mode</h3>
             <p>När inget program körs utförs en BASIC-sats utan radnummer direkt: <code>PRINT 2+3</code>, <code>A=10</code> eller <code>A=10:PRINT A</code>. Variabler, arrayer och egna funktioner består mellan direktkommandon i samma session.</p>
             <p>Även <code>FOR I=1 TO 3:PRINT I:NEXT I</code> kan köras direkt. FOR och NEXT måste finnas i samma direktkommando; en ofullständig slinga kan inte fortsättas med nästa kommando.</p>
+            <p><a href="#on-goto">ON … GOTO</a> kräver däremot en numrerad programrad och körs med RUN. Satsen är inte tillåten i direktläge, heller inte efter kolon eller i en IF-gren.</p>
             <h3>Programminne och runtime</h3>
             <p>Rader med radnummer lagras i stället för att köras. RUN börjar vid lägsta radnumret och fortsätter i nummerordning om inte en kontrollsats ändrar flödet. Variabler, arrayer och egna funktioner nollställs före varje RUN.</p>
             <p>Under körning tar INPUT emot svar som data, inte terminalkommandon. Ctrl+C avbryter. Normal avslutning visar <code>Program has run through.</code>. Efter direktkommandon, fel och avbrott visas normalt <code>Ready.</code>.</p>
@@ -399,7 +401,7 @@
         </section>
         <section id="statements">
             <h2>8. Programsatsreferens</h2>
-            <p>Detta är alla implementerade programsatser. De fungerar även i direktläge där det är meningsfullt. Hakparenteser i syntaxen betyder valfri del; skriv inte hakparenteserna.</p>
+            <p>Detta är alla implementerade programsatser. ON … GOTO får endast användas i numrerade programrader; övriga satser fungerar även i direktläge med de begränsningar som anges i respektive avsnitt. Hakparenteser i syntaxen betyder valfri del; skriv inte hakparenteserna.</p>
             <article id="let">
                 <h3>LET – tilldelning</h3>
                 <pre><code>[LET] variabel = uttryck
@@ -466,15 +468,23 @@ GO TO uttryck</code></pre>
             </article>
             <article id="on-goto">
                 <h3>ON … GOTO – välj hoppmål</h3>
-                <pre><code>ON uttryck GOTO radnummer,radnummer,...</code></pre>
+                <pre><code>ON uttryck GOTO radnummer[,radnummer ...]
+ON uttryck GO TO radnummer[,radnummer ...]</code></pre>
                 <p>Får endast användas i numrerade programrader. Uttrycket kan innehålla numeriska konstanter, variabler, arrayelement och funktionsanrop. Värdet 1 väljer första raden, 2 andra raden och så vidare. Decimaler avrundas nedåt. Värdet 0 eller ett index större än listans längd fortsätter med nästa sats, även efter kolon på samma rad.</p>
-                <p>Målen ska vara heltalskonstanter. Ett valt radnummer måste finnas, annars ges Undefined line. Strängvärden ger typfel och negativa eller icke ändliga index ger intervallfel. Även stavningen GO TO stöds.</p>
+                <p>Listan måste innehålla minst ett radnummer. Målen ska vara icke-negativa heltalskonstanter, inte variabler eller beräkningar. Endast det valda radnumret kontrolleras vid hoppet: saknas raden ges <code>Undefined line n.</code>. Strängvärden ger typfel och negativa eller icke ändliga index ger <code>ON GOTO index is out of range.</code>.</p>
                 <pre><code>10 X=2
 20 ON X GOTO 100,200,300
 30 PRINT "INGET HOPP":END
 100 PRINT "ETT":END
 200 PRINT "TVAA":END
 300 PRINT "TRE":END</code></pre>
+                <p>Exemplet skriver <code>TVAA</code>. Även <code>X=2.9</code> väljer rad 200. Byt till <code>X=0</code> eller <code>X=4</code> för att fortsätta på rad 30 och skriva <code>INGET HOPP</code>.</p>
+                <p>Indexet kan exempelvis vara <code>A+1</code>, <code>ABS(A)</code> eller <code>FNA(A)</code>. Uttrycket beräknas en gång när satsen utförs. Målraderna är fortfarande en fast lista.</p>
+                <pre><code>10 ON 0 GOTO 100,200:PRINT "FORTSAETTER"
+20 END
+100 PRINT "ETT":END
+200 PRINT "TVAA":END</code></pre>
+                <p>Här sker inget hopp, så PRINT efter kolon körs. Om indexet i stället är 1 eller 2 sker hoppet direkt och PRINT på rad 10 hoppas över. ON … GOSUB stöds inte.</p>
             </article>
             <article id="for">
                 <h3>FOR … TO … STEP och NEXT – räknarslingor</h3>
@@ -643,6 +653,8 @@ STOP</code></pre>
                     <tr><td><code>Type mismatch</code></td><td>Fel typ, exempelvis sträng till talvariabel eller jämförelse av sträng och tal.</td></tr>
                     <tr><td><code>Division by zero.</code></td><td>Divisorn blev 0. Kontrollera med IF före division.</td></tr>
                     <tr><td><code>Undefined line n.</code></td><td>Hopp till rad som inte finns.</td></tr>
+                    <tr><td><code>ON GOTO is only allowed in numbered program lines</code></td><td>ON … GOTO har skrivits i direktläge. Lägg satsen på en numrerad rad och starta programmet med RUN.</td></tr>
+                    <tr><td><code>ON GOTO index is out of range.</code></td><td>Indexet är negativt, Infinity eller NaN. Värdet 0 och positiva index utanför mållistan ger däremot inget hopp.</td></tr>
                     <tr><td><code>NEXT without matching FOR.</code> / <code>FOR without NEXT.</code></td><td>Fel matchning av slingor i källan.</td></tr>
                     <tr><td><code>NEXT without FOR.</code> / <code>NEXT does not match active FOR.</code></td><td>NEXT nåddes utan rätt aktiv slinga.</td></tr>
                     <tr><td><code>FOR STEP must not be zero.</code></td><td>Steget blev 0.</td></tr>
