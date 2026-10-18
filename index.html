@@ -205,6 +205,7 @@
                     <tr><td><a href="#input">INPUT</a></td><td>Ja</td><td>Ja</td><td>Läs ett separat svar per mottagarvariabel.</td></tr>
                     <tr><td><a href="#if">IF … THEN … ELSE</a></td><td>Ja</td><td>Ja</td><td>Välj satsgren eller hoppa till beräknat radnummer. THEN och ELSE är delar av IF, inga fristående satser.</td></tr>
                     <tr><td><a href="#goto">GOTO / GO TO</a></td><td>Begränsat</td><td>Ja</td><td>Hoppa inom den källa som just körs. Ett direktkommando har inte tillgång till det lagrade programmets radetiketter.</td></tr>
+                    <tr><td><a href="#on-goto">ON … GOTO</a></td><td>Nej</td><td>Ja</td><td>Välj målrad med ett numeriskt uttryck och en lista av radnummer.</td></tr>
                     <tr><td><a href="#for">FOR … TO … STEP</a></td><td>Ja, med NEXT i samma kommando</td><td>Ja</td><td>Starta en räknarslinga. TO och STEP är delar av FOR.</td></tr>
                     <tr><td><a href="#for">NEXT</a></td><td>Ja, med FOR i samma kommando</td><td>Ja</td><td>Öka räknaren och fortsätt eller avsluta slingan.</td></tr>
                     <tr><td><a href="#dim">DIM</a></td><td>Ja</td><td>Ja</td><td>Skapa eller ersätt arrayer med inkluderande högsta index.</td></tr>
@@ -463,6 +464,18 @@ GO TO uttryck</code></pre>
 30 IF A&lt;5 THEN 10
 40 END</code></pre>
             </article>
+            <article id="on-goto">
+                <h3>ON … GOTO – välj hoppmål</h3>
+                <pre><code>ON uttryck GOTO radnummer,radnummer,...</code></pre>
+                <p>Får endast användas i numrerade programrader. Uttrycket kan innehålla numeriska konstanter, variabler, arrayelement och funktionsanrop. Värdet 1 väljer första raden, 2 andra raden och så vidare. Decimaler avrundas nedåt. Värdet 0 eller ett index större än listans längd fortsätter med nästa sats, även efter kolon på samma rad.</p>
+                <p>Målen ska vara heltalskonstanter. Ett valt radnummer måste finnas, annars ges Undefined line. Strängvärden ger typfel och negativa eller icke ändliga index ger intervallfel. Även stavningen GO TO stöds.</p>
+                <pre><code>10 X=2
+20 ON X GOTO 100,200,300
+30 PRINT "INGET HOPP":END
+100 PRINT "ETT":END
+200 PRINT "TVAA":END
+300 PRINT "TRE":END</code></pre>
+            </article>
             <article id="for">
                 <h3>FOR … TO … STEP och NEXT – räknarslingor</h3>
                 <pre><code>FOR variabel = start TO slut [STEP steg]
@@ -652,7 +665,7 @@ STOP</code></pre>
             <p>Referensen följer den aktiva parsern och tolken. Äldre parserfiler och historiska ambitioner i README definierar inte aktuellt stöd. Medföljande spelkällor är exempelmaterial: en medföljande fil garanterar inte att dess alla språkfunktioner stöds.</p>
             <ul>
                 <li>Ingen full Altair BASIC-kompatibilitet. INT, RND, strängaddition och automatisk arrayskapning har de avvikelser som beskrivits ovan.</li>
-                <li>GOSUB, RETURN, ON … GOTO, ON … GOSUB, DATA, READ och RESTORE saknar implementerade programsatser.</li>
+                <li>GOSUB, RETURN, ON … GOSUB, DATA, READ och RESTORE saknar implementerade programsatser.</li>
                 <li>WHILE/WEND, DO/LOOP, flerradiga IF-block, ELSEIF och SELECT CASE stöds inte.</li>
                 <li>LOAD, SAVE, MERGE, DELETE, RENUM, EDIT, CONT, CLEAR och CLS är inte implementerade terminalkommandon. Radera rad med ensamt nummer, hela programmet med NEW. Öppna via menyn.</li>
                 <li>Inga implementerade grafik-, ljud-, färg- eller markörsatser såsom PLOT, DRAW, LINE, CIRCLE, SOUND, BEEP, COLOR eller LOCATE. Upplösningarnas pixelmått är visningslägen, inte ett BASIC-grafik-API.</li>

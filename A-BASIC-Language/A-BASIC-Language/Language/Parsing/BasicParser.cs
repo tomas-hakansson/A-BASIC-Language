@@ -157,6 +157,9 @@ public class BasicParser
                     case "GO":
                         Goto();//Note: Handles both GOTO and GO TO.
                         break;
+                    case "ON":
+                        OnGoto();
+                        break;
                     case "IF":
                         //Note: Since if statements can have statements as branches their parsing must handled differently
                         //          so these flags allow the relevant code to handle these special cases.
@@ -367,6 +370,38 @@ public class BasicParser
 
         Expression();
         Generate(new AblProcedure("GOTO"));
+    }
+
+    // ON expression GOTO line-number (, line-number)*
+    private void OnGoto()
+    {
+        if (_direct)
+        {
+            ParseError("ON GOTO is only allowed in numbered program lines");
+            SkipStatement();
+            return;
+        }
+
+        Expression();
+
+        if (!Maybe("GOTO") && !(Maybe("GO") && Maybe("TO")))
+            throw new InvalidOperationException("Expected GOTO after ON expression.");
+
+        var targets = new List<int>();
+        
+        do
+        {
+            var target = Regex.Match(_source.Substring(_index), @"^[0-9]+");
+        
+            if (!target.Success || !int.TryParse(target.Value, out var lineNumber))
+                throw new InvalidOperationException("Expected a line number in ON GOTO list.");
+
+            targets.Add(lineNumber);
+            _index += target.Length;
+            SkipWhitespace();
+        } while (Maybe(','));
+
+        Generate(new AblOnGoto(targets));
     }
 
     //if         => IF boolean-expr THEN body (ELSE body)?
@@ -713,7 +748,7 @@ public class BasicParser
         _expressionTarget = body;
         try { Expression(); }
         finally { _expressionTarget = null; }
-        Generate(new ABL_FunctionDefinition(name, parameter, body));
+        Generate(new AblFunctionDefinition(name, parameter, body));
     }
 
     string ReadFunctionSymbol()
@@ -813,7 +848,7 @@ public class BasicParser
                 if (!Maybe('(')) throw new InvalidOperationException("Expected ( in FN call.");
                 Expression();
                 if (!Maybe(')')) throw new InvalidOperationException("Expected ) in FN call.");
-                Generate(new ABL_FunctionCall(name));
+                Generate(new AblFunctionCall(name));
                 return;
             }
             if (Maybe('"', false))
@@ -1059,7 +1094,7 @@ public class BasicParser
     }
 
     static Regex StatementRegex() =>
-        new(@"\G(?<statement>DEF|FOR|NEXT|DIM|END|GO|IF|INPUT|LET|PRINT|RANDOMIZE|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|RANDOMIZE|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

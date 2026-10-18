@@ -38,10 +38,10 @@ Of the 101 games, we support the ones followed by a 1:
 | change            |     1     |
 | checkers          |     0     |
 | chemist           |     1     |
-| chief             |           |
-| chomp             |           |
-| civilwar          |           |
-| combat            |           |
+| chief             |     0     |
+| chomp             |     0     |
+| civilwar          |     0     |
+| combat            |     1     |
 | craps             |           |
 | cube              |           |
 | depthcharge       |           |

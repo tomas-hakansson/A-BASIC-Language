@@ -24,7 +24,7 @@ public class Interpreter
     readonly Dictionary<string, ValueBase>? _variables;//Ponder: do the value need to be nullable?
     readonly Dictionary<string, Dimension> _dimVariables;
     readonly Stack<ValueBase> _data;
-    readonly Dictionary<string, ABL_FunctionDefinition> _functions;
+    readonly Dictionary<string, AblFunctionDefinition> _functions;
     bool EndMessageDisplayed { get; set; }
     Random _random;//Note: For the RND function.
     int _currentLineNumber;
@@ -40,7 +40,7 @@ public class Interpreter
         _variables = state == null ? new Dictionary<string, ValueBase>() : state.Variables;
         _dimVariables = state == null ? new Dictionary<string, Dimension>() : state.Arrays;
         _data = new Stack<ValueBase>();
-        _functions = state == null ? new Dictionary<string, ABL_FunctionDefinition>(StringComparer.OrdinalIgnoreCase) : state.Functions;
+        _functions = state == null ? new Dictionary<string, AblFunctionDefinition>(StringComparer.OrdinalIgnoreCase) : state.Functions;
         _random = new Random();
         _currentLineNumber = 0;
     }
@@ -135,10 +135,26 @@ public class Interpreter
 
             switch (e)
             {
-                case ABL_FunctionDefinition definition:
+                case AblOnGoto branch:
+                {
+                    var selector = Number(_data.Pop());
+                    if (double.IsNaN(selector) || double.IsInfinity(selector) || selector < 0)
+                        throw new OverflowException("ON GOTO index is out of range.");
+
+                    var selected = Math.Floor(selector);
+                    if (selected >= 1 && selected <= branch.Targets.Count)
+                    {
+                        var target = branch.Targets[(int)selected - 1];
+                        if (!_parseResult.LabelIndex.TryGetValue(target, out var targetIndex))
+                            throw new InvalidOperationException($"Undefined line {target}.");
+                        i = targetIndex - 1;
+                    }
+                    break;
+                }
+                case AblFunctionDefinition definition:
                     _functions[definition.Name] = definition;
                     break;
-                case ABL_FunctionCall call:
+                case AblFunctionCall call:
                 {
                     if (!_functions.TryGetValue(call.Name, out var function))
                         throw new InvalidOperationException($"Undefined function FN {call.Name}.");

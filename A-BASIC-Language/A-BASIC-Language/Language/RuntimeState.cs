@@ -10,6 +10,6 @@ public sealed class RuntimeState
 {
     public Dictionary<string, ValueBase> Variables { get; } = new(StringComparer.OrdinalIgnoreCase);
     public Dictionary<string, Dimension> Arrays { get; } = new(StringComparer.OrdinalIgnoreCase);
-    public Dictionary<string, ABL_FunctionDefinition> Functions { get; } = new(StringComparer.OrdinalIgnoreCase);
+    public Dictionary<string, AblFunctionDefinition> Functions { get; } = new(StringComparer.OrdinalIgnoreCase);
     public void Clear() { Variables.Clear(); Arrays.Clear(); Functions.Clear(); }
 }
