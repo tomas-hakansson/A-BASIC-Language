@@ -37,7 +37,7 @@ public sealed class BasicSession
         if (command.Equals("NEW", StringComparison.OrdinalIgnoreCase))
         {
             clearProgram();
-            _state.Clear();
+            Reset(terminal);
             terminal.WriteLine("");
             terminal.WriteLine("Ready.");
             return;
@@ -46,7 +46,7 @@ public sealed class BasicSession
         var runtime = command.Equals("RUN", StringComparison.OrdinalIgnoreCase);
         
         if (runtime)
-            _state.Clear();
+            Reset(terminal);
         
         IsRunning = true;
         
@@ -62,6 +62,12 @@ public sealed class BasicSession
         }
     }
 
+    private void Reset(IBasicTerminal terminal)
+    {
+        _state.Clear();
+        terminal.ClearScreen();
+        terminal.SetTextRenderLimit(0);
+    }
     private static bool TryParseListRange(string argument, out int? first, out int? last)
     {
         first = last = null;

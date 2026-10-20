@@ -482,6 +482,16 @@ public class Interpreter
                         case "#NEXT-TAB-POSITION":
                             _terminal.Write(new string(' ', 14 - _terminal.OutputColumn % 14));
                             break;
+                        case "WINDOW":
+                            {
+                                var rows = Number(_data.Pop());
+                                if (double.IsNaN(rows) || double.IsInfinity(rows) ||
+                                    rows < 2 || rows > 25 || rows != Math.Floor(rows))
+                                    throw new InvalidOperationException("WINDOW requires a whole number of text rows from 2 to 25.");
+                                _terminal.ClearScreen();
+                                _terminal.SetTextRenderLimit(25 - (int)rows);
+                            }
+                            break;
                         case "RANDOMIZE":
                             _random = new Random();
                             break;

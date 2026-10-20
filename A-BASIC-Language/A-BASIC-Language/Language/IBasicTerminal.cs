@@ -9,4 +9,6 @@ public interface IBasicTerminal
     void WriteLine(string text);
     string InputString(string prompt);
     void PumpEvents();
+    void ClearScreen();
+    void SetTextRenderLimit(int limit);
 }

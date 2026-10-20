@@ -10,6 +10,14 @@ public sealed class TerminalAdapter(TerminalMatrixControl terminal) : IBasicTerm
     private readonly StringBuilder _line = new();
     public int OutputColumn => _line.Length;
     public bool QuitFlag => terminal.QuitFlag;
+    public void ClearScreen()
+    {
+        terminal.Clear();
+        _line.Clear();
+        terminal.SetStartPosition(0, terminal.CursorPosition.Y);
+    }
+
+    public void SetTextRenderLimit(int limit) => terminal.SetTextRenderLimit(limit);
     public void PumpEvents() => Application.DoEvents();
 
     public void Write(string text)

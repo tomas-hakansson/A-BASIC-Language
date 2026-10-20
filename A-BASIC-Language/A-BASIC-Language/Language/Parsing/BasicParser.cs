@@ -177,6 +177,9 @@ public class BasicParser
                     case "PRINT":
                         Print();
                         break;
+                    case "WINDOW":
+                        Window();
+                        break;
                     case "RANDOMIZE":
                         Generate(new AblProcedure("RANDOMIZE"));
                         break;
@@ -687,6 +690,16 @@ public class BasicParser
         }
     }
 
+    // WINDOW [expression]: the argument is the number of text rows at the bottom.
+    void Window()
+    {
+        if (_index >= _source.Length || _source[_index] == '\n' ||
+            Maybe(':', false) || (_parsingIf && Maybe("ELSE", incrementIfFound: false)))
+            Generate(new ABL_Number(25));
+        else
+            Expression();
+        Generate(new AblProcedure("WINDOW"));
+    }
     //print => PRINT (, | ; | expression)*
     void Print()
     {//todo: not completely tested.
@@ -1094,7 +1107,7 @@ public class BasicParser
     }
 
     static Regex StatementRegex() =>
-        new(@"\G(?<statement>DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|RANDOMIZE|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|WINDOW|RANDOMIZE|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

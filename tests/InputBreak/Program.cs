@@ -183,6 +183,8 @@ internal static class Program
         private readonly Func<string> _input;
         private string _line = "";
         public FakeTerminal(Func<string> input) { _input = input; }
+        public void ClearScreen() { }
+        public void SetTextRenderLimit(int limit) { }
         public bool QuitFlag => false;
         public int OutputColumn => _line.Length;
         public int InputCalls { get; private set; }

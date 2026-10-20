@@ -4,6 +4,10 @@ ABL (A BASIC Language) is (will be) an implementation of Altair BASIC by Microso
 
 [Read the manual!](https://abl.winsoft.se/)
 
+WINDOW works both as a direct command and in numbered programs. It clears the screen before changing the text window. With no argument it
+restores all 25 text rows. With an argument it uses that many rows at the bottom:
+`WINDOW 10` calls `SetTextRenderLimit(15)`. The argument can be a numeric expression
+and must evaluate to a whole number from 2 to 25. NEW and RUN also clear the screen and restore all 25 text rows when they reset variables.
 It's currently an interpreter but compilation is a possibility in the future.
 
 The initial goal is to be able to run all games in the book [101 BASIC Computer Games](http://www.bitsavers.org/pdf/dec/_Books/101_BASIC_Computer_Games_Mar75.pdf) (1975).
