@@ -17,7 +17,7 @@ public class AblNumber : AblEvalValue
         if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double parsedDouble))
             Value = parsedDouble;
         else
-            throw new ArgumentException($"Expected a double but got: ({value})", nameof(value));
+            throw new ArgumentException($@"Expected a double but got: {value}", nameof(value));
     }
 
     public override string ToString()

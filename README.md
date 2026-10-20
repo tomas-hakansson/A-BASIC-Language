@@ -10,7 +10,7 @@ restores all 25 text rows. With an argument it uses that many rows at the bottom
 and must evaluate to a whole number from 2 to 25. NEW and RUN also clear the screen and restore all 25 text rows when they reset variables.
 GOSUB (also spelled GO SUB) jumps to a line and pushes the next instruction and
 calling line onto a separate subroutine call stack. ON expression GOSUB line1,line2,...
-selects a subroutine using the same rules as ON GOTO. RETURN is not implemented yet.
+selects a subroutine using the same rules as ON GOTO. RETURN pops the latest subroutine call and resumes at the instruction after GOSUB. A RETURN with no active subroutine reports RETURN without GOSUB.
 It's currently an interpreter but compilation is a possibility in the future.
 
 The initial goal is to be able to run all games in the book [101 BASIC Computer Games](http://www.bitsavers.org/pdf/dec/_Books/101_BASIC_Computer_Games_Mar75.pdf) (1975).
@@ -28,7 +28,7 @@ Of the 101 games, we support the ones followed by a 1:
 | bagels            |     0     |
 | banner            |     0     |
 | basketball        |     0     |
-| batnum            |     0     |
+| batnum            |     1     |
 | battle            |     0     |
 | blackjack         |     0     |
 | bombardment       |     0     |
@@ -88,7 +88,7 @@ Of the 101 games, we support the ones followed by a 1:
 | mugwump           |           |
 | name              |     0     |
 | nicomachus        |     1     |
-| nim               |           |
+| nim               |     0     |
 | number            |           |
 | onecheck          |           |
 | orbit             |           |

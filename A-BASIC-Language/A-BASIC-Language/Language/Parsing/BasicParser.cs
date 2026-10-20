@@ -151,6 +151,9 @@ public class BasicParser
                     case "DIM":
                         Dim();
                         break;
+                    case "RETURN":
+                        Generate(new AblProcedure("RETURN"));
+                        break;
                     case "END":
                         Generate(new AblProcedure("#END-PROGRAM"));
                         break;
@@ -1106,7 +1109,7 @@ public class BasicParser
     }
 
     static Regex StatementRegex() =>
-        new(@"\G(?<statement>DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|WINDOW|RANDOMIZE|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|WINDOW|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

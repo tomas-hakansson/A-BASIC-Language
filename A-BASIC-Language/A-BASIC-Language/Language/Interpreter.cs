@@ -333,6 +333,15 @@ public class Interpreter
                         case "#END-PROGRAM":
                             endProgram = true;
                             break;
+                        case "RETURN":
+                            {
+                                if (_subroutineCalls.Count == 0)
+                                    throw new InvalidOperationException("RETURN without GOSUB.");
+                                var returnPoint = _subroutineCalls.Pop();
+                                _currentLineNumber = returnPoint.LineNumber;
+                                i = returnPoint.Index - 1;
+                            }
+                            break;
                         case "GOSUB":
                             {
                                 var target = Number(_data.Pop());
