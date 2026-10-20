@@ -116,49 +116,49 @@
     <Compile Include="ProgramCacheDictionary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringManipulation\StringExtensions.cs" />
-    <Compile Include="TerminalMatrixNetFramework\CharacterPixelMatrix.cs" />
-    <Compile Include="TerminalMatrixNetFramework\Coordinate.cs" />
-    <Compile Include="TerminalMatrixNetFramework\CoordinateList.cs" />
-    <Compile Include="TerminalMatrixNetFramework\Definitions\CharacterMatrixDefinition.cs" />
-    <Compile Include="TerminalMatrixNetFramework\Definitions\CharacterPosition.cs" />
-    <Compile Include="TerminalMatrixNetFramework\Definitions\PixelMatrixDefinition.cs" />
-    <Compile Include="TerminalMatrixNetFramework\Events\FunctionKey.cs" />
-    <Compile Include="TerminalMatrixNetFramework\Events\FunctionKeyEventArgs.cs" />
-    <Compile Include="TerminalMatrixNetFramework\Events\FunctionKeyPressedDelegate.cs" />
-    <Compile Include="TerminalMatrixNetFramework\Events\IntputCompletedDelegate.cs" />
-    <Compile Include="TerminalMatrixNetFramework\Events\ProgramChangeDelegate.cs" />
-    <Compile Include="TerminalMatrixNetFramework\Events\ProgramChangeEventArgs.cs" />
-    <Compile Include="TerminalMatrixNetFramework\Events\RequestToggleFullscreenDelegate.cs" />
-    <Compile Include="TerminalMatrixNetFramework\Events\TickDelegate.cs" />
-    <Compile Include="TerminalMatrixNetFramework\Events\TickEventArgs.cs" />
-    <Compile Include="TerminalMatrixNetFramework\Events\TypedLineDelegate.cs" />
-    <Compile Include="TerminalMatrixNetFramework\Events\TypedLineEventArgs.cs" />
-    <Compile Include="TerminalMatrixNetFramework\Events\UserBreakDelegate.cs" />
-    <Compile Include="TerminalMatrixNetFramework\PixelMapLibrary\FontManagement\CharacterPixelMatrix.cs" />
-    <Compile Include="TerminalMatrixNetFramework\PixelMapLibrary\FontManagement\TerminalCodePage.cs" />
-    <Compile Include="TerminalMatrixNetFramework\PixelMapLibrary\FontManagement\TerminalFont.cs" />
-    <Compile Include="TerminalMatrixNetFramework\PixelMapLibrary\Pixelmap.cs" />
-    <Compile Include="TerminalMatrixNetFramework\PixelMapLibrary\SpriteManagement\FontMonochromeSprite.cs" />
-    <Compile Include="TerminalMatrixNetFramework\PixelMapLibrary\SpriteManagement\ISprite.cs" />
-    <Compile Include="TerminalMatrixNetFramework\PixelMapLibrary\SpriteManagement\MonochromeSprite.cs" />
-    <Compile Include="TerminalMatrixNetFramework\PixelMapLibrary\SpriteManagement\StillImageSprite.cs" />
-    <Compile Include="TerminalMatrixNetFramework\ProgramLine.cs" />
-    <Compile Include="TerminalMatrixNetFramework\ProgramLineDictionary.cs" />
-    <Compile Include="TerminalMatrixNetFramework\RenderingMode.cs" />
-    <Compile Include="TerminalMatrixNetFramework\Resolution.cs" />
-    <Compile Include="TerminalMatrixNetFramework\ResolutionHelper.cs" />
-    <Compile Include="TerminalMatrixNetFramework\SetProgramLinesResult.cs" />
-    <Compile Include="TerminalMatrixNetFramework\TerminalColor\ColorName.cs" />
-    <Compile Include="TerminalMatrixNetFramework\TerminalColor\Palette.cs" />
-    <Compile Include="TerminalMatrixNetFramework\TerminalMatrixControl.cs">
+    <Compile Include="TerminalMatrix\CharacterPixelMatrix.cs" />
+    <Compile Include="TerminalMatrix\Coordinate.cs" />
+    <Compile Include="TerminalMatrix\CoordinateList.cs" />
+    <Compile Include="TerminalMatrix\Definitions\CharacterMatrixDefinition.cs" />
+    <Compile Include="TerminalMatrix\Definitions\CharacterPosition.cs" />
+    <Compile Include="TerminalMatrix\Definitions\PixelMatrixDefinition.cs" />
+    <Compile Include="TerminalMatrix\Events\FunctionKey.cs" />
+    <Compile Include="TerminalMatrix\Events\FunctionKeyEventArgs.cs" />
+    <Compile Include="TerminalMatrix\Events\FunctionKeyPressedDelegate.cs" />
+    <Compile Include="TerminalMatrix\Events\IntputCompletedDelegate.cs" />
+    <Compile Include="TerminalMatrix\Events\ProgramChangeDelegate.cs" />
+    <Compile Include="TerminalMatrix\Events\ProgramChangeEventArgs.cs" />
+    <Compile Include="TerminalMatrix\Events\RequestToggleFullscreenDelegate.cs" />
+    <Compile Include="TerminalMatrix\Events\TickDelegate.cs" />
+    <Compile Include="TerminalMatrix\Events\TickEventArgs.cs" />
+    <Compile Include="TerminalMatrix\Events\TypedLineDelegate.cs" />
+    <Compile Include="TerminalMatrix\Events\TypedLineEventArgs.cs" />
+    <Compile Include="TerminalMatrix\Events\UserBreakDelegate.cs" />
+    <Compile Include="TerminalMatrix\PixelMapLibrary\FontManagement\CharacterPixelMatrix.cs" />
+    <Compile Include="TerminalMatrix\PixelMapLibrary\FontManagement\TerminalCodePage.cs" />
+    <Compile Include="TerminalMatrix\PixelMapLibrary\FontManagement\TerminalFont.cs" />
+    <Compile Include="TerminalMatrix\PixelMapLibrary\Pixelmap.cs" />
+    <Compile Include="TerminalMatrix\PixelMapLibrary\SpriteManagement\FontMonochromeSprite.cs" />
+    <Compile Include="TerminalMatrix\PixelMapLibrary\SpriteManagement\ISprite.cs" />
+    <Compile Include="TerminalMatrix\PixelMapLibrary\SpriteManagement\MonochromeSprite.cs" />
+    <Compile Include="TerminalMatrix\PixelMapLibrary\SpriteManagement\StillImageSprite.cs" />
+    <Compile Include="TerminalMatrix\ProgramLine.cs" />
+    <Compile Include="TerminalMatrix\ProgramLineDictionary.cs" />
+    <Compile Include="TerminalMatrix\RenderingMode.cs" />
+    <Compile Include="TerminalMatrix\Resolution.cs" />
+    <Compile Include="TerminalMatrix\ResolutionHelper.cs" />
+    <Compile Include="TerminalMatrix\SetProgramLinesResult.cs" />
+    <Compile Include="TerminalMatrix\TerminalColor\ColorName.cs" />
+    <Compile Include="TerminalMatrix\TerminalColor\Palette.cs" />
+    <Compile Include="TerminalMatrix\TerminalMatrixControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="TerminalMatrixNetFramework\TerminalMatrixControl.Designer.cs">
+    <Compile Include="TerminalMatrix\TerminalMatrixControl.Designer.cs">
       <DependentUpon>TerminalMatrixControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="TerminalMatrixNetFramework\TerminalMatrixKeypressHandler.cs" />
-    <Compile Include="TerminalMatrixNetFramework\TerminalState.cs" />
-    <Compile Include="TerminalMatrixNetFramework\WordWrapper.cs" />
+    <Compile Include="TerminalMatrix\TerminalMatrixKeypressHandler.cs" />
+    <Compile Include="TerminalMatrix\TerminalState.cs" />
+    <Compile Include="TerminalMatrix\WordWrapper.cs" />
     <Compile Include="VersionService.cs" />
     <EmbeddedResource Include="Gui\Dialogs\OptionsDialog.resx">
       <DependentUpon>OptionsDialog.cs</DependentUpon>
@@ -179,7 +179,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="TerminalMatrixNetFramework\TerminalMatrixControl.resx">
+    <EmbeddedResource Include="TerminalMatrix\TerminalMatrixControl.resx">
       <DependentUpon>TerminalMatrixControl.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
@@ -191,8 +191,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="TerminalMatrixNetFramework\packages.config" />
-    <None Include="TerminalMatrixNetFramework\TerminalMatrixNetFramework.csproj" />
+    <None Include="TerminalMatrix\packages.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -505,7 +504,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\debug.png" />
-    <Content Include="TerminalMatrixNetFramework\TerminalMatrixNetFramework.csproj.user" />
     <None Include="Resources\TextboxHS.png" />
     <None Include="Resources\PlayHS.png" />
     <Content Include="Resources\settings.png" />

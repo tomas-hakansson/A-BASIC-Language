@@ -42,7 +42,7 @@ Of the 101 games, we support the ones followed by a 1:
 | chomp             |     0     |
 | civilwar          |     0     |
 | combat            |     1     |
-| craps             |           |
+| craps             |     1     |
 | cube              |           |
 | depthcharge       |           |
 | diamond           |           |
