@@ -165,7 +165,7 @@
     <header>
         <h1>ABL</h1>
         <p>Användarmanual och språkreferens för A BASIC Language, av Tomas Håkansson och Anders Hesselbom.</p>
-        <p>Beskriver projektets implementation den 14 oktober 2026. ABL är en Windowsbaserad BASIC-tolk med ett urval av Altair BASICs syntax. Begränsningar och avvikelser anges uttryckligen.</p>
+        <p>Beskriver projektets implementation den 20 oktober 2026. ABL är en Windowsbaserad BASIC-tolk med ett urval av Altair BASICs syntax. Begränsningar och avvikelser anges uttryckligen.</p>
     </header>
 <main>
         <nav aria-label="Innehåll">
@@ -180,7 +180,10 @@
                 <li><a href="#syntax">Syntax, variabler och typer</a></li>
                 <li><a href="#operators">Uttryck och operatorer</a></li>
                 <li><a href="#statements">Programsatsreferens</a></li>
+                <li><a href="#gosub">GOSUB / GO SUB – anropa subrutin</a></li>
+                <li><a href="#return">RETURN – återvänd från subrutin</a></li>
                 <li><a href="#on-goto">ON … GOTO – välj hoppmål</a></li>
+                <li><a href="#on-gosub">ON … GOSUB – välj subrutin</a></li>
                 <li><a href="#functions">Fungerande funktioner</a></li>
                 <li><a href="#missing">Funktionsnamn utan körstöd</a></li>
                 <li><a href="#examples">Programexempel</a></li>
@@ -206,6 +209,9 @@
                     <tr><td><a href="#input">INPUT</a></td><td>Ja</td><td>Ja</td><td>Läs ett separat svar per mottagarvariabel.</td></tr>
                     <tr><td><a href="#if">IF … THEN … ELSE</a></td><td>Ja</td><td>Ja</td><td>Välj satsgren eller hoppa till beräknat radnummer. THEN och ELSE är delar av IF, inga fristående satser.</td></tr>
                     <tr><td><a href="#goto">GOTO / GO TO</a></td><td>Begränsat</td><td>Ja</td><td>Hoppa inom den källa som just körs. Ett direktkommando har inte tillgång till det lagrade programmets radetiketter.</td></tr>
+                    <tr><td><a href="#gosub">GOSUB / GO SUB</a></td><td>Begränsat</td><td>Ja</td><td>Anropa en rad och spara returpositionen på anropsstacken. Direktläge kan inte anropa rader i programminnet.</td></tr>
+                    <tr><td><a href="#return">RETURN</a></td><td>Ja, men kräver aktivt GOSUB-anrop</td><td>Ja</td><td>Återvänd till satsen efter senaste GOSUB och ta bort anropet från stacken.</td></tr>
+                    <tr><td><a href="#on-gosub">ON … GOSUB</a></td><td>Nej</td><td>Ja</td><td>Välj subrutin från en lista av radnummer och spara returpositionen.</td></tr>
                     <tr><td><a href="#on-goto">ON … GOTO</a></td><td>Nej</td><td>Ja</td><td>Välj målrad med ett numeriskt uttryck och en lista av radnummer.</td></tr>
                     <tr><td><a href="#for">FOR … TO … STEP</a></td><td>Ja, med NEXT i samma kommando</td><td>Ja</td><td>Starta en räknarslinga. TO och STEP är delar av FOR.</td></tr>
                     <tr><td><a href="#for">NEXT</a></td><td>Ja, med FOR i samma kommando</td><td>Ja</td><td>Öka räknaren och fortsätt eller avsluta slingan.</td></tr>
@@ -248,7 +254,7 @@
             <h3>Direktläge, eller immediate mode</h3>
             <p>När inget program körs utförs en BASIC-sats utan radnummer direkt: <code>PRINT 2+3</code>, <code>A=10</code> eller <code>A=10:PRINT A</code>. Variabler, arrayer och egna funktioner består mellan direktkommandon i samma session.</p>
             <p>Även <code>FOR I=1 TO 3:PRINT I:NEXT I</code> kan köras direkt. FOR och NEXT måste finnas i samma direktkommando; en ofullständig slinga kan inte fortsättas med nästa kommando.</p>
-            <p><a href="#on-goto">ON … GOTO</a> kräver däremot en numrerad programrad och körs med RUN. Satsen är inte tillåten i direktläge, heller inte efter kolon eller i en IF-gren.</p>
+            <p><a href="#on-goto">ON … GOTO</a> och <a href="#on-gosub">ON … GOSUB</a> kräver däremot en numrerad programrad och körs med RUN. Satserna är inte tillåtna i direktläge, heller inte efter kolon eller i en IF-gren.</p>
             <h3>Programminne och runtime</h3>
             <p>Rader med radnummer lagras i stället för att köras. RUN börjar vid lägsta radnumret och fortsätter i nummerordning om inte en kontrollsats ändrar flödet. Variabler, arrayer och egna funktioner nollställs före varje RUN.</p>
             <p>Under körning tar INPUT emot svar som data, inte terminalkommandon. Ctrl+C avbryter. Normal avslutning visar <code>Program has run through.</code>. Efter direktkommandon, fel och avbrott visas normalt <code>Ready.</code>.</p>
@@ -401,7 +407,7 @@
         </section>
         <section id="statements">
             <h2>8. Programsatsreferens</h2>
-            <p>Detta är alla implementerade programsatser. ON … GOTO får endast användas i numrerade programrader; övriga satser fungerar även i direktläge med de begränsningar som anges i respektive avsnitt. Hakparenteser i syntaxen betyder valfri del; skriv inte hakparenteserna.</p>
+            <p>Detta är alla implementerade programsatser. ON … GOTO och ON … GOSUB får endast användas i numrerade programrader; övriga satser fungerar även i direktläge med de begränsningar som anges i respektive avsnitt. Hakparenteser i syntaxen betyder valfri del; skriv inte hakparenteserna.</p>
             <article id="let">
                 <h3>LET – tilldelning</h3>
                 <pre><code>[LET] variabel = uttryck
@@ -466,6 +472,25 @@ GO TO uttryck</code></pre>
 30 IF A&lt;5 THEN 10
 40 END</code></pre>
             </article>
+            <article id="gosub">
+                <h3>GOSUB och GO SUB – anropa subrutin</h3>
+                <pre><code>GOSUB uttryck
+GO SUB uttryck</code></pre>
+                <p>Hoppar till angiven programrad och sparar positionen för nästa sats på anropsstacken. Till skillnad från GOTO går det därför att återvända med <a href="#return">RETURN</a>. Uttrycket ska vara numeriskt; decimaldelen kapas till ett heltalsradnummer. Målet måste vara mellan 0 och 2147483647 och raden måste finnas.</p>
+                <p>Anrop kan nästlas, även rekursivt. Varje RETURN återvänder från det senast utförda anropet. Variabler är gemensamma med det anropande programmet. GOSUB i direktläge kan inte anropa rader i det lagrade programmet; starta med RUN.</p>
+                <pre><code>10 GOSUB 100:PRINT "TILLBAKA":END
+100 PRINT "SUBRUTIN"
+110 GO SUB 200
+120 RETURN
+200 PRINT "NAESTLAT ANROP":RETURN</code></pre>
+                <p>Skriver SUBRUTIN, NAESTLAT ANROP och TILLBAKA i den ordningen. END på rad 10 hindrar huvudprogrammet från att fortsätta rakt in i subrutinen.</p>
+            </article>
+            <article id="return">
+                <h3>RETURN – återvänd från subrutin</h3>
+                <pre><code>RETURN</code></pre>
+                <p>Tar bort det senaste GOSUB-anropet från anropsstacken och fortsätter vid satsen direkt efter anropet. Satsen kan ligga efter kolon på samma rad eller på nästa programrad. Detta gäller även anrop via ON … GOSUB och stavningen GO SUB.</p>
+                <p>RETURN tar inga argument. Om inget aktivt anrop finns ges <code>RETURN without GOSUB.</code>. RETURN avslutar en subrutin; använd END eller STOP för att avsluta hela programmet.</p>
+            </article>
             <article id="on-goto">
                 <h3>ON … GOTO – välj hoppmål</h3>
                 <pre><code>ON uttryck GOTO radnummer[,radnummer ...]
@@ -484,7 +509,20 @@ ON uttryck GO TO radnummer[,radnummer ...]</code></pre>
 20 END
 100 PRINT "ETT":END
 200 PRINT "TVAA":END</code></pre>
-                <p>Här sker inget hopp, så PRINT efter kolon körs. Om indexet i stället är 1 eller 2 sker hoppet direkt och PRINT på rad 10 hoppas över. ON … GOSUB stöds inte.</p>
+                <p>Här sker inget hopp, så PRINT efter kolon körs. Om indexet i stället är 1 eller 2 sker hoppet direkt och PRINT på rad 10 hoppas över. Använd <a href="#on-gosub">ON … GOSUB</a> för ett anrop som kan återvända med RETURN.</p>
+            </article>
+            <article id="on-gosub">
+                <h3>ON … GOSUB – välj subrutin</h3>
+                <pre><code>ON uttryck GOSUB radnummer[,radnummer ...]
+ON uttryck GO SUB radnummer[,radnummer ...]</code></pre>
+                <p>Väljer mål enligt samma regler som <a href="#on-goto">ON … GOTO</a>: decimaldelen av ett positivt index kapas, 1 väljer första raden och 2 den andra. Index 0 eller ett positivt index utanför listan fortsätter till nästa sats utan att lägga något på anropsstacken. Negativa eller icke ändliga index ger <code>ON GOSUB index is out of range.</code>; strängar ger typfel.</p>
+                <p>Mållistan måste innehålla minst en icke-negativ heltalskonstant. Variabler och uttryck tillåts inte som mål i listan. Bara det valda målet behöver finnas i programmet. Vid ett valt hopp sparas returpositionen; RETURN fortsätter efter hela ON-satsen. ON … GOSUB kräver en numrerad programrad och kan inte användas i direktläge.</p>
+                <pre><code>10 X=2
+20 ON X GO SUB 100,200
+30 PRINT "TILLBAKA":END
+100 PRINT "FOERSTA":RETURN
+200 PRINT "ANDRA":RETURN</code></pre>
+                <p>Skriver ANDRA och därefter TILLBAKA.</p>
             </article>
             <article id="for">
                 <h3>FOR … TO … STEP och NEXT – räknarslingor</h3>
@@ -653,8 +691,10 @@ STOP</code></pre>
                     <tr><td><code>Type mismatch</code></td><td>Fel typ, exempelvis sträng till talvariabel eller jämförelse av sträng och tal.</td></tr>
                     <tr><td><code>Division by zero.</code></td><td>Divisorn blev 0. Kontrollera med IF före division.</td></tr>
                     <tr><td><code>Undefined line n.</code></td><td>Hopp till rad som inte finns.</td></tr>
-                    <tr><td><code>ON GOTO is only allowed in numbered program lines</code></td><td>ON … GOTO har skrivits i direktläge. Lägg satsen på en numrerad rad och starta programmet med RUN.</td></tr>
-                    <tr><td><code>ON GOTO index is out of range.</code></td><td>Indexet är negativt, Infinity eller NaN. Värdet 0 och positiva index utanför mållistan ger däremot inget hopp.</td></tr>
+                    <tr><td><code>ON GOTO/GOSUB is only allowed in numbered program lines</code></td><td>ON … GOTO eller ON … GOSUB har skrivits i direktläge. Lägg satsen på en numrerad rad och starta programmet med RUN.</td></tr>
+                    <tr><td><code>ON GOTO index is out of range.</code> / <code>ON GOSUB index is out of range.</code></td><td>Indexet är negativt, Infinity eller NaN. Värdet 0 och positiva index utanför mållistan ger däremot inget hopp.</td></tr>
+                    <tr><td><code>RETURN without GOSUB.</code></td><td>RETURN nåddes utan aktivt subrutinanrop, exempelvis om huvudprogrammet fortsätter in i subrutinkoden.</td></tr>
+                    <tr><td><code>GOSUB line number is out of range.</code></td><td>Måluttrycket är negativt, större än 2147483647, Infinity eller NaN.</td></tr>
                     <tr><td><code>NEXT without matching FOR.</code> / <code>FOR without NEXT.</code></td><td>Fel matchning av slingor i källan.</td></tr>
                     <tr><td><code>NEXT without FOR.</code> / <code>NEXT does not match active FOR.</code></td><td>NEXT nåddes utan rätt aktiv slinga.</td></tr>
                     <tr><td><code>FOR STEP must not be zero.</code></td><td>Steget blev 0.</td></tr>
@@ -677,7 +717,7 @@ STOP</code></pre>
             <p>Referensen följer den aktiva parsern och tolken. Äldre parserfiler och historiska ambitioner i README definierar inte aktuellt stöd. Medföljande spelkällor är exempelmaterial: en medföljande fil garanterar inte att dess alla språkfunktioner stöds.</p>
             <ul>
                 <li>Ingen full Altair BASIC-kompatibilitet. INT, RND, strängaddition och automatisk arrayskapning har de avvikelser som beskrivits ovan.</li>
-                <li>GOSUB, RETURN, ON … GOSUB, DATA, READ och RESTORE saknar implementerade programsatser.</li>
+                <li>DATA, READ och RESTORE saknar implementerade programsatser.</li>
                 <li>WHILE/WEND, DO/LOOP, flerradiga IF-block, ELSEIF och SELECT CASE stöds inte.</li>
                 <li>LOAD, SAVE, MERGE, DELETE, RENUM, EDIT, CONT, CLEAR och CLS är inte implementerade terminalkommandon. Radera rad med ensamt nummer, hela programmet med NEW. Öppna via menyn.</li>
                 <li>Inga implementerade grafik-, ljud-, färg- eller markörsatser såsom PLOT, DRAW, LINE, CIRCLE, SOUND, BEEP, COLOR eller LOCATE. Upplösningarnas pixelmått är visningslägen, inte ett BASIC-grafik-API.</li>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using A_BASIC_Language.Language.Stage1;
 
 namespace A_BASIC_Language.Stage1;
 
