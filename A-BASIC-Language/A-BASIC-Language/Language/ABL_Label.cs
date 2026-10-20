@@ -3,16 +3,16 @@ using System.Globalization;
 
 namespace A_BASIC_Language.Language;
 
-public class ABL_Number : AblEvalValue
+public class AblNumber : AblEvalValue
 {
-    public double Value { get; private set; }
+    public double Value { get; }
 
-    public ABL_Number(double value)
+    public AblNumber(double value)
     {
         Value = value;
     }
 
-    public ABL_Number(string value)
+    public AblNumber(string value)
     {
         if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double parsedDouble))
             Value = parsedDouble;
@@ -26,11 +26,11 @@ public class ABL_Number : AblEvalValue
     }
 }
 
-public class ABL_String : AblEvalValue
+public class AblString : AblEvalValue
 {
-    public string Value { get; private set; }
+    public string Value { get; }
 
-    public ABL_String(string value)
+    public AblString(string value)
     {
         Value = value;
     }
@@ -43,7 +43,7 @@ public class ABL_String : AblEvalValue
 
 public class ABL_DIM_Creation : AblEvalValue
 {
-    public string Symbol { get; private set; }
+    public string Symbol { get; }
 
     public ABL_DIM_Creation(string symbol)
     {
@@ -58,7 +58,7 @@ public class ABL_DIM_Creation : AblEvalValue
 
 public class ABL_Variable : AblEvalValue
 {
-    public string Symbol { get; private set; }
+    public string Symbol { get; }
 
     public ABL_Variable(string symbol)
     {
@@ -73,7 +73,7 @@ public class ABL_Variable : AblEvalValue
 
 public class ABL_DIM_Variable : AblEvalValue
 {
-    public string Symbol { get; private set; }
+    public string Symbol { get; }
 
     public ABL_DIM_Variable(string symbol)
     {
@@ -88,7 +88,7 @@ public class ABL_DIM_Variable : AblEvalValue
 
 public class ABL_Assignment : AblEvalValue
 {
-    public string Symbol { get; private set; }
+    public string Symbol { get; }
     public ABL_Assignment(string symbol)
     {
         Symbol = symbol.ToUpper();
@@ -102,7 +102,7 @@ public class ABL_Assignment : AblEvalValue
 
 public class ABL_DIM_Assignment : AblEvalValue
 {
-    public string Symbol { get; private set; }
+    public string Symbol { get; }
 
     public ABL_DIM_Assignment(string symbol)
     {

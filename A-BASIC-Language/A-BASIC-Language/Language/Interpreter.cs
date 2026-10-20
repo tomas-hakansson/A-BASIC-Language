@@ -208,10 +208,10 @@ public class Interpreter
                 case AblLabel lbl:
                     _currentLineNumber = lbl.Value;
                     break;
-                case ABL_Number n:
+                case AblNumber n:
                     _data.Push(ValueBase.GetValueType(n.Value));
                     break;
-                case ABL_String s:
+                case AblString s:
                     _data.Push(new StringValue(s.Value));
                     break;
                 case ABL_DIM_Creation dc:

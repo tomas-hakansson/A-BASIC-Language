@@ -4,7 +4,7 @@ namespace A_BASIC_Language.Language.LanguageParts;
 
 public class AblLabel : AblEvalValue
 {
-    public int Value { get; private set; }
+    public int Value { get; }
 
     public AblLabel(int value)
     {

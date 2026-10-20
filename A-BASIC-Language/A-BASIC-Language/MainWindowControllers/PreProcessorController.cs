@@ -62,7 +62,7 @@ public class PreProcessorController
                     _owner.ToggleFullscreen(false);
                 break;
             case PreProcessorParserResult.ToggleLog:
-                _owner.debugOutputToolStripMenuItem_Click(this, new EventArgs());
+                _owner.debugOutputToolStripMenuItem_Click(this, EventArgs.Empty);
                 break;
             case PreProcessorParserResult.LogOn:
                 if (_owner.debugOutputToolStripMenuItem.Checked)

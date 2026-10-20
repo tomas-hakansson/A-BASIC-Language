@@ -74,7 +74,7 @@ public class FloatValue : ValueBase
 
         var f = (double)b.GetValueAsType<FloatValue>();
 
-        return Math.Abs(Value - f) < FloatValue.CompareErrorTolerance;
+        return Math.Abs(Value - f) < CompareErrorTolerance;
     }
 
     public override int GetHashCode()

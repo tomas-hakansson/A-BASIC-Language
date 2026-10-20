@@ -2,7 +2,7 @@
 
 public class AblProcedure : AblEvalValue
 {
-    public string Name { get; private set; }
+    public string Name { get; }
 
     public AblProcedure(string name)
     {

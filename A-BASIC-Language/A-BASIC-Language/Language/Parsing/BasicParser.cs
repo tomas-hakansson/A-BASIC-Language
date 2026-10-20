@@ -301,7 +301,7 @@ public class BasicParser
         if
             (Maybe("STEP")) Expression();
         else
-            Generate(new ABL_Number(1));
+            Generate(new AblNumber(1));
         
         Generate(new AblFor(variable.FullName));
     }
@@ -419,7 +419,7 @@ public class BasicParser
 
         var falseBranchLabel = GetGeneratedLabel();
         Expression();
-        Generate(new ABL_Number(falseBranchLabel), new AblProcedure("#IF-FALSE-GOTO"));
+        Generate(new AblNumber(falseBranchLabel), new AblProcedure("#IF-FALSE-GOTO"));
         if (!Maybe("THEN"))
         {
             ParseError("Expected 'THEN' statement in 'IF' statement");
@@ -432,7 +432,7 @@ public class BasicParser
         }
         Body();
         var endBranchLabel = GetGeneratedLabel();
-        Generate(new ABL_Number(endBranchLabel), new AblProcedure("GOTO"));
+        Generate(new AblNumber(endBranchLabel), new AblProcedure("GOTO"));
         Generate(new AblLabel(falseBranchLabel));
 
         if (Maybe("ELSE"))
@@ -513,7 +513,7 @@ public class BasicParser
     private void Input()
     {
         Prompt();
-        Generate(new ABL_String("? "), new AblProcedure("#WRITE"));
+        Generate(new AblString("? "), new AblProcedure("#WRITE"));
         
         if (!UnsetVariable())
             return;
@@ -536,7 +536,7 @@ public class BasicParser
                 return;
             }
 
-            Generate(new ABL_String(newString), new AblProcedure("#WRITE"));
+            Generate(new AblString(newString), new AblProcedure("#WRITE"));
         }
 
         bool UnsetVariable()
@@ -684,7 +684,7 @@ public class BasicParser
                     dimensionCount++;
                 }
 
-                Generate(new ABL_Number(dimensionCount));
+                Generate(new AblNumber(dimensionCount));
             }
         }
     }
@@ -694,7 +694,7 @@ public class BasicParser
     {
         if (_index >= _source.Length || _source[_index] == '\n' ||
             Maybe(':', false) || (_parsingIf && Maybe("ELSE", incrementIfFound: false)))
-            Generate(new ABL_Number(25));
+            Generate(new AblNumber(25));
         else
             Expression();
         Generate(new AblProcedure("WINDOW"));
@@ -867,7 +867,7 @@ public class BasicParser
             {
                 if (AString(out var newString))
                 {
-                    Generate(new ABL_String(newString));
+                    Generate(new AblString(newString));
                 }
                 else
                 {
@@ -893,7 +893,7 @@ public class BasicParser
                 // Bare RND uses the same default argument as RND(1).
                 if (functionName == "RND")
                 {
-                    Generate(new ABL_Number(1), new AblProcedure("RND"));
+                    Generate(new AblNumber(1), new AblProcedure("RND"));
                     return;
                 }
                 ParseError("Expected opening parenthesis sign in Atom");
@@ -945,7 +945,7 @@ public class BasicParser
         }
         else
         {
-            Generate(new ABL_Number(maybeNumber));
+            Generate(new AblNumber(maybeNumber));
         }
     }
 

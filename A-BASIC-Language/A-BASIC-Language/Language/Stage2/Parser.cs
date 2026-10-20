@@ -204,11 +204,11 @@ public class Parser
         var falseBranchLabel = GetGeneratedLabel();//Note: Made negative because all valid BASIC labels are positive so there won't be a conflict.
         Next();
         Expression();
-        Generate(new ABL_Number(falseBranchLabel), new AblProcedure("#IF-FALSE-GOTO"));
+        Generate(new AblNumber(falseBranchLabel), new AblProcedure("#IF-FALSE-GOTO"));
         MustMatch("THEN");
         Body();
         var endBranchLabel = GetGeneratedLabel();//Note: Se above.
-        Generate(new ABL_Number(endBranchLabel), new AblProcedure("GOTO"));
+        Generate(new AblNumber(endBranchLabel), new AblProcedure("GOTO"));
         GenerateLabel(falseBranchLabel);
         if (MightMatch("ELSE"))
             Body();
@@ -322,7 +322,7 @@ public class Parser
 
         Next();
         Prompt();
-        Generate(new ABL_String("? "), new AblProcedure("#WRITE"));
+        Generate(new AblString("? "), new AblProcedure("#WRITE"));
         UnsetVariable();
         while (MightMatch(TokenType.Comma))
             UnsetVariable();
@@ -332,7 +332,7 @@ public class Parser
             if (MightMatch(TokenType.String, out var prompt))
             {
                 MustMatch(TokenType.Semicolon);
-                Generate(new ABL_String(prompt), new AblProcedure("#WRITE"));
+                Generate(new AblString(prompt), new AblProcedure("#WRITE"));
             }
         }
 
@@ -451,7 +451,7 @@ public class Parser
                     Expression();
                     dimensionCount++;
                 }
-                Generate(new ABL_Number(dimensionCount));
+                Generate(new AblNumber(dimensionCount));
             }
         }
     }
@@ -643,11 +643,11 @@ public class Parser
                 break;
             case TokenType.Float://todo: float tokens.
             case TokenType.Number:
-                Generate(new ABL_Number(_currentTokenValue));
+                Generate(new AblNumber(_currentTokenValue));
                 Next();
                 break;
             case TokenType.String:
-                Generate(new ABL_String(_currentTokenValue));
+                Generate(new AblString(_currentTokenValue));
                 Next();
                 break;
             case TokenType.UserDefinedName:
