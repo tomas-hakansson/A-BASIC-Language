@@ -2,7 +2,6 @@
 using System;
 using System.Globalization;
 using System.Linq;
-using A_BASIC_Language.ValueTypes;
 
 namespace A_BASIC_Language.Language.ValueTypes;
 

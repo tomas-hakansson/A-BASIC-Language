@@ -1,8 +1,8 @@
+#nullable enable
 using System;
 using System.Globalization;
-using A_BASIC_Language.Language.ValueTypes;
 
-namespace A_BASIC_Language.ValueTypes;
+namespace A_BASIC_Language.Language.ValueTypes;
 
 public class FloatValue : ValueBase
 {
@@ -65,6 +65,7 @@ public class FloatValue : ValueBase
 
     public override bool Equals(object? obj)
     {
+        if (obj == null) throw new ArgumentNullException(nameof(obj));
         if (obj is not ValueBase b)
             return false;
 
@@ -83,7 +84,6 @@ public class FloatValue : ValueBase
         return (int)bits % int.MaxValue;
     }
 
-    [CLSCompliant(false)]
     public static ulong DoubleToUInt64Bits(double value)
     {
         // Använder .NET Frameworks inbyggda metod och kastar om

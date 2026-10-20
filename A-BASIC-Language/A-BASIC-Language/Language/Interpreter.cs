@@ -4,7 +4,6 @@ using A_BASIC_Language.Language.SpecificExecutors;
 using A_BASIC_Language.Language.ValueTypes;
 using A_BASIC_Language.SpecificExecutors;
 using A_BASIC_Language.StringManipulation;
-using A_BASIC_Language.ValueTypes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,6 +26,7 @@ public class Interpreter
     readonly Dictionary<string, AblFunctionDefinition> _functions;
     bool EndMessageDisplayed { get; set; }
     Random _random;//Note: For the RND function.
+    private readonly Stack<(int Index, int LineNumber)> _subroutineCalls = new();
     int _currentLineNumber;
     public bool UserBreak { get; set; }
 
@@ -83,6 +83,7 @@ public class Interpreter
     void Eval()
     {
         EndMessageDisplayed = false;
+        _subroutineCalls.Clear();
 
         if (_terminal == null)
             throw new SystemException("Terminal not initialized.");
@@ -139,7 +140,7 @@ public class Interpreter
                 {
                     var selector = Number(_data.Pop());
                     if (double.IsNaN(selector) || double.IsInfinity(selector) || selector < 0)
-                        throw new OverflowException("ON GOTO index is out of range.");
+                        throw new OverflowException(branch.IsSubroutine ? "ON GOSUB index is out of range." : "ON GOTO index is out of range.");
 
                     var selected = Math.Floor(selector);
                     if (selected >= 1 && selected <= branch.Targets.Count)
@@ -147,6 +148,8 @@ public class Interpreter
                         var target = branch.Targets[(int)selected - 1];
                         if (!_parseResult.LabelIndex.TryGetValue(target, out var targetIndex))
                             throw new InvalidOperationException($"Undefined line {target}.");
+                        if (branch.IsSubroutine)
+                            _subroutineCalls.Push((i + 1, _currentLineNumber));
                         i = targetIndex - 1;
                     }
                     break;
@@ -329,6 +332,18 @@ public class Interpreter
                             break;
                         case "#END-PROGRAM":
                             endProgram = true;
+                            break;
+                        case "GOSUB":
+                            {
+                                var target = Number(_data.Pop());
+                                if (double.IsNaN(target) || double.IsInfinity(target) ||
+                                    target < 0 || target > int.MaxValue)
+                                    throw new InvalidOperationException("GOSUB line number is out of range.");
+                                if (!_parseResult.LabelIndex.TryGetValue((int)target, out var targetIndex))
+                                    throw new InvalidOperationException($"Undefined line {(int)target}.");
+                                _subroutineCalls.Push((i + 1, _currentLineNumber));
+                                i = targetIndex - 1;
+                            }
                             break;
                         case "GOTO":
                             {

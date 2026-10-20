@@ -1,4 +1,4 @@
-﻿namespace A_BASIC_Language.Language;
+namespace A_BASIC_Language.Language;
 
 public class AblEvalValue
 {
@@ -8,9 +8,12 @@ public sealed class AblOnGoto : AblEvalValue
 {
     public System.Collections.Generic.IReadOnlyList<int> Targets { get; }
 
-    public AblOnGoto(System.Collections.Generic.IEnumerable<int> targets)
+    public bool IsSubroutine { get; }
+
+    public AblOnGoto(System.Collections.Generic.IEnumerable<int> targets, bool isSubroutine = false)
     {
         Targets = new System.Collections.Generic.List<int>(targets).AsReadOnly();
+        IsSubroutine = isSubroutine;
     }
 }
 

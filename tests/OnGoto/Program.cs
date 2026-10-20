@@ -68,7 +68,7 @@ internal static class Program
 
         foreach (var source in new[]
         {
-            "10 ON 1", "10 ON GOTO 100", "10 ON 1 GOSUB 100", "10 ON 1 GOTO",
+            "10 ON 1", "10 ON GOTO 100", "10 ON 1 GOTO",
             "10 ON 1 GOTO ,100", "10 ON 1 GOTO 100,", "10 ON 1 GOTO 100,,200",
             "10 ON 1 GOTO A", "10 ON 1 GOTO 10+20", "10 ON 1 GOTO 1.5",
             "10 ON 1 GOTO -10", "10 ON 1 GOTO 1E2", "10 ON 1 GOTO 2147483648",

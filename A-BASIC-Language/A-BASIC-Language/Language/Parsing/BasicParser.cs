@@ -155,7 +155,7 @@ public class BasicParser
                         Generate(new AblProcedure("#END-PROGRAM"));
                         break;
                     case "GO":
-                        Goto();//Note: Handles both GOTO and GO TO.
+                        Goto();// Handles GOTO, GO TO, GOSUB and GO SUB.
                         break;
                     case "ON":
                         OnGoto();
@@ -354,41 +354,40 @@ public class BasicParser
 
     private void Goto()
     {
-        if (!Maybe("GOTO"))
-        {//Note: GO TO
-            _index += 2;//Note; It would be wasteful to reparse GO just to get the length.
-            SkipWhitespace();
-            
-            if (!Maybe("TO"))
-            {
-                ParseError("Expected 'TO' in GO TO");
-                if (_parsingIf)
-                    SkipStatement();
-                else
-                    SkipLine();
-                
-                return;
-            }
-        }
-
+        var gosub = JumpKeyword();
         Expression();
-        Generate(new AblProcedure("GOTO"));
+        Generate(new AblProcedure(gosub ? "GOSUB" : "GOTO"));
     }
 
-    // ON expression GOTO line-number (, line-number)*
+    // Shared by ordinary jumps and ON dispatch, including the spaced spellings.
+    private bool JumpKeyword()
+    {
+        if (Maybe("GOSUB"))
+            return true;
+        if (Maybe("GOTO"))
+            return false;
+        if (Maybe("GO"))
+        {
+            if (Maybe("SUB"))
+                return true;
+            if (Maybe("TO"))
+                return false;
+        }
+        throw new InvalidOperationException("Expected GOTO, GO TO, GOSUB or GO SUB.");
+    }
+    // ON expression (GOTO | GOSUB) line-number (, line-number)*
     private void OnGoto()
     {
         if (_direct)
         {
-            ParseError("ON GOTO is only allowed in numbered program lines");
+            ParseError("ON GOTO/GOSUB is only allowed in numbered program lines");
             SkipStatement();
             return;
         }
 
         Expression();
 
-        if (!Maybe("GOTO") && !(Maybe("GO") && Maybe("TO")))
-            throw new InvalidOperationException("Expected GOTO after ON expression.");
+        var gosub = JumpKeyword();
 
         var targets = new List<int>();
         
@@ -397,14 +396,14 @@ public class BasicParser
             var target = Regex.Match(_source.Substring(_index), @"^[0-9]+");
         
             if (!target.Success || !int.TryParse(target.Value, out var lineNumber))
-                throw new InvalidOperationException("Expected a line number in ON GOTO list.");
+                throw new InvalidOperationException("Expected a line number in ON jump list.");
 
             targets.Add(lineNumber);
             _index += target.Length;
             SkipWhitespace();
         } while (Maybe(','));
 
-        Generate(new AblOnGoto(targets));
+        Generate(new AblOnGoto(targets, gosub));
     }
 
     //if         => IF boolean-expr THEN body (ELSE body)?
