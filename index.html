@@ -180,6 +180,7 @@
                 <li><a href="#syntax">Syntax, variabler och typer</a></li>
                 <li><a href="#operators">Uttryck och operatorer</a></li>
                 <li><a href="#statements">Programsatsreferens</a></li>
+                <li><a href="#window">WINDOW – textfönster</a></li>
                 <li><a href="#gosub">GOSUB / GO SUB – anropa subrutin</a></li>
                 <li><a href="#return">RETURN – återvänd från subrutin</a></li>
                 <li><a href="#on-goto">ON … GOTO – välj hoppmål</a></li>
@@ -206,6 +207,7 @@
                     <tr><td><a href="#new">NEW</a></td><td>Ja</td><td>Nej</td><td>Radera programmet och sessionens kördata.</td></tr>
                     <tr><td><a href="#let">LET / tilldelning utan LET</a></td><td>Ja</td><td>Ja</td><td>Tilldela en skalär eller ett arrayelement.</td></tr>
                     <tr><td><a href="#print">PRINT</a></td><td>Ja</td><td>Ja</td><td>Skriv uttryck och styr utfyllnad/radbrytning.</td></tr>
+                    <tr><td><a href="#window">WINDOW</a></td><td>Ja</td><td>Ja</td><td>Rensa skärmen och välj antal textrader längst ned. Utan argument återställs alla 25 rader.</td></tr>
                     <tr><td><a href="#input">INPUT</a></td><td>Ja</td><td>Ja</td><td>Läs ett separat svar per mottagarvariabel.</td></tr>
                     <tr><td><a href="#if">IF … THEN … ELSE</a></td><td>Ja</td><td>Ja</td><td>Välj satsgren eller hoppa till beräknat radnummer. THEN och ELSE är delar av IF, inga fristående satser.</td></tr>
                     <tr><td><a href="#goto">GOTO / GO TO</a></td><td>Begränsat</td><td>Ja</td><td>Hoppa inom den källa som just körs. Ett direktkommando har inte tillgång till det lagrade programmets radetiketter.</td></tr>
@@ -284,7 +286,7 @@
             <p>Skriv utan radnummer och avsluta med Enter. Stora och små bokstäver är likvärdiga. RUN, LIST och NEW är sessionskommandon, inte programsatser. De kan inte stå på numrerade rader eller kombineras med BASIC-satser via kolon.</p>
             <article id="run">
                 <h3>RUN</h3><pre><code>RUN</code></pre>
-                <p>Nollställer variabler, arrayer och egna funktioner och kör hela programmet. Tar inga argument: RUN 100 och filnamn efter RUN stöds inte. Programkällan består. Ett tomt program återgår till Ready.</p>
+                <p>Nollställer variabler, arrayer och egna funktioner och kör hela programmet. Tar inga argument: RUN 100 och filnamn efter RUN stöds inte. Programkällan består. Skärmen rensas och hela textytan återställs som med <a href="#window">WINDOW</a> utan argument före programstart. Ett tomt program återgår till Ready.</p>
             </article>
             <article id="list">
                 <h3>LIST</h3>
@@ -302,7 +304,7 @@
             </article>
             <article id="new">
                 <h3>NEW</h3><pre><code>NEW</code></pre>
-                <p>Tar bort hela programmet och alla variabler, arrayer och egna funktioner utan bekräftelse. Tar inga argument. Ingen ångrafunktion finns.</p>
+                <p>Tar bort hela programmet och alla variabler, arrayer och egna funktioner utan bekräftelse. Skärmen rensas och hela textytan återställs som med <a href="#window">WINDOW</a> utan argument. Tar inga argument. Ingen ångrafunktion finns.</p>
             </article>
             <h3>Direkt körning</h3>
             <p>Övrig text utan radnummer skickas till BASIC-tolken. Ett fristående uttryck skrivs inte automatiskt ut: använd <code>PRINT 2+3</code>. Text som börjar med siffror behandlas normalt som en programrad.</p>
@@ -562,6 +564,19 @@ FNnamn(argument)</code></pre>
 30 END</code></pre>
                 <p>Ger 10. Definitionen måste ha utförts före anropet. Ny definition ersätter gammal. Parametern är lokal för anropet; global variabel med samma namn ändras inte. Övriga variabler läses från aktuellt globalt tillstånd vid anropet. Funktioner kan anropa varandra; högst 256 samtidiga FN-anrop tillåts. Kroppen är ett uttryck, inte programsatser. Strängresultat och flera parametrar stöds inte. Direktdefinitioner består mellan kommandon; RUN/NEW raderar dem.</p>
             </article>
+            <article id="window">
+                <h3>WINDOW – textfönster</h3>
+                <pre><code>WINDOW [uttryck]</code></pre>
+                <p>Rensar skärmen och väljer hur många av terminalens 25 rader som används för text längst ned. Antalet textrader är alltid 25 före begränsning, oavsett terminalens pixelupplösning. Argumentet anger antal rader som ska användas, inte antal rader som ska lämnas fria överst.</p>
+                <p>Utan argument återställer WINDOW hela textytan. Ett argument ska vara ett numeriskt uttryck som ger ett heltal från 2 till 25. WINDOW 10 använder de nedersta 10 raderna och lämnar de översta 15 fria från text. WINDOW 2 använder två rader; WINDOW 25 motsvarar WINDOW utan argument. Variabler och programminne påverkas inte.</p>
+                <pre><code>10 WINDOW 10
+20 PRINT "TEXT I DE NEDERSTA 10 RADERNA"
+30 INPUT "TRYCK ENTER";A$
+40 WINDOW
+50 PRINT "HELA TEXTYTAN IGEN"</code></pre>
+                <p>Kommandot fungerar både i direktläge och i numrerade program. Varje giltigt WINDOW-anrop rensar skärmen innan textytan ändras. Även NEW och RUN rensar skärmen och återställer alla 25 textrader; RUN gör detta före programstart.</p>
+                <p>Värden utanför intervallet och decimaltal ger <code>WINDOW requires a whole number of text rows from 2 to 25.</code>. Strängargument ger typfel. Ett ogiltigt argument ändrar inte textfönstret och rensar inte skärmen.</p>
+            </article>
             <article id="randomize">
                 <h3>RANDOMIZE – slumptalsgenerator</h3><pre><code>RANDOMIZE</code></pre>
                 <p>Ersätter tolkinstansens generator med en ny .NET-generator med standardinitiering. Inget seedargument stöds. Ny generator skapas redan vid varje RUN eller separat direktkommando. RANDOMIZE krävs därför inte för slumpvärden. Kör normalt högst en gång i början, inte före varje RND.</p>
@@ -693,6 +708,7 @@ STOP</code></pre>
                     <tr><td><code>Undefined line n.</code></td><td>Hopp till rad som inte finns.</td></tr>
                     <tr><td><code>ON GOTO/GOSUB is only allowed in numbered program lines</code></td><td>ON … GOTO eller ON … GOSUB har skrivits i direktläge. Lägg satsen på en numrerad rad och starta programmet med RUN.</td></tr>
                     <tr><td><code>ON GOTO index is out of range.</code> / <code>ON GOSUB index is out of range.</code></td><td>Indexet är negativt, Infinity eller NaN. Värdet 0 och positiva index utanför mållistan ger däremot inget hopp.</td></tr>
+                    <tr><td><code>WINDOW requires a whole number of text rows from 2 to 25.</code></td><td>WINDOW-argumentet är inte ett heltal mellan 2 och 25. Utelämna argumentet för hela textytan.</td></tr>
                     <tr><td><code>RETURN without GOSUB.</code></td><td>RETURN nåddes utan aktivt subrutinanrop, exempelvis om huvudprogrammet fortsätter in i subrutinkoden.</td></tr>
                     <tr><td><code>GOSUB line number is out of range.</code></td><td>Måluttrycket är negativt, större än 2147483647, Infinity eller NaN.</td></tr>
                     <tr><td><code>NEXT without matching FOR.</code> / <code>FOR without NEXT.</code></td><td>Fel matchning av slingor i källan.</td></tr>
