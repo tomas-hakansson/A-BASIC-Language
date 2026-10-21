@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using A_BASIC_Language.TerminalMatrix.TerminalMatrixControlFeatures;
 using PixelmapLibraryNetFramework;
 using PixelmapLibraryNetFramework.FontManagement;
 using PixelmapLibraryNetFramework.SpriteManagement;
@@ -821,8 +822,10 @@ public partial class TerminalMatrixControl : UserControl
         ClearLine(_characterMap, CursorPosition.Y, CharacterMatrixDefinition.CharacterEmpty);
         ClearLine(_characterColorMap, CursorPosition.Y, CurrentCursorColor);
         _terminations[CursorPosition.Y] = true;
+        
         if (CursorPosition.Y > 0)
             _terminations[CursorPosition.Y - 1] = true;
+        
         CurrentCursorColor = promptColor;
         Write(prompt);
         CurrentCursorColor = valueColor;
@@ -830,8 +833,10 @@ public partial class TerminalMatrixControl : UserControl
         TerminalState.InputStartY = CursorPosition.Y;
         CursorPosition.X = TerminalState.InputStartX;
         TerminalState.InputMode = true;
+        
         foreach (var c in defaultValue)
             TypeCharacter(c);
+        
         UpdateBitmap();
         Invalidate();
     }
@@ -842,15 +847,8 @@ public partial class TerminalMatrixControl : UserControl
             map[x, y] = clear;
     }
 
-    public void List()
-    {
-        foreach (var programLine in ProgramLines)
-        {
-            WriteLine(programLine.Value.RawString);
-            Refresh();
-            Thread.Sleep(10);
-        }
-    }
+    public void List() =>
+        DisplayLargeListStrategy.List(WriteLine, Refresh, ProgramLines);
 
     public bool GetTerminator(int y)
     {

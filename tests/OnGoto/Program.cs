@@ -40,6 +40,21 @@ internal static class Program
             RequireOutput(result, test.Item2);
         }
 
+        // Compact selectors must stop before the jump keyword, including long names.
+        foreach (var selector in new[] { "I", "INDEX", "I+0", "A(1)" })
+        {
+            RequireOutput(Run("10 I=2:INDEX=2:DIM A(1):A(1)=2\n" +
+                $"20 ON{selector}GOTO100,200\n" +
+                "100 PRINT \"WRONG\":END\n200 PRINT \"OK\":END"), "OK");
+        }
+        foreach (var keyword in new[] { "GOSUB", "GO SUB", "gosub" })
+            RequireOutput(Run("10 I=1\n" + $"20 ONI{keyword}100:PRINT \"BACK\":END\n" +
+                "100 PRINT \"SUB\":RETURN"), "SUB", "BACK");
+        Require(new Parser("2140 ONIGOTO2300,1980,4000,4260,4700,5530,5690,7290,6270").Result.Success,
+            "Super Star Trek line 2140 did not parse.");
+        Require(new Parser("10 ON LEN(\"GOTO2300\")GOTO100,200").Result.Success,
+            "Jump text inside a selector string was treated as a keyword.");
+
         // Falling through executes the next statement on the same line and consumes the selector.
         foreach (var index in new[] { "0", "0.9", "4", "256", "1E100" })
             RequireOutput(Run($"10 ON {index} GOTO 999,998,997:PRINT \"NEXT\"\n20 PRINT 7"), "NEXT", " 7 ");

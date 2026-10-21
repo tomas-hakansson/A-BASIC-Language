@@ -156,6 +156,7 @@
     <Compile Include="TerminalMatrix\TerminalMatrixControl.Designer.cs">
       <DependentUpon>TerminalMatrixControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="TerminalMatrix\TerminalMatrixControlFeatures\DisplayLargeListStrategy.cs" />
     <Compile Include="TerminalMatrix\TerminalMatrixKeypressHandler.cs" />
     <Compile Include="TerminalMatrix\TerminalState.cs" />
     <Compile Include="TerminalMatrix\WordWrapper.cs" />

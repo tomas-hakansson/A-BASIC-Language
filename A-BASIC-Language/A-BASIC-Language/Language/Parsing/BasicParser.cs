@@ -17,6 +17,7 @@ public class BasicParser
     int _index;
     readonly List<(int index, string message)> _parseErrors;
     bool _parsingIf;
+    int? _onJumpKeywordIndex;
     int _generatedLabel;
     List<AblEvalValue>? _expressionTarget;
     public ParseResult Result { get; }
@@ -388,10 +389,20 @@ public class BasicParser
             return;
         }
 
-        Expression();
+        // Bound variable names in compact selectors such as IGOTO2300.
+        var previousBoundary = _onJumpKeywordIndex;
+        _onJumpKeywordIndex = FindOnJumpKeyword();
+
+        try
+        {
+            Expression();
+        }
+        finally
+        {
+            _onJumpKeywordIndex = previousBoundary;
+        }
 
         var gosub = JumpKeyword();
-
         var targets = new List<int>();
         
         do
@@ -407,6 +418,41 @@ public class BasicParser
         } while (Maybe(','));
 
         Generate(new AblOnGoto(targets, gosub));
+    }
+
+    private int? FindOnJumpKeyword()
+    {
+        var depth = 0;
+        var inString = false;
+
+        var keyword = new Regex(@"\GGO[ \t]*(?:TO|SUB)(?=[ \t]*[0-9])",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+        for (var i = _index; i < _source.Length; i++)
+        {
+            var c = _source[i];
+
+            if (c == '\n')
+                break;
+
+            if (c == '"')
+                inString = !inString;
+
+            if (inString)
+                continue;
+
+            if (c == ':')
+                break;
+
+            if (c == '(')
+                depth++;
+            else if (c == ')')
+                depth--;
+            else if (depth == 0 && keyword.IsMatch(_source, i))
+                return i;
+        }
+
+        return null;
     }
 
     //if         => IF boolean-expr THEN body (ELSE body)?
@@ -634,7 +680,9 @@ public class BasicParser
         {
             fullName = string.Empty;
             typeSpecifier = string.Empty;
-            var isVariable = VariableRegex().Match(_source, _index);
+            var isVariable = _onJumpKeywordIndex is int boundary && boundary >= _index
+                ? VariableRegex().Match(_source, _index, boundary - _index)
+                : VariableRegex().Match(_source, _index);
             
             if (!isVariable.Success)
             {
@@ -891,6 +939,7 @@ public class BasicParser
             var match = isFunction.Groups.Cast<Group>().First(g => g.Name == "fun");
             _index += match.Length;
             var functionName = match.Value.ToUpperInvariant();
+
             if (!Maybe('('))
             {
                 // Bare RND uses the same default argument as RND(1).
@@ -899,14 +948,18 @@ public class BasicParser
                     Generate(new AblNumber(1), new AblProcedure("RND"));
                     return;
                 }
+
                 ParseError("Expected opening parenthesis sign in Atom");
+
                 if (_parsingIf)
                     SkipLine();
                 else
                     SkipStatement();
                 return;
             }
+
             Expression();
+
             if (!Maybe(')'))
             {
                 ParseError("Expected closing parenthesis sign in Atom");
@@ -914,8 +967,10 @@ public class BasicParser
                     SkipLine();
                 else
                     SkipStatement();
+
                 return;
             }
+
             Generate(new AblProcedure(functionName));
             return;
         }
