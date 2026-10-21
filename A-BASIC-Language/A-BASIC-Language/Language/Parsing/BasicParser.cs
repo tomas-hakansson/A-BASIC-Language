@@ -999,6 +999,7 @@ public class BasicParser
             var match = isFunction.Groups.Cast<Group>().First(g => g.Name == "fun");
             _index += match.Length;
             var functionName = match.Value.ToUpperInvariant();
+            SkipWhitespace();
 
             if (!Maybe('('))
             {
@@ -1019,6 +1020,20 @@ public class BasicParser
             }
 
             Expression();
+
+            if (functionName == "LEFT$" || functionName == "RIGHT$" || functionName == "MID$")
+            {
+                if (!Maybe(','))
+                    throw new InvalidOperationException($"Expected a second argument in {functionName}.");
+                Expression();
+                if (functionName == "MID$")
+                {
+                    if (Maybe(','))
+                        Expression();
+                    else
+                        Generate(new AblNumber(int.MaxValue));
+                }
+            }
 
             if (!Maybe(')'))
             {

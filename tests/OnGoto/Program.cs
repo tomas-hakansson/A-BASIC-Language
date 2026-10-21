@@ -120,17 +120,41 @@ internal static class Program
         // Super Star Trek line 1390: compact OR clauses and a numeric THEN target.
         foreach (var point in new[] { (0, 4), (9, 4), (4, 0), (4, 9), (1, 1), (8, 8), (4, 4) })
         {
-            var expected = point.Item1 < 1 || point.Item1 > 8 || point.Item2 < 1 || point.Item2 > 8
-                ? "OUTSIDE" : "INSIDE";
+            var expected = point.Item1 < 1 || point.Item1 > 8 || point.Item2 < 1 || point.Item2 > 8 ? "OUTSIDE" : "INSIDE";
             RequireOutput(Run($"10 Q1={point.Item1}:Q2={point.Item2}\n" +
                 "1390 IFQ1<1ORQ1>8ORQ2<1ORQ2>8THEN1600\n" +
                 "1400 PRINT\"INSIDE\":END\n1600 PRINT\"OUTSIDE\":END"), expected);
         }
+
         RequireOutput(Run("10 D=1:E=0:IFDORETHENPRINT\"OK\""), "OK");
         RequireOutput(Run("10 IF1OR0AND0THENPRINT\"OK\""), "OK");
         RequireOutput(Run("10 IF(1OR0)AND0THENPRINT\"WRONG\"\n20 PRINT\"OK\""), "OK");
 
-        Console.WriteLine($"All ON GOTO and compact IF regression checks passed ({checks} cases).");
+        foreach (var test in new[] {
+            ("LEFT$(\"ABCDE\",2)", "AB"), ("RIGHT$(\"ABCDE\",2)", "DE"),
+            ("MID$(\"ABCDE\",2,3)", "BCD"), ("MID$(\"ABCDE\",3)", "CDE"),
+            ("LEFT$(\"ABC\",99)", "ABC"), ("RIGHT$(\"ABC\",99)", "ABC"),
+            ("MID$(\"ABC\",2,99)", "BC"), ("MID$(\"ABC\",99)", ""),
+            ("LEFT$(\"ABC\",0)", ""), ("RIGHT$(\"ABC\",0)", ""),
+            ("MID$(\"ABC\",1,0)", ""), ("MID$(\"\",1)", ""),
+            ("LEFT$(RIGHT$(\"ABCDE\",4),2)", "BC"),
+            ("MID$(\"A,B)C\",2,3)", ",B)"), ("left$ (\"ABC\",1+1)", "AB") })
+            RequireOutput(Run($"10 PRINT {test.Item1}"), test.Item2);
+
+        foreach (var call in new[] { "LEFT$(\"A\")", "RIGHT$(\"A\",1,2)", "MID$(\"A\")",
+            "MID$(\"A\",1,2,3)", "LEFT$(\"A\",)", "MID$(\"A\",1,)" })
+            Require(!new Parser("10 PRINT " + call).Result.Success, "Invalid argument list accepted: " + call);
+
+        foreach (var call in new[] { "LEFT$(1,2)", "RIGHT$(\"A\",\"2\")", "MID$(\"A\",0)",
+            "LEFT$(\"A\",-1)", "RIGHT$(\"A\",1E100)", "MID$(\"A\",1,-1)" })
+            Require(Run("10 PRINT " + call).Lines.Any(s => s.StartsWith("?Error in line 10:")),
+                "Invalid argument accepted: " + call);
+
+        RequireOutput(Run("10 DIM K(3,3):Z$=\"ABC\"\n" +
+            "1600 FORI=1TO3:K(I,3)=0:NEXTI:Q$=Z$+Z$+Z$+Z$+Z$+Z$+Z$+LEFT$(Z$,17)\n" +
+            "1610 PRINT Q$"), string.Concat(Enumerable.Repeat("ABC", 8)));
+
+        Console.WriteLine($"All parser and interpreter regression checks passed ({checks} cases).");
     }
 
     private static void RequireOutput(FakeTerminal terminal, params string[] expected)

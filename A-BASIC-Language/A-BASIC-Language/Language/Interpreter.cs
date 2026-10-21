@@ -327,6 +327,24 @@ public class Interpreter
                                 _data.Push(new IntValue(left & right));
                             }
                             break;
+                        case "LEFT$":
+                        case "RIGHT$":
+                        case "MID$":
+                            {
+                                var length = StringPosition(_data.Pop(), 0);
+                                var start = p.Name == "MID$" ? StringPosition(_data.Pop(), 1) - 1 : 0;
+
+                                if (_data.Pop() is not StringValue text)
+                                    throw new InvalidOperationException("Type mismatch: expected a string.");
+
+                                if (p.Name == "RIGHT$")
+                                    start = Math.Max(0, text.Value.Length - length);
+
+                                start = Math.Min(start, text.Value.Length);
+                                length = Math.Min(length, text.Value.Length - start);
+                                _data.Push(new StringValue(text.Value.Substring(start, length)));
+                            }
+                            break;
                         case "ABS":
                             {
                                 if (_data.Count > 0)
@@ -351,6 +369,7 @@ public class Interpreter
                             {
                                 if (_subroutineCalls.Count == 0)
                                     throw new InvalidOperationException("RETURN without GOSUB.");
+
                                 var returnPoint = _subroutineCalls.Pop();
                                 _currentLineNumber = returnPoint.LineNumber;
                                 i = returnPoint.Index - 1;
@@ -359,11 +378,14 @@ public class Interpreter
                         case "GOSUB":
                             {
                                 var target = Number(_data.Pop());
+
                                 if (double.IsNaN(target) || double.IsInfinity(target) ||
                                     target < 0 || target > int.MaxValue)
                                     throw new InvalidOperationException("GOSUB line number is out of range.");
+                                
                                 if (!_parseResult.LabelIndex.TryGetValue((int)target, out var targetIndex))
                                     throw new InvalidOperationException($"Undefined line {(int)target}.");
+                                
                                 _subroutineCalls.Push((i + 1, _currentLineNumber));
                                 i = targetIndex - 1;
                             }
@@ -680,6 +702,14 @@ public class Interpreter
         }
 
         return pending.Count > 0 ? throw new InvalidOperationException("FOR without NEXT.") : result;
+    }
+
+    private static int StringPosition(ValueBase value, int minimum)
+    {
+        var number = Number(value);
+        if (double.IsNaN(number) || double.IsInfinity(number) || number < minimum || number > int.MaxValue)
+            throw new InvalidOperationException("Illegal function call: string position or length is out of range.");
+        return (int)number;
     }
 
     private static double Number(ValueBase value)
