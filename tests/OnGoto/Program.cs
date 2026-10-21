@@ -103,7 +103,34 @@ internal static class Program
                 "Missing direct-mode syntax error.");
         }
 
-        Console.WriteLine($"All ON GOTO regression checks passed ({checks} cases).");
+        // Super Star Trek's compact IF, AND and array assignment on line 2790.
+        foreach (var value in new[] { "-.05", "-.2", ".05", "0", "-.1" })
+        {
+            var expected = value == "-.05" ? "-.1" : value;
+            RequireOutput(Run($"10 DIM D(1):I=1:D6=0:D(I)={value}\n" +
+                "2790 D(I)=D(I)+D6:IFD(I)>-.1ANDD(I)<0THEND(I)=-.1:GOTO2880\n" +
+                $"2880 IF D(I)={expected} THEN PRINT \"OK\" ELSE PRINT \"WRONG\""), "OK");
+        }
+        RequireOutput(Run("10 D=1:IFDTHENPRINT\"OK\""), "OK");
+        RequireOutput(Run("10 D=1:E=1:IFDANDETHENPRINT\"OK\""), "OK");
+        RequireOutput(Run("10 IF\"THEN:AND\"=\"THEN:AND\"THENPRINT\"OK\""), "OK");
+        RequireOutput(Run("10 DIM D(1):D(1)=100:IF1THEND(1)\n" +
+            "20 PRINT\"WRONG\":END\n100 PRINT\"OK\""), "OK");
+
+        // Super Star Trek line 1390: compact OR clauses and a numeric THEN target.
+        foreach (var point in new[] { (0, 4), (9, 4), (4, 0), (4, 9), (1, 1), (8, 8), (4, 4) })
+        {
+            var expected = point.Item1 < 1 || point.Item1 > 8 || point.Item2 < 1 || point.Item2 > 8
+                ? "OUTSIDE" : "INSIDE";
+            RequireOutput(Run($"10 Q1={point.Item1}:Q2={point.Item2}\n" +
+                "1390 IFQ1<1ORQ1>8ORQ2<1ORQ2>8THEN1600\n" +
+                "1400 PRINT\"INSIDE\":END\n1600 PRINT\"OUTSIDE\":END"), expected);
+        }
+        RequireOutput(Run("10 D=1:E=0:IFDORETHENPRINT\"OK\""), "OK");
+        RequireOutput(Run("10 IF1OR0AND0THENPRINT\"OK\""), "OK");
+        RequireOutput(Run("10 IF(1OR0)AND0THENPRINT\"WRONG\"\n20 PRINT\"OK\""), "OK");
+
+        Console.WriteLine($"All ON GOTO and compact IF regression checks passed ({checks} cases).");
     }
 
     private static void RequireOutput(FakeTerminal terminal, params string[] expected)

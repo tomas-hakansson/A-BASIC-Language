@@ -18,6 +18,7 @@ public class BasicParser
     readonly List<(int index, string message)> _parseErrors;
     bool _parsingIf;
     int? _onJumpKeywordIndex;
+    bool _parsingIfCondition;
     int _generatedLabel;
     List<AblEvalValue>? _expressionTarget;
     public ParseResult Result { get; }
@@ -467,7 +468,16 @@ public class BasicParser
          */
 
         var falseBranchLabel = GetGeneratedLabel();
-        Expression();
+        var previousCondition = _parsingIfCondition;
+        _parsingIfCondition = true;
+        try
+        {
+            Expression();
+        }
+        finally
+        {
+            _parsingIfCondition = previousCondition;
+        }
         Generate(new AblNumber(falseBranchLabel), new AblProcedure("#IF-FALSE-GOTO"));
         if (!Maybe("THEN"))
         {
@@ -522,7 +532,28 @@ public class BasicParser
                             return;
                         }
 
-                        if (_source[index] == '=')
+                        // An array reference may be an assignment or an implicit jump target.
+                        if (_source[index] == '(')
+                        {
+                            var depth = 0;
+                            var inString = false;
+                            for (var i = index; i < _source.Length && _source[i] != '\n'; i++)
+                            {
+                                if (_source[i] == '"')
+                                    inString = !inString;
+                                if (inString)
+                                    continue;
+                                if (_source[i] == '(')
+                                    depth++;
+                                else if (_source[i] == ')' && --depth == 0)
+                                {
+                                    index = GetNextNonWhitespaceIndex(i + 1);
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (index >= 0 && _source[index] == '=')
                             OneOrMoreStatements();//Note: Is assignment.
                         else
                         {
@@ -680,9 +711,19 @@ public class BasicParser
         {
             fullName = string.Empty;
             typeSpecifier = string.Empty;
+
             var isVariable = _onJumpKeywordIndex is int boundary && boundary >= _index
                 ? VariableRegex().Match(_source, _index, boundary - _index)
                 : VariableRegex().Match(_source, _index);
+
+            if (_parsingIfCondition && isVariable.Success)
+            {
+                var keyword = Regex.Match(isVariable.Value, "AND|OR|THEN",
+                    RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+                if (keyword.Success)
+                    isVariable = VariableRegex().Match(_source, _index, keyword.Index);
+            }
             
             if (!isVariable.Success)
             {
@@ -824,7 +865,26 @@ public class BasicParser
     }
 
     /// <summary>Calls the operator of the lowest precedence.</summary>
-    void Expression() => Precedence_5_Operator();
+    void Expression()
+    {
+        AndExpression();
+        while (Maybe("OR"))
+        {
+            AndExpression();
+            Generate(new AblProcedure("OR"));
+        }
+    }
+
+    void AndExpression()
+    {
+        Precedence_5_Operator();
+
+        while (Maybe("AND"))
+        {
+            Precedence_5_Operator();
+            Generate(new AblProcedure("AND"));
+        }
+    }
 
     void Precedence_5_Operator()
     {

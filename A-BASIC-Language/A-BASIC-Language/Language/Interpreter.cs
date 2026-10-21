@@ -313,6 +313,20 @@ public class Interpreter
                         case "<>":
                             comparisonExecutor.Run(_currentLineNumber, (a, b) => Math.Abs(a - b) > 0.00001);
                             break;
+                        case "OR":
+                            {
+                                var right = (int)Number(_data.Pop());
+                                var left = (int)Number(_data.Pop());
+                                _data.Push(new IntValue(left | right));
+                            }
+                            break;
+                        case "AND":
+                            {
+                                var right = (int)Number(_data.Pop());
+                                var left = (int)Number(_data.Pop());
+                                _data.Push(new IntValue(left & right));
+                            }
+                            break;
                         case "ABS":
                             {
                                 if (_data.Count > 0)
