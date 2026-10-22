@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using A_BASIC_Language.Language.LoopInstructions;
+using A_BASIC_Language.TerminalMatrix;
 using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language.Language;

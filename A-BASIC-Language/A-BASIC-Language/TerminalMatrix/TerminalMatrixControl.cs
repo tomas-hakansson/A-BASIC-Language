@@ -12,11 +12,12 @@ using A_BASIC_Language.TerminalMatrix.TerminalMatrixControlFeatures;
 using PixelmapLibraryNetFramework;
 using PixelmapLibraryNetFramework.FontManagement;
 using PixelmapLibraryNetFramework.SpriteManagement;
+using TerminalMatrixNetFramework;
 using TerminalMatrixNetFramework.Definitions;
 using TerminalMatrixNetFramework.Events;
 using TerminalMatrixNetFramework.TerminalColor;
 
-namespace TerminalMatrixNetFramework;
+namespace A_BASIC_Language.TerminalMatrix;
 
 public partial class TerminalMatrixControl : UserControl
 {
@@ -79,7 +80,18 @@ public partial class TerminalMatrixControl : UserControl
         CurrentCursorColor = (int)ColorName.White;
         _timer.Interval = 1000;
         QuitFlag = false;
+        HasFocus = true;
         InitializeComponent();
+    }
+
+    public bool HasFocus
+    {
+        get => field;
+        set
+        {
+            field = value;
+            Invalidate();
+        }
     }
 
     /// <summary>
@@ -431,6 +443,26 @@ public partial class TerminalMatrixControl : UserControl
             e.Graphics.DrawImage(_fastBitmap, 0, 0, Width, Height);
 
         ControlOverlayPainter?.Invoke(e.Graphics);
+
+        if (!Focused)
+        {
+            var graphicsState = e.Graphics.Save();
+            try
+            {
+                e.Graphics.CompositingMode = CompositingMode.SourceOver;
+                using var overlayBrush = new SolidBrush(Color.FromArgb(230, 0, 0, 0));
+                using var textFormat = new StringFormat();
+                textFormat.Alignment = StringAlignment.Center;
+                textFormat.LineAlignment = StringAlignment.Center;
+
+                e.Graphics.FillRectangle(overlayBrush, ClientRectangle);
+                e.Graphics.DrawString("Not in focus", Font, Brushes.White, ClientRectangle, textFormat);
+            }
+            finally
+            {
+                e.Graphics.Restore(graphicsState);
+            }
+        }
 
         base.OnPaint(e);
     }

@@ -343,4 +343,10 @@ public partial class MainWindow : Form
 
     private void toolStripButton1_Click(object sender, EventArgs e) =>
         textEditorToolStripMenuItem_Click(sender, e);
+
+    private void MainWindow_Enter(object sender, EventArgs e) =>
+        terminalMatrixControl1.HasFocus = true;
+
+    private void MainWindow_Leave(object sender, EventArgs e) =>
+        terminalMatrixControl1.HasFocus = false;
 }

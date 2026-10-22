@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace TerminalMatrixNetFramework
+namespace A_BASIC_Language.TerminalMatrix
 {
     partial class TerminalMatrixControl
     {
