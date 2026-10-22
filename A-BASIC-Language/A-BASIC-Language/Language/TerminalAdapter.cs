@@ -23,19 +23,27 @@ public sealed class TerminalAdapter(TerminalMatrixControl terminal) : IBasicTerm
 
     public void Write(string text)
     {
-        foreach (var c in text.Replace("\r\n", "\n").Replace('\r', '\n'))
+        text = text.Replace("\r\n", "\n").Replace('\r', '\n');
+        var index = 0;
+        while (index < text.Length)
         {
-            if (c == '\n')
+            if (text[index] == '\n')
             {
                 WriteLine("");
+                index++;
                 continue;
             }
 
             if (_line.Length == terminal.CharacterWidth)
                 WriteLine("");
             
-            terminal.Write(_line.Length, c.ToString());
-            _line.Append(c);
+            var newline = text.IndexOf('\n', index);
+            var count = Math.Min(terminal.CharacterWidth - _line.Length,
+                (newline < 0 ? text.Length : newline) - index);
+            var chunk = text.Substring(index, count);
+            terminal.Write(_line.Length, chunk);
+            _line.Append(chunk);
+            index += count;
             terminal.SetStartPosition(Math.Min(_line.Length, terminal.CharacterWidth - 1), terminal.CursorPosition.Y);
         }
     }

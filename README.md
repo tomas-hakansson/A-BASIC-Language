@@ -22,7 +22,7 @@ Of the 101 games, we support the ones followed by a 1:
 | 23matches         |     1     |
 | 3dplot            |     1     |
 | aceyducey         |     1     |
-| amazing           |     0     |
+| amazing           |     1     |
 | animal            |     0     |
 | awari             |     0     |
 | bagels            |     0     |

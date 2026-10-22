@@ -6,6 +6,7 @@ using A_BASIC_Language.SpecificExecutors;
 using A_BASIC_Language.StringManipulation;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using A_BASIC_Language.Language.LoopInstructions;
 using A_BASIC_Language.TerminalMatrix;
@@ -104,6 +105,7 @@ public class Interpreter
         var loops = new Stack<LoopFrame>();
 
         var instructions = _parseResult.EvalValues;
+        var eventPumpWatch = Stopwatch.StartNew();
         // Switch instruction streams on FN calls; return with one numeric result.
         var calls = new Stack<(List<AblEvalValue> Instructions, int Index, string Parameter, ValueBase Argument, int StackDepth)>();
         for (var i = 0; i < instructions.Count || calls.Count > 0; i++)
@@ -118,7 +120,12 @@ public class Interpreter
                 i = frame.Index;
                 continue;
             }
-            _terminal.PumpEvents();
+            // Keep the UI responsive without pumping Windows messages for every stack operation.
+            if (eventPumpWatch.ElapsedMilliseconds >= 16)
+            {
+                _terminal.PumpEvents();
+                eventPumpWatch.Restart();
+            }
 
             if (endProgram || _terminal.QuitFlag)
             {
@@ -133,7 +140,8 @@ public class Interpreter
             }
 
             var e = instructions[i];
-            _log.Write(e.ToString());
+            if (_log.TraceEnabled)
+                _log.Write(e.ToString());
 
             switch (e)
             {

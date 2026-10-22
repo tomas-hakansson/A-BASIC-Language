@@ -22,9 +22,6 @@ public partial class MainWindow : Form
     private readonly BasicSession _session = new();
     private bool _logVisible;
     private readonly Log _log;
-#if !DEBUG
-    private bool _promptQuit;
-#endif
     public static string UserDataPath { get; set; }
 
     static MainWindow()
@@ -76,7 +73,7 @@ public partial class MainWindow : Form
     private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
     {
 #if !DEBUG
-        if (_promptQuit && e.CloseReason == CloseReason.UserClosing && !MsgBox.Ask(this, @"Are you sure you want to close this application?"))
+        if (e.CloseReason == CloseReason.UserClosing && !_msgBox.Ask("Are you sure you want to close this application?"))
             e.Cancel = true;
 #endif
     }
@@ -86,6 +83,7 @@ public partial class MainWindow : Form
         debugOutputToolStripMenuItem.Checked = !debugOutputToolStripMenuItem.Checked;
         btnDebug.Checked = debugOutputToolStripMenuItem.Checked;
         _logVisible = debugOutputToolStripMenuItem.Checked;
+        _log.TraceEnabled = _logVisible;
         _log.ClearIf(_logVisible);
         var text = $"{DateTime.Now:mm:HH:ss} - Logging {(debugOutputToolStripMenuItem.Checked ? "enabled" : "disabled")}.";
         _log.Write(text);

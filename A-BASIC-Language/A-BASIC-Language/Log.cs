@@ -14,6 +14,7 @@ public class Log
     private readonly ToolStripStatusLabel _statusLabel;
     private readonly Font _logFont;
     public int StartPointer { get; set; }
+    public bool TraceEnabled { get; set; }
     public string[] LogRows { get; }
 
     public Log(ToolStripStatusLabel statusLabel, Font logFont)
