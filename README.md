@@ -50,13 +50,13 @@ Of the 101 games, we support the ones followed by a 1:
 | civilwar          |     0     |
 | combat            |     1     |
 | craps             |     1     |
-| cube              |           |
-| depthcharge       |           |
-| diamond           |           |
-| dice              |           |
+| cube              |     0     |
+| depthcharge       |     0     |
+| diamond           |     0     |
+| dice              |     1     |
 | digits            |     0     |
-| evenwins          |           |
-| flipflop          |           |
+| evenwins          |     1     |
+| flipflop          |     0     |
 | football          |           |
 | ftball            |           |
 | furtrader         |           |
@@ -115,9 +115,9 @@ Of the 101 games, we support the ones followed by a 1:
 | target            |           |
 | tictactoe1        |           |
 | tictactoe2        |           |
-| tower             |           |
-| train             |           |
-| trap              |           |
+| tower             |     0     |
+| train             |     1     |
+| trap              |     0     |
 | war               |     0     |
 | weekday           |     0     |
 | word              |     0     |
