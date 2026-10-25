@@ -154,6 +154,24 @@ internal static class Program
             "1600 FORI=1TO3:K(I,3)=0:NEXTI:Q$=Z$+Z$+Z$+Z$+Z$+Z$+Z$+LEFT$(Z$,17)\n" +
             "1610 PRINT Q$"), string.Concat(Enumerable.Repeat("ABC", 8)));
 
+        // LOG: natural logarithm, expression integration and direct-mode evaluation.
+        foreach (var expression in new[] { "LOG(1)", "LOG(EXP(1))-1", "LOG(100)/LOG(10)-2",
+            "LOG(.5)+LOG(2)", "log (EXP(2))-2", "LOG(1E100)/LOG(10)-100" })
+            RequireOutput(Run($"10 IF ABS({expression})<.00000001 THEN PRINT \"OK\" ELSE PRINT \"WRONG\""), "OK");
+        RequireOutput(Run("10 A=2:DIM B(1):B(1)=EXP(A):DEF FNL(X)=LOG(X)\n" +
+            "20 IF ABS(FNL(B(1))-A)<.00000001 THEN PRINT \"OK\" ELSE PRINT \"WRONG\""), "OK");
+        Require(Run("PRINT LOG(1)", runtime: false).Lines.Contains(" 0 "), "Direct LOG failed.");
+        foreach (var argument in new[] { "0", "-1", "-0.5", "SQR(-1)" })
+        {
+            var result = Run($"10 PRINT LOG({argument}):PRINT \"WRONG\"");
+            Require(result.Lines.Any(s => s.StartsWith("?Error in line 10:") &&
+                s.Contains("LOG requires a positive argument")), "Missing LOG domain error: " + argument);
+            Require(!result.Lines.Contains("WRONG"), "Execution continued after LOG error.");
+        }
+        Require(Run("10 PRINT LOG(\"1\")").Lines.Any(s => s.Contains("Type mismatch")), "LOG accepted a string.");
+        foreach (var call in new[] { "LOG", "LOG()", "LOG(1,2)" })
+            Require(!new Parser("10 PRINT " + call).Result.Success, "Invalid LOG syntax accepted: " + call);
+
         Console.WriteLine($"All parser and interpreter regression checks passed ({checks} cases).");
     }
 

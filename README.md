@@ -60,10 +60,10 @@ Of the 101 games, we support the ones followed by a 1:
 | football          |     0     |
 | ftball            |     0     |
 | furtrader         |     0     |
-| gameofevenwins    |           |
-| golf              |           |
-| gomoko            |           |
-| guess             |           |
+| gameofevenwins    |     1     |
+| golf              |     0     |
+| gomoko            |     0     |
+| guess             |     1     |
 | gunner            |           |
 | hammurabi         |           |
 | hangman           |           |
@@ -84,8 +84,8 @@ Of the 101 games, we support the ones followed by a 1:
 | love              |           |
 | lunar             |           |
 | mastermind        |     0     |
-| mathdice          |           |
-| mugwump           |           |
+| mathdice          |     1     |
+| mugwump           |     1     |
 | name              |     0     |
 | nicomachus        |     1     |
 | nim               |     0     |
@@ -111,9 +111,9 @@ Of the 101 games, we support the ones followed by a 1:
 | stockmarket       |           |
 | superstartrek     |           |
 | superstartrekins  |           |
-| synonym           |           |
-| target            |           |
-| tictactoe1        |           |
+| synonym           |     0     |
+| target            |     0     |
+| tictactoe1        |     1     |
 | tictactoe2        |     1     |
 | tower             |     0     |
 | train             |     1     |

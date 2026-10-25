@@ -371,6 +371,14 @@ public class Interpreter
                         case "EXP":
                             _data.Push(new FloatValue(Math.Exp(Number(_data.Pop()))));
                             break;
+                        case "LOG":
+                            {
+                                var argument = Number(_data.Pop());
+                                if (double.IsNaN(argument) || argument <= 0)
+                                    throw new InvalidOperationException("Illegal function call: LOG requires a positive argument.");
+                                _data.Push(new FloatValue(Math.Log(argument)));
+                            }
+                            break;
                         case "#END-PROGRAM":
                             endProgram = true;
                             break;

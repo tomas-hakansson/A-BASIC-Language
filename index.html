@@ -224,6 +224,7 @@
                     <tr><td><a href="#rem">REM</a></td><td>Ja</td><td>Ja</td><td>Ignorera resten av den fysiska källraden.</td></tr>
                     <tr><td><a href="#end">END / STOP</a></td><td>Ja</td><td>Ja</td><td>Avsluta den aktuella körningen utan möjlighet att återuppta.</td></tr>
                     <tr><td><a href="#abs">ABS(x)</a></td><td>Ja, i uttryck</td><td>Ja, i uttryck</td><td>Absolutbelopp.</td></tr>
+                    <tr><td><a href="#log">LOG(x)</a></td><td>Ja, i uttryck</td><td>Ja, i uttryck</td><td>Naturlig logaritm, x &gt; 0.</td></tr>
                     <tr><td><a href="#exp">EXP(x)</a></td><td>Ja, i uttryck</td><td>Ja, i uttryck</td><td>e upphöjt till x.</td></tr>
                     <tr><td><a href="#int">INT(x)</a></td><td>Ja, i uttryck</td><td>Ja, i uttryck</td><td>Kapa till 32-bitars heltal mot noll.</td></tr>
                     <tr><td><a href="#rnd">RND / RND(x)</a></td><td>Ja, i uttryck</td><td>Ja, i uttryck</td><td>Slumptal mellan 0 inklusive och 1 exklusive.</td></tr>
@@ -558,8 +559,8 @@ DIM A(maxindex1,maxindex2,...),B$(maxindex),C%(maxindex)</code></pre>
             </article>
             <article id="def">
                 <h3>DEF FN – egna numeriska funktioner</h3>
-                <pre><code>DEF FNnamn(parameter)=uttryck
-FNnamn(argument)</code></pre>
+                <pre><code>DEF FN namn(parameter)=uttryck
+FN namn(argument)</code></pre>
                 <p>En numerisk parameter och numeriskt resultat. DEF FNA(X)=X*X och DEF FN A(X)=X*X är likvärdiga; anropa FNA(3). Namn/parameter följer bokstavs-/sifferreglerna men får inte % eller $.</p>
                 <pre><code>10 DEF FNA(X)=X*X+1
 20 PRINT FNA(3)
@@ -611,6 +612,11 @@ STOP</code></pre>
                 <h3>INT(x)</h3>
                 <p>32-bitars heltalskonvertering som kapar decimaldelen <strong>mot noll</strong>. INT(3.9) ger 3 och INT(-3.9) ger −3. Avviker från BASIC-dialekter där INT avrundar nedåt. Håll argumentet inom heltalsområdet; utanför det har ABL inget definierat numeriskt kontrakt.</p><pre><code>PRINT INT(3.9);INT(-3.9)</code></pre>
             </article>
+            <article id="log">
+                <h3>LOG(x)</h3>
+                <p>Naturlig logaritm (bas e) med dubbelprecision. Argumentet måste vara numeriskt och större än 0; annars ges ett körfel. LOG(1) ger 0 och LOG(EXP(1)) ger ungefär 1. För tiologaritmen används LOG(x)/LOG(10).</p><pre><code>PRINT LOG(1);LOG(EXP(1))
+PRINT LOG(100)/LOG(10)</code></pre>
+            </article>
             <article id="rnd">
                 <h3>RND och RND(x)</h3>
                 <p>Pseudotillfälligt flyttal 0 ≤ värdet &lt; 1. RND motsvarar RND(1). Argumentet beräknas men värdet ignoreras: 0 återanvänder inte föregående värde och negativa argument anger inget seed.</p>
@@ -642,7 +648,6 @@ STOP</code></pre>
                     <tr><td><code>COS</code></td><td>Cosinus.</td></tr>
                     <tr><td><code>LEFT$</code></td><td>Vänstra delen av sträng.</td></tr>
                     <tr><td><code>LEN</code></td><td>Stränglängd.</td></tr>
-                    <tr><td><code>LOG</code></td><td>Naturlig logaritm.</td></tr>
                     <tr><td><code>MID$</code></td><td>Delsträng från startposition.</td></tr>
                     <tr><td><code>RIGHT$</code></td><td>Högra delen av sträng.</td></tr>
                     <tr><td><code>SGN</code></td><td>Talets tecken, normalt −1, 0 eller 1.</td></tr>
