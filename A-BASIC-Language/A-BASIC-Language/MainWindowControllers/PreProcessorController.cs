@@ -62,6 +62,21 @@ public class PreProcessorController
                 else
                     _owner.ToggleFullscreen(false);
                 break;
+            case PreProcessorParserResult.HighQualityRenderToggle:
+                _owner.highQualityRenderingToolStripMenuItem_Click(this, EventArgs.Empty);
+                break;
+            case PreProcessorParserResult.HighQualityRenderOn:
+                if (_owner.highQualityRenderingToolStripMenuItem.Checked)
+                    _parent.WriteLine("No action required.");
+                else
+                    _owner.highQualityRenderingToolStripMenuItem_Click(this, EventArgs.Empty);
+                break;
+            case PreProcessorParserResult.HighQualityRenderOff:
+                if (!_owner.highQualityRenderingToolStripMenuItem.Checked)
+                    _parent.WriteLine("No action required.");
+                else
+                    _owner.highQualityRenderingToolStripMenuItem_Click(this, EventArgs.Empty);
+                break;
             case PreProcessorParserResult.ToggleLog:
                 _owner.debugOutputToolStripMenuItem_Click(this, EventArgs.Empty);
                 break;

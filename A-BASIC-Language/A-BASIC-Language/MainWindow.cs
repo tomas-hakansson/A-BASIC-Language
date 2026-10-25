@@ -187,7 +187,7 @@ public partial class MainWindow : Form
         lblUserAction.Text = text;
     }
 
-    private void highQualityRenderingToolStripMenuItem_Click(object sender, EventArgs e)
+    public void highQualityRenderingToolStripMenuItem_Click(object sender, EventArgs e)
     {
         highQualityRenderingToolStripMenuItem.Checked = !highQualityRenderingToolStripMenuItem.Checked;
         terminalMatrixControl1.RenderingMode = highQualityRenderingToolStripMenuItem.Checked ? RenderingMode.HighQuality : RenderingMode.HighSpeed;

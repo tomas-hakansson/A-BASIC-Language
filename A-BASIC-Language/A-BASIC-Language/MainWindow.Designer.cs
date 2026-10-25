@@ -396,7 +396,7 @@ namespace A_BASIC_Language
         private ToolStripStatusLabel lblUserAction;
         private ToolStripStatusLabel lblCursPos;
         private ToolStripMenuItem resolutionToolStripMenuItem;
-        private ToolStripMenuItem highQualityRenderingToolStripMenuItem;
+        public ToolStripMenuItem highQualityRenderingToolStripMenuItem;
         public ToolStripMenuItem fullscreenToolStripMenuItem;
         private ToolStripMenuItem helpToolStripMenuItem;
         private ToolStripMenuItem onlineHelpToolStripMenuItem;

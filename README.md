@@ -57,9 +57,9 @@ Of the 101 games, we support the ones followed by a 1:
 | digits            |     0     |
 | evenwins          |     1     |
 | flipflop          |     0     |
-| football          |           |
-| ftball            |           |
-| furtrader         |           |
+| football          |     0     |
+| ftball            |     0     |
+| furtrader         |     0     |
 | gameofevenwins    |           |
 | golf              |           |
 | gomoko            |           |
@@ -114,7 +114,7 @@ Of the 101 games, we support the ones followed by a 1:
 | synonym           |           |
 | target            |           |
 | tictactoe1        |           |
-| tictactoe2        |           |
+| tictactoe2        |     1     |
 | tower             |     0     |
 | train             |     1     |
 | trap              |     0     |

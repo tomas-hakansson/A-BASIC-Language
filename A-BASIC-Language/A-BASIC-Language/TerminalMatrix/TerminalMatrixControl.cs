@@ -450,7 +450,7 @@ public partial class TerminalMatrixControl : UserControl
             try
             {
                 e.Graphics.CompositingMode = CompositingMode.SourceOver;
-                using var overlayBrush = new SolidBrush(Color.FromArgb(230, 0, 0, 0));
+                using var overlayBrush = new SolidBrush(Color.FromArgb(160, 0, 0, 0));
                 using var textFormat = new StringFormat();
                 textFormat.Alignment = StringAlignment.Center;
                 textFormat.LineAlignment = StringAlignment.Center;

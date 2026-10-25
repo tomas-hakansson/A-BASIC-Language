@@ -229,7 +229,7 @@
                     <tr><td><a href="#rnd">RND / RND(x)</a></td><td>Ja, i uttryck</td><td>Ja, i uttryck</td><td>Slumptal mellan 0 inklusive och 1 exklusive.</td></tr>
                     <tr><td><a href="#sqr">SQR(x)</a></td><td>Ja, i uttryck</td><td>Ja, i uttryck</td><td>Kvadratrot.</td></tr>
                     <tr><td><a href="#tab">TAB(n)</a></td><td>Ja, avsedd för PRINT</td><td>Ja, avsedd för PRINT</td><td>Positionera utskrift i en absolut kolumn.</td></tr>
-                    <tr><td><a href="#appcommands">!-kommandon</a></td><td>Integrationsfel; se avsnittet</td><td>Nej</td><td>Avsedda kommandon för visning, diagnostik, listning och avslutning.</td></tr>
+                    <tr><td><a href="#appcommands">!-kommandon</a></td><td>Ja, i terminalen</td><td>Nej</td><td>Kommandon för visning, renderingsläge, diagnostik, listning och avslutning.</td></tr>
                 </tbody>
             </table>
             <p>För alla funktionsnamn som känns igen men saknar körstöd, se <a href="#missing">den separata listan</a>. De räknas inte som fungerande funktioner. <a href="#operators">Operatorreferensen</a> beskriver också samtliga implementerade beräknings- och jämförelseoperatorer.</p>
@@ -311,9 +311,9 @@
         </section>
         <section id="appcommands">
             <h2>4. Applikationskommandon med !</h2>
-            <p class="note"><strong>Aktuell begränsning:</strong> ABL identifierar rader med !, men kontrollern behåller bara det första tecknet innan analysen. Parsern får därför endast <code>!</code>. Inget av nedanstående !-kommandon fungerar via terminalen i denna implementation. De ger okänt kommando. Tabellen beskriver kodade avsikter, inte fungerande kommandon. Använd alternativen i sista kolumnen.</p>
+            <p>Skriv kommandona i terminalen utan radnummer och avsluta med Enter. Med <code>!HQ-RENDER</code> kan du ändra renderingsläge mellan hög kvalitet och snabbare rendering.</p>
             <table>
-                <thead><tr><th>Avsedd syntax</th><th>Avsedd funktion</th><th>Fungerande alternativ</th></tr></thead>
+                <thead><tr><th>Syntax</th><th>Funktion</th><th>Alternativ</th></tr></thead>
                 <tbody>
                     <tr><td><code>!FULLSCREEN</code></td><td>Växla helskärm.</td><td>F11 eller View → Fullscreen.</td></tr>
                     <tr><td><code>!FULLSCREEN ON</code> / <code>!FULLSCREEN OFF</code></td><td>Slå på/av helskärm.</td><td>View → Fullscreen.</td></tr>
@@ -321,11 +321,13 @@
                     <tr><td><code>!LOG ON</code> / <code>!LOG OFF</code></td><td>Slå på/av diagnostik.</td><td>View → Debug output.</td></tr>
                     <tr><td><code>!RES</code></td><td>Växla 80 → 60 → 40 → 20 → 80 kolumner; 25 rader.</td><td>View → Resolution.</td></tr>
                     <tr><td><code>!RES 1</code>, <code>!RES 2</code>, <code>!RES 3</code>, <code>!RES 4</code></td><td>Välj 80, 60, 40 respektive 20 kolumner.</td><td>View → Resolution eller Tools → Options.</td></tr>
+                    <tr><td><code>!HQ-RENDER</code></td><td>Växla mellan hög renderingskvalitet och snabbare rendering. Ändrar inte beräkningar.</td><td>View → High quality rendering.</td></tr>
+                    <tr><td><code>!HQ-RENDER ON</code> / <code>!HQ-RENDER OFF</code></td><td>Slå på/av hög renderingskvalitet.</td><td>View → High quality rendering eller Tools → Options.</td></tr>
                     <tr><td><code>!LIST</code></td><td>Lista hela programmet, utan intervall.</td><td>LIST.</td></tr>
                     <tr><td><code>!QUIT</code></td><td>Avsluta utan bekräftelse.</td><td>File → Exit.</td></tr>
                 </tbody>
             </table>
-            <p>Den avsedda parsern accepterar ON, YES, TRUE eller 1 som på och OFF, NO, FALSE eller 0 som av för FULLSCREEN och LOG. Det ändrar inte begränsningen ovan. !-kommandona är inte BASIC-satser.</p>
+            <p>Parsern accepterar ON, YES, TRUE eller 1 som på och OFF, NO, FALSE eller 0 som av för FULLSCREEN, LOG och HQ-RENDER. !-kommandona är inte BASIC-satser.</p>
         </section>
         <section id="interface">
             <h2>5. Menyer, skärm och tangentbord</h2>

@@ -39,6 +39,9 @@ public class PreProcessorParser
                     case "LIST":
                         message = "List source code.";
                         return PreProcessorParserResult.List;
+                    case "HQ-RENDER":
+                        message = "Toggle high quality render.";
+                        return PreProcessorParserResult.HighQualityRenderToggle;
                     default:
                         return PreProcessorParserResult.Unknown;
                 }
@@ -56,6 +59,7 @@ public class PreProcessorParser
                             message = "Switch to windowed mode.";
                             return PreProcessorParserResult.FullscreenOff;
                         }
+
                         return PreProcessorParserResult.Unknown;
                     case "LOG":
                         if (parts[1].IsTrue())
@@ -68,6 +72,7 @@ public class PreProcessorParser
                             message = "Turn off debug output.";
                             return PreProcessorParserResult.LogOff;
                         }
+
                         return PreProcessorParserResult.Unknown;
                     case "RES":
                         switch (parts[1])
@@ -84,6 +89,19 @@ public class PreProcessorParser
                                 message = "Did not understand that.";
                                 return PreProcessorParserResult.Unknown;
                         }
+                        case "HQ-RENDER":
+                        if (parts[1].IsTrue())
+                        {
+                            message = "Turn on high quality rendering.";
+                            return PreProcessorParserResult.HighQualityRenderOn;
+                        }
+                        if (parts[1].IsFalse())
+                        {
+                            message = "Turn off high quality rendering.";
+                            return PreProcessorParserResult.HighQualityRenderOff;
+                        }
+
+                        return PreProcessorParserResult.Unknown;
                     default:
                         message = "Did not understand that.";
                         return PreProcessorParserResult.Unknown;
