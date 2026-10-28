@@ -45,7 +45,6 @@ public partial class TerminalMatrixControl : UserControl
     private readonly FontMonochromeSprite _fontMonochromeSprite;
     private Size _border;
     private bool _resolutionIncorrect;
-    private bool _use32BitForeground;
 
     public int CharacterWidth { get; private set; } = 40;
     public int CharacterHeight { get; private set; } = 25;
@@ -126,13 +125,13 @@ public partial class TerminalMatrixControl : UserControl
 
     public bool Use32BitForeground
     {
-        get => _use32BitForeground;
+        get;
         set
         {
-            if (_use32BitForeground != value)
+            if (field != value)
                 _resolutionIncorrect = true;
 
-            _use32BitForeground = value;
+            field = value;
         }
     }
 
@@ -209,6 +208,9 @@ public partial class TerminalMatrixControl : UserControl
 
         Clear();
     }
+
+    public Size GetCharacterMapSize() =>
+        ResolutionHelper.GetCharacterMapSize(Resolution);
 
     private void Blink(object? sender, EventArgs e)
     {

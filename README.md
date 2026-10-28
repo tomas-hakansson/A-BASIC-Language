@@ -64,7 +64,7 @@ Of the 101 games, we support the ones followed by a 1:
 | golf              |     0     |
 | gomoko            |     0     |
 | guess             |     1     |
-| gunner            |           |
+| gunner            |     0     |
 | hammurabi         |           |
 | hangman           |           |
 | hello             |           |

@@ -13,9 +13,10 @@ public class PreProcessorParser
         _command = (command ?? "").Trim().ToUpper();
     }
 
-    public PreProcessorParserResult Parse(out string message)
+    public PreProcessorParserResult Parse(out string message, out string? argument)
     {
         message = "Did not understand that.";
+        argument = null;
         var c = Regex.Replace(_command, @"\s+", " ");
         var parts = c.Split(' ');
 
@@ -42,6 +43,12 @@ public class PreProcessorParser
                     case "HQ-RENDER":
                         message = "Toggle high quality render.";
                         return PreProcessorParserResult.HighQualityRenderToggle;
+                    case "101":
+                        message = "Show 101 games.";
+                        return PreProcessorParserResult.Show101Games;
+                    case "LOAD101":
+                        message = "Game name required.";
+                        return PreProcessorParserResult.QuietError;
                     default:
                         return PreProcessorParserResult.Unknown;
                 }
@@ -54,6 +61,7 @@ public class PreProcessorParser
                             message = "Switch to fullscreen.";
                             return PreProcessorParserResult.FullscreenOn;
                         }
+
                         if (parts[1].IsFalse())
                         {
                             message = "Switch to windowed mode.";
@@ -67,6 +75,7 @@ public class PreProcessorParser
                             message = "Turn on debug output.";
                             return PreProcessorParserResult.LogOn;
                         }
+
                         if (parts[1].IsFalse())
                         {
                             message = "Turn off debug output.";
@@ -89,12 +98,13 @@ public class PreProcessorParser
                                 message = "Did not understand that.";
                                 return PreProcessorParserResult.Unknown;
                         }
-                        case "HQ-RENDER":
+                    case "HQ-RENDER":
                         if (parts[1].IsTrue())
                         {
                             message = "Turn on high quality rendering.";
                             return PreProcessorParserResult.HighQualityRenderOn;
                         }
+
                         if (parts[1].IsFalse())
                         {
                             message = "Turn off high quality rendering.";
@@ -102,6 +112,10 @@ public class PreProcessorParser
                         }
 
                         return PreProcessorParserResult.Unknown;
+                    case "LOAD101":
+                        argument = parts[1];
+                        message = "Load from the 101 list: " + argument;
+                        return PreProcessorParserResult.Load101Games;
                     default:
                         message = "Did not understand that.";
                         return PreProcessorParserResult.Unknown;

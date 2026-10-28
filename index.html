@@ -313,6 +313,8 @@
         <section id="appcommands">
             <h2>4. Applikationskommandon med !</h2>
             <p>Skriv kommandona i terminalen utan radnummer och avsluta med Enter. Med <code>!HQ-RENDER</code> kan du ändra renderingsläge mellan hög kvalitet och snabbare rendering.</p>
+            <p>Skriv <code>!101</code> för att visa alla spel från boken <strong>101 BASIC Computer Games</strong> från 1974. Ladda ett spel genom att skriva följande, där <code>namn</code> är spelets namn i listan:</p>
+            <pre><code>!load101 namn</code></pre>
             <table>
                 <thead><tr><th>Syntax</th><th>Funktion</th><th>Alternativ</th></tr></thead>
                 <tbody>
@@ -325,6 +327,8 @@
                     <tr><td><code>!HQ-RENDER</code></td><td>Växla mellan hög renderingskvalitet och snabbare rendering. Ändrar inte beräkningar.</td><td>View → High quality rendering.</td></tr>
                     <tr><td><code>!HQ-RENDER ON</code> / <code>!HQ-RENDER OFF</code></td><td>Slå på/av hög renderingskvalitet.</td><td>View → High quality rendering eller Tools → Options.</td></tr>
                     <tr><td><code>!LIST</code></td><td>Lista hela programmet, utan intervall.</td><td>LIST.</td></tr>
+                    <tr><td><code>!101</code></td><td>Visa alla spel från boken <strong>101 BASIC Computer Games</strong> från 1974.</td><td>—</td></tr>
+                    <tr><td><code>!load101 namn</code></td><td>Ladda spelet med angivet namn från listan som visas med <code>!101</code>.</td><td>File → Open from 101 BASIC Computer Games...</td></tr>
                     <tr><td><code>!QUIT</code></td><td>Avsluta utan bekräftelse.</td><td>File → Exit.</td></tr>
                 </tbody>
             </table>
@@ -336,8 +340,8 @@
                 <thead><tr><th>Meny</th><th>Funktion</th></tr></thead>
                 <tbody>
                     <tr><td>File → Open from 101 BASIC Computer Games...</td><td>Läs källfil till programminnet. Kör inte automatiskt.</td></tr>
-                    <tr><td>File → Exit</td><td>Stäng ABL. Releasebygget kan fråga om bekräftelse; Debugbygget gör det inte. Programminnet sparas inte.</td></tr>
-                    <tr><td>View → Fullscreen</td><td>Växla helskärm. Meny, verktygsrad och statusrad döljs. F11 växlar tillbaka.</td></tr>
+                    <tr><td>File → Exit</td><td>Stäng ABL efter bekräftelse. Programminnet sparas inte.</td></tr>
+                    <tr><td>View → Fullscreen</td><td>Växla till eller från helskärmsläge. Meny, verktygsrad och statusrad döljs i helskärmsläge. F11 växlar tillbaka.</td></tr>
                     <tr><td>View → Debug output</td><td>Visa/dölj diagnostik över terminalen. Kan skymma utskriften. Ingen stegvis debugger.</td></tr>
                     <tr><td>View → Resolution</td><td>80×25 (640×200 pixlar), 60×25 (480×200), 40×25 (320×200) eller 20×25 (160×200). Val via denna meny sparas som inställning och ritar om startskärmen.</td></tr>
                     <tr><td>View → High quality rendering</td><td>Växla renderingskvalitet/hastighet. Ändrar inte beräkningar. Inställningen sparas vid avslutning.</td></tr>
@@ -362,7 +366,7 @@
                     <tr><td>Delete / Backspace</td><td>Tar bort vid/före markören och skjuter ihop skärmradens text. Backspace går inte till föregående rad vid vänstergränsen.</td></tr>
                     <tr><td>Ctrl+C</td><td>Avbryter körning och INPUT. Är inte kopiering. Återgår till Ready; CONT finns inte.</td></tr>
                     <tr><td>F5</td><td>Kör programmet.</td></tr>
-                    <tr><td>F11</td><td>Växlar helskärm.</td></tr>
+                    <tr><td>F11</td><td>Växlar till eller från helskärmsläge.</td></tr>
                 </tbody>
             </table>
             <p>Terminalbibliotekets teckenkodning begränsar tecknen; godtycklig Unicode stöds inte. Text efter nederkanten rullar upp. Page Up hämtar inte utskrift som rullat bort. Utskrift radbryts vid vald kolumnbredd.</p>

@@ -3,6 +3,7 @@
 public enum PreProcessorParserResult
 {
     Unknown,
+    QuietError,
     ToggleFullscreen,
     FullscreenOn,
     FullscreenOff,
@@ -18,5 +19,7 @@ public enum PreProcessorParserResult
     Resolution3,
     Resolution4,
     List,
+    Show101Games,
+    Load101Games,
     Quit
 }

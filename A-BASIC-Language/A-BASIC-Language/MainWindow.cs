@@ -262,7 +262,7 @@ public partial class MainWindow : Form
     private void btnOptions_Click(object sender, EventArgs e) =>
         optionsToolStripMenuItem_Click(sender, e);
 
-    private void LoadProgram(string source)
+    public void LoadProgram(string source)
     {
         terminalMatrixControl1.ProgramLines.Clear();
         terminalMatrixControl1.SetProgramLines(source);
