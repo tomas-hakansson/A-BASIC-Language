@@ -1,7 +1,7 @@
-﻿using System;
-using A_BASIC_Language.TerminalMatrix.Events;
+﻿#nullable enable
+using System;
 
-namespace TerminalMatrixNetFramework.Events;
+namespace A_BASIC_Language.TerminalMatrix.Events;
 
 public class FunctionKeyEventArgs : EventArgs
 {

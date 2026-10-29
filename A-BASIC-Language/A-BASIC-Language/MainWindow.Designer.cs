@@ -345,11 +345,11 @@ namespace A_BASIC_Language
             this.terminalMatrixControl1.UnlimitedInput = false;
             this.terminalMatrixControl1.Use32BitForeground = false;
             this.terminalMatrixControl1.UseBackground24Bit = false;
-            this.terminalMatrixControl1.TypedLine += new TerminalMatrixNetFramework.Events.TypedLineDelegate(this.terminalMatrixControl1_TypedLine);
-            this.terminalMatrixControl1.InputCompleted += new TerminalMatrixNetFramework.Events.InputCompletedDelegate(this.terminalMatrixControl1_InputCompleted);
+            this.terminalMatrixControl1.TypedLine += new TypedLineDelegate(this.terminalMatrixControl1_TypedLine);
+            this.terminalMatrixControl1.InputCompleted += new InputCompletedDelegate(this.terminalMatrixControl1_InputCompleted);
             this.terminalMatrixControl1.UserBreak += new UserBreakDelegate(this.terminalMatrixControl1_UserBreak);
-            this.terminalMatrixControl1.RequestToggleFullscreen += new TerminalMatrixNetFramework.Events.RequestToggleFullscreenDelegate(this.terminalMatrixControl1_RequestToggleFullscreen);
-            this.terminalMatrixControl1.Tick += new TerminalMatrixNetFramework.Events.TickDelegate(this.terminalMatrixControl1_Tick);
+            this.terminalMatrixControl1.RequestToggleFullscreen += new RequestToggleFullscreenDelegate(this.terminalMatrixControl1_RequestToggleFullscreen);
+            this.terminalMatrixControl1.Tick += new TickDelegate(this.terminalMatrixControl1_Tick);
             this.terminalMatrixControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.terminalMatrixControl1_Paint);
             this.terminalMatrixControl1.Leave += new System.EventHandler(this.terminalMatrixControl1_Leave);
             // 

@@ -562,20 +562,24 @@ public class Interpreter
                             {
                                 var color = Number(_data.Pop());
                                 var target = Number(_data.Pop());
-                                if (target != 1)
+
+                                if (Math.Abs(target - 1) > 0.1)
                                     throw new InvalidOperationException("COLOR supports only target 1 (text color).");
-                                if (double.IsNaN(color) || double.IsInfinity(color) ||
-                                    color < 0 || color > 15 || color != Math.Floor(color))
+                                
+                                if (double.IsNaN(color) || double.IsInfinity(color) || color < 0 || color > 15 || Math.Abs(color - Math.Floor(color)) > 0.1)
                                     throw new InvalidOperationException("COLOR requires a whole number from 0 to 15 for the color.");
+
                                 _terminal.SetTextColor((int)color);
                             }
                             break;
                         case "WINDOW":
                             {
                                 var rows = Number(_data.Pop());
+
                                 if (double.IsNaN(rows) || double.IsInfinity(rows) ||
                                     rows < 2 || rows > 25 || rows != Math.Floor(rows))
                                     throw new InvalidOperationException("WINDOW requires a whole number of text rows from 2 to 25.");
+                                
                                 _terminal.ClearScreen();
                                 _terminal.SetTextRenderLimit(25 - (int)rows);
                             }
@@ -586,8 +590,10 @@ public class Interpreter
                         case "SAVE":
                             if (_runtime)
                                 throw new InvalidOperationException("SAVE is only allowed in direct mode.");
+                            
                             if (_data.Count == 0 || _data.Pop() is not StringValue fileName)
                                 throw new InvalidOperationException("SAVE requires a string argument.");
+                            
                             Save(fileName.Value);
                             break;
                         case "RND":

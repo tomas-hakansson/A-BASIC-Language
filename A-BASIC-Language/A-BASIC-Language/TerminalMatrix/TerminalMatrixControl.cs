@@ -15,10 +15,8 @@ using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 using A_BASIC_Language.TerminalMatrix.TerminalColor;
 using A_BASIC_Language.TerminalMatrix.TerminalMatrixControlFeatures;
 using PixelmapLibraryNetFramework;
-using PixelmapLibraryNetFramework.FontManagement;
 using PixelmapLibraryNetFramework.SpriteManagement;
 using TerminalMatrixNetFramework;
-using TerminalMatrixNetFramework.Events;
 using TerminalMatrixNetFramework.TerminalColor;
 
 namespace A_BASIC_Language.TerminalMatrix;

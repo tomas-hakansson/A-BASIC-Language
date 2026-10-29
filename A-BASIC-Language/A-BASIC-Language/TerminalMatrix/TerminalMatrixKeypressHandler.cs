@@ -2,7 +2,6 @@ using System;
 using System.Windows.Forms;
 using A_BASIC_Language.TerminalMatrix;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
-using PixelmapLibraryNetFramework.FontManagement;
 
 namespace TerminalMatrixNetFramework;
 

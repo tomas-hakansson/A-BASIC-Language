@@ -1,6 +1,7 @@
-﻿using System;
+﻿#nullable enable
+using System;
 
-namespace TerminalMatrixNetFramework.Events;
+namespace A_BASIC_Language.TerminalMatrix.Events;
 
 public class ProgramChangeEventArgs : EventArgs
 {

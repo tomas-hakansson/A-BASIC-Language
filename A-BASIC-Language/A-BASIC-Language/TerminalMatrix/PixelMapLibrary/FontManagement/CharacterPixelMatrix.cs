@@ -1,4 +1,5 @@
-namespace PixelmapLibraryNetFramework.FontManagement;
+#nullable enable
+namespace A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 
 public class CharacterPixelMatrix
 {

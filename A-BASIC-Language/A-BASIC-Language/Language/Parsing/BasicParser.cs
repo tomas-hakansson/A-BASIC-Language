@@ -47,6 +47,7 @@ public class BasicParser
             {
                 var evalValues = _lines.SelectMany(v => v.Value).ToList();
                 Dictionary<int, int> labelIndex = new();
+
                 for (int i = 0; i < evalValues.Count; i++)
                 {
                     if (evalValues[i] is AblLabel label)
@@ -71,23 +72,28 @@ public class BasicParser
         while (_index < _source.Length)
         {
             SkipWhitespace();
+
             if (Maybe('\n'))
                 continue;
+
             if (_index >= _source.Length)
                 break;
+
             if (!ALabel())
             {
                 ParseError("Expected a numbered BASIC line");
                 SkipLine();
                 continue;
             }
+
             OneOrMoreStatements();
             SkipWhitespace();
-            if (_index < _source.Length && _source[_index] != '\n')
-            {
-                ParseError("Unexpected text after statement");
-                SkipLine();
-            }
+
+            if (_index >= _source.Length || _source[_index] == '\n')
+                continue;
+
+            ParseError("Unexpected text after statement");
+            SkipLine();
         }
     }
 
@@ -109,7 +115,7 @@ public class BasicParser
         _index += mg.Length;
         _currentLabel = int.Parse(mg.Value);
         //Note: We prime the next line by adding a new label to _lines.
-        _lines.Add(_currentLabel, new List<AblEvalValue>() { new AblLabel(_currentLabel) });
+        _lines.Add(_currentLabel, [new AblLabel(_currentLabel)]);
         SkipWhitespace();
         return matched;
     }
@@ -118,6 +124,7 @@ public class BasicParser
     void OneOrMoreStatements(Match? match = null)
     {
         AStatementPlusParts(match);
+
         while (Maybe(':'))
             AStatementPlusParts();
     }
@@ -127,9 +134,11 @@ public class BasicParser
         //This is the tricky part.
 
         isStatement ??= StatementRegex().Match(_source, _index);
+
         if (isStatement.Success)
         {
             var match = isStatement.Groups.Cast<Group>().First(g => g.Name == "statement");
+            
             if (match != null)
             {
                 var statement = match.Value.ToUpper();
@@ -139,6 +148,7 @@ public class BasicParser
                     _index += match.Length;
                     SkipWhitespace();
                 }
+
                 switch (statement)
                 {
                     case "DEF":
@@ -217,7 +227,9 @@ public class BasicParser
             }
         }
         else if (LooksLikeAssignment())
+        {
             Let();
+        }
         else
         {
             var name = VariableRegex().Match(_source, _index);
@@ -249,16 +261,27 @@ public class BasicParser
         {
             var depth = 0;
             var quoted = false;
+            
             do
             {
                 var c = _source[position++];
-                if (c == '\n') return false;
-                if (c == '"') quoted = !quoted;
+                
+                if (c == '\n')
+                    return false;
+                
+                if (c == '"')
+                    quoted = !quoted;
+                
                 if (!quoted)
                 {
-                    if (c == ':') return false;
-                    if (c == '(') depth++;
-                    if (c == ')') depth--;
+                    if (c == ':')
+                        return false;
+
+                    if (c == '(')
+                        depth++;
+
+                    if (c == ')')
+                        depth--;
                 }
             } while (position < _source.Length && depth > 0);
             
@@ -372,8 +395,10 @@ public class BasicParser
     {
         if (Maybe("GOSUB"))
             return true;
+
         if (Maybe("GOTO"))
             return false;
+
         if (Maybe("GO"))
         {
             if (Maybe("SUB"))
@@ -381,8 +406,10 @@ public class BasicParser
             if (Maybe("TO"))
                 return false;
         }
+
         throw new InvalidOperationException("Expected GOTO, GO TO, GOSUB or GO SUB.");
     }
+
     // ON expression (GOTO | GOSUB) line-number (, line-number)*
     private void OnGoto()
     {
@@ -473,6 +500,7 @@ public class BasicParser
         var falseBranchLabel = GetGeneratedLabel();
         var previousCondition = _parsingIfCondition;
         _parsingIfCondition = true;
+
         try
         {
             Expression();
@@ -481,7 +509,9 @@ public class BasicParser
         {
             _parsingIfCondition = previousCondition;
         }
+        
         Generate(new AblNumber(falseBranchLabel), new AblProcedure("#IF-FALSE-GOTO"));
+        
         if (!Maybe("THEN"))
         {
             ParseError("Expected 'THEN' statement in 'IF' statement");
@@ -492,6 +522,7 @@ public class BasicParser
             SkipLine();
             return;
         }
+        
         Body();
         var endBranchLabel = GetGeneratedLabel();
         Generate(new AblNumber(endBranchLabel), new AblProcedure("GOTO"));
@@ -519,6 +550,7 @@ public class BasicParser
                 if (isVariable.Success)
                 {
                     var match = isVariable.Groups.Cast<Group>().First(g => g.Name == "var");
+
                     if (match.Value.StartsWith("FN", StringComparison.InvariantCultureIgnoreCase))
                     {
                         //Note: this is a user defined function.
@@ -557,7 +589,9 @@ public class BasicParser
                         }
 
                         if (index >= 0 && _source[index] == '=')
-                            OneOrMoreStatements();//Note: Is assignment.
+                        {
+                            OneOrMoreStatements(); //Note: Is assignment.
+                        }
                         else
                         {
                             Expression();
@@ -578,7 +612,7 @@ public class BasicParser
         }
     }
 
-    void ParseError(string message) =>
+    private void ParseError(string message) =>
         _parseErrors.Add((_index, FormatDiagnostic(message)));
 
     private string FormatDiagnostic(string message)
