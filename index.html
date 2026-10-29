@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ABL – användarmanual och språkreferens</title>
+    <title>ABL – user manual and language reference</title>
     <style>
         :root {
             color-scheme: light;
@@ -164,524 +164,524 @@
 <body>
     <header>
         <h1>ABL</h1>
-        <p>Användarmanual och språkreferens för A BASIC Language, av Tomas Håkansson och Anders Hesselbom.</p>
-        <p>Beskriver projektets implementation den 20 oktober 2026. ABL är en Windowsbaserad BASIC-tolk med ett urval av Altair BASICs syntax. Begränsningar och avvikelser anges uttryckligen.</p>
+        <p>User manual and language reference for A BASIC Language, by Tomas Håkansson and Anders Hesselbom.</p>
+        <p>Describes the project's implementation as of October 20, 2026. ABL is a Windows-based BASIC interpreter supporting a subset of Altair BASIC syntax. Limitations and deviations are stated explicitly.</p>
     </header>
-<main>
-        <nav aria-label="Innehåll">
-            <h2 style="margin-top:0;border:0;padding:0">Innehåll</h2>
+    <main>
+        <nav aria-label="Contents">
+            <h2 style="margin-top:0;border:0;padding:0">Contents</h2>
             <ul>
-                <li><a href="#register">Kommandoregister och tillstånd</a></li>
-                <li><a href="#start">Kom igång och körlägen</a></li>
-                <li><a href="#editor">Skriva och ändra program</a></li>
-                <li><a href="#terminal">Terminalkommandon</a></li>
-                <li><a href="#appcommands">Applikationskommandon med !</a></li>
-                <li><a href="#interface">Menyer och tangentbord</a></li>
-                <li><a href="#syntax">Syntax, variabler och typer</a></li>
-                <li><a href="#operators">Uttryck och operatorer</a></li>
-                <li><a href="#statements">Programsatsreferens</a></li>
-                <li><a href="#window">WINDOW – textfönster</a></li>
-                <li><a href="#gosub">GOSUB / GO SUB – anropa subrutin</a></li>
-                <li><a href="#return">RETURN – återvänd från subrutin</a></li>
-                <li><a href="#on-goto">ON … GOTO – välj hoppmål</a></li>
-                <li><a href="#on-gosub">ON … GOSUB – välj subrutin</a></li>
-                <li><a href="#functions">Fungerande funktioner</a></li>
-                <li><a href="#missing">Funktionsnamn utan körstöd</a></li>
-                <li><a href="#examples">Programexempel</a></li>
-                <li><a href="#errors">Fel och felsökning</a></li>
-                <li><a href="#limits">Omfattning och kompatibilitet</a></li>
+                <li><a href="#register">Command index and state</a></li>
+                <li><a href="#start">Getting started and execution modes</a></li>
+                <li><a href="#editor">Writing and editing programs</a></li>
+                <li><a href="#terminal">Terminal commands</a></li>
+                <li><a href="#appcommands">Application commands with !</a></li>
+                <li><a href="#interface">Menus and keyboard</a></li>
+                <li><a href="#syntax">Syntax, variables and types</a></li>
+                <li><a href="#operators">Expressions and operators</a></li>
+                <li><a href="#statements">Statement reference</a></li>
+                <li><a href="#window">WINDOW – text window</a></li>
+                <li><a href="#gosub">GOSUB / GO SUB – call a subroutine</a></li>
+                <li><a href="#return">RETURN – return from a subroutine</a></li>
+                <li><a href="#on-goto">ON … GOTO – select a jump target</a></li>
+                <li><a href="#on-gosub">ON … GOSUB – select a subroutine</a></li>
+                <li><a href="#functions">Working functions</a></li>
+                <li><a href="#missing">Function names without runtime support</a></li>
+                <li><a href="#examples">Program examples</a></li>
+                <li><a href="#errors">Errors and troubleshooting</a></li>
+                <li><a href="#limits">Scope and compatibility</a></li>
             </ul>
         </nav>
         <section id="register">
-            <h2>Länkar</h2>
+            <h2>Links</h2>
             <ul>
-                <li><a href="https://github.com/tomas-hakansson/A-BASIC-Language" target="_blank">Källkod</a></li>
+                <li><a href="https://github.com/tomas-hakansson/A-BASIC-Language" target="_blank">Source code</a></li>
             </ul>
-            <h2>Kommandoregister och användningsområden</h2>
-            <p>Följ länkarna för fullständig syntax, betydelse, exempel och begränsningar. <strong>Direktläge</strong> betyder att en sats skrivs utan radnummer vid terminalen. <strong>Runtime</strong> betyder att satsen utförs som del av ett numrerat program. Listan omfattar de satser och funktioner som den aktiva parsern och tolken implementerar.</p>
+            <h2>Command index and usage</h2>
+            <p>Follow the links for full syntax, meaning, examples and limitations. <strong>Direct mode</strong> means entering a statement without a line number at the terminal. <strong>Runtime</strong> means executing the statement as part of a numbered program. The list covers the statements and functions implemented by the active parser and interpreter.</p>
             <table>
-                <thead><tr><th>Namn</th><th>Direktläge</th><th>Runtime</th><th>Definition</th></tr></thead>
+                <thead><tr><th>Name</th><th>Direct mode</th><th>Runtime</th><th>Definition</th></tr></thead>
                 <tbody>
-                    <tr><td><a href="#run">RUN</a></td><td>Ja</td><td>Nej</td><td>Nollställ kördata och starta hela det lagrade programmet.</td></tr>
-                    <tr><td><a href="#list">LIST</a></td><td>Ja</td><td>Nej</td><td>Lista alla eller ett intervall av programrader.</td></tr>
-                    <tr><td><a href="#new">NEW</a></td><td>Ja</td><td>Nej</td><td>Radera programmet och sessionens kördata.</td></tr>
-                    <tr><td><a href="#let">LET / tilldelning utan LET</a></td><td>Ja</td><td>Ja</td><td>Tilldela en skalär eller ett arrayelement.</td></tr>
-                    <tr><td><a href="#print">PRINT</a></td><td>Ja</td><td>Ja</td><td>Skriv uttryck och styr utfyllnad/radbrytning.</td></tr>
-                    <tr><td><a href="#window">WINDOW</a></td><td>Ja</td><td>Ja</td><td>Rensa skärmen och välj antal textrader längst ned. Utan argument återställs alla 25 rader.</td></tr>
-                    <tr><td><a href="#input">INPUT</a></td><td>Ja</td><td>Ja</td><td>Läs ett separat svar per mottagarvariabel.</td></tr>
-                    <tr><td><a href="#if">IF … THEN … ELSE</a></td><td>Ja</td><td>Ja</td><td>Välj satsgren eller hoppa till beräknat radnummer. THEN och ELSE är delar av IF, inga fristående satser.</td></tr>
-                    <tr><td><a href="#goto">GOTO / GO TO</a></td><td>Begränsat</td><td>Ja</td><td>Hoppa inom den källa som just körs. Ett direktkommando har inte tillgång till det lagrade programmets radetiketter.</td></tr>
-                    <tr><td><a href="#gosub">GOSUB / GO SUB</a></td><td>Begränsat</td><td>Ja</td><td>Anropa en rad och spara returpositionen på anropsstacken. Direktläge kan inte anropa rader i programminnet.</td></tr>
-                    <tr><td><a href="#return">RETURN</a></td><td>Ja, men kräver aktivt GOSUB-anrop</td><td>Ja</td><td>Återvänd till satsen efter senaste GOSUB och ta bort anropet från stacken.</td></tr>
-                    <tr><td><a href="#on-gosub">ON … GOSUB</a></td><td>Nej</td><td>Ja</td><td>Välj subrutin från en lista av radnummer och spara returpositionen.</td></tr>
-                    <tr><td><a href="#on-goto">ON … GOTO</a></td><td>Nej</td><td>Ja</td><td>Välj målrad med ett numeriskt uttryck och en lista av radnummer.</td></tr>
-                    <tr><td><a href="#for">FOR … TO … STEP</a></td><td>Ja, med NEXT i samma kommando</td><td>Ja</td><td>Starta en räknarslinga. TO och STEP är delar av FOR.</td></tr>
-                    <tr><td><a href="#for">NEXT</a></td><td>Ja, med FOR i samma kommando</td><td>Ja</td><td>Öka räknaren och fortsätt eller avsluta slingan.</td></tr>
-                    <tr><td><a href="#dim">DIM</a></td><td>Ja</td><td>Ja</td><td>Skapa eller ersätt arrayer med inkluderande högsta index.</td></tr>
-                    <tr><td><a href="#def">DEF FN</a></td><td>Ja</td><td>Ja</td><td>Definiera en funktion med en numerisk parameter.</td></tr>
-                    <tr><td><a href="#def">FNnamn(argument)</a></td><td>Ja, i uttryck</td><td>Ja, i uttryck</td><td>Anropa en utförd DEF FN-definition.</td></tr>
-                    <tr><td><a href="#randomize">RANDOMIZE</a></td><td>Ja</td><td>Ja</td><td>Skapa en ny slumptalsgenerator utan seedargument.</td></tr>
-                    <tr><td><a href="#rem">REM</a></td><td>Ja</td><td>Ja</td><td>Ignorera resten av den fysiska källraden.</td></tr>
-                    <tr><td><a href="#end">END / STOP</a></td><td>Ja</td><td>Ja</td><td>Avsluta den aktuella körningen utan möjlighet att återuppta.</td></tr>
-                    <tr><td><a href="#abs">ABS(x)</a></td><td>Ja, i uttryck</td><td>Ja, i uttryck</td><td>Absolutbelopp.</td></tr>
-                    <tr><td><a href="#log">LOG(x)</a></td><td>Ja, i uttryck</td><td>Ja, i uttryck</td><td>Naturlig logaritm, x &gt; 0.</td></tr>
-                    <tr><td><a href="#exp">EXP(x)</a></td><td>Ja, i uttryck</td><td>Ja, i uttryck</td><td>e upphöjt till x.</td></tr>
-                    <tr><td><a href="#int">INT(x)</a></td><td>Ja, i uttryck</td><td>Ja, i uttryck</td><td>Kapa till 32-bitars heltal mot noll.</td></tr>
-                    <tr><td><a href="#rnd">RND / RND(x)</a></td><td>Ja, i uttryck</td><td>Ja, i uttryck</td><td>Slumptal mellan 0 inklusive och 1 exklusive.</td></tr>
-                    <tr><td><a href="#sqr">SQR(x)</a></td><td>Ja, i uttryck</td><td>Ja, i uttryck</td><td>Kvadratrot.</td></tr>
-                    <tr><td><a href="#tab">TAB(n)</a></td><td>Ja, avsedd för PRINT</td><td>Ja, avsedd för PRINT</td><td>Positionera utskrift i en absolut kolumn.</td></tr>
-                    <tr><td><a href="#appcommands">!-kommandon</a></td><td>Ja, i terminalen</td><td>Nej</td><td>Kommandon för visning, renderingsläge, diagnostik, listning och avslutning.</td></tr>
+                    <tr><td><a href="#run">RUN</a></td><td>Yes</td><td>No</td><td>Reset runtime data and start the entire stored program.</td></tr>
+                    <tr><td><a href="#list">LIST</a></td><td>Yes</td><td>No</td><td>List all program lines or a range of lines.</td></tr>
+                    <tr><td><a href="#new">NEW</a></td><td>Yes</td><td>No</td><td>Delete the program and the session's runtime data.</td></tr>
+                    <tr><td><a href="#let">LET / assignment without LET</a></td><td>Yes</td><td>Yes</td><td>Assign a value to a scalar or array element.</td></tr>
+                    <tr><td><a href="#print">PRINT</a></td><td>Yes</td><td>Yes</td><td>Print expressions and control padding/line breaks.</td></tr>
+                    <tr><td><a href="#window">WINDOW</a></td><td>Yes</td><td>Yes</td><td>Clear the screen and select the number of text rows at the bottom. Without an argument, all 25 rows are restored.</td></tr>
+                    <tr><td><a href="#input">INPUT</a></td><td>Yes</td><td>Yes</td><td>Read a separate response for each target variable.</td></tr>
+                    <tr><td><a href="#if">IF … THEN … ELSE</a></td><td>Yes</td><td>Yes</td><td>Select a statement branch or jump to a calculated line number. THEN and ELSE are parts of IF, not standalone statements.</td></tr>
+                    <tr><td><a href="#goto">GOTO / GO TO</a></td><td>Limited</td><td>Yes</td><td>Jump within the source currently being executed. A direct command cannot access line labels in the stored program.</td></tr>
+                    <tr><td><a href="#gosub">GOSUB / GO SUB</a></td><td>Limited</td><td>Yes</td><td>Call a line and save the return position on the call stack. Direct mode cannot call lines in program memory.</td></tr>
+                    <tr><td><a href="#return">RETURN</a></td><td>Yes, but requires an active GOSUB call</td><td>Yes</td><td>Return to the statement after the most recent GOSUB and remove the call from the stack.</td></tr>
+                    <tr><td><a href="#on-gosub">ON … GOSUB</a></td><td>No</td><td>Yes</td><td>Select a subroutine from a list of line numbers and save the return position.</td></tr>
+                    <tr><td><a href="#on-goto">ON … GOTO</a></td><td>No</td><td>Yes</td><td>Select a target line using a numeric expression and a list of line numbers.</td></tr>
+                    <tr><td><a href="#for">FOR … TO … STEP</a></td><td>Yes, with NEXT in the same command</td><td>Yes</td><td>Start a counting loop. TO and STEP are parts of FOR.</td></tr>
+                    <tr><td><a href="#for">NEXT</a></td><td>Yes, with FOR in the same command</td><td>Yes</td><td>Increment the counter and continue or end the loop.</td></tr>
+                    <tr><td><a href="#dim">DIM</a></td><td>Yes</td><td>Yes</td><td>Create or replace arrays with inclusive upper bounds.</td></tr>
+                    <tr><td><a href="#def">DEF FN</a></td><td>Yes</td><td>Yes</td><td>Define a function with one numeric parameter.</td></tr>
+                    <tr><td><a href="#def">FNname(argument)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Call a DEF FN definition that has been executed.</td></tr>
+                    <tr><td><a href="#randomize">RANDOMIZE</a></td><td>Yes</td><td>Yes</td><td>Create a new random number generator without a seed argument.</td></tr>
+                    <tr><td><a href="#rem">REM</a></td><td>Yes</td><td>Yes</td><td>Ignore the rest of the physical source line.</td></tr>
+                    <tr><td><a href="#end">END / STOP</a></td><td>Yes</td><td>Yes</td><td>End the current execution with no option to resume.</td></tr>
+                    <tr><td><a href="#abs">ABS(x)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Absolute value.</td></tr>
+                    <tr><td><a href="#log">LOG(x)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Natural logarithm, x &gt; 0.</td></tr>
+                    <tr><td><a href="#exp">EXP(x)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>e raised to the power x.</td></tr>
+                    <tr><td><a href="#int">INT(x)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Truncate toward zero to a 32-bit integer.</td></tr>
+                    <tr><td><a href="#rnd">RND / RND(x)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Random number from 0 inclusive to 1 exclusive.</td></tr>
+                    <tr><td><a href="#sqr">SQR(x)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Square root.</td></tr>
+                    <tr><td><a href="#tab">TAB(n)</a></td><td>Yes, intended for PRINT</td><td>Yes, intended for PRINT</td><td>Position output at an absolute column.</td></tr>
+                    <tr><td><a href="#appcommands">! commands</a></td><td>Yes, in the terminal</td><td>No</td><td>Commands for display, rendering mode, diagnostics, listing and quitting.</td></tr>
                 </tbody>
             </table>
-            <p>För alla funktionsnamn som känns igen men saknar körstöd, se <a href="#missing">den separata listan</a>. De räknas inte som fungerande funktioner. <a href="#operators">Operatorreferensen</a> beskriver också samtliga implementerade beräknings- och jämförelseoperatorer.</p>
-            <h3>Vad finns kvar mellan åtgärder?</h3>
+            <p>For all recognized function names without runtime support, see <a href="#missing">the separate list</a>. They are not counted as working functions. The <a href="#operators">operator reference</a> also describes all implemented arithmetic and comparison operators.</p>
+            <h3>What persists between actions?</h3>
             <table>
-                <thead><tr><th>Åtgärd</th><th>Programrader</th><th>Variabler, arrayer, DEF FN</th><th>Slumptalsgenerator</th></tr></thead>
+                <thead><tr><th>Action</th><th>Program lines</th><th>Variables, arrays, DEF FN</th><th>Random number generator</th></tr></thead>
                 <tbody>
-                    <tr><td>Nytt direktkommando</td><td>Består.</td><td>Består.</td><td>Ny generator för det nya kommandot.</td></tr>
-                    <tr><td>Lägg till, ändra eller radera programrad</td><td>Den angivna raden ändras.</td><td>Består.</td><td>Ingen BASIC-körning startas.</td></tr>
-                    <tr><td>LIST</td><td>Består.</td><td>Består.</td><td>Ingen ny BASIC-körning.</td></tr>
-                    <tr><td>Öppna .bas-fil</td><td>Ersätts av filens rader.</td><td>Består tills RUN/NEW.</td><td>Ingen BASIC-körning startas.</td></tr>
-                    <tr><td>RUN</td><td>Består.</td><td>Rensas före starten; skapas sedan av programmet.</td><td>Ny generator.</td></tr>
-                    <tr><td>END, STOP eller slut på källan</td><td>Består.</td><td>Består efter avslutning.</td><td>Den avslutade tolkinstansen fortsätter inte.</td></tr>
-                    <tr><td>Körfel eller Ctrl+C</td><td>Består.</td><td>Redan utförda tilldelningar består; ingen automatisk återställning.</td><td>Nästa körning/direktkommando får ny generator.</td></tr>
-                    <tr><td>NEW</td><td>Raderas.</td><td>Raderas.</td><td>Ingen BASIC-körning startas.</td></tr>
-                    <tr><td>Stäng ABL</td><td>Sparas inte automatiskt.</td><td>Försvinner med sessionen.</td><td>Försvinner.</td></tr>
+                    <tr><td>New direct command</td><td>Retained.</td><td>Retained.</td><td>New generator for the new command.</td></tr>
+                    <tr><td>Add, edit or delete a program line</td><td>The specified line is changed.</td><td>Retained.</td><td>No BASIC execution is started.</td></tr>
+                    <tr><td>LIST</td><td>Retained.</td><td>Retained.</td><td>No new BASIC execution.</td></tr>
+                    <tr><td>Open a .bas file</td><td>Replaced by the file's lines.</td><td>Retained until RUN/NEW.</td><td>No BASIC execution is started.</td></tr>
+                    <tr><td>RUN</td><td>Retained.</td><td>Cleared before starting; then created by the program.</td><td>New generator.</td></tr>
+                    <tr><td>END, STOP or end of source</td><td>Retained.</td><td>Retained after execution ends.</td><td>The terminated interpreter instance does not continue.</td></tr>
+                    <tr><td>Runtime error or Ctrl+C</td><td>Retained.</td><td>Completed assignments are retained; no automatic rollback.</td><td>The next run/direct command gets a new generator.</td></tr>
+                    <tr><td>NEW</td><td>Deleted.</td><td>Deleted.</td><td>No BASIC execution is started.</td></tr>
+                    <tr><td>Close ABL</td><td>Not saved automatically.</td><td>Lost with the session.</td><td>Lost.</td></tr>
                 </tbody>
             </table>
         </section>
         <section id="start">
-            <h2>1. Kom igång och körlägen</h2>
-            <p>Terminalen används som programeditor och för kommandon, utskrift och inmatning. Menyerna öppnar program, startar körning och ändrar visningen.</p>
-            <ol><li>Skriv <code>NEW</code> och tryck Enter för ett tomt program.</li><li>Skriv <code>10 PRINT "HEJ!"</code> och Enter.</li><li>Skriv <code>20 END</code> och Enter.</li><li>Skriv <code>LIST</code> för att visa programmet.</li><li>Skriv <code>RUN</code>, välj Program → Run eller tryck F5.</li></ol>
-            <h3>Direktläge, eller immediate mode</h3>
-            <p>När inget program körs utförs en BASIC-sats utan radnummer direkt: <code>PRINT 2+3</code>, <code>A=10</code> eller <code>A=10:PRINT A</code>. Variabler, arrayer och egna funktioner består mellan direktkommandon i samma session.</p>
-            <p>Även <code>FOR I=1 TO 3:PRINT I:NEXT I</code> kan köras direkt. FOR och NEXT måste finnas i samma direktkommando; en ofullständig slinga kan inte fortsättas med nästa kommando.</p>
-            <p><a href="#on-goto">ON … GOTO</a> och <a href="#on-gosub">ON … GOSUB</a> kräver däremot en numrerad programrad och körs med RUN. Satserna är inte tillåtna i direktläge, heller inte efter kolon eller i en IF-gren.</p>
-            <h3>Programminne och runtime</h3>
-            <p>Rader med radnummer lagras i stället för att köras. RUN börjar vid lägsta radnumret och fortsätter i nummerordning om inte en kontrollsats ändrar flödet. Variabler, arrayer och egna funktioner nollställs före varje RUN.</p>
-            <p>Under körning tar INPUT emot svar som data, inte terminalkommandon. Ctrl+C avbryter. Normal avslutning visar <code>Program has run through.</code>. Efter direktkommandon, fel och avbrott visas normalt <code>Ready.</code>.</p>
-            <p>Värden består efter körningen och kan undersökas med exempelvis <code>PRINT A</code>. Nästa RUN nollställer dem igen. END och STOP raderar inte värden. NEW raderar både program och tillstånd.</p>
+            <h2>1. Getting started and execution modes</h2>
+            <p>The terminal serves as a program editor and handles commands, output and input. The menus open programs, start execution and change the display.</p>
+            <ol><li>Type <code>NEW</code> and press Enter for an empty program.</li><li>Type <code>10 PRINT "HELLO!"</code> and press Enter.</li><li>Type <code>20 END</code> and press Enter.</li><li>Type <code>LIST</code> to display the program.</li><li>Type <code>RUN</code>, choose Program → Run or press F5.</li></ol>
+            <h3>Direct mode, or immediate mode</h3>
+            <p>When no program is running, a BASIC statement without a line number is executed immediately: <code>PRINT 2+3</code>, <code>A=10</code> or <code>A=10:PRINT A</code>. Variables, arrays and user-defined functions persist between direct commands in the same session.</p>
+            <p><code>FOR I=1 TO 3:PRINT I:NEXT I</code> can also run directly. FOR and NEXT must be in the same direct command; an incomplete loop cannot be continued with the next command.</p>
+            <p>However, <a href="#on-goto">ON … GOTO</a> and <a href="#on-gosub">ON … GOSUB</a> require a numbered program line and are executed with RUN. These statements are not allowed in direct mode, including after a colon or in an IF branch.</p>
+            <h3>Program memory and runtime</h3>
+            <p>Lines with line numbers are stored rather than executed. RUN starts at the lowest line number and continues in numerical order unless a control statement changes the flow. Variables, arrays and user-defined functions are reset before every RUN.</p>
+            <p>During execution, INPUT accepts responses as data, not terminal commands. Ctrl+C interrupts execution. Normal termination displays <code>Program has run through.</code>. Direct commands, errors and interruptions normally end with <code>Ready.</code>.</p>
+            <p>Values persist after execution and can be inspected using, for example, <code>PRINT A</code>. The next RUN resets them again. END and STOP do not delete values. NEW deletes both the program and its state.</p>
         </section>
         <section id="editor">
-            <h2>2. Skriva, ändra och öppna program</h2>
+            <h2>2. Writing, editing and opening programs</h2>
             <table>
-                <thead><tr><th>Åtgärd</th><th>Inmatning</th><th>Resultat</th></tr></thead>
+                <thead><tr><th>Action</th><th>Input</th><th>Result</th></tr></thead>
                 <tbody>
-                    <tr><td>Lägg till</td><td><code>10 PRINT "HEJ"</code></td><td>Lagrar rad 10; kör den inte.</td></tr>
-                    <tr><td>Ersätt</td><td><code>10 PRINT "NY TEXT"</code></td><td>Samma nummer ersätter den gamla raden.</td></tr>
-                    <tr><td>Radera</td><td><code>10</code></td><td>Ett ensamt nummer tar bort raden.</td></tr>
-                    <tr><td>Infoga mellan</td><td><code>15 PRINT "MELLAN"</code></td><td>Kommer mellan 10 och 20.</td></tr>
-                    <tr><td>Visa</td><td><code>LIST</code></td><td>Listar programminnet.</td></tr>
-                    <tr><td>Töm</td><td><code>NEW</code></td><td>Tar bort program och sessionstillstånd.</td></tr>
+                    <tr><td>Add</td><td><code>10 PRINT "HELLO"</code></td><td>Stores line 10; does not execute it.</td></tr>
+                    <tr><td>Replace</td><td><code>10 PRINT "NEW TEXT"</code></td><td>The same number replaces the old line.</td></tr>
+                    <tr><td>Delete</td><td><code>10</code></td><td>A number on its own removes the line.</td></tr>
+                    <tr><td>Insert between</td><td><code>15 PRINT "BETWEEN"</code></td><td>Comes between 10 and 20.</td></tr>
+                    <tr><td>Display</td><td><code>LIST</code></td><td>Lists program memory.</td></tr>
+                    <tr><td>Clear</td><td><code>NEW</code></td><td>Removes the program and session state.</td></tr>
                 </tbody>
             </table>
-            <p>Rader kan skrivas i valfri ordning. Nummer som 10, 20, 30 lämnar plats för tillägg. Kolon skiljer satser på samma rad. Flytta markören till en synlig rad, ändra och tryck Enter för att lagra igen. Ändrat radnummer skapar en ny rad; radera den gamla separat. LIST visar åter rader som inte syns.</p>
-            <h3>Öppna och spara filer</h3>
-            <p>File → Open from 101 BASIC Computer Games... öppnar en fildialog i spelens källkodsmapp. Även egna filer kan väljas. Filtret är .bas eller alla filer. Innehållet ersätter programminnet och listas; kör sedan RUN. Filöppning nollställer inte variablerna; RUN gör det vid start.</p>
-            <p>Källfiler ska innehålla numrerade BASIC-rader. Tomma rader tillåts. Använd unika radnummer. Programeditorn ersätter dubbla nummer vid inläsning, medan tolken avvisar dubbletter om de förekommer i källan den får.</p>
-            <p>ABL har ingen implementerad sparfunktion. Skapa och spara vanlig text med ändelsen .bas i en extern texteditor och öppna via menyn. Programminnet sparas inte automatiskt vid avslutning.</p>
+            <p>Lines can be entered in any order. Numbers such as 10, 20, 30 leave room for additions. Colons separate statements on the same line. Move the cursor to a visible line, edit it and press Enter to store it again. Changing the line number creates a new line; delete the old one separately. LIST displays lines that are no longer visible.</p>
+            <h3>Opening and saving files</h3>
+            <p>File → Open from 101 BASIC Computer Games... opens a file dialog in the games' source folder. You can also select your own files. The filter is .bas or all files. The contents replace program memory and are listed; then execute RUN. Opening a file does not reset variables; RUN does so at startup.</p>
+            <p>Source files must contain numbered BASIC lines. Blank lines are allowed. Use unique line numbers. The program editor replaces duplicate numbers when loading, whereas the interpreter rejects duplicates if they occur in the source it receives.</p>
+            <p>ABL has no implemented save function. Create and save plain text with the .bas extension in an external text editor, then open it through the menu. Program memory is not saved automatically on exit.</p>
         </section>
         <section id="terminal">
-            <h2>3. Terminalkommandon utanför runtime</h2>
-            <p>Skriv utan radnummer och avsluta med Enter. Stora och små bokstäver är likvärdiga. RUN, LIST och NEW är sessionskommandon, inte programsatser. De kan inte stå på numrerade rader eller kombineras med BASIC-satser via kolon.</p>
+            <h2>3. Terminal commands outside runtime</h2>
+            <p>Type without a line number and press Enter. Uppercase and lowercase are equivalent. RUN, LIST and NEW are session commands, not program statements. They cannot appear on numbered lines or be combined with BASIC statements using colons.</p>
             <article id="run">
                 <h3>RUN</h3><pre><code>RUN</code></pre>
-                <p>Nollställer variabler, arrayer och egna funktioner och kör hela programmet. Tar inga argument: RUN 100 och filnamn efter RUN stöds inte. Programkällan består. Skärmen rensas och hela textytan återställs som med <a href="#window">WINDOW</a> utan argument före programstart. Ett tomt program återgår till Ready.</p>
+                <p>Resets variables, arrays and user-defined functions and runs the entire program. Takes no arguments: RUN 100 and filenames after RUN are not supported. The program source is retained. Before the program starts, the screen is cleared and the full text area is restored, as with <a href="#window">WINDOW</a> without an argument. An empty program returns to Ready.</p>
             </article>
             <article id="list">
                 <h3>LIST</h3>
                 <table>
-                    <thead><tr><th>Syntax</th><th>Urval</th></tr></thead>
+                    <thead><tr><th>Syntax</th><th>Selection</th></tr></thead>
                     <tbody>
-                        <tr><td><code>LIST</code></td><td>Alla lagrade rader.</td></tr>
-                        <tr><td><code>LIST 100</code></td><td>Endast rad 100, om den finns.</td></tr>
-                        <tr><td><code>LIST 100-200</code></td><td>Från och med 100 till och med 200.</td></tr>
-                        <tr><td><code>LIST 100-</code></td><td>Rad 100 och högre.</td></tr>
-                        <tr><td><code>LIST -200</code></td><td>Alla rader till och med 200.</td></tr>
+                        <tr><td><code>LIST</code></td><td>All stored lines.</td></tr>
+                        <tr><td><code>LIST 100</code></td><td>Only line 100, if it exists.</td></tr>
+                        <tr><td><code>LIST 100-200</code></td><td>From 100 through 200, inclusive.</td></tr>
+                        <tr><td><code>LIST 100-</code></td><td>Line 100 and higher.</td></tr>
+                        <tr><td><code>LIST -200</code></td><td>All lines up to and including 200.</td></tr>
                     </tbody>
                 </table>
-                <p>Gränserna är inkluderande och behöver inte motsvara befintliga rader. Mellanslag runt bindestrecket tillåts. Även LIST100 och LIST100-200 fungerar. Endast icke-negativa 32-bitars heltal godtas. Start större än slut eller ogiltig syntax ger <code>?Invalid LIST range</code>. Ett tomt urval skriver inga programrader. Värden ändras inte.</p>
+                <p>Bounds are inclusive and need not correspond to existing lines. Spaces around the hyphen are allowed. LIST100 and LIST100-200 also work. Only non-negative 32-bit integers are accepted. A start greater than the end or invalid syntax produces <code>?Invalid LIST range</code>. An empty selection prints no program lines. Values are unchanged.</p>
             </article>
             <article id="new">
                 <h3>NEW</h3><pre><code>NEW</code></pre>
-                <p>Tar bort hela programmet och alla variabler, arrayer och egna funktioner utan bekräftelse. Skärmen rensas och hela textytan återställs som med <a href="#window">WINDOW</a> utan argument. Tar inga argument. Ingen ångrafunktion finns.</p>
+                <p>Removes the entire program and all variables, arrays and user-defined functions without confirmation. The screen is cleared and the full text area is restored, as with <a href="#window">WINDOW</a> without an argument. Takes no arguments. There is no undo function.</p>
             </article>
-            <h3>Direkt körning</h3>
-            <p>Övrig text utan radnummer skickas till BASIC-tolken. Ett fristående uttryck skrivs inte automatiskt ut: använd <code>PRINT 2+3</code>. Text som börjar med siffror behandlas normalt som en programrad.</p>
+            <h3>Direct execution</h3>
+            <p>Other text without a line number is sent to the BASIC interpreter. A standalone expression is not printed automatically: use <code>PRINT 2+3</code>. Text beginning with digits is normally treated as a program line.</p>
         </section>
         <section id="appcommands">
-            <h2>4. Applikationskommandon med !</h2>
-            <p>Skriv kommandona i terminalen utan radnummer och avsluta med Enter. Med <code>!HQ-RENDER</code> kan du ändra renderingsläge mellan hög kvalitet och snabbare rendering.</p>
-            <p>Skriv <code>!101</code> för att visa alla spel från boken <strong>101 BASIC Computer Games</strong> från 1974. Ladda ett spel genom att skriva följande, där <code>namn</code> är spelets namn i listan:</p>
-            <pre><code>!load101 namn</code></pre>
+            <h2>4. Application commands with !</h2>
+            <p>Type the commands in the terminal without a line number and press Enter. Use <code>!HQ-RENDER</code> to switch rendering mode between high quality and faster rendering.</p>
+            <p>Type <code>!101</code> to display all games from the 1974 book <strong>101 BASIC Computer Games</strong>. Load a game by typing the following, where <code>name</code> is the game's name in the list:</p>
+            <pre><code>!LOAD101 name</code></pre>
             <table>
-                <thead><tr><th>Syntax</th><th>Funktion</th><th>Alternativ</th></tr></thead>
+                <thead><tr><th>Syntax</th><th>Function</th><th>Alternative</th></tr></thead>
                 <tbody>
-                    <tr><td><code>!FULLSCREEN</code></td><td>Växla helskärm.</td><td>F11 eller View → Fullscreen.</td></tr>
-                    <tr><td><code>!FULLSCREEN ON</code> / <code>!FULLSCREEN OFF</code></td><td>Slå på/av helskärm.</td><td>View → Fullscreen.</td></tr>
-                    <tr><td><code>!LOG</code></td><td>Växla diagnostik.</td><td>View → Debug output.</td></tr>
-                    <tr><td><code>!LOG ON</code> / <code>!LOG OFF</code></td><td>Slå på/av diagnostik.</td><td>View → Debug output.</td></tr>
-                    <tr><td><code>!RES</code></td><td>Växla 80 → 60 → 40 → 20 → 80 kolumner; 25 rader.</td><td>View → Resolution.</td></tr>
-                    <tr><td><code>!RES 1</code>, <code>!RES 2</code>, <code>!RES 3</code>, <code>!RES 4</code></td><td>Välj 80, 60, 40 respektive 20 kolumner.</td><td>View → Resolution eller Tools → Options.</td></tr>
-                    <tr><td><code>!HQ-RENDER</code></td><td>Växla mellan hög renderingskvalitet och snabbare rendering. Ändrar inte beräkningar.</td><td>View → High quality rendering.</td></tr>
-                    <tr><td><code>!HQ-RENDER ON</code> / <code>!HQ-RENDER OFF</code></td><td>Slå på/av hög renderingskvalitet.</td><td>View → High quality rendering eller Tools → Options.</td></tr>
-                    <tr><td><code>!LIST</code></td><td>Lista hela programmet, utan intervall.</td><td>LIST.</td></tr>
-                    <tr><td><code>!101</code></td><td>Visa alla spel från boken <strong>101 BASIC Computer Games</strong> från 1974.</td><td>—</td></tr>
-                    <tr><td><code>!load101 namn</code></td><td>Ladda spelet med angivet namn från listan som visas med <code>!101</code>.</td><td>File → Open from 101 BASIC Computer Games...</td></tr>
-                    <tr><td><code>!QUIT</code></td><td>Avsluta utan bekräftelse.</td><td>File → Exit.</td></tr>
+                    <tr><td><code>!FULLSCREEN</code></td><td>Toggle fullscreen.</td><td>F11 or View → Fullscreen.</td></tr>
+                    <tr><td><code>!FULLSCREEN ON</code> / <code>!FULLSCREEN OFF</code></td><td>Turn fullscreen on/off.</td><td>View → Fullscreen.</td></tr>
+                    <tr><td><code>!LOG</code></td><td>Toggle diagnostics.</td><td>View → Debug output.</td></tr>
+                    <tr><td><code>!LOG ON</code> / <code>!LOG OFF</code></td><td>Turn diagnostics on/off.</td><td>View → Debug output.</td></tr>
+                    <tr><td><code>!RES</code></td><td>Cycle through 80 → 60 → 40 → 20 → 80 columns; 25 rows.</td><td>View → Resolution.</td></tr>
+                    <tr><td><code>!RES 1</code>, <code>!RES 2</code>, <code>!RES 3</code>, <code>!RES 4</code></td><td>Select 80, 60, 40 or 20 columns, respectively.</td><td>View → Resolution or Tools → Options.</td></tr>
+                    <tr><td><code>!HQ-RENDER</code></td><td>Switch between high rendering quality and faster rendering. Does not affect calculations.</td><td>View → High quality rendering.</td></tr>
+                    <tr><td><code>!HQ-RENDER ON</code> / <code>!HQ-RENDER OFF</code></td><td>Turn high rendering quality on/off.</td><td>View → High quality rendering or Tools → Options.</td></tr>
+                    <tr><td><code>!LIST</code></td><td>List the entire program, without a range.</td><td>LIST.</td></tr>
+                    <tr><td><code>!101</code></td><td>Display all games from the 1974 book <strong>101 BASIC Computer Games</strong>.</td><td>—</td></tr>
+                    <tr><td><code>!LOAD101 name</code></td><td>Load the game with the specified name from the list displayed by <code>!101</code>.</td><td>File → Open from 101 BASIC Computer Games...</td></tr>
+                    <tr><td><code>!QUIT</code></td><td>Quit without confirmation.</td><td>File → Exit.</td></tr>
                 </tbody>
             </table>
-            <p>Parsern accepterar ON, YES, TRUE eller 1 som på och OFF, NO, FALSE eller 0 som av för FULLSCREEN, LOG och HQ-RENDER. !-kommandona är inte BASIC-satser.</p>
+            <p>The parser accepts ON, YES, TRUE or 1 for on and OFF, NO, FALSE or 0 for off for FULLSCREEN, LOG and HQ-RENDER. ! commands are not BASIC statements.</p>
         </section>
         <section id="interface">
-            <h2>5. Menyer, skärm och tangentbord</h2>
+            <h2>5. Menus, screen and keyboard</h2>
             <table>
-                <thead><tr><th>Meny</th><th>Funktion</th></tr></thead>
+                <thead><tr><th>Menu</th><th>Function</th></tr></thead>
                 <tbody>
-                    <tr><td>File → Open from 101 BASIC Computer Games...</td><td>Läs källfil till programminnet. Kör inte automatiskt.</td></tr>
-                    <tr><td>File → Exit</td><td>Stäng ABL efter bekräftelse. Programminnet sparas inte.</td></tr>
-                    <tr><td>View → Fullscreen</td><td>Växla till eller från helskärmsläge. Meny, verktygsrad och statusrad döljs i helskärmsläge. F11 växlar tillbaka.</td></tr>
-                    <tr><td>View → Debug output</td><td>Visa/dölj diagnostik över terminalen. Kan skymma utskriften. Ingen stegvis debugger.</td></tr>
-                    <tr><td>View → Resolution</td><td>80×25 (640×200 pixlar), 60×25 (480×200), 40×25 (320×200) eller 20×25 (160×200). Val via denna meny sparas som inställning och ritar om startskärmen.</td></tr>
-                    <tr><td>View → High quality rendering</td><td>Växla renderingskvalitet/hastighet. Ändrar inte beräkningar. Inställningen sparas vid avslutning.</td></tr>
-                    <tr><td>Program → Run</td><td>Samma som RUN. F5 eller körknappen i verktygsraden.</td></tr>
-                    <tr><td>Tools → Options...</td><td>Upplösning och renderingskvalitet. OK tillämpar; Cancel avbryter. Options skriver inte sparad upplösning; använd View → Resolution för val som ska gälla nästa start.</td></tr>
-                    <tr><td>Help → Online help...</td><td>Öppnar publicerad hjälp i standardwebbläsaren. Den lokala filen publiceras inte automatiskt vid ändring.</td></tr>
-                    <tr><td>Help → Version history...</td><td>Öppnar projektets README på GitHub.</td></tr>
-                    <tr><td>Help → About...</td><td>Programnamn, version och upphovspersoner.</td></tr>
+                    <tr><td>File → Open from 101 BASIC Computer Games...</td><td>Load a source file into program memory. Does not run it automatically.</td></tr>
+                    <tr><td>File → Exit</td><td>Close ABL after confirmation. Program memory is not saved.</td></tr>
+                    <tr><td>View → Fullscreen</td><td>Switch to or from fullscreen mode. The menu, toolbar and status bar are hidden in fullscreen mode. F11 switches back.</td></tr>
+                    <tr><td>View → Debug output</td><td>Show/hide diagnostics over the terminal. May obscure output. No step-by-step debugger.</td></tr>
+                    <tr><td>View → Resolution</td><td>80×25 (640×200 pixels), 60×25 (480×200), 40×25 (320×200) or 20×25 (160×200). Selections through this menu are saved as a setting and redraw the startup screen.</td></tr>
+                    <tr><td>View → High quality rendering</td><td>Toggle rendering quality/speed. Does not affect calculations. The setting is saved on exit.</td></tr>
+                    <tr><td>Program → Run</td><td>Same as RUN. F5 or the run button on the toolbar.</td></tr>
+                    <tr><td>Tools → Options...</td><td>Resolution and rendering quality. OK applies; Cancel discards. Options does not update the saved resolution; use View → Resolution for a selection that should apply at the next startup.</td></tr>
+                    <tr><td>Help → Online help...</td><td>Opens the published help in the default browser. Changes to the local file are not published automatically.</td></tr>
+                    <tr><td>Help → Version history...</td><td>Opens the project's README on GitHub.</td></tr>
+                    <tr><td>Help → About...</td><td>Application name, version and authors.</td></tr>
                 </tbody>
             </table>
-            <p>Verktygsraden har knappar för körning, diagnostik och inställningar. Statusraden visar markörposition och senaste användaråtgärd. Standardinställningen är 60×25 tecken. Större fönster och helskärm ger inte fler logiska rader.</p>
-            <h3>Tangentbord</h3>
+            <p>The toolbar has buttons for running, diagnostics and settings. The status bar shows the cursor position and the most recent user action. The default setting is 60×25 characters. Larger windows and fullscreen do not provide more logical rows.</p>
+            <h3>Keyboard</h3>
             <table>
-                <thead><tr><th>Tangent</th><th>Beteende</th></tr></thead>
+                <thead><tr><th>Key</th><th>Behavior</th></tr></thead>
                 <tbody>
-                    <tr><td>Enter</td><td>Slutför den logiska raden: lagrar/raderar programrad, kör direktkommando eller lämnar INPUT-svar. Automatiskt radbruten text kan omfatta flera skärmrader.</td></tr>
-                    <tr><td>Shift+Enter</td><td>Flyttar vidare utan att lagra programrad eller skicka direktkommando. Under INPUT slutförs däremot svaret.</td></tr>
-                    <tr><td>Pilar</td><td>Flyttar markören i synlig terminal. Under INPUT begränsas vänster/höger till inmatningsområdet; upp/ned är avstängda.</td></tr>
-                    <tr><td>Home / End</td><td>Home går till skärmradens början eller INPUT-fältets början på första raden. End går till sista kolumnen, inte sista texttecknet.</td></tr>
-                    <tr><td>Page Up / Page Down</td><td>Markör till översta/nedersta redigerbara skärmraden, inte bläddring i historik. Avstängda under INPUT.</td></tr>
-                    <tr><td>Insert</td><td>Infogar en tom teckenplats på skärmraden och skjuter tecken åt höger. Växlar inte skrivläge.</td></tr>
-                    <tr><td>Delete / Backspace</td><td>Tar bort vid/före markören och skjuter ihop skärmradens text. Backspace går inte till föregående rad vid vänstergränsen.</td></tr>
-                    <tr><td>Ctrl+C</td><td>Avbryter körning och INPUT. Är inte kopiering. Återgår till Ready; CONT finns inte.</td></tr>
-                    <tr><td>F5</td><td>Kör programmet.</td></tr>
-                    <tr><td>F11</td><td>Växlar till eller från helskärmsläge.</td></tr>
+                    <tr><td>Enter</td><td>Completes the logical line: stores/deletes a program line, executes a direct command or submits an INPUT response. Automatically wrapped text may span several screen rows.</td></tr>
+                    <tr><td>Shift+Enter</td><td>Moves on without storing a program line or submitting a direct command. During INPUT, however, it completes the response.</td></tr>
+                    <tr><td>Arrow keys</td><td>Move the cursor within the visible terminal. During INPUT, left/right are restricted to the input area; up/down are disabled.</td></tr>
+                    <tr><td>Home / End</td><td>Home moves to the beginning of the screen row or to the beginning of the INPUT field on its first row. End moves to the last column, not the last text character.</td></tr>
+                    <tr><td>Page Up / Page Down</td><td>Move the cursor to the top/bottom editable screen row; do not scroll through history. Disabled during INPUT.</td></tr>
+                    <tr><td>Insert</td><td>Inserts an empty character position on the screen row and shifts characters to the right. Does not toggle typing mode.</td></tr>
+                    <tr><td>Delete / Backspace</td><td>Deletes at/before the cursor and closes the gap in the screen row's text. Backspace does not move to the previous row at the left edge.</td></tr>
+                    <tr><td>Ctrl+C</td><td>Interrupts execution and INPUT. Does not copy. Returns to Ready; CONT is unavailable.</td></tr>
+                    <tr><td>F5</td><td>Runs the program.</td></tr>
+                    <tr><td>F11</td><td>Switches to or from fullscreen mode.</td></tr>
                 </tbody>
             </table>
-            <p>Terminalbibliotekets teckenkodning begränsar tecknen; godtycklig Unicode stöds inte. Text efter nederkanten rullar upp. Page Up hämtar inte utskrift som rullat bort. Utskrift radbryts vid vald kolumnbredd.</p>
+            <p>The terminal library's character encoding limits the available characters; arbitrary Unicode is not supported. Text beyond the bottom edge scrolls upward. Page Up does not retrieve output that has scrolled away. Output wraps at the selected column width.</p>
         </section>
         <section id="syntax">
-            <h2>6. Grundsyntax, variabler och typer</h2>
-            <pre><code>10 REM EXEMPEL
+            <h2>6. Basic syntax, variables and types</h2>
+            <pre><code>10 REM EXAMPLE
 20 A=5:PRINT A
 30 END</code></pre>
-            <p>En programrad har ett icke-negativt 32-bitars radnummer och minst en sats. Nummer behöver inte vara sammanhängande. Tomma fysiska rader tillåts i källfiler. Ensamt radnummer i terminalen raderar raden. Kolon separerar satser.</p>
-            <p>Nyckelord och variabler är skiftlägesoberoende. Mellanslag kan ofta utelämnas, som i FORI=1TO3, men tydliga mellanslag rekommenderas. Parsern känner igen nyckelord och funktioner som prefix. Undvik namn som börjar med PRINT, IF, FOR, FN, INT, ABS eller andra reserverade ord.</p>
-            <h3>Namn och typer</h3>
+            <p>A program line has a non-negative 32-bit line number and at least one statement. Numbers need not be consecutive. Blank physical lines are allowed in source files. A line number on its own in the terminal deletes the line. Colons separate statements.</p>
+            <p>Keywords and variables are case-insensitive. Spaces can often be omitted, as in FORI=1TO3, but clear spacing is recommended. The parser recognizes keywords and functions as prefixes. Avoid names beginning with PRINT, IF, FOR, FN, INT, ABS or other reserved words.</p>
+            <h3>Names and types</h3>
             <table>
-                <thead><tr><th>Exempel</th><th>Typ</th><th>Initialvärde</th></tr></thead>
+                <thead><tr><th>Example</th><th>Type</th><th>Initial value</th></tr></thead>
                 <tbody>
-                    <tr><td><code>A</code>, <code>X1</code>, <code>POANG</code></td><td>Numerisk utan suffix: dubbelprecision.</td><td>0.</td></tr>
-                    <tr><td><code>A%</code>, <code>ANTAL%</code></td><td>32-bitars signerat heltal, −2147483648 till 2147483647.</td><td>0.</td></tr>
-                    <tr><td><code>A$</code>, <code>NAMN$</code></td><td>Sträng.</td><td>Tom sträng.</td></tr>
+                    <tr><td><code>A</code>, <code>X1</code>, <code>SCORE</code></td><td>Numeric without a suffix: double precision.</td><td>0.</td></tr>
+                    <tr><td><code>A%</code>, <code>COUNT%</code></td><td>32-bit signed integer, −2147483648 to 2147483647.</td><td>0.</td></tr>
+                    <tr><td><code>A$</code>, <code>NAME$</code></td><td>String.</td><td>Empty string.</td></tr>
                 </tbody>
             </table>
-            <p>Namn börjar med A–Z/a–z och fortsätter med bokstäver eller siffror. % eller $ får avsluta namnet. Understreck och svenska bokstäver ingår inte i namngrammatiken. Hela namnet är betydelsebärande. A, A% och A$ är olika variabler. Deklaration krävs inte; aldrig tilldelade variabler ger initialvärdet.</p>
-            <p>Tilldelning till % kapar decimaldelen mot noll och kontrollerar heltalsområdet. Numeriska variabler kan inte tilldelas strängar, eller tvärtom. <code>A="5"</code> och <code>A$=5</code> ger typfel.</p>
-            <h3>Konstanter</h3>
-            <p>Tal använder punkt: <code>12</code>, <code>3.5</code>, <code>.5</code> och <code>2.</code>. Exponentnotation stöds: <code>1E3</code>, <code>2.5E-2</code>. Inledande plus/minus är operatorer. Hexadecimala och oktala format stöds inte. Utskrift använder punkt.</p>
-            <p>Strängar omsluts av dubbla citattecken: <code>"HEJ"</code>. Tom sträng är <code>""</code>. Inga escapesekvenser eller dubblerade citattecken för inbäddade citattecken stöds. Kolon/komma inne i strängar är vanliga tecken.</p>
-            <h3>Arrayer</h3>
-            <p><code>A(3)</code> är ett arrayelement; A är en separat skalär. Flera index samt suffixen % och $ stöds. Index får vara numeriska uttryck. DIM-gränser är inkluderande från 0. Se DIM för automatisk skapning.</p>
+            <p>Names start with A–Z/a–z and continue with letters or digits. % or $ may end the name. Underscores and Swedish letters are not part of the naming grammar. The entire name is significant. A, A% and A$ are different variables. Declarations are not required; variables that have never been assigned return their initial value.</p>
+            <p>Assignment to % truncates the fractional part toward zero and checks the integer range. Numeric variables cannot be assigned strings, or vice versa. <code>A="5"</code> and <code>A$=5</code> produce type errors.</p>
+            <h3>Constants</h3>
+            <p>Numbers use a decimal point: <code>12</code>, <code>3.5</code>, <code>.5</code> and <code>2.</code>. Exponent notation is supported: <code>1E3</code>, <code>2.5E-2</code>. Leading plus/minus signs are operators. Hexadecimal and octal formats are not supported. Output uses a decimal point.</p>
+            <p>Strings are enclosed in double quotes: <code>"HELLO"</code>. An empty string is <code>""</code>. Neither escape sequences nor doubled quotes for embedded quotation marks are supported. Colons/commas inside strings are ordinary characters.</p>
+            <h3>Arrays</h3>
+            <p><code>A(3)</code> is an array element; A is a separate scalar. Multiple subscripts and the suffixes % and $ are supported. Subscripts may be numeric expressions. DIM bounds are inclusive, starting at 0. See DIM for automatic creation.</p>
         </section>
         <section id="operators">
-            <h2>7. Uttryck och operatorer</h2>
-            <p>Uttryck används i tilldelning, PRINT, villkor, slinggränser, index och funktionsargument.</p>
+            <h2>7. Expressions and operators</h2>
+            <p>Expressions are used in assignment, PRINT, conditions, loop bounds, subscripts and function arguments.</p>
             <table>
-                <thead><tr><th>Prioritet, högst först</th><th>Operator</th><th>Betydelse</th></tr></thead>
+                <thead><tr><th>Precedence, highest first</th><th>Operator</th><th>Meaning</th></tr></thead>
                 <tbody>
-                    <tr><td>1</td><td><code>(...)</code>, funktioner</td><td>Deluttryck.</td></tr>
-                    <tr><td>2</td><td><code>^</code></td><td>Potens, grupperas åt höger: 2^3^2 = 2^(3^2) = 512.</td></tr>
-                    <tr><td>3</td><td>Unärt <code>+</code>, <code>-</code></td><td>Tecken. -2^2 = −4; (-2)^2 = 4. 2^-2 tillåts.</td></tr>
-                    <tr><td>4</td><td><code>*</code>, <code>/</code></td><td>Multiplikation/division, vänster till höger. Division med 0 ger fel.</td></tr>
-                    <tr><td>5</td><td><code>+</code>, <code>-</code></td><td>Addition/subtraktion, vänster till höger. + även strängsammanfogning.</td></tr>
-                    <tr><td>6</td><td><code>=</code>, <code>&lt;&gt;</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code></td><td>Jämförelser. Sant = −1, falskt = 0. != motsvarar &lt;&gt;.</td></tr>
+                    <tr><td>1</td><td><code>(...)</code>, functions</td><td>Subexpressions.</td></tr>
+                    <tr><td>2</td><td><code>^</code></td><td>Exponentiation, grouped from the right: 2^3^2 = 2^(3^2) = 512.</td></tr>
+                    <tr><td>3</td><td>Unary <code>+</code>, <code>-</code></td><td>Sign. -2^2 = −4; (-2)^2 = 4. 2^-2 is allowed.</td></tr>
+                    <tr><td>4</td><td><code>*</code>, <code>/</code></td><td>Multiplication/division, left to right. Division by 0 produces an error.</td></tr>
+                    <tr><td>5</td><td><code>+</code>, <code>-</code></td><td>Addition/subtraction, left to right. + also concatenates strings.</td></tr>
+                    <tr><td>6</td><td><code>=</code>, <code>&lt;&gt;</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code></td><td>Comparisons. True = −1, false = 0. != is equivalent to &lt;&gt;.</td></tr>
                 </tbody>
             </table>
-            <p>Numerisk likhet använder toleransen 0,00001: A=B är sant om absolutdifferensen är mindre, A&lt;&gt;B om den är större. Precis vid toleransgränsen är båda falska. Övriga jämförelser använder vanliga numeriska gränser.</p>
-            <p>Strängar jämförs lexikografiskt enligt ordinal jämförelse utan skillnad mellan stora/små bokstäver. <code>"hej"="HEJ"</code> och <code>"10"&lt;"2"</code> är sanna. Sträng jämförd med tal ger typfel.</p>
-            <p class="note"><strong>Avvikelse i strängaddition:</strong> + sammanfogar strängar och tal med text, men den aktuella implementationen vänder operandordningen. <code>"A"+"B"</code> ger <code>"BA"</code>; <code>"X"+2</code> ger <code>"2X"</code>. Använd PRINT-uttryck med semikolon när ordningen är viktig. Numerisk addition påverkas inte.</p>
-            <p>AND, OR, NOT, MOD, heltalsdivision och bitoperatorer stöds inte. Skriv separata IF-rader för sammansatta villkor. <code>1&lt;A&lt;10</code> är inte ett intervalltest: senare jämförelser använder föregående jämförelses numeriska resultat.</p>
+            <p>Numeric equality uses a tolerance of 0.00001: A=B is true if the absolute difference is smaller, A&lt;&gt;B if it is larger. At exactly the tolerance boundary, both are false. Other comparisons use ordinary numeric bounds.</p>
+            <p>Strings are compared lexicographically using a case-insensitive ordinal comparison. <code>"hello"="HELLO"</code> and <code>"10"&lt;"2"</code> are true. Comparing a string with a number produces a type error.</p>
+            <p class="note"><strong>String addition deviation:</strong> + concatenates strings and numbers with text, but the current implementation reverses the operand order. <code>"A"+"B"</code> produces <code>"BA"</code>; <code>"X"+2</code> produces <code>"2X"</code>. Use PRINT expressions separated by semicolons when order matters. Numeric addition is unaffected.</p>
+            <p>AND, OR, NOT, MOD, integer division and bitwise operators are not supported. Use separate IF lines for compound conditions. <code>1&lt;A&lt;10</code> is not a range test: subsequent comparisons use the numeric result of the previous comparison.</p>
         </section>
         <section id="statements">
-            <h2>8. Programsatsreferens</h2>
-            <p>Detta är alla implementerade programsatser. ON … GOTO och ON … GOSUB får endast användas i numrerade programrader; övriga satser fungerar även i direktläge med de begränsningar som anges i respektive avsnitt. Hakparenteser i syntaxen betyder valfri del; skriv inte hakparenteserna.</p>
+            <h2>8. Statement reference</h2>
+            <p>These are all implemented program statements. ON … GOTO and ON … GOSUB may only be used in numbered program lines; other statements also work in direct mode with the limitations stated in their respective sections. Square brackets in the syntax indicate an optional part; do not type the brackets.</p>
             <article id="let">
-                <h3>LET – tilldelning</h3>
-                <pre><code>[LET] variabel = uttryck
-[LET] array(index[,index ...]) = uttryck</code></pre>
-                <p>Beräknar högerledet och lagrar värdet. LET är valfritt. Suffix avgör mottagarens typ. Heltalstilldelning kapar mot noll.</p>
+                <h3>LET – assignment</h3>
+                <pre><code>[LET] variable = expression
+[LET] array(index[,index ...]) = expression</code></pre>
+                <p>Evaluates the right-hand side and stores the value. LET is optional. The suffix determines the target's type. Integer assignment truncates toward zero.</p>
                 <pre><code>10 LET A=3.75
 20 B%=-3.75
-30 NAMN$="ADA"
-40 PRINT A;B%;NAMN$</code></pre>
-                <p>B% blir −3. Tal till sträng eller sträng till tal ger typfel. Arrayindex måste passa gränser och dimensioner.</p>
+30 NAME$="ADA"
+40 PRINT A;B%;NAME$</code></pre>
+                <p>B% becomes −3. Assigning a number to a string or a string to a number produces a type error. Array subscripts must match the bounds and dimensions.</p>
             </article>
             <article id="print">
-                <h3>PRINT – utskrift</h3>
+                <h3>PRINT – output</h3>
                 <pre><code>PRINT
-PRINT uttryck[;uttryck ...]
-PRINT uttryck[,uttryck ...]</code></pre>
-                <p>Utan argument skrivs en tom rad. Strängar skrivs utan citattecken. Tal får ett inledande blanktecken om de inte är negativa och ett avslutande blanktecken. PRINT 4;2 ger därför <code> 4 2 </code>.</p>
+PRINT expression[;expression ...]
+PRINT expression[,expression ...]</code></pre>
+                <p>Without arguments, prints a blank line. Strings are printed without quotes. Numbers receive a leading space unless negative, and a trailing space. PRINT 4;2 therefore produces <code> 4 2 </code>.</p>
                 <table>
-                    <thead><tr><th>Avskiljare</th><th>Beteende</th></tr></thead>
+                    <thead><tr><th>Separator</th><th>Behavior</th></tr></thead>
                     <tbody>
-                        <tr><td><code>;</code></td><td>Ingen extra utfyllnad; talens egna blanktecken består.</td></tr>
-                        <tr><td><code>,</code></td><td>Nästa 14-teckens zon: enbaserade kolumner 15, 29, 43 osv. Vid zongräns flyttas utskriften till nästa zon.</td></tr>
-                        <tr><td>Avslutande <code>;</code> eller <code>,</code></td><td>Ingen slutlig radbrytning. Nästa PRINT i samma körning/direktkommando fortsätter där.</td></tr>
+                        <tr><td><code>;</code></td><td>No extra padding; the numbers' own spaces remain.</td></tr>
+                        <tr><td><code>,</code></td><td>Next 14-character zone: one-based columns 15, 29, 43, etc. At a zone boundary, output moves to the next zone.</td></tr>
+                        <tr><td>Trailing <code>;</code> or <code>,</code></td><td>No final line break. The next PRINT in the same run/direct command continues there.</td></tr>
                     </tbody>
                 </table>
-                <pre><code>10 PRINT "NAMN";TAB(20);"POANG"
+                <pre><code>10 PRINT "NAME";TAB(20);"SCORE"
 20 PRINT "ADA";TAB(20);42
-30 PRINT "DEL 1 ";
-40 PRINT "DEL 2"</code></pre>
-                <p>Avskiljarna kan blandas. TAB ger absolut kolumn. För långa rader radbryts. Ett separat direktkommando får en ny terminaladapter; använd inte avslutande semikolon för fortsatt utskrift över flera separata Ready-kommandon.</p>
+30 PRINT "PART 1 ";
+40 PRINT "PART 2"</code></pre>
+                <p>Separators can be mixed. TAB specifies an absolute column. Long lines wrap. A separate direct command receives a new terminal adapter; do not use trailing semicolons to continue output across several separate Ready commands.</p>
             </article>
             <article id="input">
-                <h3>INPUT – läs värden</h3>
-                <pre><code>INPUT variabel[,variabel ...]
-INPUT "ledtext";variabel[,variabel ...]</code></pre>
-                <p>Skriver valfri ledtext, därefter <code>? </code>, och väntar på svar. Ledtexten måste vara en strängkonstant följd av semikolon. Typen bestäms av mottagaren. Ogiltiga numeriska svar ger <code>?Redo from start</code> och ny begäran om numeriskt värde. % kapar decimaldelen mot noll.</p>
-                <pre><code>10 INPUT "VAD HETER DU";NAMN$
-20 INPUT "ANGE TVAA TAL";A,B
-30 PRINT NAMN$;": ";A+B</code></pre>
-                <p><strong>Varje variabel läses som ett separat svar med Enter.</strong> Svara med A och Enter, sedan B och Enter. Skriv inte en kommaseparerad lista. Ledtext och frågetecken skrivs en gång av satsen. Även arrayelement kan vara mottagare, exempelvis INPUT A(2).</p>
-                <p>Strängsvar kräver inga citattecken; skrivna citattecken blir del av texten. Terminalen tar bort inledande/avslutande blanksteg. Använd punkt som decimaltecken; komma är inte en svensk decimalavskiljare här. Numerisk inmatning använder kulturinvariant .NET-konvertering och kan acceptera exponentnotation. Ctrl+C avbryter utan att tilldela det avbrutna svaret. Tidigare tilldelningar i samma INPUT-lista återställs inte.</p>
+                <h3>INPUT – read values</h3>
+                <pre><code>INPUT variable[,variable ...]
+INPUT "prompt";variable[,variable ...]</code></pre>
+                <p>Prints an optional prompt, followed by <code>? </code>, and waits for a response. The prompt must be a string constant followed by a semicolon. The target determines the type. Invalid numeric responses produce <code>?Redo from start</code> and a new request for a numeric value. % truncates the fractional part toward zero.</p>
+                <pre><code>10 INPUT "WHAT IS YOUR NAME";NAME$
+20 INPUT "ENTER TWO NUMBERS";A,B
+30 PRINT NAME$;": ";A+B</code></pre>
+                <p><strong>Each variable is read as a separate response followed by Enter.</strong> Enter A and press Enter, then B and Enter. Do not enter a comma-separated list. The statement prints the prompt and question mark once. Array elements may also be targets, for example INPUT A(2).</p>
+                <p>String responses do not require quotes; any quotes entered become part of the text. The terminal removes leading/trailing spaces. Use a decimal point; a comma is not treated as a Swedish decimal separator here. Numeric input uses culture-invariant .NET conversion and may accept exponent notation. Ctrl+C interrupts without assigning the interrupted response. Earlier assignments in the same INPUT list are not rolled back.</p>
             </article>
             <article id="if">
-                <h3>IF … THEN … ELSE – villkor</h3>
-                <pre><code>IF villkor THEN sats[:sats ...] [ELSE sats[:sats ...]]
-IF villkor THEN radnummer [ELSE radnummer]</code></pre>
-                <p>0 är falskt; andra numeriska värden är sanna. THEN-grenen körs om sant, valfri ELSE-gren annars. Numeriskt uttryck som gren motsvarar GOTO till beräknat radnummer.</p>
+                <h3>IF … THEN … ELSE – conditions</h3>
+                <pre><code>IF condition THEN statement[:statement ...] [ELSE statement[:statement ...]]
+IF condition THEN lineNumber [ELSE lineNumber]</code></pre>
+                <p>0 is false; other numeric values are true. The THEN branch runs if true, otherwise the optional ELSE branch runs. A numeric expression used as a branch is equivalent to GOTO with a calculated line number.</p>
                 <pre><code>10 INPUT A
-20 IF A&gt;0 THEN PRINT "POSITIVT" ELSE PRINT "NOLL ELLER NEGATIVT"
+20 IF A&gt;0 THEN PRINT "POSITIVE" ELSE PRINT "ZERO OR NEGATIVE"
 30 IF A=0 THEN 100
-40 PRINT "INTE NOLL":END
-100 PRINT "NOLL":END</code></pre>
-                <p>Grenarna gäller resten av aktuell BASIC-rad. I <code>IF A THEN PRINT "JA":PRINT "OCKSAA"</code> körs båda PRINT bara när A är sant. Lägg satser som alltid ska köras på nästa rad. Nästlade IF stöds inte tillförlitligt; använd separata rader och GOTO. Skriv LET uttryckligen i IF-grenar för tilldelning till %, $ och arrayelement för att undvika begränsningar i parserns identifiering av grenformen.</p>
+40 PRINT "NONZERO":END
+100 PRINT "ZERO":END</code></pre>
+                <p>Branches cover the rest of the current BASIC line. In <code>IF A THEN PRINT "YES":PRINT "ALSO"</code>, both PRINT statements run only when A is true. Put statements that should always run on the next line. Nested IF statements are not reliably supported; use separate lines and GOTO. Write LET explicitly in IF branches when assigning to %, $ and array elements to avoid limitations in the parser's recognition of the branch form.</p>
             </article>
             <article id="goto">
-                <h3>GOTO och GO TO – hopp</h3>
-                <pre><code>GOTO uttryck
-GO TO uttryck</code></pre>
-                <p>Fortsätter från angiven programrad. Uttrycket konverteras till heltal genom kapning av decimaldelen. Raden måste finnas, annars ges Undefined line. Hopp in i FOR-kropp utan aktiv slinga kan ge NEXT-fel. GOTO i direktläge kan inte hoppa in i programminnet; starta med RUN.</p>
+                <h3>GOTO and GO TO – jump</h3>
+                <pre><code>GOTO expression
+GO TO expression</code></pre>
+                <p>Continues from the specified program line. The expression is converted to an integer by truncating the fractional part. The line must exist; otherwise Undefined line is reported. Jumping into a FOR body without an active loop may produce a NEXT error. GOTO in direct mode cannot jump into program memory; start with RUN.</p>
                 <pre><code>10 A=A+1
 20 PRINT A
 30 IF A&lt;5 THEN 10
 40 END</code></pre>
             </article>
             <article id="gosub">
-                <h3>GOSUB och GO SUB – anropa subrutin</h3>
-                <pre><code>GOSUB uttryck
-GO SUB uttryck</code></pre>
-                <p>Hoppar till angiven programrad och sparar positionen för nästa sats på anropsstacken. Till skillnad från GOTO går det därför att återvända med <a href="#return">RETURN</a>. Uttrycket ska vara numeriskt; decimaldelen kapas till ett heltalsradnummer. Målet måste vara mellan 0 och 2147483647 och raden måste finnas.</p>
-                <p>Anrop kan nästlas, även rekursivt. Varje RETURN återvänder från det senast utförda anropet. Variabler är gemensamma med det anropande programmet. GOSUB i direktläge kan inte anropa rader i det lagrade programmet; starta med RUN.</p>
-                <pre><code>10 GOSUB 100:PRINT "TILLBAKA":END
-100 PRINT "SUBRUTIN"
+                <h3>GOSUB and GO SUB – call a subroutine</h3>
+                <pre><code>GOSUB expression
+GO SUB expression</code></pre>
+                <p>Jumps to the specified program line and saves the next statement's position on the call stack. Unlike GOTO, this allows a return with <a href="#return">RETURN</a>. The expression must be numeric; the fractional part is truncated to an integer line number. The target must be between 0 and 2147483647, and the line must exist.</p>
+                <p>Calls can be nested, including recursively. Each RETURN returns from the most recent call. Variables are shared with the calling program. GOSUB in direct mode cannot call lines in the stored program; start with RUN.</p>
+                <pre><code>10 GOSUB 100:PRINT "BACK":END
+100 PRINT "SUBROUTINE"
 110 GO SUB 200
 120 RETURN
-200 PRINT "NAESTLAT ANROP":RETURN</code></pre>
-                <p>Skriver SUBRUTIN, NAESTLAT ANROP och TILLBAKA i den ordningen. END på rad 10 hindrar huvudprogrammet från att fortsätta rakt in i subrutinen.</p>
+200 PRINT "NESTED CALL":RETURN</code></pre>
+                <p>Prints SUBROUTINE, NESTED CALL and BACK in that order. END on line 10 prevents the main program from continuing straight into the subroutine.</p>
             </article>
             <article id="return">
-                <h3>RETURN – återvänd från subrutin</h3>
+                <h3>RETURN – return from a subroutine</h3>
                 <pre><code>RETURN</code></pre>
-                <p>Tar bort det senaste GOSUB-anropet från anropsstacken och fortsätter vid satsen direkt efter anropet. Satsen kan ligga efter kolon på samma rad eller på nästa programrad. Detta gäller även anrop via ON … GOSUB och stavningen GO SUB.</p>
-                <p>RETURN tar inga argument. Om inget aktivt anrop finns ges <code>RETURN without GOSUB.</code>. RETURN avslutar en subrutin; använd END eller STOP för att avsluta hela programmet.</p>
+                <p>Removes the most recent GOSUB call from the call stack and continues at the statement immediately after the call. That statement may follow a colon on the same line or be on the next program line. This also applies to calls through ON … GOSUB and the GO SUB spelling.</p>
+                <p>RETURN takes no arguments. If there is no active call, <code>RETURN without GOSUB.</code> is reported. RETURN ends a subroutine; use END or STOP to end the entire program.</p>
             </article>
             <article id="on-goto">
-                <h3>ON … GOTO – välj hoppmål</h3>
-                <pre><code>ON uttryck GOTO radnummer[,radnummer ...]
-ON uttryck GO TO radnummer[,radnummer ...]</code></pre>
-                <p>Får endast användas i numrerade programrader. Uttrycket kan innehålla numeriska konstanter, variabler, arrayelement och funktionsanrop. Värdet 1 väljer första raden, 2 andra raden och så vidare. Decimaler avrundas nedåt. Värdet 0 eller ett index större än listans längd fortsätter med nästa sats, även efter kolon på samma rad.</p>
-                <p>Listan måste innehålla minst ett radnummer. Målen ska vara icke-negativa heltalskonstanter, inte variabler eller beräkningar. Endast det valda radnumret kontrolleras vid hoppet: saknas raden ges <code>Undefined line n.</code>. Strängvärden ger typfel och negativa eller icke ändliga index ger <code>ON GOTO index is out of range.</code>.</p>
+                <h3>ON … GOTO – select a jump target</h3>
+                <pre><code>ON expression GOTO lineNumber[,lineNumber ...]
+ON expression GO TO lineNumber[,lineNumber ...]</code></pre>
+                <p>May only be used in numbered program lines. The expression can contain numeric constants, variables, array elements and function calls. The value 1 selects the first line, 2 the second, and so on. Fractional values are rounded down. The value 0 or an index greater than the list's length continues with the next statement, including after a colon on the same line.</p>
+                <p>The list must contain at least one line number. Targets must be non-negative integer constants, not variables or calculations. Only the selected line number is checked when jumping: if the line is missing, <code>Undefined line n.</code> is reported. String values produce type errors, and negative or non-finite indices produce <code>ON GOTO index is out of range.</code>.</p>
                 <pre><code>10 X=2
 20 ON X GOTO 100,200,300
-30 PRINT "INGET HOPP":END
-100 PRINT "ETT":END
-200 PRINT "TVAA":END
-300 PRINT "TRE":END</code></pre>
-                <p>Exemplet skriver <code>TVAA</code>. Även <code>X=2.9</code> väljer rad 200. Byt till <code>X=0</code> eller <code>X=4</code> för att fortsätta på rad 30 och skriva <code>INGET HOPP</code>.</p>
-                <p>Indexet kan exempelvis vara <code>A+1</code>, <code>ABS(A)</code> eller <code>FNA(A)</code>. Uttrycket beräknas en gång när satsen utförs. Målraderna är fortfarande en fast lista.</p>
-                <pre><code>10 ON 0 GOTO 100,200:PRINT "FORTSAETTER"
+30 PRINT "NO JUMP":END
+100 PRINT "ONE":END
+200 PRINT "TWO":END
+300 PRINT "THREE":END</code></pre>
+                <p>The example prints <code>TWO</code>. <code>X=2.9</code> also selects line 200. Change to <code>X=0</code> or <code>X=4</code> to continue at line 30 and print <code>NO JUMP</code>.</p>
+                <p>The index could, for example, be <code>A+1</code>, <code>ABS(A)</code> or <code>FNA(A)</code>. The expression is evaluated once when the statement executes. The target lines remain a fixed list.</p>
+                <pre><code>10 ON 0 GOTO 100,200:PRINT "CONTINUING"
 20 END
-100 PRINT "ETT":END
-200 PRINT "TVAA":END</code></pre>
-                <p>Här sker inget hopp, så PRINT efter kolon körs. Om indexet i stället är 1 eller 2 sker hoppet direkt och PRINT på rad 10 hoppas över. Använd <a href="#on-gosub">ON … GOSUB</a> för ett anrop som kan återvända med RETURN.</p>
+100 PRINT "ONE":END
+200 PRINT "TWO":END</code></pre>
+                <p>No jump occurs here, so PRINT after the colon executes. If the index is instead 1 or 2, the jump occurs immediately and PRINT on line 10 is skipped. Use <a href="#on-gosub">ON … GOSUB</a> for a call that can return with RETURN.</p>
             </article>
             <article id="on-gosub">
-                <h3>ON … GOSUB – välj subrutin</h3>
-                <pre><code>ON uttryck GOSUB radnummer[,radnummer ...]
-ON uttryck GO SUB radnummer[,radnummer ...]</code></pre>
-                <p>Väljer mål enligt samma regler som <a href="#on-goto">ON … GOTO</a>: decimaldelen av ett positivt index kapas, 1 väljer första raden och 2 den andra. Index 0 eller ett positivt index utanför listan fortsätter till nästa sats utan att lägga något på anropsstacken. Negativa eller icke ändliga index ger <code>ON GOSUB index is out of range.</code>; strängar ger typfel.</p>
-                <p>Mållistan måste innehålla minst en icke-negativ heltalskonstant. Variabler och uttryck tillåts inte som mål i listan. Bara det valda målet behöver finnas i programmet. Vid ett valt hopp sparas returpositionen; RETURN fortsätter efter hela ON-satsen. ON … GOSUB kräver en numrerad programrad och kan inte användas i direktläge.</p>
+                <h3>ON … GOSUB – select a subroutine</h3>
+                <pre><code>ON expression GOSUB lineNumber[,lineNumber ...]
+ON expression GO SUB lineNumber[,lineNumber ...]</code></pre>
+                <p>Selects a target using the same rules as <a href="#on-goto">ON … GOTO</a>: the fractional part of a positive index is truncated, 1 selects the first line and 2 the second. Index 0 or a positive index outside the list continues to the next statement without pushing anything onto the call stack. Negative or non-finite indices produce <code>ON GOSUB index is out of range.</code>; strings produce type errors.</p>
+                <p>The target list must contain at least one non-negative integer constant. Variables and expressions are not allowed as targets in the list. Only the selected target needs to exist in the program. When a jump is selected, the return position is saved; RETURN continues after the entire ON statement. ON … GOSUB requires a numbered program line and cannot be used in direct mode.</p>
                 <pre><code>10 X=2
 20 ON X GO SUB 100,200
-30 PRINT "TILLBAKA":END
-100 PRINT "FOERSTA":RETURN
-200 PRINT "ANDRA":RETURN</code></pre>
-                <p>Skriver ANDRA och därefter TILLBAKA.</p>
+30 PRINT "BACK":END
+100 PRINT "FIRST":RETURN
+200 PRINT "SECOND":RETURN</code></pre>
+                <p>Prints SECOND followed by BACK.</p>
             </article>
             <article id="for">
-                <h3>FOR … TO … STEP och NEXT – räknarslingor</h3>
-                <pre><code>FOR variabel = start TO slut [STEP steg]
-  satser
-NEXT [variabel]
-NEXT variabel1,variabel2</code></pre>
-                <p>Variabeln måste vara numerisk skalär. Start, slut och steg beräknas en gång vid FOR. Standardsteg är 1; negativa och decimala steg tillåts. STEP 0 ger fel. Positivt steg kör medan räknaren ≤ slut, negativt medan räknaren ≥ slut. Start utanför intervallet hoppar över kroppen.</p>
+                <h3>FOR … TO … STEP and NEXT – counting loops</h3>
+                <pre><code>FOR variable = start TO end [STEP step]
+    statements
+NEXT [variable]
+NEXT variable1,variable2</code></pre>
+                <p>The variable must be a numeric scalar. Start, end and step are evaluated once at FOR. The default step is 1; negative and fractional steps are allowed. STEP 0 produces an error. A positive step runs while the counter ≤ end, a negative step while the counter ≥ end. A start outside the range skips the body.</p>
                 <pre><code>10 FOR I=1 TO 3
 20 FOR J=2 TO 0 STEP -1
 30 PRINT I;J
 40 NEXT J,I
 50 END</code></pre>
-                <p>NEXT ökar räknaren och upprepar om gränsen tillåter. Utan namn avses innersta slingan. En lista avslutar i angiven ordning, innerst först. FOR/NEXT måste vara rätt nästlade och matchas före körningen. Saknade eller felaktiga par ger fel.</p>
-                <p>Namnmatchningen för NEXT bevarar källkodens skiftläge; använd samma stavning och skiftläge i FOR och NEXT.</p>
-                <p>Ändrar kroppen räknaren används det nya värdet av nästa NEXT. Efter normal avslutning har räknaren passerat gränsen med ett steg. Flyttalssteg kan ge avrundningsskillnader. Slingräknaren lagras som flyttal även för namn med %; använd namn utan suffix för konsekvent slingbeteende.</p>
+                <p>NEXT increments the counter and repeats if the bound permits. Without a name, it refers to the innermost loop. A list ends loops in the specified order, innermost first. FOR/NEXT must be properly nested and are matched before execution. Missing or incorrect pairs produce errors.</p>
+                <p>Name matching for NEXT preserves the source code's case; use the same spelling and case in FOR and NEXT.</p>
+                <p>If the body changes the counter, the next NEXT uses the new value. After normal completion, the counter has passed the bound by one step. Floating-point steps may cause rounding differences. The loop counter is stored as a floating-point number even for names ending in %; use names without a suffix for consistent loop behavior.</p>
             </article>
             <article id="dim">
-                <h3>DIM – arrayer</h3>
+                <h3>DIM – arrays</h3>
                 <pre><code>DIM A(maxindex)
 DIM A(maxindex1,maxindex2,...),B$(maxindex),C%(maxindex)</code></pre>
-                <p>Index går från 0 till och med varje gräns. DIM A(10) ger 11 element; DIM B(2,3) ger 3×4. Initialvärde 0 eller tom sträng. Gränser/index får vara uttryck och konverteras till heltal genom kapning mot noll. Negativa gränser är ogiltiga. Storleken begränsas av minne och heltalsberäkningen av antalet element.</p>
-                <pre><code>10 DIM A(3),NAMN$(2)
+                <p>Subscripts run from 0 through each bound, inclusive. DIM A(10) gives 11 elements; DIM B(2,3) gives 3×4. The initial value is 0 or an empty string. Bounds/subscripts may be expressions and are converted to integers by truncation toward zero. Negative bounds are invalid. Size is limited by memory and the integer calculation of the element count.</p>
+                <pre><code>10 DIM A(3),NAME$(2)
 20 A(0)=10:A(3)=40
-30 NAMN$(1)="ADA"
-40 PRINT A(0);A(3);NAMN$(1)</code></pre>
-                <p>Ny DIM med samma arraynamn ersätter hela arrayen och raderar värdena. Skalären med samma grundnamn påverkas inte. Fel antal index eller index utanför befintliga gränser ger fel.</p>
-                <p>Utan DIM ger läsning från en ännu inte skapad array standardvärdet. Första tilldelningen skapar gränser utifrån just de använda indexen: A(3)=7 skapar gränsen 3, inte standardgräns 10. Arrayen växer inte automatiskt. Använd DIM för tydliga gränser. DIM A accepteras men skapar ingen array och nollställer inte en befintlig skalär.</p>
+30 NAME$(1)="ADA"
+40 PRINT A(0);A(3);NAME$(1)</code></pre>
+                <p>A new DIM with the same array name replaces the entire array and deletes its values. The scalar with the same base name is unaffected. The wrong number of subscripts or subscripts outside the existing bounds produce errors.</p>
+                <p>Without DIM, reading an array that has not yet been created returns the default value. The first assignment creates bounds based on the actual subscripts used: A(3)=7 creates an upper bound of 3, not a default bound of 10. The array does not grow automatically. Use DIM for explicit bounds. DIM A is accepted but creates no array and does not reset an existing scalar.</p>
             </article>
             <article id="def">
-                <h3>DEF FN – egna numeriska funktioner</h3>
-                <pre><code>DEF FN namn(parameter)=uttryck
-FN namn(argument)</code></pre>
-                <p>En numerisk parameter och numeriskt resultat. DEF FNA(X)=X*X och DEF FN A(X)=X*X är likvärdiga; anropa FNA(3). Namn/parameter följer bokstavs-/sifferreglerna men får inte % eller $.</p>
+                <h3>DEF FN – user-defined numeric functions</h3>
+                <pre><code>DEF FN name(parameter)=expression
+FN name(argument)</code></pre>
+                <p>One numeric parameter and a numeric result. DEF FNA(X)=X*X and DEF FN A(X)=X*X are equivalent; call FNA(3). Names/parameters follow the letter/digit rules but may not have % or $.</p>
                 <pre><code>10 DEF FNA(X)=X*X+1
 20 PRINT FNA(3)
 30 END</code></pre>
-                <p>Ger 10. Definitionen måste ha utförts före anropet. Ny definition ersätter gammal. Parametern är lokal för anropet; global variabel med samma namn ändras inte. Övriga variabler läses från aktuellt globalt tillstånd vid anropet. Funktioner kan anropa varandra; högst 256 samtidiga FN-anrop tillåts. Kroppen är ett uttryck, inte programsatser. Strängresultat och flera parametrar stöds inte. Direktdefinitioner består mellan kommandon; RUN/NEW raderar dem.</p>
+                <p>Produces 10. The definition must have been executed before the call. A new definition replaces the old one. The parameter is local to the call; a global variable with the same name is unchanged. Other variables are read from the current global state at the time of the call. Functions can call one another; at most 256 simultaneous FN calls are allowed. The body is an expression, not program statements. String results and multiple parameters are not supported. Direct definitions persist between commands; RUN/NEW delete them.</p>
             </article>
             <article id="window">
-                <h3>WINDOW – textfönster</h3>
-                <pre><code>WINDOW [uttryck]</code></pre>
-                <p>Rensar skärmen och väljer hur många av terminalens 25 rader som används för text längst ned. Antalet textrader är alltid 25 före begränsning, oavsett terminalens pixelupplösning. Argumentet anger antal rader som ska användas, inte antal rader som ska lämnas fria överst.</p>
-                <p>Utan argument återställer WINDOW hela textytan. Ett argument ska vara ett numeriskt uttryck som ger ett heltal från 2 till 25. WINDOW 10 använder de nedersta 10 raderna och lämnar de översta 15 fria från text. WINDOW 2 använder två rader; WINDOW 25 motsvarar WINDOW utan argument. Variabler och programminne påverkas inte.</p>
+                <h3>WINDOW – text window</h3>
+                <pre><code>WINDOW [expression]</code></pre>
+                <p>Clears the screen and selects how many of the terminal's 25 rows are used for text at the bottom. The number of text rows is always 25 before restriction, regardless of the terminal's pixel resolution. The argument specifies the number of rows to use, not the number of rows to leave free at the top.</p>
+                <p>Without an argument, WINDOW restores the full text area. An argument must be a numeric expression yielding an integer from 2 to 25. WINDOW 10 uses the bottom 10 rows and leaves the top 15 free of text. WINDOW 2 uses two rows; WINDOW 25 is equivalent to WINDOW without an argument. Variables and program memory are unaffected.</p>
                 <pre><code>10 WINDOW 10
-20 PRINT "TEXT I DE NEDERSTA 10 RADERNA"
-30 INPUT "TRYCK ENTER";A$
+20 PRINT "TEXT IN THE BOTTOM 10 ROWS"
+30 INPUT "PRESS ENTER";A$
 40 WINDOW
-50 PRINT "HELA TEXTYTAN IGEN"</code></pre>
-                <p>Kommandot fungerar både i direktläge och i numrerade program. Varje giltigt WINDOW-anrop rensar skärmen innan textytan ändras. Även NEW och RUN rensar skärmen och återställer alla 25 textrader; RUN gör detta före programstart.</p>
-                <p>Värden utanför intervallet och decimaltal ger <code>WINDOW requires a whole number of text rows from 2 to 25.</code>. Strängargument ger typfel. Ett ogiltigt argument ändrar inte textfönstret och rensar inte skärmen.</p>
+50 PRINT "FULL TEXT AREA AGAIN"</code></pre>
+                <p>The command works both in direct mode and in numbered programs. Every valid WINDOW call clears the screen before changing the text area. NEW and RUN also clear the screen and restore all 25 text rows; RUN does this before the program starts.</p>
+                <p>Values outside the range and fractional values produce <code>WINDOW requires a whole number of text rows from 2 to 25.</code>. String arguments produce type errors. An invalid argument does not change the text window or clear the screen.</p>
             </article>
             <article id="randomize">
-                <h3>RANDOMIZE – slumptalsgenerator</h3><pre><code>RANDOMIZE</code></pre>
-                <p>Ersätter tolkinstansens generator med en ny .NET-generator med standardinitiering. Inget seedargument stöds. Ny generator skapas redan vid varje RUN eller separat direktkommando. RANDOMIZE krävs därför inte för slumpvärden. Kör normalt högst en gång i början, inte före varje RND.</p>
+                <h3>RANDOMIZE – random number generator</h3><pre><code>RANDOMIZE</code></pre>
+                <p>Replaces the interpreter instance's generator with a new .NET generator using default initialization. No seed argument is supported. A new generator is already created for each RUN or separate direct command. RANDOMIZE is therefore not required for random values. Normally use it at most once at the beginning, not before every RND.</p>
             </article>
             <article id="rem">
-                <h3>REM – kommentar</h3>
-                <pre><code>REM valfri kommentar
-10 A=1:REM RESTEN AV RADEN AER KOMMENTAR</code></pre>
-                <p>Allt efter REM på samma fysiska källrad ignoreras, även kolon. Apostrof som kommentarstart stöds inte.</p>
+                <h3>REM – comment</h3>
+                <pre><code>REM any comment
+10 A=1:REM THE REST OF THE LINE IS A COMMENT</code></pre>
+                <p>Everything after REM on the same physical source line is ignored, including colons. An apostrophe as a comment marker is not supported.</p>
             </article>
             <article id="end">
-                <h3>END och STOP – avsluta</h3>
+                <h3>END and STOP – terminate</h3>
                 <pre><code>END
 STOP</code></pre>
-                <p>Båda avslutar med samma beteende. STOP är ingen återupptagningsbar paus; CONT finns inte. Variabler raderas inte. Även slutet av sista raden avslutar, så END är valfritt.</p>
+                <p>Both terminate with the same behavior. STOP is not a resumable pause; CONT is unavailable. Variables are not deleted. Reaching the end of the last line also terminates execution, so END is optional.</p>
             </article>
         </section>
         <section id="functions">
-            <h2>9. Fungerande inbyggda funktioner</h2>
-            <p>Detta är samtliga fungerande inbyggda funktioner. Parenteser och ett argument krävs, utom RND som också får skrivas utan parenteser. Använd numeriska argument. Vissa äldre konverteringsvägar accepterar numerisk text, men ger inget enhetligt typkontrakt över alla funktioner.</p>
+            <h2>9. Working built-in functions</h2>
+            <p>These are all working built-in functions. Parentheses and one argument are required, except for RND, which can also be written without parentheses. Use numeric arguments. Some older conversion paths accept numeric text, but do not provide consistent type behavior across all functions.</p>
             <article id="abs">
                 <h3>ABS(x)</h3>
-                <p>Absolutbelopp. ABS(-7.5) ger 7.5. Numeriskt resultat.</p><pre><code>PRINT ABS(-7.5)</code></pre>
+                <p>Absolute value. ABS(-7.5) returns 7.5. Numeric result.</p><pre><code>PRINT ABS(-7.5)</code></pre>
             </article>
             <article id="exp">
                 <h3>EXP(x)</h3>
-                <p>e upphöjt till x med dubbelprecision. EXP(0) ger 1. Stora positiva argument kan ge Infinity; stora negativa kan ge 0 på grund av flyttalsgränserna.</p><pre><code>PRINT EXP(1)</code></pre>
+                <p>e raised to the power x using double precision. EXP(0) returns 1. Large positive arguments may produce Infinity; large negative arguments may produce 0 due to floating-point limits.</p><pre><code>PRINT EXP(1)</code></pre>
             </article>
             <article id="int">
                 <h3>INT(x)</h3>
-                <p>32-bitars heltalskonvertering som kapar decimaldelen <strong>mot noll</strong>. INT(3.9) ger 3 och INT(-3.9) ger −3. Avviker från BASIC-dialekter där INT avrundar nedåt. Håll argumentet inom heltalsområdet; utanför det har ABL inget definierat numeriskt kontrakt.</p><pre><code>PRINT INT(3.9);INT(-3.9)</code></pre>
+                <p>32-bit integer conversion that truncates the fractional part <strong>toward zero</strong>. INT(3.9) returns 3 and INT(-3.9) returns −3. Differs from BASIC dialects where INT rounds down. Keep the argument within the integer range; outside it, ABL has no defined numeric behavior.</p><pre><code>PRINT INT(3.9);INT(-3.9)</code></pre>
             </article>
             <article id="log">
                 <h3>LOG(x)</h3>
-                <p>Naturlig logaritm (bas e) med dubbelprecision. Argumentet måste vara numeriskt och större än 0; annars ges ett körfel. LOG(1) ger 0 och LOG(EXP(1)) ger ungefär 1. För tiologaritmen används LOG(x)/LOG(10).</p><pre><code>PRINT LOG(1);LOG(EXP(1))
+                <p>Natural logarithm (base e) using double precision. The argument must be numeric and greater than 0; otherwise a runtime error is reported. LOG(1) returns 0 and LOG(EXP(1)) returns approximately 1. For the base-10 logarithm, use LOG(x)/LOG(10).</p><pre><code>PRINT LOG(1);LOG(EXP(1))
 PRINT LOG(100)/LOG(10)</code></pre>
             </article>
             <article id="rnd">
-                <h3>RND och RND(x)</h3>
-                <p>Pseudotillfälligt flyttal 0 ≤ värdet &lt; 1. RND motsvarar RND(1). Argumentet beräknas men värdet ignoreras: 0 återanvänder inte föregående värde och negativa argument anger inget seed.</p>
+                <h3>RND and RND(x)</h3>
+                <p>Pseudorandom floating-point number with 0 ≤ value &lt; 1. RND is equivalent to RND(1). The argument is evaluated but its value is ignored: 0 does not reuse the previous value, and negative arguments do not specify a seed.</p>
                 <pre><code>10 FOR I=1 TO 5
 20 PRINT INT(6*RND)+1
 30 NEXT I</code></pre>
-                <p>Fem tärningsslag 1–6. Generatorns tillstånd delas inom en körning, inte mellan separata direktkommandon.</p>
+                <p>Five dice rolls from 1–6. The generator's state is shared within a run, not between separate direct commands.</p>
             </article>
             <article id="sqr">
                 <h3>SQR(x)</h3>
-                <p>Kvadratroten. SQR(9) ger 3. Negativa argument ger .NETs NaN, inte särskilt BASIC-domänfel. Kontrollera själv att argumentet är icke-negativt.</p><pre><code>PRINT SQR(9)</code></pre>
+                <p>Square root. SQR(9) returns 3. Negative arguments produce .NET's NaN, not a specific BASIC domain error. Check that the argument is non-negative yourself.</p><pre><code>PRINT SQR(9)</code></pre>
             </article>
             <article id="tab">
                 <h3>TAB(n)</h3>
-                <p>Avsedd för PRINT. Absolut enbaserad kolumn: TAB(1) är första kolumnen. n konverteras till heltal genom kapning mot noll; mindre än 1 behandlas som 1. Mål före aktuell position ger först radbrytning. Vid exakt målposition infogas inga blanksteg.</p>
+                <p>Intended for PRINT. Absolute one-based column: TAB(1) is the first column. n is converted to an integer by truncation toward zero; values less than 1 are treated as 1. A target before the current position first causes a line break. At the exact target position, no spaces are inserted.</p>
                 <pre><code>10 PRINT TAB(5);"*";TAB(10);"*"</code></pre>
-                <p>Stjärnor i kolumn 5 och 10. TAB returnerar internt utfyllnadsblanksteg och kan skriva en radbrytning medan uttrycket beräknas. Använd som separat PRINT-uttryck med semikolon, inte som allmän strängfunktion. Ändrar inte terminalbredden; mål utanför skärmen radbryts genom vanlig utskrift.</p>
+                <p>Stars in columns 5 and 10. Internally, TAB returns padding spaces and may print a line break while the expression is being evaluated. Use it as a separate PRINT expression with semicolons, not as a general string function. It does not change terminal width; targets beyond the screen wrap through normal output.</p>
             </article>
         </section>
         <section id="missing">
-            <h2>10. Funktionsnamn utan körstöd</h2>
-            <p class="note">Parsern känner igen nedanstående namn men tolken saknar implementation. Accepterade anrop ger <code>Unsupported BASIC function: namn</code> när de utförs. Betydelserna nedan är vanlig BASIC-betydelse som orientering, inte fungerande ABL-funktionalitet.</p>
+            <h2>10. Function names without runtime support</h2>
+            <p class="note">The parser recognizes the names below, but the interpreter has no implementation. Accepted calls produce <code>Unsupported BASIC function: name</code> when executed. The meanings below describe their usual BASIC meaning for reference, not working ABL functionality.</p>
             <table>
-                <thead><tr><th>Namn</th><th>Vanlig betydelse; ej implementerad</th></tr></thead>
+                <thead><tr><th>Name</th><th>Usual meaning; not implemented</th></tr></thead>
                 <tbody>
-                    <tr><td><code>ASC</code></td><td>Första tecknets teckenkod.</td></tr>
-                    <tr><td><code>ATN</code></td><td>Arcustangens.</td></tr>
-                    <tr><td><code>CHR$</code></td><td>Tecken från teckenkod.</td></tr>
-                    <tr><td><code>COS</code></td><td>Cosinus.</td></tr>
-                    <tr><td><code>LEFT$</code></td><td>Vänstra delen av sträng.</td></tr>
-                    <tr><td><code>LEN</code></td><td>Stränglängd.</td></tr>
-                    <tr><td><code>MID$</code></td><td>Delsträng från startposition.</td></tr>
-                    <tr><td><code>RIGHT$</code></td><td>Högra delen av sträng.</td></tr>
-                    <tr><td><code>SGN</code></td><td>Talets tecken, normalt −1, 0 eller 1.</td></tr>
-                    <tr><td><code>SIN</code></td><td>Sinus.</td></tr>
-                    <tr><td><code>STR$</code></td><td>Tal till sträng.</td></tr>
-                    <tr><td><code>TAN</code></td><td>Tangens.</td></tr>
-                    <tr><td><code>VAL</code></td><td>Sträng till tal.</td></tr>
+                    <tr><td><code>ASC</code></td><td>Character code of the first character.</td></tr>
+                    <tr><td><code>ATN</code></td><td>Arctangent.</td></tr>
+                    <tr><td><code>CHR$</code></td><td>Character from a character code.</td></tr>
+                    <tr><td><code>COS</code></td><td>Cosine.</td></tr>
+                    <tr><td><code>LEFT$</code></td><td>Left part of a string.</td></tr>
+                    <tr><td><code>LEN</code></td><td>String length.</td></tr>
+                    <tr><td><code>MID$</code></td><td>Substring from a starting position.</td></tr>
+                    <tr><td><code>RIGHT$</code></td><td>Right part of a string.</td></tr>
+                    <tr><td><code>SGN</code></td><td>Sign of a number, normally −1, 0 or 1.</td></tr>
+                    <tr><td><code>SIN</code></td><td>Sine.</td></tr>
+                    <tr><td><code>STR$</code></td><td>Number to string.</td></tr>
+                    <tr><td><code>TAN</code></td><td>Tangent.</td></tr>
+                    <tr><td><code>VAL</code></td><td>String to number.</td></tr>
                 </tbody>
             </table>
-            <p>Den generella funktionssyntaxen läser bara ett argument. Traditionella flerargumentanrop som LEFT$(A$,3) och MID$(A$,2,3) ger därför syntaxfel redan före körning. Även former med ett argument saknar körstöd.</p>
+            <p>The general function syntax reads only one argument. Traditional calls with multiple arguments, such as LEFT$(A$,3) and MID$(A$,2,3), therefore produce syntax errors before execution. Single-argument forms also lack runtime support.</p>
         </section>
         <section id="examples">
-            <h2>11. Fullständiga programexempel</h2>
+            <h2>11. Complete program examples</h2>
             <p>
-                För att klistra in kod i ABL, välj Tools → Text editor.
+                To paste code into ABL, choose Tools → Text editor.
             </p>
-            <h3>Tabell med kvadrater och rötter</h3>
-            <pre><code>10 PRINT "N";TAB(12);"KVADRAT";TAB(26);"ROT"
+            <h3>Table of squares and roots</h3>
+            <pre><code>10 PRINT "N";TAB(12);"SQUARE";TAB(26);"ROOT"
 20 FOR N=1 TO 10
 30 PRINT N;TAB(12);N^2;TAB(26);SQR(N)
 40 NEXT N
 50 END</code></pre>
-            <p>Välj minst 40 kolumner. Talens blanktecken ingår i kolumnräkningen.</p>
-            <h3>Inmatning och villkor</h3>
-            <pre><code>10 INPUT "ANGE ETT TAL";A
-20 IF A&lt;0 THEN PRINT "NEGATIVT TAL":GOTO 50
-30 PRINT "KVADRATROT: ";SQR(A)
-40 PRINT "ABSOLUTBELOPP: ";ABS(A)
+            <p>Select at least 40 columns. The spaces around numbers are included in the column count.</p>
+            <h3>Input and conditions</h3>
+            <pre><code>10 INPUT "ENTER A NUMBER";A
+20 IF A&lt;0 THEN PRINT "NEGATIVE NUMBER":GOTO 50
+30 PRINT "SQUARE ROOT: ";SQR(A)
+40 PRINT "ABSOLUTE VALUE: ";ABS(A)
 50 END</code></pre>
-            <h3>Array med fem värden</h3>
+            <h3>Array with five values</h3>
             <pre><code>10 DIM A(4)
 20 FOR I=0 TO 4
 30 A(I)=I^2
@@ -690,7 +690,7 @@ PRINT LOG(100)/LOG(10)</code></pre>
 60 PRINT I;A(I)
 70 NEXT I
 80 END</code></pre>
-            <h3>3D-diagram</h3>
+            <h3>3D plot</h3>
             <pre><code>10 DEF FNA(Z)=30*EXP(-Z*Z/100)
 20 FOR X=-30 TO 30 STEP 1.5
 30 L=0
@@ -704,60 +704,60 @@ PRINT LOG(100)/LOG(10)</code></pre>
 110 PRINT
 120 NEXT X
 130 END</code></pre>
-            <p>Kräver omkring 55 kolumner; välj 60 eller 80. Diagrammet har 41 rader och ryms inte samtidigt på terminalens 25. Övre delen rullar bort. Fler kolumner/helskärm ger inte fler logiska rader.</p>
+            <p>Requires about 55 columns; select 60 or 80. The plot has 41 rows and cannot fit within the terminal's 25 rows all at once. The top part scrolls away. More columns/fullscreen do not provide more logical rows.</p>
         </section>
         <section id="errors">
-            <h2>12. Fel och felsökning</h2>
+            <h2>12. Errors and troubleshooting</h2>
             <table>
-                <thead><tr><th>Meddelande</th><th>Betydelse</th></tr></thead>
+                <thead><tr><th>Message</th><th>Meaning</th></tr></thead>
                 <tbody>
-                    <tr><td><code>?Syntax error: ...</code></td><td>Källan kan inte tolkas. Diagnostiken anger normalt rad, kolumn och orsak. Kontrollera parenteser, citattecken, satsnamn och radnummer. Hela källan analyseras före körning, även rader som senare skulle hoppas över.</td></tr>
-                    <tr><td><code>?Error in line n: ...</code></td><td>Körfel. n är senast utförda radetikett. Fel under förberedande slingmatchning kan visas vid rad 0.</td></tr>
-                    <tr><td><code>?Error: ...</code></td><td>Motsvarande fel i direktläge.</td></tr>
-                    <tr><td><code>Type mismatch</code></td><td>Fel typ, exempelvis sträng till talvariabel eller jämförelse av sträng och tal.</td></tr>
-                    <tr><td><code>Division by zero.</code></td><td>Divisorn blev 0. Kontrollera med IF före division.</td></tr>
-                    <tr><td><code>Undefined line n.</code></td><td>Hopp till rad som inte finns.</td></tr>
-                    <tr><td><code>ON GOTO/GOSUB is only allowed in numbered program lines</code></td><td>ON … GOTO eller ON … GOSUB har skrivits i direktläge. Lägg satsen på en numrerad rad och starta programmet med RUN.</td></tr>
-                    <tr><td><code>ON GOTO index is out of range.</code> / <code>ON GOSUB index is out of range.</code></td><td>Indexet är negativt, Infinity eller NaN. Värdet 0 och positiva index utanför mållistan ger däremot inget hopp.</td></tr>
-                    <tr><td><code>WINDOW requires a whole number of text rows from 2 to 25.</code></td><td>WINDOW-argumentet är inte ett heltal mellan 2 och 25. Utelämna argumentet för hela textytan.</td></tr>
-                    <tr><td><code>RETURN without GOSUB.</code></td><td>RETURN nåddes utan aktivt subrutinanrop, exempelvis om huvudprogrammet fortsätter in i subrutinkoden.</td></tr>
-                    <tr><td><code>GOSUB line number is out of range.</code></td><td>Måluttrycket är negativt, större än 2147483647, Infinity eller NaN.</td></tr>
-                    <tr><td><code>NEXT without matching FOR.</code> / <code>FOR without NEXT.</code></td><td>Fel matchning av slingor i källan.</td></tr>
-                    <tr><td><code>NEXT without FOR.</code> / <code>NEXT does not match active FOR.</code></td><td>NEXT nåddes utan rätt aktiv slinga.</td></tr>
-                    <tr><td><code>FOR STEP must not be zero.</code></td><td>Steget blev 0.</td></tr>
-                    <tr><td><code>Array subscript out of range.</code></td><td>Negativt index eller index över gränsen.</td></tr>
-                    <tr><td><code>Wrong number of array subscripts.</code></td><td>Fel antal index.</td></tr>
-                    <tr><td><code>Invalid array dimensions.</code></td><td>Ogiltiga gränser vid skapande.</td></tr>
-                    <tr><td><code>Undefined function FN ...</code></td><td>Definitionen har inte utförts.</td></tr>
-                    <tr><td><code>FN call nesting limit exceeded.</code></td><td>Fler än 256 samtidiga funktionsanrop, exempelvis rekursion utan stopp.</td></tr>
-                    <tr><td><code>Unsupported BASIC function: ...</code></td><td>Funktionsnamnet känns igen men saknar körstöd.</td></tr>
-                    <tr><td><code>?Redo from start</code></td><td>Ogiltigt numeriskt INPUT-svar. Mata in nytt värde. Tidigare tilldelningar återställs inte.</td></tr>
-                    <tr><td><code>User break.</code></td><td>Användaravbrott. Starta om med RUN; återupptagning saknas.</td></tr>
-                    <tr><td><code>Program has run through.</code></td><td>Normal avslutning, även via END/STOP.</td></tr>
-                    <tr><td><code>Ready.</code></td><td>Redo för nästa kommando. Betyder inte att program eller variabler raderats.</td></tr>
+                    <tr><td><code>?Syntax error: ...</code></td><td>The source cannot be parsed. Diagnostics normally indicate the line, column and cause. Check parentheses, quotes, statement names and line numbers. The entire source is analyzed before execution, including lines that would later be skipped.</td></tr>
+                    <tr><td><code>?Error in line n: ...</code></td><td>Runtime error. n is the most recently executed line label. Errors during preliminary loop matching may be shown at line 0.</td></tr>
+                    <tr><td><code>?Error: ...</code></td><td>Equivalent error in direct mode.</td></tr>
+                    <tr><td><code>Type mismatch</code></td><td>Wrong type, for example assigning a string to a numeric variable or comparing a string and a number.</td></tr>
+                    <tr><td><code>Division by zero.</code></td><td>The divisor became 0. Check with IF before dividing.</td></tr>
+                    <tr><td><code>Undefined line n.</code></td><td>Jump to a line that does not exist.</td></tr>
+                    <tr><td><code>ON GOTO/GOSUB is only allowed in numbered program lines</code></td><td>ON … GOTO or ON … GOSUB was entered in direct mode. Put the statement on a numbered line and start the program with RUN.</td></tr>
+                    <tr><td><code>ON GOTO index is out of range.</code> / <code>ON GOSUB index is out of range.</code></td><td>The index is negative, Infinity or NaN. In contrast, the value 0 and positive indices outside the target list cause no jump.</td></tr>
+                    <tr><td><code>WINDOW requires a whole number of text rows from 2 to 25.</code></td><td>The WINDOW argument is not an integer between 2 and 25. Omit the argument for the full text area.</td></tr>
+                    <tr><td><code>RETURN without GOSUB.</code></td><td>RETURN was reached without an active subroutine call, for example if the main program continues into the subroutine code.</td></tr>
+                    <tr><td><code>GOSUB line number is out of range.</code></td><td>The target expression is negative, greater than 2147483647, Infinity or NaN.</td></tr>
+                    <tr><td><code>NEXT without matching FOR.</code> / <code>FOR without NEXT.</code></td><td>Incorrect loop matching in the source.</td></tr>
+                    <tr><td><code>NEXT without FOR.</code> / <code>NEXT does not match active FOR.</code></td><td>NEXT was reached without the correct active loop.</td></tr>
+                    <tr><td><code>FOR STEP must not be zero.</code></td><td>The step became 0.</td></tr>
+                    <tr><td><code>Array subscript out of range.</code></td><td>Negative subscript or subscript above the bound.</td></tr>
+                    <tr><td><code>Wrong number of array subscripts.</code></td><td>Wrong number of subscripts.</td></tr>
+                    <tr><td><code>Invalid array dimensions.</code></td><td>Invalid bounds during creation.</td></tr>
+                    <tr><td><code>Undefined function FN ...</code></td><td>The definition has not been executed.</td></tr>
+                    <tr><td><code>FN call nesting limit exceeded.</code></td><td>More than 256 simultaneous function calls, for example recursion without a stopping condition.</td></tr>
+                    <tr><td><code>Unsupported BASIC function: ...</code></td><td>The function name is recognized but lacks runtime support.</td></tr>
+                    <tr><td><code>?Redo from start</code></td><td>Invalid numeric INPUT response. Enter a new value. Earlier assignments are not rolled back.</td></tr>
+                    <tr><td><code>User break.</code></td><td>User interruption. Restart with RUN; resuming is not supported.</td></tr>
+                    <tr><td><code>Program has run through.</code></td><td>Normal termination, including through END/STOP.</td></tr>
+                    <tr><td><code>Ready.</code></td><td>Ready for the next command. Does not mean the program or variables have been deleted.</td></tr>
                 </tbody>
             </table>
-            <p>Visa mellanvärden med PRINT, kontrollera rader med LIST och välj tillräcklig skärmbredd. Debug output visar interna operationer men saknar brytpunkter och stegkommandon. Flyttalsöverflöde och negativa kvadratrötter kan ge Infinity/NaN i stället för BASIC-fel. Alla interna resursfel garanteras inte bli fångade och presenterade i terminalen.</p>
+            <p>Display intermediate values with PRINT, check lines with LIST and select sufficient screen width. Debug output shows internal operations but has no breakpoints or stepping commands. Floating-point overflow and negative square roots may produce Infinity/NaN instead of BASIC errors. Not all internal resource errors are guaranteed to be caught and presented in the terminal.</p>
         </section>
         <section id="limits">
-            <h2>13. Omfattning och kompatibilitet</h2>
-            <p>Referensen följer den aktiva parsern och tolken. Äldre parserfiler och historiska ambitioner i README definierar inte aktuellt stöd. Medföljande spelkällor är exempelmaterial: en medföljande fil garanterar inte att dess alla språkfunktioner stöds.</p>
+            <h2>13. Scope and compatibility</h2>
+            <p>This reference follows the active parser and interpreter. Older parser files and historical ambitions in the README do not define current support. Bundled game sources are sample material: a bundled file does not guarantee that all its language features are supported.</p>
             <ul>
-                <li>Ingen full Altair BASIC-kompatibilitet. INT, RND, strängaddition och automatisk arrayskapning har de avvikelser som beskrivits ovan.</li>
-                <li>DATA, READ och RESTORE saknar implementerade programsatser.</li>
-                <li>WHILE/WEND, DO/LOOP, flerradiga IF-block, ELSEIF och SELECT CASE stöds inte.</li>
-                <li>LOAD, SAVE, MERGE, DELETE, RENUM, EDIT, CONT, CLEAR och CLS är inte implementerade terminalkommandon. Radera rad med ensamt nummer, hela programmet med NEW. Öppna via menyn.</li>
-                <li>Inga implementerade grafik-, ljud-, färg- eller markörsatser såsom PLOT, DRAW, LINE, CIRCLE, SOUND, BEEP, COLOR eller LOCATE. Upplösningarnas pixelmått är visningslägen, inte ett BASIC-grafik-API.</li>
-                <li>Ingen BASIC-filhantering med OPEN, CLOSE, PRINT# eller INPUT#.</li>
-                <li>Inga implementerade PEEK/POKE-, maskinkods-, nätverks-, process- eller systemkommandon i språket.</li>
-                <li>Ingen implementerad INKEY$- eller TIMER-funktion.</li>
-                <li>Ingen kommandoradsfunktion för .bas-fil, automatisk programkörning eller fristående BASIC-kompilering. Programstart öppnar Windowsgränssnittet.</li>
+                <li>No full Altair BASIC compatibility. INT, RND, string addition and automatic array creation have the deviations described above.</li>
+                <li>DATA, READ and RESTORE have no implemented program statements.</li>
+                <li>WHILE/WEND, DO/LOOP, multiline IF blocks, ELSEIF and SELECT CASE are not supported.</li>
+                <li>LOAD, SAVE, MERGE, DELETE, RENUM, EDIT, CONT, CLEAR and CLS are not implemented terminal commands. Delete a line with a number on its own, or the entire program with NEW. Open files through the menu.</li>
+                <li>No implemented graphics, sound, color or cursor statements such as PLOT, DRAW, LINE, CIRCLE, SOUND, BEEP, COLOR or LOCATE. The resolutions' pixel dimensions are display modes, not a BASIC graphics API.</li>
+                <li>No BASIC file handling with OPEN, CLOSE, PRINT# or INPUT#.</li>
+                <li>No implemented PEEK/POKE, machine code, networking, process or system commands in the language.</li>
+                <li>No implemented INKEY$ or TIMER function.</li>
+                <li>No command-line support for a .bas file, automatic program execution or standalone BASIC compilation. Starting the application opens the Windows interface.</li>
             </ul>
-            <p>ABL är en tolk. Att bygga Windowsapplikationen från C# är en utvecklaråtgärd, inte en BASIC-kompilatorfunktion. Projektet riktar sig mot .NET Framework 4.8 och använder TerminalPixelMatrixLibrary.</p>
-            <h3>Underlag och underhåll</h3>
-            <p>Manualen är kontrollerad mot BasicSession, den aktiva BasicParser, Interpreter, variabel- och operatorexekverarna, Dimension, TerminalAdapter, MainWindow, menyerna och inställningsdialogen. Skärmredigering och tangenter följer den lokala källan till TerminalMatrixNetFramework och bör kontrolleras igen när biblioteket uppdateras.</p>
-            <p>Projektrotens index.html och applikationsmappens index.html ska hållas identiska. Manualen fungerar lokalt i webbläsare utan externa skript, teckensnitt eller tjänster.</p>
         </section>
-</main><footer><p>ABL – A BASIC Language · Granskad mot projektkoden 2026-10-14.</p></footer>
+    <section id="install">
+        <h2>14. Download and install</h2>
+        <p>An installer will be made available with version 1.0. Until then, please use the <a href="https://github.com/tomas-hakansson/A-BASIC-Language" target="_blank">source code</a> to compile and try it out.</p>
+    </section>
+    </main><footer><p>ABL – A BASIC Language · developed by Tomas Håkansson and Anders Hesselbom.</p></footer>
 </body>
 </html>
