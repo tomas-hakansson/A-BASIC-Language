@@ -41,10 +41,10 @@ public static class StringExtensions
 
         public bool Is(string? other)
         {
-            if (IsEmpty(me) && IsEmpty(other))
+            if (me.IsEmpty() && other.IsEmpty())
                 return true;
 
-            if (IsEmpty(me) || IsEmpty(other))
+            if (me.IsEmpty() || other.IsEmpty())
                 return false;
 
             return string.Compare(me!.Trim(), other!.Trim(), StringComparison.CurrentCultureIgnoreCase) == 0;

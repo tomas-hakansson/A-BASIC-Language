@@ -1,4 +1,4 @@
-﻿namespace TerminalMatrixNetFramework.Events;
+﻿namespace A_BASIC_Language.TerminalMatrix.Events;
 
 public enum FunctionKey
 {

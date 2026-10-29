@@ -5,7 +5,7 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using PixelmapLibraryNetFramework.SpriteManagement;
 
-namespace PixelmapLibraryNetFramework;
+namespace A_BASIC_Language.TerminalMatrix.PixelMapLibrary;
 
 public class Pixelmap
 {
@@ -21,6 +21,7 @@ public class Pixelmap
     {
         if (bitmap == null)
             throw new ArgumentNullException(nameof(bitmap));
+
         if (bitmap.PixelFormat != Format)
             throw new ArgumentException("Bitmap must use Format24bppRgb. Use CreateCompatibleBitmap to convert images.", nameof(bitmap));
 
@@ -38,6 +39,7 @@ public class Pixelmap
     {
         using var bitmap = new Bitmap(filename);
         var result = new Bitmap(bitmap.Width, bitmap.Height, Format);
+
         try
         {
             using var graphics = Graphics.FromImage(result);
@@ -61,6 +63,7 @@ public class Pixelmap
         var pixels = new byte[checked(rowBytes * Height)];
         var rect = new Rectangle(0, 0, Width, Height);
         var data = _bitmap.LockBits(rect, ImageLockMode.ReadWrite, Format);
+
         try
         {
             for (var y = 0; y < Height; y++)
@@ -81,9 +84,11 @@ public class Pixelmap
             throw new InvalidOperationException("Bitmap is not locked.");
 
         var data = _data;
+
         try
         {
             var rowBytes = checked(Width * BytesPerPixel);
+
             for (var y = 0; y < Height; y++)
                 Marshal.Copy(_pixels!, y * rowBytes, IntPtr.Add(data.Scan0, checked(y * data.Stride)), rowBytes);
         }

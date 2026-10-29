@@ -32,7 +32,7 @@ public class BasicParser
         source = source.Replace("\r\n", "\n").Replace('\r', '\n');
         _source = direct ? "0 " + source : source;
         _lines = new SortedDictionary<int, List<AblEvalValue>>();
-        _parseErrors = new List<(int index, string message)>();
+        _parseErrors = [];
 
         //Note: The parsing begins:
         try
@@ -1108,22 +1108,20 @@ public class BasicParser
         return match.Value;
     }
 
-    bool AString(out string value)
+    private bool AString(out string value)
     {
         value = string.Empty;
         Regex regex = new(@"\G""(?<string>.*?)""", RegexOptions.CultureInvariant);
         var isString = regex.Match(_source, _index);
-        
-        if (isString.Success)
-        {
-            var match = isString.Groups.Cast<Group>().First(g => g.Name == "string");
-            value = match.Value;
-            _index += match.Length + 2;
-            SkipWhitespace();
-            return true;
-        }
-        
-        return false;
+
+        if (!isString.Success)
+            return false;
+
+        var match = isString.Groups.Cast<Group>().First(g => g.Name == "string");
+        value = match.Value;
+        _index += match.Length + 2;
+        SkipWhitespace();
+        return true;
 
         //ToDo: Implement string parsing properly.
         //for (; _index < _source.Length; _index++)
@@ -1143,10 +1141,7 @@ public class BasicParser
         }
 
         List<AblEvalValue> evalValues = [];
-
-        foreach (AblEvalValue value in values)
-            evalValues.Add(value);
-        
+        evalValues.AddRange(values);
         var v = _lines[_currentLabel];
         v.AddRange(evalValues);
         _lines[_currentLabel] = v;
@@ -1161,11 +1156,13 @@ public class BasicParser
             _index++;
     }
 
-    int GetNextNonWhitespaceIndex(int? startAt = null)
+    private int GetNextNonWhitespaceIndex(int? startAt = null)
     {
         var index = startAt ?? _index;
+        
         while (index < _source.Length && _source[index] != '\n' && char.IsWhiteSpace(_source[index]))
             index++;
+
         return index < _source.Length ? index : -1;
     }
 
@@ -1188,23 +1185,26 @@ public class BasicParser
     /// <param name="skipWhitespace"></param>
     /// <param name="incrementIfFound"></param>
     /// <returns></returns>
-    bool Maybe(string value, bool skipWhitespace = true, bool incrementIfFound = true)
+    private bool Maybe(string value, bool skipWhitespace = true, bool incrementIfFound = true)
     {
         var rsl = _source.Length - _index; //Note: Remaining source length.
         if (rsl < value.Length) return false; //Note: If the remaining source is too short to fit the given string.
 
         Regex regex = new($@"\G(?<value>{value})", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         var isValue = regex.Match(_source, _index);
-        if (isValue.Success)
-        {
-            var match = isValue.Groups.Cast<Group>().First(g => g.Name == "value");
-            if (incrementIfFound)
-                _index += match.Length;
-            if (skipWhitespace && incrementIfFound)
-                SkipWhitespace();
-            return match.Success;
-        }
-        return false;
+
+        if (!isValue.Success)
+            return false;
+
+        var match = isValue.Groups.Cast<Group>().First(g => g.Name == "value");
+            
+        if (incrementIfFound)
+            _index += match.Length;
+
+        if (skipWhitespace && incrementIfFound)
+            SkipWhitespace();
+
+        return match.Success;
     }
 
     /// <summary>
@@ -1213,22 +1213,26 @@ public class BasicParser
     /// <param name="value"></param>
     /// <param name="incrementIfFound"></param>
     /// <returns></returns>
-    bool Maybe(char value, bool incrementIfFound = true)
+    private bool Maybe(char value, bool incrementIfFound = true)
     {
         if (_index >= _source.Length)
             return false;
+
         if (_source[_index] == value)
         {
             if (incrementIfFound)
                 _index++;
+
             if (incrementIfFound)
                 SkipWhitespace();
+
             return true;
         }
+
         return false;
     }
 
-    bool OneOf(out string outValue, params string[] values)
+    private bool OneOf(out string outValue, params string[] values)
     {
         outValue = string.Empty;
         var orderedValues = values.OrderByDescending(v => v.Length);

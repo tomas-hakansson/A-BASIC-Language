@@ -1,6 +1,8 @@
-﻿using System;
+﻿#nullable enable
+using System;
+using TerminalMatrixNetFramework;
 
-namespace TerminalMatrixNetFramework.Definitions;
+namespace A_BASIC_Language.TerminalMatrix.Definitions;
 
 public static class PixelMatrixDefinition
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TerminalMatrixNetFramework.Events;
+namespace A_BASIC_Language.TerminalMatrix.Events;
 
 public class TickEventArgs : EventArgs
 {

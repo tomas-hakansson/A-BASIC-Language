@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using A_BASIC_Language.TerminalMatrix;
+using A_BASIC_Language.TerminalMatrix.Events;
 
 namespace A_BASIC_Language
 {
@@ -346,7 +347,7 @@ namespace A_BASIC_Language
             this.terminalMatrixControl1.UseBackground24Bit = false;
             this.terminalMatrixControl1.TypedLine += new TerminalMatrixNetFramework.Events.TypedLineDelegate(this.terminalMatrixControl1_TypedLine);
             this.terminalMatrixControl1.InputCompleted += new TerminalMatrixNetFramework.Events.InputCompletedDelegate(this.terminalMatrixControl1_InputCompleted);
-            this.terminalMatrixControl1.UserBreak += new TerminalMatrixNetFramework.Events.UserBreakDelegate(this.terminalMatrixControl1_UserBreak);
+            this.terminalMatrixControl1.UserBreak += new UserBreakDelegate(this.terminalMatrixControl1_UserBreak);
             this.terminalMatrixControl1.RequestToggleFullscreen += new TerminalMatrixNetFramework.Events.RequestToggleFullscreenDelegate(this.terminalMatrixControl1_RequestToggleFullscreen);
             this.terminalMatrixControl1.Tick += new TerminalMatrixNetFramework.Events.TickDelegate(this.terminalMatrixControl1_Tick);
             this.terminalMatrixControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.terminalMatrixControl1_Paint);

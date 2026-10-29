@@ -8,13 +8,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using A_BASIC_Language.TerminalMatrix.Definitions;
+using A_BASIC_Language.TerminalMatrix.Events;
+using A_BASIC_Language.TerminalMatrix.PixelMapLibrary;
+using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 using A_BASIC_Language.TerminalMatrix.TerminalColor;
 using A_BASIC_Language.TerminalMatrix.TerminalMatrixControlFeatures;
 using PixelmapLibraryNetFramework;
 using PixelmapLibraryNetFramework.FontManagement;
 using PixelmapLibraryNetFramework.SpriteManagement;
 using TerminalMatrixNetFramework;
-using TerminalMatrixNetFramework.Definitions;
 using TerminalMatrixNetFramework.Events;
 using TerminalMatrixNetFramework.TerminalColor;
 
@@ -86,7 +89,7 @@ public partial class TerminalMatrixControl : UserControl
 
     public bool HasFocus
     {
-        get => field;
+        get;
         set
         {
             field = value;
@@ -552,8 +555,8 @@ public partial class TerminalMatrixControl : UserControl
             if (CursorPosition.X > limit)
             {
                 CursorPosition.X--;
-                DoDelete(_characterMap, _terminations, CharacterMatrixDefinition.CharacterEmpty);
-                DoDelete(_characterColorMap, null, _characterColorMap[CursorPosition.X, CursorPosition.Y]);
+                DoDelete(_characterMap, CharacterMatrixDefinition.CharacterEmpty);
+                DoDelete(_characterColorMap, _characterColorMap[CursorPosition.X, CursorPosition.Y]);
                 ShowEffect();
             }
 
@@ -634,13 +637,13 @@ public partial class TerminalMatrixControl : UserControl
                 ShowEffect();
                 break;
             case Keys.Insert:
-                DoInsert(_characterMap, _terminations, CharacterMatrixDefinition.CharacterEmpty);
-                DoInsert(_characterColorMap, null, _characterColorMap[CursorPosition.X, CursorPosition.Y]);
+                DoInsert(_characterMap, CharacterMatrixDefinition.CharacterEmpty);
+                DoInsert(_characterColorMap, _characterColorMap[CursorPosition.X, CursorPosition.Y]);
                 ShowEffect();
                 break;
             case Keys.Delete:
-                DoDelete(_characterMap, _terminations, CharacterMatrixDefinition.CharacterEmpty);
-                DoDelete(_characterColorMap, null, _characterColorMap[CursorPosition.X, CursorPosition.Y]);
+                DoDelete(_characterMap, CharacterMatrixDefinition.CharacterEmpty);
+                DoDelete(_characterColorMap, _characterColorMap[CursorPosition.X, CursorPosition.Y]);
                 ShowEffect();
                 break;
             default:
@@ -718,7 +721,7 @@ public partial class TerminalMatrixControl : UserControl
             TypedLine?.Invoke(this, eventArgs);
     }
 
-    private void DoInsert(byte[,] map, bool[]? terminations, byte empty) // Accepts the terminations array just in case it is needed.
+    private void DoInsert(byte[,] map, byte empty) // Accepts the terminations array just in case it is needed.
     {
         if (CursorPosition.X >= CharacterWidth - 1)
         {
@@ -732,7 +735,7 @@ public partial class TerminalMatrixControl : UserControl
         map[CursorPosition.X, CursorPosition.Y] = empty;
     }
 
-    private void DoDelete(byte[,] map, bool[]? terminations, byte empty) // Accepts the terminations array just in case it is needed.
+    private void DoDelete(byte[,] map, byte empty) // Accepts the terminations array just in case it is needed.
     {
         if (CursorPosition.X >= CharacterWidth - 1)
         {

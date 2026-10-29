@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System.Collections.Generic;
 
-namespace PixelmapLibraryNetFramework.FontManagement;
+namespace A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 
 public class TerminalCodePage
 {

@@ -30,7 +30,7 @@ public abstract class ValueBase
     }
 
     public static ValueBase GetValueType(double value) =>
-        value % 1 == 0 && value >= int.MinValue && value <= int.MaxValue
+        value % 1 == 0 && value is >= int.MinValue and <= int.MaxValue
             ? new IntValue((int)value)
             : new FloatValue(value);
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using A_BASIC_Language.TerminalMatrix.PixelMapLibrary;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 using PixelmapLibraryNetFramework.FontManagement;
 

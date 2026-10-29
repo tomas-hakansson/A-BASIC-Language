@@ -1,6 +1,6 @@
 #nullable enable
+using A_BASIC_Language.TerminalMatrix.Definitions;
 using TerminalMatrixNetFramework;
-using TerminalMatrixNetFramework.Definitions;
 
 namespace A_BASIC_Language.TerminalMatrix;
 

@@ -1,4 +1,5 @@
-﻿namespace TerminalMatrixNetFramework.Definitions;
+﻿#nullable enable
+namespace A_BASIC_Language.TerminalMatrix.Definitions;
 
 public class CharacterPosition
 {
