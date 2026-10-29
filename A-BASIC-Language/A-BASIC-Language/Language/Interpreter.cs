@@ -2,7 +2,6 @@
 using A_BASIC_Language.Language.LanguageParts;
 using A_BASIC_Language.Language.SpecificExecutors;
 using A_BASIC_Language.Language.ValueTypes;
-using A_BASIC_Language.SpecificExecutors;
 using A_BASIC_Language.StringManipulation;
 using System;
 using System.Collections.Generic;
@@ -223,23 +222,23 @@ public class Interpreter
                 case AblString s:
                     _data.Push(new StringValue(s.Value));
                     break;
-                case ABL_DIM_Creation dc:
+                case AblDimCreation dc:
                     dimExecutor.Create(dc);
                     break;
-                case ABL_Variable v:
+                case AblVariable v:
                     // Only the current function's parameter shadows a global variable.
                     if (calls.Count > 0 && calls.Peek().Parameter == v.Symbol)
                         _data.Push(calls.Peek().Argument);
                     else
                         flatVariableExecutor.Create(v);
                     break;
-                case ABL_DIM_Variable dv:
+                case AblDimVariable dv:
                     dimExecutor.Read(dv);
                     break;
-                case ABL_Assignment a:
+                case AblAssignment a:
                     flatVariableExecutor.Write(a);
                     break;
-                case ABL_DIM_Assignment da:
+                case AblDimAssignment da:
                     dimExecutor.Write(da); //Note: E.g. 10 dimvariable(1, 2) = 42.
                     break;
                 case AblProcedure p:

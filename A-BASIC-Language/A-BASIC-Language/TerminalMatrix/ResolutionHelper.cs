@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Drawing;
+using TerminalMatrixNetFramework;
 
-namespace TerminalMatrixNetFramework;
+namespace A_BASIC_Language.TerminalMatrix;
 
 public static class ResolutionHelper
 {

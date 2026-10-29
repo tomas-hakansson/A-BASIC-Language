@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using A_BASIC_Language.Language;
 using A_BASIC_Language.Language.ValueTypes;
 
-namespace A_BASIC_Language.SpecificExecutors;
+namespace A_BASIC_Language.Language.SpecificExecutors;
 
 public class DimExecutor : VariableExecutor
 {
@@ -14,14 +13,14 @@ public class DimExecutor : VariableExecutor
         _dimVariables = dimVariables;
     }
 
-    public void Create(ABL_DIM_Creation dc)
+    public void Create(AblDimCreation dc)
     {
         if (Data.Count > 1)
         {
             var indexCount = (int)Data.Pop().GetValueAsType<IntValue>();
-            List<int> index = new();
+            List<int> index = [];
 
-            for (int inner = 0; inner < indexCount; inner++)
+            for (var inner = 0; inner < indexCount; inner++)
             {
                 var indexDigit = (int)Data.Pop().GetValueAsType<IntValue>();
                 index.Add(indexDigit);
@@ -37,15 +36,15 @@ public class DimExecutor : VariableExecutor
         }
     }
 
-    public void Read(ABL_DIM_Variable dv)
+    public void Read(AblDimVariable dv)
     {
         if (Data.Count > 1)
         {
             //Note: Removal of index data from the stack must be done in all successful cases.
             var indexCount = (int)Data.Pop().GetValueAsType<IntValue>();
-            List<int> index = new();
+            List<int> index = [];
             
-            for (int inner = 0; inner < indexCount; inner++)
+            for (var inner = 0; inner < indexCount; inner++)
             {
                 var indexDigit = (int)Data.Pop().GetValueAsType<IntValue>();
                 index.Add(indexDigit);
@@ -67,7 +66,7 @@ public class DimExecutor : VariableExecutor
         }
     }
 
-    public void Write(ABL_DIM_Assignment da)
+    public void Write(AblDimAssignment da)
     {
         if (Data.Count > 2)
         {
@@ -77,9 +76,9 @@ public class DimExecutor : VariableExecutor
             value = value.ForVariable(symbol);
 
             var indexCount = (int)Data.Pop().GetValueAsType<IntValue>();
-            List<int> index = new();
+            List<int> index = [];
 
-            for (int inner = 0; inner < indexCount; inner++)
+            for (var inner = 0; inner < indexCount; inner++)
             {
                 var indexDigit = (int)Data.Pop().GetValueAsType<IntValue>();
                 index.Add(indexDigit);

@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using A_BASIC_Language.Language.LanguageParts;
-using A_BASIC_Language.Stage1;
+using A_BASIC_Language.Language.Stage1;
 
 namespace A_BASIC_Language.Language.Stage2;
 
 public class Parser
 {
-    public A_BASIC_Language.Stage2.ParseResult Result { get; set; } = new A_BASIC_Language.Stage2.ParseResult();
-
     private readonly TokenizeResult _tokenizeResult;
     private readonly List<AblEvalValue> _evalValues;
     private readonly Dictionary<int, int> _labelIndex;
@@ -17,6 +15,7 @@ public class Parser
     private TokenType _currentTokenType;
     private bool _parsingIf;
     private int _generatedLabel;
+    public ParseResult Result { get; set; } = new();
 
     public Parser(TokenizeResult tokenizeResult)
     {
@@ -96,7 +95,7 @@ public class Parser
         if (_currentTokenType == TokenType.Label)
             return true;
         
-        if (_currentTokenType == TokenType.EOF)
+        if (_currentTokenType == TokenType.Eof)
             return false;
         
         return true;
@@ -183,9 +182,9 @@ public class Parser
         {
             var (fullName, _, dimVariable) = ASetVariable(true);
             if (dimVariable)
-                Generate(new ABL_DIM_Creation(fullName));
+                Generate(new AblDimCreation(fullName));
             else
-                Generate(new ABL_Variable(fullName));
+                Generate(new AblVariable(fullName));
         }
     }
 
@@ -239,14 +238,14 @@ public class Parser
 
         (string value, TokenType type) LookAhead()
         {
-            if (_currentTokenType == TokenType.EOF)//Note: just in case we're at the end.
-                return ("", TokenType.EOF);
+            if (_currentTokenType == TokenType.Eof)//Note: just in case we're at the end.
+                return ("", TokenType.Eof);
             var result = ("", TokenType.Space);
             for (int i = _index + 1; i < _tokenizeResult.TokenValues.Count; i++)
             {
                 var ctt = _tokenizeResult.TokenTypes[i];
-                if (ctt == TokenType.EOF)
-                    return ("", TokenType.EOF);
+                if (ctt == TokenType.Eof)
+                    return ("", TokenType.Eof);
                 if (ctt == TokenType.Space) continue;
                 result = (_tokenizeResult.TokenValues[i], ctt);
                 break;
@@ -292,7 +291,7 @@ public class Parser
         Next();
         bool shouldPrintNewline = true;
         while (_currentTokenType != TokenType.Label &&
-            _currentTokenType != TokenType.EOF &&
+            _currentTokenType != TokenType.Eof &&
             _currentTokenType != TokenType.Colon &&
             _currentTokenType != TokenType.Statement)//Note: checks for statement in case of ELSE statement in IF.
         {
@@ -379,9 +378,9 @@ public class Parser
     {
         var fullName = v.fullName;
         if (v.dimVariable)
-            return new ABL_DIM_Assignment(fullName);
+            return new AblDimAssignment(fullName);
         else
-            return new ABL_Assignment(fullName);
+            return new AblAssignment(fullName);
     }
 
     /// <summary>
@@ -429,7 +428,7 @@ public class Parser
             if (!MightMatch(TokenType.OpeningParenthesis))
             {
                 if (!assignmentMode)
-                    Generate(new ABL_Variable(fullName));
+                    Generate(new AblVariable(fullName));
                 return;
             }
             dimVariable = true;
@@ -439,7 +438,7 @@ public class Parser
             if (assignmentMode)
                 return;
             
-            Generate(new ABL_DIM_Variable(fullName));
+            Generate(new AblDimVariable(fullName));
             return;
 
             void IndexValue()
@@ -493,7 +492,7 @@ public class Parser
                     goto END;
             }
         }
-    END:;
+        END:;
     }
 
     private void Equal()
@@ -776,13 +775,13 @@ public class Parser
 
     private void SkipLine()
     {
-        while (_currentTokenType != TokenType.Label && _currentTokenType != TokenType.EOF)
+        while (_currentTokenType != TokenType.Label && _currentTokenType != TokenType.Eof)
             Next_wws();
     }
 
     private bool Next_wws()
     {
-        if (_currentTokenType == TokenType.EOF)
+        if (_currentTokenType == TokenType.Eof)
             return true;
 
         _currentTokenType = _tokenizeResult.TokenTypes[_index];

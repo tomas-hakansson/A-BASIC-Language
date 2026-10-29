@@ -215,7 +215,7 @@ public class PreProcessorController
             foreach (var part in parts)
                 _parent.WriteLine(part);
         }
-        catch (Exception e)
+        catch
         {
             _parent.WriteLine("?Failed to show 101 games");
         }

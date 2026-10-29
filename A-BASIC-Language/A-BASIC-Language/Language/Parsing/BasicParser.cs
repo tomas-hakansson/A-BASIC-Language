@@ -10,17 +10,17 @@ namespace A_BASIC_Language.Language.Parsing;
 
 public class BasicParser
 {
-    readonly string _source;
-    readonly bool _direct;
-    readonly SortedDictionary<int, List<AblEvalValue>> _lines;
-    int _currentLabel;
-    int _index;
-    readonly List<(int index, string message)> _parseErrors;
-    bool _parsingIf;
-    int? _onJumpKeywordIndex;
-    bool _parsingIfCondition;
-    int _generatedLabel;
-    List<AblEvalValue>? _expressionTarget;
+    private readonly string _source;
+    private readonly bool _direct;
+    private readonly SortedDictionary<int, List<AblEvalValue>> _lines;
+    private int _currentLabel;
+    private int _index;
+    private readonly List<(int index, string message)> _parseErrors;
+    private bool _parsingIf;
+    private int? _onJumpKeywordIndex;
+    private bool _parsingIfCondition;
+    private int _generatedLabel;
+    private List<AblEvalValue>? _expressionTarget;
     public ParseResult Result { get; }
 
     public BasicParser(string source, bool direct = false)
@@ -354,9 +354,9 @@ public class BasicParser
                 return;
             
             if (result.DimVariable)
-                Generate(new ABL_DIM_Creation(result.FullName));
+                Generate(new AblDimCreation(result.FullName));
             else
-                Generate(new ABL_Variable(result.FullName));
+                Generate(new AblVariable(result.FullName));
         }
     }
 
@@ -671,9 +671,9 @@ public class BasicParser
         var fullName = r.FullName;
 
         if (r.DimVariable)
-            return new ABL_DIM_Assignment(fullName);
+            return new AblDimAssignment(fullName);
         
-        return new ABL_Assignment(fullName);
+        return new AblAssignment(fullName);
     }
 
     // set-variable => name index?
@@ -715,7 +715,7 @@ public class BasicParser
             fullName = string.Empty;
             typeSpecifier = string.Empty;
 
-            var isVariable = _onJumpKeywordIndex is int boundary && boundary >= _index
+            var isVariable = _onJumpKeywordIndex is { } boundary && boundary >= _index
                 ? VariableRegex().Match(_source, _index, boundary - _index)
                 : VariableRegex().Match(_source, _index);
 
@@ -752,7 +752,7 @@ public class BasicParser
             if (!Maybe('('))
             {
                 if (!assignmentMode)
-                    Generate(new ABL_Variable(fullName));
+                    Generate(new AblVariable(fullName));
                 return true;
             }
             dimVariable = true;
@@ -765,7 +765,7 @@ public class BasicParser
             }
             if (assignmentMode)
                 return true;
-            Generate(new ABL_DIM_Variable(fullName));
+            Generate(new AblDimVariable(fullName));
             return true;
 
             void IndexValue()

@@ -1,7 +1,8 @@
 #nullable enable
+using TerminalMatrixNetFramework;
 using TerminalMatrixNetFramework.Definitions;
 
-namespace TerminalMatrixNetFramework;
+namespace A_BASIC_Language.TerminalMatrix;
 
 public class Coordinate
 {

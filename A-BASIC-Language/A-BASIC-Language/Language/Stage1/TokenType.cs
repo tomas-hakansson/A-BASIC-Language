@@ -1,11 +1,11 @@
-﻿namespace A_BASIC_Language.Stage1;
+﻿namespace A_BASIC_Language.Language.Stage1;
 
 public enum TokenType
 {
     ClosingParenthesis,
     Colon,
     Comma,
-    EOF,
+    Eof,
     EqualityOrAssignment,
     Float,
     Function,

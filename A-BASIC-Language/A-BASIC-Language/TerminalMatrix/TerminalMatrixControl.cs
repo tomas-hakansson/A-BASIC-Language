@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using A_BASIC_Language.TerminalMatrix.TerminalColor;
 using A_BASIC_Language.TerminalMatrix.TerminalMatrixControlFeatures;
 using PixelmapLibraryNetFramework;
 using PixelmapLibraryNetFramework.FontManagement;

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using A_BASIC_Language.Language.ValueTypes;
-using A_BASIC_Language.SpecificExecutors;
 
 namespace A_BASIC_Language.Language.SpecificExecutors;
 
@@ -14,7 +13,7 @@ public class FlatVariableExecutor : VariableExecutor
         _variables = variables;
     }
 
-    public void Create(ABL_Variable v)
+    public void Create(AblVariable v)
     {
         if (_variables.TryGetValue(v.Symbol, out var value))
         {
@@ -28,7 +27,7 @@ public class FlatVariableExecutor : VariableExecutor
         }
     }
 
-    public void Write(ABL_Assignment a)
+    public void Write(AblAssignment a)
     {
         if (Data.Count > 0)
         {

@@ -1,4 +1,4 @@
-﻿namespace TerminalMatrixNetFramework.TerminalColor;
+﻿namespace A_BASIC_Language.TerminalMatrix.TerminalColor;
 
 public enum ColorName
 {

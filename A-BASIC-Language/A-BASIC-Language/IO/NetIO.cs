@@ -29,7 +29,7 @@ public class NetIo : IoBase
                 Application.DoEvents();
             }
 
-            if (token.IsCompleted && !token.IsFaulted)
+            if (token is { IsCompleted: true, IsFaulted: false })
             {
                 var response = token.Result;
                 

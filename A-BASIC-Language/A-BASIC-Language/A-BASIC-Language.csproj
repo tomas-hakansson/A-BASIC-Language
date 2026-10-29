@@ -164,6 +164,7 @@
     <Compile Include="VersionService.cs" />
     <EmbeddedResource Include="Gui\Dialogs\OptionsDialog.resx">
       <DependentUpon>OptionsDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\SourceCodeDialog.resx">
       <DependentUpon>SourceCodeDialog.cs</DependentUpon>

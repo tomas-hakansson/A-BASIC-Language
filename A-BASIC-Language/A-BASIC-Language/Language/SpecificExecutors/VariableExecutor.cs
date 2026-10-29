@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using A_BASIC_Language.Language.ValueTypes;
 
-namespace A_BASIC_Language.SpecificExecutors;
+namespace A_BASIC_Language.Language.SpecificExecutors;
 
 public abstract class VariableExecutor
 {

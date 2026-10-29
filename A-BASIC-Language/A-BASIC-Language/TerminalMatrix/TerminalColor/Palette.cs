@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using A_BASIC_Language.TerminalMatrix.TerminalColor;
 
 namespace TerminalMatrixNetFramework.TerminalColor;
 

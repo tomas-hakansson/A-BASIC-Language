@@ -1,4 +1,4 @@
-﻿namespace A_BASIC_Language.SpecificExecutors;
+﻿namespace A_BASIC_Language.Language.SpecificExecutors;
 
 public interface ISubExecutor
 {

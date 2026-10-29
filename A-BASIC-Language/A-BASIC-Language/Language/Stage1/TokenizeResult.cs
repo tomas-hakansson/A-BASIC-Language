@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace A_BASIC_Language.Stage1;
+namespace A_BASIC_Language.Language.Stage1;
 
 public class TokenizeResult
 {
@@ -24,6 +24,7 @@ public class TokenizeResult
     {
         if (values.Count != types.Count)
             throw new ArgumentException("Values and types must have the same length");
+
         TokenValues.AddRange(values);
         TokenTypes.AddRange(types);
     }

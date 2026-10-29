@@ -1,4 +1,4 @@
-﻿namespace TerminalMatrixNetFramework;
+﻿namespace A_BASIC_Language.TerminalMatrix;
 
 public class CharacterPixelMatrix
 {
@@ -7,7 +7,6 @@ public class CharacterPixelMatrix
     public CharacterPixelMatrix(string data)
     {
         Pixels = new bool[8, 8];
-
         var index = 0;
 
         for (var y = 0; y < 8; y++)

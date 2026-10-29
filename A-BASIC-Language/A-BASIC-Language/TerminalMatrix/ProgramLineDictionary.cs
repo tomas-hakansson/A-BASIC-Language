@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace TerminalMatrixNetFramework;
+namespace A_BASIC_Language.TerminalMatrix;
 
 public class ProgramLineDictionary : SortedDictionary<int, ProgramLine>
 {

@@ -3,18 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PixelmapLibraryNetFramework.FontManagement;
+namespace A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 
-public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
+public class TerminalFont : IReadOnlyDictionary<char, PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix>
 {
-    private readonly Dictionary<char, CharacterPixelMatrix> _data;
+    private readonly Dictionary<char, PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix> _data;
 
     public TerminalFont()
     {
-        _data = new Dictionary<char, CharacterPixelMatrix>
+        _data = new Dictionary<char, PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix>
         {
             {
-                ' ', new CharacterPixelMatrix(
+                ' ', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",,,,,,,," +
@@ -26,7 +26,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '@', new CharacterPixelMatrix(
+                '@', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,****,," +
                     ",*,,,,*," +
                     "*,,**,,*" +
@@ -38,7 +38,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '(', new CharacterPixelMatrix(
+                '(', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,**,," +
                     ",,,**,,," +
                     ",,**,,,," +
@@ -50,7 +50,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                ')', new CharacterPixelMatrix(
+                ')', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,**,,,," +
                     ",,,**,,," +
                     ",,,,**,," +
@@ -62,7 +62,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '<', new CharacterPixelMatrix(
+                '<', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,**,," +
                     ",,,**,,," +
@@ -74,7 +74,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '>', new CharacterPixelMatrix(
+                '>', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,**,,,," +
                     ",,,**,,," +
@@ -86,7 +86,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '#', new CharacterPixelMatrix(
+                '#', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,**,**," +
                     ",*******" +
                     ",,**,**," +
@@ -98,7 +98,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '$', new CharacterPixelMatrix(
+                '$', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,**,,," +
                     ",,****,," +
                     ",**,,,,," +
@@ -110,7 +110,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '&', new CharacterPixelMatrix(
+                '&', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,****,," +
                     ",**,,**," +
                     ",,****,," +
@@ -122,7 +122,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                ':', new CharacterPixelMatrix(
+                ':', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",,,**,,," +
@@ -134,7 +134,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '+', new CharacterPixelMatrix(
+                '+', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,**,,," +
                     ",,,**,,," +
@@ -146,7 +146,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '*', new CharacterPixelMatrix(
+                '*', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",**,,**," +
                     ",,****,," +
@@ -158,7 +158,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '/', new CharacterPixelMatrix(
+                '/', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,**,," +
                     ",,,,**,," +
@@ -170,7 +170,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '\\', new CharacterPixelMatrix(
+                '\\', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,**,,,," +
                     ",,**,,,," +
@@ -182,7 +182,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '%', new CharacterPixelMatrix(
+                '%', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     "**,,**,," +
                     "**,,**,," +
@@ -194,7 +194,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                ',', new CharacterPixelMatrix(
+                ',', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",,,,,,,," +
@@ -206,7 +206,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                ';', new CharacterPixelMatrix(
+                ';', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",,,,,,,," +
@@ -218,7 +218,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '.', new CharacterPixelMatrix(
+                '.', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",,,,,,,," +
@@ -230,7 +230,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '"', new CharacterPixelMatrix(
+                '"', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",**,,**," +
                     ",**,,**," +
                     ",,,,,,,," +
@@ -242,7 +242,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '\'', new CharacterPixelMatrix(
+                '\'', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,**,,," +
                     ",,,**,,," +
                     ",,,,,,,," +
@@ -254,7 +254,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '0', new CharacterPixelMatrix(
+                '0', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,****,," +
                     ",**,,**," +
                     ",**,***," +
@@ -266,7 +266,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '!', new CharacterPixelMatrix(
+                '!', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,**,,," +
                     ",,,**,,," +
                     ",,,**,,," +
@@ -278,7 +278,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '?', new CharacterPixelMatrix(
+                '?', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,****,," +
                     ",**,,**," +
                     ",,,,,**," +
@@ -290,7 +290,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '1', new CharacterPixelMatrix(
+                '1', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,**,,," +
                     ",,***,,," +
                     ",****,,," +
@@ -302,7 +302,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '2', new CharacterPixelMatrix(
+                '2', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,****,," +
                     ",**,,**," +
                     ",,,, **," +
@@ -314,7 +314,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '3', new CharacterPixelMatrix(
+                '3', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,****,," +
                     ",**,,**," +
                     ",,,,,**," +
@@ -326,7 +326,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '4', new CharacterPixelMatrix(
+                '4', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,***," +
                     ",,,****," +
                     ",,**,**," +
@@ -338,7 +338,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '5', new CharacterPixelMatrix(
+                '5', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",******," +
                     ",**,,,,," +
                     ",**,,,,," +
@@ -350,7 +350,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '6', new CharacterPixelMatrix(
+                '6', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,****,," +
                     ",**,,**," +
                     ",**,,,,," +
@@ -362,7 +362,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '7', new CharacterPixelMatrix(
+                '7', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",******," +
                     ",,,,,**," +
                     ",,,,,**," +
@@ -374,7 +374,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '8', new CharacterPixelMatrix(
+                '8', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,****,," +
                     ",**,,**," +
                     ",**,,**," +
@@ -386,7 +386,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '9', new CharacterPixelMatrix(
+                '9', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,****,," +
                     ",**,,**," +
                     ",**,,**," +
@@ -398,7 +398,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'A', new CharacterPixelMatrix(
+                'A', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,**,,," +
                     ",,****,," +
                     ",**,,**," +
@@ -410,7 +410,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'a', new CharacterPixelMatrix(
+                'a', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",,****,," +
@@ -422,7 +422,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'B', new CharacterPixelMatrix(
+                'B', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",*****,," +
                     ",**,,**," +
                     ",**,,**," +
@@ -434,7 +434,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'b', new CharacterPixelMatrix(
+                'b', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",**,,,,," +
                     ",**,,,,," +
                     ",*****,," +
@@ -446,7 +446,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'C', new CharacterPixelMatrix(
+                'C', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,****,," +
                     ",**,,**," +
                     ",**,,,,," +
@@ -458,7 +458,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'c', new CharacterPixelMatrix(
+                'c', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",,****,," +
@@ -470,7 +470,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'D', new CharacterPixelMatrix(
+                'D', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",****,,," +
                     ",**,**,," +
                     ",**,,**," +
@@ -482,7 +482,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'd', new CharacterPixelMatrix(
+                'd', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,**," +
                     ",,,,,**," +
                     ",,*****," +
@@ -494,7 +494,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'E', new CharacterPixelMatrix(
+                'E', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",******," +
                     ",**,,,,," +
                     ",**,,,,," +
@@ -506,7 +506,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'e', new CharacterPixelMatrix(
+                'e', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",,****,," +
@@ -518,7 +518,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'F', new CharacterPixelMatrix(
+                'F', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",******," +
                     ",**,,,,," +
                     ",**,,,,," +
@@ -530,7 +530,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'f', new CharacterPixelMatrix(
+                'f', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,****," +
                     ",,**,,,," +
                     ",,**,,,," +
@@ -542,7 +542,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'G', new CharacterPixelMatrix(
+                'G', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,****,," +
                     ",**,,**," +
                     ",**,,,,," +
@@ -554,7 +554,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'g', new CharacterPixelMatrix(
+                'g', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",,*****," +
@@ -566,7 +566,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'H', new CharacterPixelMatrix(
+                'H', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",**,,**," +
                     ",**,,**," +
                     ",**,,**," +
@@ -578,7 +578,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'h', new CharacterPixelMatrix(
+                'h', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",**,,,,," +
                     ",**,,,,," +
                     ",*****,," +
@@ -590,7 +590,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'I', new CharacterPixelMatrix(
+                'I', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,****,," +
                     ",,,**,,," +
                     ",,,**,,," +
@@ -602,7 +602,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'i', new CharacterPixelMatrix(
+                'i', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,**,,," +
                     ",,,,,,,," +
                     ",,,**,,," +
@@ -614,7 +614,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'J', new CharacterPixelMatrix(
+                'J', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,****," +
                     ",,,,,**," +
                     ",,,,,**," +
@@ -626,7 +626,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'j', new CharacterPixelMatrix(
+                'j', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,**," +
                     ",,,,,,,," +
                     ",,,,,**," +
@@ -638,7 +638,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'K', new CharacterPixelMatrix(
+                'K', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",**,,**," +
                     ",**,,**," +
                     ",**,**,," +
@@ -650,7 +650,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'k', new CharacterPixelMatrix(
+                'k', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",**,,,,," +
                     ",**,,,,," +
                     ",**,,**," +
@@ -662,7 +662,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'L', new CharacterPixelMatrix(
+                'L', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",**,,,,," +
                     ",**,,,,," +
                     ",**,,,,," +
@@ -674,7 +674,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'l', new CharacterPixelMatrix(
+                'l', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,***,,," +
                     ",,,**,,," +
                     ",,,**,,," +
@@ -686,7 +686,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'M', new CharacterPixelMatrix(
+                'M', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",**,,,**" +
                     ",***,***" +
                     ",*******" +
@@ -698,7 +698,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'm', new CharacterPixelMatrix(
+                'm', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",***,**," +
@@ -710,7 +710,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'N', new CharacterPixelMatrix(
+                'N', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",**,,**," +
                     ",***,**," +
                     ",******," +
@@ -722,7 +722,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'n', new CharacterPixelMatrix(
+                'n', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",******," +
@@ -734,7 +734,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'O', new CharacterPixelMatrix(
+                'O', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,****,," +
                     ",**,,**," +
                     ",**,,**," +
@@ -746,7 +746,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'o', new CharacterPixelMatrix(
+                'o', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",,****,," +
@@ -758,7 +758,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'P', new CharacterPixelMatrix(
+                'P', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",*****,," +
                     ",**,,**," +
                     ",**,,**," +
@@ -770,7 +770,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'p', new CharacterPixelMatrix(
+                'p', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",*****,," +
@@ -782,7 +782,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'Q', new CharacterPixelMatrix(
+                'Q', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,****,," +
                     ",**,,**," +
                     ",**,,**," +
@@ -794,7 +794,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'q', new CharacterPixelMatrix(
+                'q', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",,*****," +
@@ -806,7 +806,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'R', new CharacterPixelMatrix(
+                'R', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",*****,," +
                     ",**,,**," +
                     ",**,,**," +
@@ -818,7 +818,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'r', new CharacterPixelMatrix(
+                'r', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",*****,," +
@@ -830,7 +830,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'S', new CharacterPixelMatrix(
+                'S', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,****,," +
                     ",**,,**," +
                     ",**,,,,," +
@@ -842,7 +842,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                's', new CharacterPixelMatrix(
+                's', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",,****,," +
@@ -854,7 +854,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'T', new CharacterPixelMatrix(
+                'T', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",******," +
                     ",,,**,,," +
                     ",,,**,,," +
@@ -866,7 +866,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                't', new CharacterPixelMatrix(
+                't', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,**,,,," +
                     ",,**,,,," +
                     ",*****,," +
@@ -878,7 +878,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'U', new CharacterPixelMatrix(
+                'U', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",**,,**," +
                     ",**,,**," +
                     ",**,,**," +
@@ -890,7 +890,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'u', new CharacterPixelMatrix(
+                'u', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",**,,**," +
@@ -902,21 +902,9 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'V', new CharacterPixelMatrix(
+                'V', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",**,,**," +
                     ",**,,**," +
-                    ",**,,**," +
-                    ",**,,**," +
-                    ",**,,**," +
-                    ",,****,," +
-                    ",,,**,,," +
-                    ",,,,,,,,"
-                )
-            },
-            {
-                'v', new CharacterPixelMatrix(
-                    ",,,,,,,," +
-                    ",,,,,,,," +
                     ",**,,**," +
                     ",**,,**," +
                     ",**,,**," +
@@ -926,7 +914,19 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'W', new CharacterPixelMatrix(
+                'v', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
+                    ",,,,,,,," +
+                    ",,,,,,,," +
+                    ",**,,**," +
+                    ",**,,**," +
+                    ",**,,**," +
+                    ",,****,," +
+                    ",,,**,,," +
+                    ",,,,,,,,"
+                )
+            },
+            {
+                'W', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",**,,,**" +
                     ",**,,,**" +
                     ",**,,,**" +
@@ -938,7 +938,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'w', new CharacterPixelMatrix(
+                'w', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",**,,,**" +
@@ -950,7 +950,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'X', new CharacterPixelMatrix(
+                'X', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",**,,**," +
                     ",**,,**," +
                     ",,****,," +
@@ -962,7 +962,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'x', new CharacterPixelMatrix(
+                'x', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",**,,**," +
@@ -974,7 +974,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'Y', new CharacterPixelMatrix(
+                'Y', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",**,,**," +
                     ",**,,**," +
                     ",**,,**," +
@@ -986,7 +986,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'y', new CharacterPixelMatrix(
+                'y', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",**,,**," +
@@ -998,7 +998,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'Z', new CharacterPixelMatrix(
+                'Z', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",******," +
                     ",,,,,**," +
                     ",,,,**,," +
@@ -1010,7 +1010,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                'z', new CharacterPixelMatrix(
+                'z', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",******," +
@@ -1022,7 +1022,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '-', new CharacterPixelMatrix(
+                '-', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",,,,,,,," +
@@ -1034,7 +1034,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
                 )
             },
             {
-                '=', new CharacterPixelMatrix(
+                '=', new PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix(
                     ",,,,,,,," +
                     ",,,,,,,," +
                     ",******," +
@@ -1048,7 +1048,7 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
         };
     }
 
-    public IEnumerator<KeyValuePair<char, CharacterPixelMatrix>> GetEnumerator() =>
+    public IEnumerator<KeyValuePair<char, PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix>> GetEnumerator() =>
         _data.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() =>
@@ -1061,19 +1061,19 @@ public class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMatrix>
         _data.ContainsKey(key);
 
 #pragma warning disable CS8601 // Possible null reference assignment.
-    public bool TryGetValue(char key, out CharacterPixelMatrix value) =>
+    public bool TryGetValue(char key, out PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix value) =>
         _data.TryGetValue(key, out value);
 #pragma warning restore CS8601 // Possible null reference assignment.
 
-    public CharacterPixelMatrix this[int index] =>
+    public PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix this[int index] =>
         _data.ElementAt(index).Value;
 
-    public CharacterPixelMatrix this[char key] =>
+    public PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix this[char key] =>
         _data[key];
 
     public IEnumerable<char> Keys =>
         _data.Keys;
 
-    public IEnumerable<CharacterPixelMatrix> Values =>
+    public IEnumerable<PixelmapLibraryNetFramework.FontManagement.CharacterPixelMatrix> Values =>
         _data.Values;
 }

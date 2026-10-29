@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using A_BASIC_Language.Language.Stage1;
 
-namespace A_BASIC_Language.Stage1;
+namespace A_BASIC_Language.Language.Stage1;
 
-class Tokenizer
+internal class Tokenizer
 {
     public TokenizeResult Result { get; set; }
 
@@ -171,10 +170,12 @@ class Tokenizer
         tokenValues.AddRange(names.Select(n => n.ToUpper()));
 
         //Note: Get (and remove) the floats.
-        var floatPattern = @"\d+ \. \d+ | \.\d+";
+        const string floatPattern = @"\d+ \. \d+ | \.\d+";
+
         var (floatIndices, floatLengths, floats) = GetSimpleMatch(floatPattern,
             RegexOptions.CultureInvariant |
             RegexOptions.IgnorePatternWhitespace);
+        
         tokenTypes.AddRange(Enumerable.Repeat(TokenType.Float, floatIndices.Count).ToList());
         tokenIndices.AddRange(floatIndices);
         tokenLengths.AddRange(floatLengths);
@@ -182,10 +183,12 @@ class Tokenizer
 
         //Note: Get (and remove) the numbers.
         // (there is no way to know at this point whether this is a float or an integer).
-        var intPattern = @$"\d+";
+        const string intPattern = @"\d+";
+
         var (intIndices, intLengths, ints) = GetSimpleMatch(intPattern,
             RegexOptions.CultureInvariant |
             RegexOptions.IgnorePatternWhitespace);
+        
         tokenTypes.AddRange(Enumerable.Repeat(TokenType.Number, intIndices.Count).ToList());
         tokenIndices.AddRange(intIndices);
         tokenLengths.AddRange(intLengths);
@@ -201,11 +204,12 @@ class Tokenizer
          */
 
         //Note: Get (and remove) space characters.
-        var spacePattern = @$"\s+";
+        const string spacePattern = @"\s+";
 
         var spaceMatches = Regex.Matches(_source, spacePattern,
             RegexOptions.CultureInvariant |
             RegexOptions.IgnorePatternWhitespace);
+
         foreach (Match mi in spaceMatches)
         {
             if (mi.Success)
@@ -225,7 +229,8 @@ class Tokenizer
 
         //Note: Put the tokens in the correct order.
         SortedDictionary<int, (TokenType, int, string)> sortedTokens = new();
-        for (int i = 0; i < tokenIndices.Count; i++)
+
+        for (var i = 0; i < tokenIndices.Count; i++)
         {
             var value = (tokenTypes[i], tokenLengths[i], tokenValues[i]);
             sortedTokens.Add(tokenIndices[i], value);
@@ -235,25 +240,26 @@ class Tokenizer
         //Note: Label is parsed to int for correct ordering.
         var isBeginning = true;
         SortedDictionary<int, (List<string>, List<TokenType>)> sortedLines = new();
-        List<string> lineValues = new();
-        List<TokenType> lineTypes = new();
+        List<string> lineValues = [];
+        List<TokenType> lineTypes = [];
 
-        foreach ((_, (TokenType type, _, string value)) in sortedTokens)
+        foreach (var (_, (type, _, value)) in sortedTokens)
         {
             if (isBeginning)
             {
                 if (type == TokenType.Space)
                     continue;
-                else
-                    isBeginning = false;
+                
+                isBeginning = false;
             }
 
             if (type == TokenType.Label)
             {
                 if (lineValues.Count > 0)
                     sortedLines.Add(int.Parse(lineValues.First()), (lineValues, lineTypes));
-                lineValues = new();
-                lineTypes = new();
+                
+                lineValues = [];
+                lineTypes = [];
             }
             lineValues.Add(value);
             lineTypes.Add(type);
@@ -270,30 +276,32 @@ class Tokenizer
         }
 
         //Note: add end of line token for parsing:
-        Result.Add(string.Empty, TokenType.EOF);
+        Result.Add(string.Empty, TokenType.Eof);
     }
 
     private (List<int> indices, List<int> lengths, List<string> values) GetSimpleMatch(string pattern, RegexOptions regexOption)
     {
         var matches = Regex.Matches(_source, pattern, regexOption);
-        List<int> indices = new();
-        List<int> lengths = new();
-        List<string> values = new();
+        List<int> indices = [];
+        List<int> lengths = [];
+        List<string> values = [];
+
         foreach (Match m in matches)
         {
-            if (m.Success)
-            {
-                indices.Add(m.Index);
-                lengths.Add(m.Length);
-                values.Add(m.Value);
+            if (!m.Success)
+                continue;
 
-                //Note: I choose '¤' as a placeholder character because it's not allowed in valid
-                // BASIC code. If we ever decide that it should be allowed in ABL code the
-                // choosen placeholder character must be replaced or the logic changed.
-                string placeholders = new('¤', m.Value.Length);
-                _source = _source.Remove(m.Index, m.Length).Insert(m.Index, placeholders);
-            }
+            indices.Add(m.Index);
+            lengths.Add(m.Length);
+            values.Add(m.Value);
+
+            //Note: I choose '¤' as a placeholder character because it's not allowed in valid
+            // BASIC code. If we ever decide that it should be allowed in ABL code the
+            // choosen placeholder character must be replaced or the logic changed.
+            string placeholders = new('¤', m.Value.Length);
+            _source = _source.Remove(m.Index, m.Length).Insert(m.Index, placeholders);
         }
+
         return (indices, lengths, values);
     }
 
@@ -301,18 +309,20 @@ class Tokenizer
     {
         using StringReader reader = new(_source);
         using StringWriter writer = new();
-        string line;
-        while ((line = reader.ReadLine()!) != null)
+
+        while (reader.ReadLine()! is { } line)
         {
             if (line.Trim().Length > 0)
                 writer.WriteLine(line);
         }
+
         _source = writer.ToString().Trim();
     }
 
     private (List<int> indices, List<int> lengths, List<string> values) GetReservedWords(List<string> words)
     {
         var aWord = string.Empty;
+        
         foreach (var word in words)
         {
             //., +, *, ?, ^, $, (, ), [, ], {, }, |, \
@@ -322,15 +332,16 @@ class Tokenizer
             }
             aWord += word + "|";
         }
+        
         aWord = aWord.Remove(aWord.Length - 1);
 
         var matches = Regex.Matches(_source, aWord,
             RegexOptions.CultureInvariant |
             RegexOptions.IgnoreCase);
         
-        List<int> indices = new();
-        List<int> lengths = new();//not sure I need this.
-        List<string> values = new();
+        List<int> indices = [];
+        List<int> lengths = []; //not sure I need this.
+        List<string> values = [];
         
         foreach (Match m in matches)
         {

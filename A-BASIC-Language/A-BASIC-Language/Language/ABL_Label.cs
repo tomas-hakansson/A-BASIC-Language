@@ -41,11 +41,11 @@ public class AblString : AblEvalValue
     }
 }
 
-public class ABL_DIM_Creation : AblEvalValue
+public class AblDimCreation : AblEvalValue
 {
     public string Symbol { get; }
 
-    public ABL_DIM_Creation(string symbol)
+    public AblDimCreation(string symbol)
     {
         Symbol = symbol.ToUpper();
     }
@@ -56,11 +56,11 @@ public class ABL_DIM_Creation : AblEvalValue
     }
 }
 
-public class ABL_Variable : AblEvalValue
+public class AblVariable : AblEvalValue
 {
     public string Symbol { get; }
 
-    public ABL_Variable(string symbol)
+    public AblVariable(string symbol)
     {
         Symbol = symbol.ToUpper();
     }
@@ -71,11 +71,11 @@ public class ABL_Variable : AblEvalValue
     }
 }
 
-public class ABL_DIM_Variable : AblEvalValue
+public class AblDimVariable : AblEvalValue
 {
     public string Symbol { get; }
 
-    public ABL_DIM_Variable(string symbol)
+    public AblDimVariable(string symbol)
     {
         Symbol = symbol.ToUpper();
     }
@@ -86,10 +86,11 @@ public class ABL_DIM_Variable : AblEvalValue
     }
 }
 
-public class ABL_Assignment : AblEvalValue
+public class AblAssignment : AblEvalValue
 {
     public string Symbol { get; }
-    public ABL_Assignment(string symbol)
+
+    public AblAssignment(string symbol)
     {
         Symbol = symbol.ToUpper();
     }
@@ -100,11 +101,11 @@ public class ABL_Assignment : AblEvalValue
     }
 }
 
-public class ABL_DIM_Assignment : AblEvalValue
+public class AblDimAssignment : AblEvalValue
 {
     public string Symbol { get; }
 
-    public ABL_DIM_Assignment(string symbol)
+    public AblDimAssignment(string symbol)
     {
         Symbol = symbol.ToUpper();
     }
@@ -114,5 +115,3 @@ public class ABL_DIM_Assignment : AblEvalValue
         return $"D=({Symbol})";
     }
 }
-
-
