@@ -67,7 +67,7 @@ Of the 101 games, we support the ones followed by a 1:
 | gunner            |     0     |
 | hammurabi         |     0     |
 | hangman           |     0     |
-| hello             |           |
+| hello             |     1     |
 | hexapawn          |           |
 | hi-lo             |           |
 | highiq            |           |
@@ -82,14 +82,14 @@ Of the 101 games, we support the ones followed by a 1:
 | lifefortwo        |           |
 | litquiz           |           |
 | love              |           |
-| lunar             |           |
+| lunar             |     1     |
 | mastermind        |     0     |
 | mathdice          |     1     |
 | mugwump           |     1     |
 | name              |     0     |
 | nicomachus        |     1     |
 | nim               |     0     |
-| number            |           |
+| number            |     1     |
 | onecheck          |           |
 | orbit             |           |
 | pizza             |           |
@@ -109,8 +109,8 @@ Of the 101 games, we support the ones followed by a 1:
 | splat             |           |
 | stars             |           |
 | stockmarket       |           |
-| superstartrek     |           |
-| superstartrekins  |           |
+| superstartrek     |     0     |
+| superstartrekins  |     0     |
 | synonym           |     0     |
 | target            |     0     |
 | tictactoe1        |     1     |
