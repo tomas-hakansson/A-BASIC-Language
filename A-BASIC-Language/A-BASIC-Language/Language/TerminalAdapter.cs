@@ -19,6 +19,7 @@ public sealed class TerminalAdapter(TerminalMatrixControl terminal) : IBasicTerm
     }
 
     public void SetTextRenderLimit(int limit) => terminal.SetTextRenderLimit(limit);
+    public void SetTextColor(int color) => terminal.CurrentCursorColor = (byte)color;
     public void PumpEvents() => Application.DoEvents();
 
     public void Write(string text)

@@ -185,6 +185,9 @@ public class BasicParser
                     case "WINDOW":
                         Window();
                         break;
+                    case "COLOR":
+                        Color();
+                        break;
                     case "RANDOMIZE":
                         Generate(new AblProcedure("RANDOMIZE"));
                         break;
@@ -781,6 +784,16 @@ public class BasicParser
         }
     }
 
+    // COLOR target, color: both arguments are required numeric expressions.
+    void Color()
+    {
+        Expression();
+        if (!Maybe(','))
+            throw new InvalidOperationException("Expected comma between COLOR arguments.");
+        Expression();
+        Generate(new AblProcedure("COLOR"));
+    }
+
     // WINDOW [expression]: the argument is the number of text rows at the bottom.
     void Window()
     {
@@ -1239,7 +1252,7 @@ public class BasicParser
     }
 
     static Regex StatementRegex() =>
-        new(@"\G(?<statement>DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|WINDOW|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|WINDOW|COLOR|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

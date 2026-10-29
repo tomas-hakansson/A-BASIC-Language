@@ -113,6 +113,7 @@ internal static class Program
         public string InputString(string prompt) { return _inputs.Dequeue(); }
         public void PumpEvents() { Pumps++; Application.DoEvents(); OnPump?.Invoke(); }
         public void ClearScreen() { }
+        public void SetTextColor(int color) { }
         public void SetTextRenderLimit(int limit) { }
     }
 }

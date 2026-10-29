@@ -194,6 +194,7 @@ internal static class Program
         private string _line = "";
         private int _ticks;
         public void ClearScreen() { }
+        public void SetTextColor(int color) { }
         public void SetTextRenderLimit(int limit) { }
         public bool QuitFlag => false;
         public int OutputColumn => _line.Length;

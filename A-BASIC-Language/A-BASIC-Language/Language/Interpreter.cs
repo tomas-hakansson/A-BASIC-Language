@@ -559,6 +559,18 @@ public class Interpreter
                         case "#NEXT-TAB-POSITION":
                             _terminal.Write(new string(' ', 14 - _terminal.OutputColumn % 14));
                             break;
+                        case "COLOR":
+                            {
+                                var color = Number(_data.Pop());
+                                var target = Number(_data.Pop());
+                                if (target != 1)
+                                    throw new InvalidOperationException("COLOR supports only target 1 (text color).");
+                                if (double.IsNaN(color) || double.IsInfinity(color) ||
+                                    color < 0 || color > 15 || color != Math.Floor(color))
+                                    throw new InvalidOperationException("COLOR requires a whole number from 0 to 15 for the color.");
+                                _terminal.SetTextColor((int)color);
+                            }
+                            break;
                         case "WINDOW":
                             {
                                 var rows = Number(_data.Pop());

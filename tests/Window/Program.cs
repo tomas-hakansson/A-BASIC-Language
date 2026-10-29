@@ -90,6 +90,7 @@ internal static class Program
         private bool _cleared;
         public int ClearCount { get; private set; }
         public void ClearScreen() { _cleared = true; ClearCount++; _line = ""; }
+        public void SetTextColor(int color) { }
         public void SetTextRenderLimit(int limit)
         {
             Require(_cleared, "WINDOW changed the limit before clearing the screen");

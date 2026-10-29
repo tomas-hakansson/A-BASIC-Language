@@ -11,4 +11,5 @@ public interface IBasicTerminal
     void PumpEvents();
     void ClearScreen();
     void SetTextRenderLimit(int limit);
+    void SetTextColor(int color);
 }

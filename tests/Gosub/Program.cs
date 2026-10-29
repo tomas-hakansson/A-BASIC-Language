@@ -116,6 +116,7 @@ internal static class Program
         public void Write(string text) => _line += text;
         public void WriteLine(string text) { Lines.Add(_line + text); _line = ""; }
         public void ClearScreen() => _line = "";
+        public void SetTextColor(int color) { }
         public void SetTextRenderLimit(int limit) { }
         public string InputString(string prompt) => throw new Exception("Unexpected INPUT");
         public void PumpEvents() { }

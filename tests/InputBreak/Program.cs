@@ -184,6 +184,7 @@ internal static class Program
         private string _line = "";
         public FakeTerminal(Func<string> input) { _input = input; }
         public void ClearScreen() { }
+        public void SetTextColor(int color) { }
         public void SetTextRenderLimit(int limit) { }
         public bool QuitFlag => false;
         public int OutputColumn => _line.Length;
