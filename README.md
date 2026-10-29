@@ -65,8 +65,8 @@ Of the 101 games, we support the ones followed by a 1:
 | gomoko            |     0     |
 | guess             |     1     |
 | gunner            |     0     |
-| hammurabi         |           |
-| hangman           |           |
+| hammurabi         |     0     |
+| hangman           |     0     |
 | hello             |           |
 | hexapawn          |           |
 | hi-lo             |           |

@@ -65,6 +65,7 @@ public partial class MainWindow : Form
         highQualityRenderingToolStripMenuItem.Checked = highQualityRendering;
         terminalMatrixControl1.RenderingMode = highQualityRendering ? RenderingMode.HighQuality : RenderingMode.HighSpeed;
         new WindowConfigurator(terminalMatrixControl1, _log).Configure(this, resolutionToolStripMenuItem, Settings.Default.Resolution);
+        
     }
 
     private void exitToolStripMenuItem_Click(object sender, EventArgs e) =>
@@ -172,6 +173,7 @@ public partial class MainWindow : Form
     {
         terminalMatrixControl1.Focus();
         Refresh();
+        CheckResolutionBox();
     }
 
     private void terminalMatrixControl1_Leave(object sender, EventArgs e) =>
