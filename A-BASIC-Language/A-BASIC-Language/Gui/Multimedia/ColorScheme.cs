@@ -41,7 +41,7 @@ public class ColorSchemeConfigurationList : List<ColorSchemeConfiguration>
         Add(new ColorSchemeConfiguration("COMMODORE 64", ColorScheme.C64, ColorName.Blue, ColorName.LightBlue, ColorName.LightBlue));
         Add(new ColorSchemeConfiguration("COMMODORE 128", ColorScheme.C128, ColorName.DarkGrey, ColorName.LightGreen, ColorName.LightGreen));
         Add(new ColorSchemeConfiguration("VIC-20", ColorScheme.Vic20, ColorName.White, ColorName.Blue, ColorName.Cyan));
-        Add(new ColorSchemeConfiguration("COMMODORE 16", ColorScheme.C16, ColorName.Violet, ColorName.Black, ColorName.White));
+        Add(new ColorSchemeConfiguration("COMMODORE 16", ColorScheme.C16, ColorName.White, ColorName.Black, ColorName.Violet));
     }
 
     public ColorSchemeConfiguration Get(ColorScheme scheme) =>
