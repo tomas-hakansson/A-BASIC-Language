@@ -274,7 +274,7 @@ public partial class MainWindow : Form
         }
     }
 
-    private void ApplyColorScheme(ColorScheme scheme)
+    internal void ApplyColorScheme(ColorScheme scheme)
     {
         var colors = new ColorSchemeConfigurationList().Get(scheme);
         terminalMatrixControl1.CurrentCursorColor = (byte)colors.Text;

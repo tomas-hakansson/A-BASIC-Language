@@ -21,5 +21,6 @@ public enum PreProcessorParserResult
     List,
     Show101Games,
     Load101Games,
-    Quit
+    Quit,
+    ColorTheme
 }

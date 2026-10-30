@@ -232,7 +232,7 @@
                     <tr><td><a href="#rnd">RND / RND(x)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Random number from 0 inclusive to 1 exclusive.</td></tr>
                     <tr><td><a href="#sqr">SQR(x)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Square root.</td></tr>
                     <tr><td><a href="#tab">TAB(n)</a></td><td>Yes, intended for PRINT</td><td>Yes, intended for PRINT</td><td>Position output at an absolute column.</td></tr>
-                    <tr><td><a href="#appcommands">! commands</a></td><td>Yes, in the terminal</td><td>No</td><td>Commands for display, rendering mode, diagnostics, listing and quitting.</td></tr>
+                    <tr><td><a href="#appcommands">! commands</a></td><td>Yes, in the terminal</td><td>No</td><td>Commands for display, color themes, rendering mode, diagnostics, listing and quitting.</td></tr>
                 </tbody>
             </table>
             <p>For all recognized function names without runtime support, see <a href="#missing">the separate list</a>. They are not counted as working functions. The <a href="#operators">operator reference</a> also describes all implemented arithmetic and comparison operators.</p>
@@ -328,12 +328,20 @@
                     <tr><td><code>!RES 1</code>, <code>!RES 2</code>, <code>!RES 3</code>, <code>!RES 4</code></td><td>Select 80, 60, 40 or 20 columns, respectively.</td><td>View → Resolution or Tools → Options.</td></tr>
                     <tr><td><code>!HQ-RENDER</code></td><td>Switch between high rendering quality and faster rendering. Does not affect calculations.</td><td>View → High quality rendering.</td></tr>
                     <tr><td><code>!HQ-RENDER ON</code> / <code>!HQ-RENDER OFF</code></td><td>Turn high rendering quality on/off.</td><td>View → High quality rendering or Tools → Options.</td></tr>
+                    <tr><td><code>!COLORTHEME</code></td><td>Show the current color theme short name.</td><td>Tools → Options.</td></tr>
+                    <tr><td><code>!COLORTHEME name</code></td><td>Apply a color theme and use it as the default at the next startup. Names: DEFAULT, C64, C128, VIC20, C16 (case-insensitive). Example: !COLORTHEME C128.</td><td>Tools → Options.</td></tr>
                     <tr><td><code>!LIST</code></td><td>List the entire program, without a range.</td><td>LIST.</td></tr>
                     <tr><td><code>!101</code></td><td>Display all games from the 1974 book <strong>101 BASIC Computer Games</strong>.</td><td>—</td></tr>
                     <tr><td><code>!LOAD101 name</code></td><td>Load the game with the specified name from the list displayed by <code>!101</code>.</td><td>File → Open from 101 BASIC Computer Games...</td></tr>
                     <tr><td><code>!QUIT</code></td><td>Quit without confirmation.</td><td>File → Exit.</td></tr>
                 </tbody>
             </table>
+            <h3>Color themes</h3>
+            <p>Type <code>!COLORTHEME</code> to display the short name of the currently selected theme. To change it, supply one of <code>DEFAULT</code>, <code>C64</code>, <code>C128</code>, <code>VIC20</code> or <code>C16</code>. Theme names are case-insensitive.</p>
+            <pre><code>!COLORTHEME C128
+!COLORTHEME</code></pre>
+            <p>The first command applies the Commodore 128 theme to the background, text (including existing text) and border. It also selects this theme as the default, which is saved when the application closes and loaded at the next startup. The second command displays <code>C128</code>.</p>
+            <p>An unknown theme name displays an error and the available short names without changing the colors or default theme. You can also select a theme in Tools → Options. Use the BASIC <a href="#color">COLOR</a> statement to change individual colors; it does not select a different default theme.</p>
             <p>The parser accepts ON, YES, TRUE or 1 for on and OFF, NO, FALSE or 0 for off for FULLSCREEN, LOG and HQ-RENDER. ! commands are not BASIC statements.</p>
         </section>
         <section id="interface">

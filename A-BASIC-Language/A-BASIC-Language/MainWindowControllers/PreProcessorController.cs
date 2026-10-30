@@ -1,5 +1,7 @@
 #nullable enable
 using A_BASIC_Language.Gui.PreProcessor;
+using A_BASIC_Language.Gui.Multimedia;
+using A_BASIC_Language.Properties;
 using A_BASIC_Language.StringManipulation;
 using A_BASIC_Language.TerminalMatrix;
 using System;
@@ -45,10 +47,33 @@ public class PreProcessorController
 
         var preProcessorParser = new PreProcessorParser(preProcessor);
         var response = preProcessorParser.Parse(out var message, out var argument);
-        _parent.WriteLine(message);
+        if (!string.IsNullOrEmpty(message))
+            _parent.WriteLine(message);
 
         switch (response)
         {
+            case PreProcessorParserResult.ColorTheme:
+                var themes = new ColorSchemeConfigurationList();
+                if (argument == null)
+                {
+                    _parent.WriteLine(themes.Get(Settings.Default.ColorScheme).ShortName);
+                    break;
+                }
+
+                var matches = themes.Where(theme =>
+                    string.Equals(theme.ShortName, argument, StringComparison.OrdinalIgnoreCase)).ToList();
+                if (matches.Count == 0)
+                {
+                    _parent.WriteLine("Unknown color theme: " + argument);
+                    _parent.WriteLine("Available: " + string.Join(", ", themes.Select(theme => theme.ShortName)));
+                    break;
+                }
+
+                var selectedTheme = matches[0];
+                _owner.ApplyColorScheme(selectedTheme.Id);
+                Settings.Default.ColorScheme = selectedTheme.Id;
+                _parent.WriteLine(selectedTheme.ShortName);
+                break;
             case PreProcessorParserResult.Unknown:
                 _parent.WriteLine("Unknown command.");
                 _parent.WriteLine("Help: https://abl.winsoft.se/");

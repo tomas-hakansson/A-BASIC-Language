@@ -17,6 +17,46 @@ internal static class Program
         using var status = new ToolStripStatusLabel();
         using var font = new Font(FontFamily.GenericMonospace, 10);
         var log = new Log(status, font);
+        // Exercise the application command using the actual window and terminal.
+        var settingsType = typeof(MainWindow).Assembly.GetType("A_BASIC_Language.Properties.Settings");
+        var settings = settingsType.GetProperty("Default").GetValue(null);
+        var themeProperty = settingsType.GetProperty("ColorScheme");
+        A_BASIC_Language.Gui.Multimedia.ColorScheme GetTheme() =>
+            (A_BASIC_Language.Gui.Multimedia.ColorScheme)themeProperty.GetValue(settings);
+        var originalTheme = GetTheme();
+        try
+        {
+            using var window = new MainWindow();
+            var themeTerminal = (TerminalMatrixControl)typeof(MainWindow)
+                .GetField("terminalMatrixControl1", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(window);
+            themeTerminal.SetResolution(Resolution.Pixels320x200Characters40x25);
+            var commands = new A_BASIC_Language.MainWindowControllers.PreProcessorController(themeTerminal, window);
+            foreach (var theme in new A_BASIC_Language.Gui.Multimedia.ColorSchemeConfigurationList())
+            {
+                commands.Run("!colortheme " + theme.ShortName.ToLowerInvariant(), out var quit);
+                Require(!quit && GetTheme() == theme.Id &&
+                    themeTerminal.BackgroundColor == (byte)theme.Background &&
+                    themeTerminal.CurrentCursorColor == (byte)theme.Text &&
+                    themeTerminal.BorderColor == (byte)theme.Border, "Theme command: " + theme.ShortName);
+                themeTerminal.Clear();
+                commands.Run("!COLORTHEME", out quit);
+                var text = (byte[,])typeof(TerminalMatrixControl)
+                    .GetField("_characterMap", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(themeTerminal);
+                var rows = Enumerable.Range(0, themeTerminal.CharacterHeight).Select(y =>
+                    new string(Enumerable.Range(0, themeTerminal.CharacterWidth).Select(x => (char)text[x, y]).ToArray()));
+                Require(rows.Any(row => row.StartsWith(theme.ShortName)), "Theme query: " + theme.ShortName);
+            }
+            var currentTheme = GetTheme();
+            var currentColor = themeTerminal.CurrentCursorColor;
+            commands.Run("!COLORTHEME UNKNOWN", out _);
+            commands.Run("!COLORTHEME C64 EXTRA", out _);
+            Require(GetTheme() == currentTheme &&
+                themeTerminal.CurrentCursorColor == currentColor, "Invalid theme changed settings or colors");
+        }
+        finally
+        {
+            themeProperty.SetValue(settings, originalTheme);
+        }
         var checks = 0;
         foreach (var runtime in new[] { false, true })
         {

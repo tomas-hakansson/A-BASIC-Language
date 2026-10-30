@@ -25,6 +25,9 @@ public class PreProcessorParser
             case 1:
                 switch (parts[0])
                 {
+                    case "COLORTHEME":
+                        message = "";
+                        return PreProcessorParserResult.ColorTheme;
                     case "FULLSCREEN":
                         message = "Toggle fullscreen.";
                         return PreProcessorParserResult.ToggleFullscreen;
@@ -55,6 +58,10 @@ public class PreProcessorParser
             case 2:
                 switch (parts[0])
                 {
+                    case "COLORTHEME":
+                        argument = parts[1];
+                        message = "";
+                        return PreProcessorParserResult.ColorTheme;
                     case "FULLSCREEN":
                         if (parts[1].IsTrue())
                         {
