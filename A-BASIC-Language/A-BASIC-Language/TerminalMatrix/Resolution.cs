@@ -1,4 +1,4 @@
-﻿namespace TerminalMatrixNetFramework;
+﻿namespace A_BASIC_Language.TerminalMatrix;
 
 public enum Resolution
 {

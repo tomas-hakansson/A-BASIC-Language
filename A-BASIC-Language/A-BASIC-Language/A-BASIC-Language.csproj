@@ -51,6 +51,7 @@
       <DependentUpon>OptionsDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Gui\MsgBox.cs" />
+    <Compile Include="Gui\Multimedia\ColorScheme.cs" />
     <Compile Include="Gui\PreProcessor\PreProcessorParser.cs" />
     <Compile Include="Gui\PreProcessor\PreProcessorParserResult.cs" />
     <Compile Include="Gui\SourceCodeDialog.cs">
@@ -62,6 +63,9 @@
     <Compile Include="Gui\StartScreen.cs" />
     <Compile Include="Gui\TerminalResolution.cs" />
     <Compile Include="Gui\TerminalResolutionList.cs" />
+    <Compile Include="Gui\UserControls\ColorSchemeComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Gui\UserControls\TerminalResolutionComboBox.cs" />
     <Compile Include="IntegerList.cs" />
     <Compile Include="IO\Dispatcher.cs" />

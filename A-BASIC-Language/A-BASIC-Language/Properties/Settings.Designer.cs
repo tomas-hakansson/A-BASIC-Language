@@ -8,11 +8,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.Globalization;
+
 namespace A_BASIC_Language.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "18.11.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "18.12.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -26,9 +28,9 @@ namespace A_BASIC_Language.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Pixels480x200Characters60x25")]
-        public global::TerminalMatrixNetFramework.Resolution Resolution {
+        public global::A_BASIC_Language.TerminalMatrix.Resolution Resolution {
             get {
-                return ((global::TerminalMatrixNetFramework.Resolution)(this["Resolution"]));
+                return ((global::A_BASIC_Language.TerminalMatrix.Resolution)(this["Resolution"]));
             }
             set {
                 this["Resolution"] = value;
@@ -44,6 +46,18 @@ namespace A_BASIC_Language.Properties {
             }
             set {
                 this["HighQualityRendering"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Default")]
+        public global::A_BASIC_Language.Gui.Multimedia.ColorScheme ColorScheme {
+            get {
+                return ((global::A_BASIC_Language.Gui.Multimedia.ColorScheme)(this["ColorScheme"]));
+            }
+            set {
+                this["ColorScheme"] = value;
             }
         }
     }

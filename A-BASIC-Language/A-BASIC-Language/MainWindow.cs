@@ -1,5 +1,6 @@
 using A_BASIC_Language.Gui;
 using A_BASIC_Language.Gui.Dialogs;
+using A_BASIC_Language.Gui.Multimedia;
 using A_BASIC_Language.Language;
 using A_BASIC_Language.MainWindowControllers;
 using A_BASIC_Language.Properties;
@@ -65,6 +66,7 @@ public partial class MainWindow : Form
         highQualityRenderingToolStripMenuItem.Checked = highQualityRendering;
         terminalMatrixControl1.RenderingMode = highQualityRendering ? RenderingMode.HighQuality : RenderingMode.HighSpeed;
         new WindowConfigurator(terminalMatrixControl1, _log).Configure(this, resolutionToolStripMenuItem, Settings.Default.Resolution);
+        ApplyColorScheme(Settings.Default.ColorScheme);
         
     }
 
@@ -245,6 +247,7 @@ public partial class MainWindow : Form
         using var x = new OptionsDialog();
         x.Resolution = terminalMatrixControl1.Resolution;
         x.HighQualityRendering = highQualityRenderingToolStripMenuItem.Checked;
+        x.ColorScheme = Settings.Default.ColorScheme;
 
         if (x.ShowDialog(this) != DialogResult.OK)
             return;
@@ -255,10 +258,26 @@ public partial class MainWindow : Form
             terminalMatrixControl1.WriteLine("Changed resolution.");
         }
 
+        if (Settings.Default.ColorScheme != x.ColorScheme)
+        {
+            Settings.Default.ColorScheme = x.ColorScheme;
+            terminalMatrixControl1.WriteLine("Default color scheme changed.");
+            ApplyColorScheme(x.ColorScheme);
+        }
+
         if (x.HighQualityRendering != highQualityRenderingToolStripMenuItem.Checked)
         {
             highQualityRenderingToolStripMenuItem_Click(sender, e);
         }
+    }
+
+    private void ApplyColorScheme(ColorScheme scheme)
+    {
+        var colors = new ColorSchemeConfigurationList().Get(scheme);
+        terminalMatrixControl1.CurrentCursorColor = (byte)colors.Text;
+        terminalMatrixControl1.ClearColorMap();
+        terminalMatrixControl1.SetBackgroundColor((byte)colors.Background);
+        terminalMatrixControl1.SetBorderColor((byte)colors.Border);
     }
 
     private void btnOptions_Click(object sender, EventArgs e) =>
