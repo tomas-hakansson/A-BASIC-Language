@@ -33,12 +33,14 @@ public class StartScreen
             case Resolution.Pixels480x200Characters60x25:
                 control.WriteLine("                   ABL, A BASIC Language");
                 control.WriteLine("         **** Altair Commodore BASIC Emulator ****");
+                control.WriteLine("          (C)  Tomas Hakansson & Anders Hesselbom");
                 control.WriteLine("");
                 control.WriteLine("Ready.");
                 break;
             case Resolution.Pixels320x200Characters40x25:
                 control.WriteLine("            A BASIC Language");
                 control.WriteLine("    *** An Altair BASIC Emulator ***");
+                control.WriteLine(" (C) Tomas Hakansson & Anders Hesselbom");
                 control.WriteLine("");
                 control.WriteLine("Ready.");
                 break;

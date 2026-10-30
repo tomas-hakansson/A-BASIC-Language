@@ -255,8 +255,11 @@ public partial class MainWindow : Form
         if (terminalMatrixControl1.Resolution != x.Resolution)
         {
             terminalMatrixControl1.SetResolution(x.Resolution);
+            CheckResolutionBox();
             terminalMatrixControl1.WriteLine("Changed resolution.");
         }
+
+        Settings.Default.Resolution = x.Resolution;
 
         if (Settings.Default.ColorScheme != x.ColorScheme)
         {
