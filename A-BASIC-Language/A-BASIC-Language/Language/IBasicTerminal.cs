@@ -12,4 +12,6 @@ public interface IBasicTerminal
     void ClearScreen();
     void SetTextRenderLimit(int limit);
     void SetTextColor(int color);
+    void SetBackgroundColor(int color);
+    void SetBorderColor(int color);
 }

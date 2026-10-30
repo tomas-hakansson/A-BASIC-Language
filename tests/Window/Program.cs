@@ -90,6 +90,8 @@ internal static class Program
         private bool _cleared;
         public int ClearCount { get; private set; }
         public void ClearScreen() { _cleared = true; ClearCount++; _line = ""; }
+        public void SetBackgroundColor(int color) { }
+        public void SetBorderColor(int color) { }
         public void SetTextColor(int color) { }
         public void SetTextRenderLimit(int limit)
         {

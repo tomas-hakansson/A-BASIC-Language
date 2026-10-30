@@ -563,13 +563,24 @@ public class Interpreter
                                 var color = Number(_data.Pop());
                                 var target = Number(_data.Pop());
 
-                                if (Math.Abs(target - 1) > 0.1)
-                                    throw new InvalidOperationException("COLOR supports only target 1 (text color).");
+                                if (double.IsNaN(target) || double.IsInfinity(target) || target < 0 || target > 2 || target != Math.Floor(target))
+                                    throw new InvalidOperationException("COLOR requires a whole number from 0 to 2 for the target.");
                                 
-                                if (double.IsNaN(color) || double.IsInfinity(color) || color < 0 || color > 15 || Math.Abs(color - Math.Floor(color)) > 0.1)
-                                    throw new InvalidOperationException("COLOR requires a whole number from 0 to 15 for the color.");
+                                if (double.IsNaN(color) || double.IsInfinity(color) || color < 1 || color > 16 || color != Math.Floor(color))
+                                    throw new InvalidOperationException("COLOR requires a whole number from 1 to 16 for the color.");
 
-                                _terminal.SetTextColor((int)color);
+                                switch ((int)target)
+                                {
+                                    case 0:
+                                        _terminal.SetBackgroundColor((int)color);
+                                        break;
+                                    case 1:
+                                        _terminal.SetTextColor((int)color);
+                                        break;
+                                    case 2:
+                                        _terminal.SetBorderColor((int)color);
+                                        break;
+                                }
                             }
                             break;
                         case "WINDOW":

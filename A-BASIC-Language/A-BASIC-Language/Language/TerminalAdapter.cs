@@ -2,7 +2,6 @@ using System;
 using System.Text;
 using System.Windows.Forms;
 using A_BASIC_Language.TerminalMatrix;
-using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language.Language;
 
@@ -11,6 +10,7 @@ public sealed class TerminalAdapter(TerminalMatrixControl terminal) : IBasicTerm
     private readonly StringBuilder _line = new();
     public int OutputColumn => _line.Length;
     public bool QuitFlag => terminal.QuitFlag;
+
     public void ClearScreen()
     {
         terminal.Clear();
@@ -19,7 +19,9 @@ public sealed class TerminalAdapter(TerminalMatrixControl terminal) : IBasicTerm
     }
 
     public void SetTextRenderLimit(int limit) => terminal.SetTextRenderLimit(limit);
-    public void SetTextColor(int color) => terminal.CurrentCursorColor = (byte)color;
+    public void SetTextColor(int color) => terminal.CurrentCursorColor = (byte)(color - 1);
+    public void SetBackgroundColor(int color) => terminal.SetBackgroundColor((byte)(color - 1));
+    public void SetBorderColor(int color) => terminal.SetBorderColor((byte)(color - 1));
     public void PumpEvents() => Application.DoEvents();
 
     public void Write(string text)
@@ -37,7 +39,7 @@ public sealed class TerminalAdapter(TerminalMatrixControl terminal) : IBasicTerm
 
             if (_line.Length == terminal.CharacterWidth)
                 WriteLine("");
-            
+
             var newline = text.IndexOf('\n', index);
             var count = Math.Min(terminal.CharacterWidth - _line.Length,
                 (newline < 0 ? text.Length : newline) - index);

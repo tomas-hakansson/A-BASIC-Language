@@ -4,3 +4,6 @@ preservation of the previous color on failure, mixed colors on one line, INPUT,
 session persistence, and real terminal output through wrapping and scrolling.
 
 Build Color.csproj with Visual Studio MSBuild, then run bin/Debug/Color.exe.
+
+COLOR accepts targets 0 (background), 1 (text), and 2 (border), with colors 1–16.
+Checks include real bitmap background/border pixels and preservation across clears and resolution changes.

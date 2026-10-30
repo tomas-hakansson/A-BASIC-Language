@@ -34,7 +34,7 @@ public partial class TerminalMatrixControl : UserControl
     private bool[] _terminations;
     private byte[,] _characterColorMap;
     private byte[,] _characterMap;
-    private Pixelmap _pixelMap;
+    private Pixelmap? _pixelMap;
     private Bitmap? _fastBitmap;
     private bool _cursorVisibleBlink;
     private readonly System.Windows.Forms.Timer _timer = new();
@@ -59,6 +59,28 @@ public partial class TerminalMatrixControl : UserControl
     public bool QuitFlag { get; private set; }
     public Coordinate CursorPosition { get; private set; }
     public byte CurrentCursorColor { get; set; }
+    public byte BackgroundColor { get; private set; }
+    public byte BorderColor { get; private set; }
+
+    public void SetBackgroundColor(byte color)
+    {
+        BackgroundColor = color;
+
+        if (_pixelMap != null)
+        {
+            ClearPixelMap();
+            UpdateBitmap();
+        }
+    }
+
+    public void SetBorderColor(byte color)
+    {
+        BorderColor = color;
+
+        if (_pixelMap != null)
+            UpdateBitmap();
+    }
+
     public ProgramLineDictionary ProgramLines { get; } = new();
     public int[,] Background24Bit { get; private set; }
     public bool UseBackground24Bit { get; set; }
@@ -249,7 +271,7 @@ public partial class TerminalMatrixControl : UserControl
         _pixelMap.LockBits();
         try
         {
-            _pixelMap.Clear(Color.Black);
+            _pixelMap.Clear(_palette.GetColor(BackgroundColor));
         }
         finally
         {
@@ -392,16 +414,23 @@ public partial class TerminalMatrixControl : UserControl
                     if (CursorPosition.IsSame(x, y))
                     {
                         if (_cursorVisibleBlink)
-                            _fontMonochromeSprite.DrawOpaque(_pixelMap, _characterMap[x, y], pixelX, pixelY, _palette.GetColor(CurrentCursorColor), Color.Black);
+                            _fontMonochromeSprite.DrawOpaque(_pixelMap, _characterMap[x, y], pixelX, pixelY, _palette.GetColor(CurrentCursorColor), _palette.GetColor(BackgroundColor));
                         else
-                            _fontMonochromeSprite.DrawOpaque(_pixelMap, _characterMap[x, y], pixelX, pixelY, Color.Black, _palette.GetColor(CurrentCursorColor));
+                            _fontMonochromeSprite.DrawOpaque(_pixelMap, _characterMap[x, y], pixelX, pixelY, _palette.GetColor(BackgroundColor), _palette.GetColor(CurrentCursorColor));
                     }
                     else if (_characterMap[x, y] > 0)
                     {
-                        _fontMonochromeSprite.DrawOpaque(_pixelMap, _characterMap[x, y], pixelX, pixelY, _palette.GetColor(_characterColorMap[x, y]), Color.Black);
+                        _fontMonochromeSprite.DrawOpaque(_pixelMap, _characterMap[x, y], pixelX, pixelY, _palette.GetColor(_characterColorMap[x, y]), _palette.GetColor(BackgroundColor));
                     }
                 }
             }
+
+            var border = _palette.GetColor(BorderColor);
+            for (var y = 0; y < _pixelMap.Height; y++)
+                for (var x = 0; x < _pixelMap.Width; x++)
+                    if (x < BorderWidth || x >= BorderWidth + PixelWidth ||
+                        y < BorderHeight || y >= BorderHeight + PixelHeight)
+                        _pixelMap.SetPixel(x, y, border);
 
             overText?.Invoke(_pixelMap);
         }
@@ -441,7 +470,7 @@ public partial class TerminalMatrixControl : UserControl
                 throw new ArgumentOutOfRangeException();
         }
 
-        e.Graphics.Clear(Color.Black);
+        e.Graphics.Clear(_palette.GetColor(BorderColor));
 
         if (_fastBitmap != null)
             e.Graphics.DrawImage(_fastBitmap, 0, 0, Width, Height);

@@ -20,12 +20,20 @@ internal static class Program
         var checks = 0;
         foreach (var runtime in new[] { false, true })
         {
-            for (var color = 0; color <= 15; color++)
+            for (var color = 1; color <= 16; color++)
             {
                 var terminal = Run("COLOR 1," + color, runtime);
                 Require(terminal.Colors.SequenceEqual(new[] { color }) && !terminal.Output.Contains("?"), "Palette " + color);
                 checks++;
             }
+            foreach (var targetId in new[] { 0, 2 })
+                for (var color = 1; color <= 16; color++)
+                {
+                    var terminal = Run("COLOR " + targetId + "," + color, runtime);
+                    Require((targetId == 0 ? terminal.Background : terminal.Border) == color &&
+                        terminal.Color == 1 && !terminal.Output.Contains("?"), "Background/border palette");
+                    checks++;
+                }
             foreach (var source in new[] {
                 "color 1,2", "A=1:B=3:COLOR A,B*2-4",
                 "IF 1 THEN COLOR 1,2 ELSE COLOR 1,5",
@@ -39,8 +47,8 @@ internal static class Program
                 checks++;
             }
             foreach (var arguments in new[] {
-                "0,2", "2,2", "-1,2", "1.5,2", "1E1000,2", "SQR(-1),2",
-                "1,-1", "1,16", "1,2.5", "1,1E1000", "1,SQR(-1)",
+                "3,2", "0.05,2", "1.05,2", "-1,2", "1.5,2", "1E1000,2", "SQR(-1),2",
+                "1,-1", "1,0", "1,17", "1,2.05", "1,2.5", "1,1E1000", "1,SQR(-1)",
                 "\"1\",2", "1,\"2\"", "1,1/0",
                 "", "1", "1,", ",2", "1;2", "1,2,3", "1,2 3"
             })
@@ -55,7 +63,7 @@ internal static class Program
                 "Color change interrupted PRINT or recolored old output");
             var input = Run("COLOR 1,7:INPUT A$:PRINT A$", runtime);
             Require(input.InputColor == 7 && input.Output.Contains("ANSWER"), "INPUT color");
-            var invalid = Run("COLOR 1,2:COLOR 1,16", runtime);
+            var invalid = Run("COLOR 1,2:COLOR 1,17", runtime);
             Require(invalid.Color == 2 && invalid.Colors.Count == 1, "Invalid COLOR changed the existing color");
         }
 
@@ -77,20 +85,33 @@ internal static class Program
         for (var y = 0; y < control.CharacterHeight; y++)
             if (chars[0, y] == 'A' && chars[1, y] == 'B')
             {
-                Require(map[0, y] == 2 && map[1, y] == 5, "Real terminal lost per-character colors");
+                Require(map[0, y] == 1 && map[1, y] == 4, "Real terminal lost per-character colors");
                 found = true;
             }
         Require(found, "Real terminal output missing");
         adapter.ClearScreen();
         for (var row = 0; row < 30; row++)
         {
-            adapter.SetTextColor(row % 16);
+            adapter.SetTextColor(row % 16 + 1);
             adapter.WriteLine(new string('X', 41));
         }
         map = (byte[,])typeof(TerminalMatrixControl).GetField("_characterColorMap", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(control);
         chars = (byte[,])typeof(TerminalMatrixControl).GetField("_characterMap", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(control);
         Require(chars[0, 22] == 'X' && chars[0, 23] == 'X' && map[0, 22] == 13 && map[0, 23] == 13,
             "Wrapping or scrolling lost the color");
+        control.BorderWidth = 8;
+        control.BorderHeight = 8;
+        control.SetResolution(Resolution.Pixels320x200Characters40x25);
+        new Interpreter("COLOR 0,7:COLOR 2,3:COLOR 1,16:PRINT \"X\";", false, log, new RuntimeState()).Run(adapter);
+        control.UpdateBitmap();
+        var bitmap = (Bitmap)typeof(TerminalMatrixControl).GetField("_fastBitmap", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(control);
+        Require(control.BackgroundColor == 6 && control.BorderColor == 2 && control.CurrentCursorColor == 15,
+            "Adapter did not convert all three colors to palette indices");
+        Require(bitmap.GetPixel(0, 0).ToArgb() == System.Drawing.Color.FromArgb(136, 0, 0).ToArgb(), "Border pixels");
+        Require(bitmap.GetPixel(16, 16).ToArgb() == System.Drawing.Color.FromArgb(0, 0, 170).ToArgb(), "Background pixels");
+        adapter.ClearScreen();
+        control.SetResolution(Resolution.Pixels320x200Characters40x25);
+        Require(control.BackgroundColor == 6 && control.BorderColor == 2, "Clear/resolution reset colors");
         Console.WriteLine($"COLOR checks passed ({checks} cases plus output, INPUT, session and real terminal checks).");
 
         FakeTerminal Run(string source, bool runtime)
@@ -115,6 +136,10 @@ internal static class Program
         public List<int> Colors { get; } = new();
         public List<(string, int)> Characters { get; } = new();
         public string Output { get; private set; } = "";
+        public int Background { get; private set; } = 1;
+        public int Border { get; private set; } = 1;
+        public void SetBackgroundColor(int color) { Background = color; Colors.Add(color); }
+        public void SetBorderColor(int color) { Border = color; Colors.Add(color); }
         public void SetTextColor(int color) { Color = color; Colors.Add(color); }
         public void ClearScreen() { }
         public void SetTextRenderLimit(int limit) { }

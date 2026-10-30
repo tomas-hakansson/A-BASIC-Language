@@ -822,8 +822,10 @@ public class BasicParser
     void Color()
     {
         Expression();
+
         if (!Maybe(','))
             throw new InvalidOperationException("Expected comma between COLOR arguments.");
+
         Expression();
         Generate(new AblProcedure("COLOR"));
     }
