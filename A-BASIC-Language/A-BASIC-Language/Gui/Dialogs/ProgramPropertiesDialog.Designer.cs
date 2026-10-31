@@ -39,7 +39,7 @@
             this.btnClose = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.lvVariables = new A_BASIC_Language.Gui.UserControls.TwoColumnListView();
-            this.lvDimensions = new A_BASIC_Language.Gui.UserControls.TwoColumnListView();
+            this.lvArrays = new A_BASIC_Language.Gui.UserControls.TwoColumnListView();
             this.label5 = new System.Windows.Forms.Label();
             this.lvFunctions = new A_BASIC_Language.Gui.UserControls.TwoColumnListView();
             this.label6 = new System.Windows.Forms.Label();
@@ -143,16 +143,16 @@
             this.lvVariables.UseCompatibleStateImageBehavior = false;
             this.lvVariables.View = System.Windows.Forms.View.Details;
             // 
-            // lvDimensions
+            // lvArrays
             // 
-            this.lvDimensions.FullRowSelect = true;
-            this.lvDimensions.HideSelection = false;
-            this.lvDimensions.Location = new System.Drawing.Point(8, 260);
-            this.lvDimensions.Name = "lvDimensions";
-            this.lvDimensions.Size = new System.Drawing.Size(520, 97);
-            this.lvDimensions.TabIndex = 11;
-            this.lvDimensions.UseCompatibleStateImageBehavior = false;
-            this.lvDimensions.View = System.Windows.Forms.View.Details;
+            this.lvArrays.FullRowSelect = true;
+            this.lvArrays.HideSelection = false;
+            this.lvArrays.Location = new System.Drawing.Point(8, 260);
+            this.lvArrays.Name = "lvArrays";
+            this.lvArrays.Size = new System.Drawing.Size(520, 97);
+            this.lvArrays.TabIndex = 11;
+            this.lvArrays.UseCompatibleStateImageBehavior = false;
+            this.lvArrays.View = System.Windows.Forms.View.Details;
             // 
             // label5
             // 
@@ -185,11 +185,13 @@
             // 
             // ProgramPropertiesDialog
             // 
+            this.AcceptButton = this.btnClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(533, 509);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.lvDimensions);
+            this.Controls.Add(this.lvArrays);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.lvVariables);
             this.Controls.Add(this.label4);
@@ -229,7 +231,7 @@
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Label label4;
         private UserControls.TwoColumnListView lvVariables;
-        private UserControls.TwoColumnListView lvDimensions;
+        private UserControls.TwoColumnListView lvArrays;
         private System.Windows.Forms.Label label5;
         private UserControls.TwoColumnListView lvFunctions;
         private System.Windows.Forms.Label label6;

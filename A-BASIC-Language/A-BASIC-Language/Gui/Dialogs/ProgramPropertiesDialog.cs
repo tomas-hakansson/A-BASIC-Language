@@ -42,5 +42,16 @@ public partial class ProgramPropertiesDialog : Form
             txtDataFolder.Text = BasicSession.DataDirectory.FullName;
             btnOpenDataFolder.Enabled = true;
         }
+
+        var state = BasicSession.GetRuntimeState();
+
+        foreach (var variable in state.Variables)
+            lvVariables.Add(variable.Value, variable.Key, variable.Value.ToString());
+        
+        foreach (var array in state.Arrays)
+            lvArrays.Add(array.Value, array.Key, array.Value.ToString());
+
+        foreach (var function in state.Functions)
+            lvFunctions.Add(function.Value, function.Key, function.Value.ToString());
     }
 }

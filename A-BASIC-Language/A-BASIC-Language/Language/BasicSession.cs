@@ -73,6 +73,7 @@ public sealed class BasicSession
         terminal.ClearScreen();
         terminal.SetTextRenderLimit(0);
     }
+
     private static bool TryParseListRange(string argument, out int? first, out int? last)
     {
         first = last = null;
@@ -107,12 +108,17 @@ public sealed class BasicSession
                 return false;
             first = line;
         }
+
         if (lastText.Length > 0)
         {
             if (!int.TryParse(lastText, out var line))
                 return false;
             last = line;
         }
+
         return !first.HasValue || !last.HasValue || first.Value <= last.Value;
     }
+
+    public RuntimeState GetRuntimeState() =>
+        _state;
 }

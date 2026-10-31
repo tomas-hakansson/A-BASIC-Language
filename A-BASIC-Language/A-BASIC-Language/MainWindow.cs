@@ -286,13 +286,21 @@ public partial class MainWindow : Form
     private void btnOptions_Click(object sender, EventArgs e) =>
         optionsToolStripMenuItem_Click(sender, e);
 
-    public void LoadProgram(string source)
+    public bool LoadProgram(string source)
     {
-        terminalMatrixControl1.ProgramLines.Clear();
-        terminalMatrixControl1.SetProgramLines(source);
-        terminalMatrixControl1.List();
-        terminalMatrixControl1.WriteLine("");
-        terminalMatrixControl1.WriteLine("Ready.");
+        try
+        {
+            terminalMatrixControl1.ProgramLines.Clear();
+            terminalMatrixControl1.SetProgramLines(source);
+            terminalMatrixControl1.List();
+            terminalMatrixControl1.WriteLine("");
+            terminalMatrixControl1.WriteLine("Ready.");
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private void openFrom101BASICComputerGamesToolStripMenuItem_Click(object sender, EventArgs e)
