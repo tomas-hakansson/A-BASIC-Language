@@ -46,6 +46,8 @@ namespace A_BASIC_Language
             this.highQualityRenderingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.programToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+            this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,7 +66,7 @@ namespace A_BASIC_Language
             this.lblCursPos = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblUserAction = new System.Windows.Forms.ToolStripStatusLabel();
-            this.terminalMatrixControl1 = new TerminalMatrixControl();
+            this.terminalMatrixControl1 = new A_BASIC_Language.TerminalMatrix.TerminalMatrixControl();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -159,7 +161,9 @@ namespace A_BASIC_Language
             // programToolStripMenuItem
             // 
             this.programToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.runToolStripMenuItem});
+            this.runToolStripMenuItem,
+            this.toolStripMenuItem2,
+            this.propertiesToolStripMenuItem});
             this.programToolStripMenuItem.Name = "programToolStripMenuItem";
             this.programToolStripMenuItem.Size = new System.Drawing.Size(65, 20);
             this.programToolStripMenuItem.Text = "Program";
@@ -169,9 +173,23 @@ namespace A_BASIC_Language
             this.runToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.PlayHS;
             this.runToolStripMenuItem.Name = "runToolStripMenuItem";
             this.runToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.runToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.runToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.runToolStripMenuItem.Text = "Run";
             this.runToolStripMenuItem.Click += new System.EventHandler(this.runToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
+            // 
+            // propertiesToolStripMenuItem
+            // 
+            this.propertiesToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.PropertiesHS;
+            this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
+            this.propertiesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
+            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.propertiesToolStripMenuItem.Text = "Properties...";
+            this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
             // 
@@ -186,7 +204,7 @@ namespace A_BASIC_Language
             // 
             this.textEditorToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.TextboxHS;
             this.textEditorToolStripMenuItem.Name = "textEditorToolStripMenuItem";
-            this.textEditorToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.textEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.textEditorToolStripMenuItem.Text = "Text editor...";
             this.textEditorToolStripMenuItem.Click += new System.EventHandler(this.textEditorToolStripMenuItem_Click);
             // 
@@ -194,7 +212,7 @@ namespace A_BASIC_Language
             // 
             this.optionsToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.settings;
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.optionsToolStripMenuItem.Text = "Options...";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
@@ -211,21 +229,22 @@ namespace A_BASIC_Language
             // onlineHelpToolStripMenuItem
             // 
             this.onlineHelpToolStripMenuItem.Name = "onlineHelpToolStripMenuItem";
-            this.onlineHelpToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.onlineHelpToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
+            this.onlineHelpToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.onlineHelpToolStripMenuItem.Text = "Online help...";
             this.onlineHelpToolStripMenuItem.Click += new System.EventHandler(this.onlineHelpToolStripMenuItem_Click);
             // 
             // versionHistoryToolStripMenuItem
             // 
             this.versionHistoryToolStripMenuItem.Name = "versionHistoryToolStripMenuItem";
-            this.versionHistoryToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.versionHistoryToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.versionHistoryToolStripMenuItem.Text = "Version history...";
             this.versionHistoryToolStripMenuItem.Click += new System.EventHandler(this.versionHistoryToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.aboutToolStripMenuItem.Text = "About...";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -337,6 +356,7 @@ namespace A_BASIC_Language
             this.terminalMatrixControl1.ControlOverlayPainter = null;
             this.terminalMatrixControl1.CurrentCursorColor = ((byte)(1));
             this.terminalMatrixControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.terminalMatrixControl1.HasFocus = true;
             this.terminalMatrixControl1.Location = new System.Drawing.Point(0, 49);
             this.terminalMatrixControl1.Name = "terminalMatrixControl1";
             this.terminalMatrixControl1.RenderingMode = TerminalMatrixNetFramework.RenderingMode.HighQuality;
@@ -345,11 +365,11 @@ namespace A_BASIC_Language
             this.terminalMatrixControl1.UnlimitedInput = false;
             this.terminalMatrixControl1.Use32BitForeground = false;
             this.terminalMatrixControl1.UseBackground24Bit = false;
-            this.terminalMatrixControl1.TypedLine += new TypedLineDelegate(this.terminalMatrixControl1_TypedLine);
-            this.terminalMatrixControl1.InputCompleted += new InputCompletedDelegate(this.terminalMatrixControl1_InputCompleted);
-            this.terminalMatrixControl1.UserBreak += new UserBreakDelegate(this.terminalMatrixControl1_UserBreak);
-            this.terminalMatrixControl1.RequestToggleFullscreen += new RequestToggleFullscreenDelegate(this.terminalMatrixControl1_RequestToggleFullscreen);
-            this.terminalMatrixControl1.Tick += new TickDelegate(this.terminalMatrixControl1_Tick);
+            this.terminalMatrixControl1.TypedLine += new A_BASIC_Language.TerminalMatrix.Events.TypedLineDelegate(this.terminalMatrixControl1_TypedLine);
+            this.terminalMatrixControl1.InputCompleted += new A_BASIC_Language.TerminalMatrix.Events.InputCompletedDelegate(this.terminalMatrixControl1_InputCompleted);
+            this.terminalMatrixControl1.UserBreak += new A_BASIC_Language.TerminalMatrix.Events.UserBreakDelegate(this.terminalMatrixControl1_UserBreak);
+            this.terminalMatrixControl1.RequestToggleFullscreen += new A_BASIC_Language.TerminalMatrix.Events.RequestToggleFullscreenDelegate(this.terminalMatrixControl1_RequestToggleFullscreen);
+            this.terminalMatrixControl1.Tick += new A_BASIC_Language.TerminalMatrix.Events.TickDelegate(this.terminalMatrixControl1_Tick);
             this.terminalMatrixControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.terminalMatrixControl1_Paint);
             this.terminalMatrixControl1.Leave += new System.EventHandler(this.terminalMatrixControl1_Leave);
             // 
@@ -416,5 +436,7 @@ namespace A_BASIC_Language
         private ToolStripButton btnPlay;
         private ToolStripMenuItem textEditorToolStripMenuItem;
         private ToolStripButton toolStripButton1;
+        private ToolStripSeparator toolStripMenuItem2;
+        private ToolStripMenuItem propertiesToolStripMenuItem;
     }
 }

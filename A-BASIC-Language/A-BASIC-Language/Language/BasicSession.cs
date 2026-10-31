@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace A_BASIC_Language.Language;
@@ -10,6 +11,8 @@ public sealed class BasicSession
     private readonly RuntimeState _state = new();
     private Interpreter? _interpreter;
     public bool IsRunning { get; private set; }
+    public DirectoryInfo? DataDirectory = null;
+    public FileInfo? ProgramFile = null;
 
     public void Break() =>
         _interpreter?.UserBreak = true;
@@ -38,6 +41,8 @@ public sealed class BasicSession
         {
             clearProgram();
             Reset(terminal);
+            DataDirectory = null;
+            ProgramFile = null;
             terminal.WriteLine("");
             terminal.WriteLine("Ready.");
             return;

@@ -371,4 +371,11 @@ public partial class MainWindow : Form
 
     private void MainWindow_Leave(object sender, EventArgs e) =>
         terminalMatrixControl1.HasFocus = false;
+
+    private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        using var x = new ProgramPropertiesDialog();
+        x.BasicSession = _session;
+        x.ShowDialog(this);
+    }
 }
