@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Globalization;
 using A_BASIC_Language.Language.LoopInstructions;
 using A_BASIC_Language.TerminalMatrix;
 using TerminalMatrixNetFramework;
@@ -29,6 +30,7 @@ public class Interpreter
     Random _random;//Note: For the RND function.
     private readonly Stack<(int Index, int LineNumber)> _subroutineCalls = new();
     int _currentLineNumber;
+    int _dataPosition;
     public bool UserBreak { get; set; }
 
     public Interpreter(string source, bool runtime, Log log, RuntimeState? state = null)
@@ -85,6 +87,7 @@ public class Interpreter
     {
         EndMessageDisplayed = false;
         _subroutineCalls.Clear();
+        _dataPosition = 0;
 
         if (_terminal == null)
             throw new SystemException("Terminal not initialized.");
@@ -222,6 +225,34 @@ public class Interpreter
                 case AblString s:
                     _data.Push(new StringValue(s.Value));
                     break;
+                case AblRead read:
+                {
+                    if (_dataPosition >= _parseResult.DataValues.Count)
+                        throw new InvalidOperationException("Out of DATA.");
+
+                    var value = _parseResult.DataValues[_dataPosition];
+                    // Numeric strings are accepted by READ; assignment still applies
+                    // the ordinary integer conversion and overflow rules.
+                    if (!read.Symbol.EndsWith("$") && value is StringValue text)
+                    {
+                        if (!double.TryParse(text.Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var number) ||
+                            double.IsNaN(number) || double.IsInfinity(number))
+                            throw new InvalidOperationException($"Type mismatch: cannot read string \"{text.Value}\" into numeric variable {read.Symbol}.");
+                        
+                        value = ValueBase.GetValueType(number);
+                    }
+
+                    value = value.ForVariable(read.Symbol);
+                    _data.Push(value);
+
+                    if (read.IsArray)
+                        dimExecutor.Write(new AblDimAssignment(read.Symbol));
+                    else
+                        flatVariableExecutor.Write(new AblAssignment(read.Symbol));
+                    
+                    _dataPosition++;
+                    break;
+                }
                 case AblDimCreation dc:
                     dimExecutor.Create(dc);
                     break;

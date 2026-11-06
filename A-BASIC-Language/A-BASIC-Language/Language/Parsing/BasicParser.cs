@@ -3,6 +3,8 @@ using A_BASIC_Language.Language.LanguageParts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
+using A_BASIC_Language.Language.ValueTypes;
 using System.Text.RegularExpressions;
 using A_BASIC_Language.Language.LoopInstructions;
 
@@ -14,6 +16,7 @@ public class BasicParser
     private readonly bool _direct;
     private readonly SortedDictionary<int, List<AblEvalValue>> _lines;
     private int _currentLabel;
+    private readonly SortedDictionary<int, List<ValueBase>> _dataLines = new();
     private int _index;
     private readonly List<(int index, string message)> _parseErrors;
     private bool _parsingIf;
@@ -48,12 +51,13 @@ public class BasicParser
                 var evalValues = _lines.SelectMany(v => v.Value).ToList();
                 Dictionary<int, int> labelIndex = new();
 
-                for (int i = 0; i < evalValues.Count; i++)
+                for (var i = 0; i < evalValues.Count; i++)
                 {
                     if (evalValues[i] is AblLabel label)
                         labelIndex.Add(label.Value, i);
                 }
 
+                Result.DataValues.AddRange(_dataLines.SelectMany(line => line.Value));
                 Result.Success = true;
                 Result.EvalValues = evalValues;
                 Result.LabelIndex = labelIndex;
@@ -151,6 +155,12 @@ public class BasicParser
 
                 switch (statement)
                 {
+                    case "READ":
+                        Read();
+                        break;
+                    case "DATA":
+                        Data();
+                        break;
                     case "DEF":
                         DefineFunction();
                         break;
@@ -298,6 +308,69 @@ public class BasicParser
             while (position < _source.Length && _source[position] != '\n' && char.IsWhiteSpace(_source[position]))
                 position++;
         }
+    }
+
+    private void Read()
+    {
+        if (_direct)
+        {
+            ParseError("READ is only allowed in numbered program lines");
+            SkipStatement();
+            return;
+        }
+
+        do
+        {
+            var variable = ASetVariable(true);
+            if (!variable.Success)
+                return;
+            Generate(new AblRead(variable.FullName, variable.DimVariable));
+        } while (Maybe(','));
+    }
+
+    // DATA contains literals only and never emits executable instructions.
+    private void Data()
+    {
+        if (_direct)
+        {
+            ParseError("DATA is only allowed in numbered program lines");
+            SkipStatement();
+            return;
+        }
+
+        var values = new List<ValueBase>();
+        do
+        {
+            if (Maybe('"', false))
+            {
+                if (!AString(out var text))
+                    throw new InvalidOperationException("Unterminated string in DATA.");
+                values.Add(new StringValue(text));
+            }
+            else
+            {
+                var negative = Maybe('-');
+                if (!negative)
+                    Maybe('+');
+                var literal = ANumber();
+                if (literal.Length == 0)
+                    throw new InvalidOperationException("Expected a numeric or quoted string literal in DATA.");
+                var number = double.Parse(literal, NumberStyles.Float, CultureInfo.InvariantCulture);
+                if (negative)
+                    number = -number;
+                if (double.IsInfinity(number) || double.IsNaN(number))
+                    throw new InvalidOperationException("Numeric literal in DATA is out of range.");
+                values.Add(ValueBase.GetValueType(number));
+            }
+        } while (Maybe(','));
+
+        if (_index < _source.Length && _source[_index] != '\n' && _source[_index] != ':' &&
+            !(_parsingIf && Maybe("ELSE", incrementIfFound: false)))
+            throw new InvalidOperationException("Expected comma or end of DATA statement.");
+
+        if (!_dataLines.TryGetValue(_currentLabel, out var lineValues))
+            _dataLines.Add(_currentLabel, lineValues = new List<ValueBase>());
+        lineValues.AddRange(values);
     }
 
     private void For()
@@ -1292,7 +1365,7 @@ public class BasicParser
     }
 
     static Regex StatementRegex() =>
-        new(@"\G(?<statement>DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|WINDOW|COLOR|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|WINDOW|COLOR|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

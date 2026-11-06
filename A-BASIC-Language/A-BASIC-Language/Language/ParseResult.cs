@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using A_BASIC_Language.Language.ValueTypes;
 
 namespace A_BASIC_Language.Language;
 
@@ -9,6 +10,7 @@ public class ParseResult
     public List<string> Errors { get; } = [];
     public bool Success { get; set; } = false;
     public List<AblEvalValue> EvalValues { get; set; } = [];
+    public List<ValueBase> DataValues { get; } = [];
     public Dictionary<int, int> LabelIndex { get; set; } = new();
 
     public string ToString(PrintThe selection)

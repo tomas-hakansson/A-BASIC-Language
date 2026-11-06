@@ -4,6 +4,18 @@ public class AblEvalValue
 {
 }
 
+public sealed class AblRead : AblEvalValue
+{
+    public string Symbol { get; }
+    public bool IsArray { get; }
+
+    public AblRead(string symbol, bool isArray)
+    {
+        Symbol = symbol;
+        IsArray = isArray;
+    }
+}
+
 public sealed class AblOnGoto : AblEvalValue
 {
     public System.Collections.Generic.IReadOnlyList<int> Targets { get; }
