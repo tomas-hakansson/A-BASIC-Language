@@ -165,7 +165,7 @@
     <header>
         <h1>ABL</h1>
         <p>User manual and language reference for A BASIC Language, by Tomas Håkansson and Anders Hesselbom.</p>
-        <p>Describes the project's implementation as of October 20, 2026. ABL is a Windows-based BASIC interpreter supporting a subset of Altair BASIC syntax. Limitations and deviations are stated explicitly.</p>
+        <p>Describes the project's implementation as of November 6, 2026. ABL is a Windows-based BASIC interpreter supporting a subset of Altair BASIC syntax. Limitations and deviations are stated explicitly.</p>
     </header>
     <main>
         <nav aria-label="Contents">
@@ -187,6 +187,10 @@
                 <li><a href="#on-goto">ON … GOTO – select a jump target</a></li>
                 <li><a href="#on-gosub">ON … GOSUB – select a subroutine</a></li>
                 <li><a href="#functions">Working functions</a></li>
+                <li><a href="#data">DATA – stored values</a></li>
+                <li><a href="#read">READ – consume stored values</a></li>
+                <li><a href="#restore">RESTORE – reset the data pointer</a></li>
+                <li><a href="#datapointer">DATAPOINTER() – current data position</a></li>
                 <li><a href="#missing">Function names without runtime support</a></li>
                 <li><a href="#examples">Program examples</a></li>
                 <li><a href="#errors">Errors and troubleshooting</a></li>
@@ -211,6 +215,10 @@
                     <tr><td><a href="#window">WINDOW</a></td><td>Yes</td><td>Yes</td><td>Clear the screen and select the number of text rows at the bottom. Without an argument, all 25 rows are restored.</td></tr>
                     <tr><td><a href="#color">COLOR</a></td><td>Yes</td><td>Yes</td><td>Set background (0), text (1), or border (2) with COLOR target, color. Color values 1–16 select one of the 16 available colors.</td></tr>
                     <tr><td><a href="#input">INPUT</a></td><td>Yes</td><td>Yes</td><td>Read a separate response for each target variable.</td></tr>
+                    <tr><td><a href="#data">DATA</a></td><td>No</td><td>Yes</td><td>Supply comma-separated numeric and quoted string literals.</td></tr>
+                    <tr><td><a href="#read">READ</a></td><td>No</td><td>Yes</td><td>Assign successive DATA values to variables or array elements.</td></tr>
+                    <tr><td><a href="#restore">RESTORE</a></td><td>Yes</td><td>Yes</td><td>Reset the data pointer to zero.</td></tr>
+                    <tr><td><a href="#datapointer">DATAPOINTER()</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Return the zero-based data pointer as an integer.</td></tr>
                     <tr><td><a href="#if">IF … THEN … ELSE</a></td><td>Yes</td><td>Yes</td><td>Select a statement branch or jump to a calculated line number. THEN and ELSE are parts of IF, not standalone statements.</td></tr>
                     <tr><td><a href="#goto">GOTO / GO TO</a></td><td>Limited</td><td>Yes</td><td>Jump within the source currently being executed. A direct command cannot access line labels in the stored program.</td></tr>
                     <tr><td><a href="#gosub">GOSUB / GO SUB</a></td><td>Limited</td><td>Yes</td><td>Call a line and save the return position on the call stack. Direct mode cannot call lines in program memory.</td></tr>
@@ -237,6 +245,7 @@
             </table>
             <p>For all recognized function names without runtime support, see <a href="#missing">the separate list</a>. They are not counted as working functions. The <a href="#operators">operator reference</a> also describes all implemented arithmetic and comparison operators.</p>
             <h3>What persists between actions?</h3>
+            <p>The data pointer starts at 0, advances after each successful READ, and persists after execution and between direct commands. RESTORE, RUN and NEW reset it to 0. RUN collects all DATA values again from the current program before executing it. Inspect the position with <code>PRINT DATAPOINTER()</code> in direct mode.</p>
             <table>
                 <thead><tr><th>Action</th><th>Program lines</th><th>Variables, arrays, DEF FN</th><th>Random number generator</th></tr></thead>
                 <tbody>
@@ -259,7 +268,7 @@
             <h3>Direct mode, or immediate mode</h3>
             <p>When no program is running, a BASIC statement without a line number is executed immediately: <code>PRINT 2+3</code>, <code>A=10</code> or <code>A=10:PRINT A</code>. Variables, arrays and user-defined functions persist between direct commands in the same session.</p>
             <p><code>FOR I=1 TO 3:PRINT I:NEXT I</code> can also run directly. FOR and NEXT must be in the same direct command; an incomplete loop cannot be continued with the next command.</p>
-            <p>However, <a href="#on-goto">ON … GOTO</a> and <a href="#on-gosub">ON … GOSUB</a> require a numbered program line and are executed with RUN. These statements are not allowed in direct mode, including after a colon or in an IF branch.</p>
+            <p>However, <a href="#on-goto">ON … GOTO</a>, <a href="#on-gosub">ON … GOSUB</a>, <a href="#data">DATA</a> and <a href="#read">READ</a> require a numbered program line and are executed with RUN. These statements are not allowed in direct mode, including after a colon or in an IF branch. RESTORE and DATAPOINTER() work in both modes.</p>
             <h3>Program memory and runtime</h3>
             <p>Lines with line numbers are stored rather than executed. RUN starts at the lowest line number and continues in numerical order unless a control statement changes the flow. Variables, arrays and user-defined functions are reset before every RUN.</p>
             <p>During execution, INPUT accepts responses as data, not terminal commands. Ctrl+C interrupts execution. Normal termination displays <code>Program has run through.</code>. Direct commands, errors and interruptions normally end with <code>Ready.</code>.</p>
@@ -289,7 +298,7 @@
             <p>Type without a line number and press Enter. Uppercase and lowercase are equivalent. RUN, LIST and NEW are session commands, not program statements. They cannot appear on numbered lines or be combined with BASIC statements using colons.</p>
             <article id="run">
                 <h3>RUN</h3><pre><code>RUN</code></pre>
-                <p>Resets variables, arrays and user-defined functions and runs the entire program. Takes no arguments: RUN 100 and filenames after RUN are not supported. The program source is retained. Before the program starts, the screen is cleared and the full text area is restored, as with <a href="#window">WINDOW</a> without an argument. An empty program returns to Ready.</p>
+                <p>Resets variables, arrays, user-defined functions and the data pointer, then runs the entire program. Takes no arguments: RUN 100 and filenames after RUN are not supported. The program source is retained. Before the program starts, the screen is cleared and the full text area is restored, as with <a href="#window">WINDOW</a> without an argument. An empty program returns to Ready.</p>
             </article>
             <article id="list">
                 <h3>LIST</h3>
@@ -457,6 +466,36 @@ PRINT expression[,expression ...]</code></pre>
 30 PRINT "PART 1 ";
 40 PRINT "PART 2"</code></pre>
                 <p>Separators can be mixed. TAB specifies an absolute column. Long lines wrap. A separate direct command receives a new terminal adapter; do not use trailing semicolons to continue output across several separate Ready commands.</p>
+            </article>
+            <article id="data">
+                <h3>DATA – stored values</h3>
+                <pre><code>DATA literal[,literal ...]</code></pre>
+                <p>Supplies one or more numeric or quoted string literals, separated by commas. Numbers may have a sign, decimal point or exponent, for example <code>-3.5</code>, <code>.25</code> or <code>1E2</code>. Strings must be enclosed in double quotes; empty strings and commas or colons inside strings are allowed. Variables, expressions, unquoted text and missing values are not supported.</p>
+                <p>Allowed only in numbered programs. Before execution, all DATA values are collected in ascending line-number order, then left to right within each line. Values are included even when a jump skips the DATA line, it follows END, or it occurs in an IF branch that is not taken. Executing DATA has no effect and never advances the pointer.</p>
+                <pre><code>10 DATA 42, "HELLO"
+20 DATA -3.5, 1E2, ""</code></pre>
+            </article>
+            <article id="read">
+                <h3>READ – consume stored values</h3>
+                <pre><code>READ variable[,variable ...]</code></pre>
+                <p>Allowed only in numbered programs. Assigns the next DATA value to each target in order. Targets can be scalar variables or array elements, including integer (%) and string ($) variables. Each successful assignment advances the pointer by one.</p>
+                <p>Numeric values can be read into numeric variables. Integer targets truncate toward zero and report overflow outside the 32-bit integer range. Numeric strings such as <code>"42.8"</code> can also be read into numeric variables; <code>"HELLO"</code> causes a type mismatch. String targets require string DATA values; numbers are not automatically converted to strings.</p>
+                <p>If a READ assignment fails, its target and the pointer remain unchanged. Earlier successful assignments in the same READ remain in effect. Reading past the last value, or reading when there is no DATA, reports <code>Out of DATA.</code> with the program line number.</p>
+                <pre><code>10 READ A%, B$, C(2)
+20 PRINT A%;B$;C(2)
+30 DATA 42, "HELLO", 3.5</code></pre>
+            </article>
+            <article id="restore">
+                <h3>RESTORE – reset the data pointer</h3>
+                <pre><code>RESTORE</code></pre>
+                <p>Sets the data pointer to 0. The next READ takes the first value in the first DATA statement in program order. DATA values and existing variables are unchanged. RESTORE takes no arguments; restoring to a particular line is not supported. It works in numbered programs and direct mode, including when there is no DATA. RUN and NEW also reset the pointer to 0.</p>
+                <pre><code>10 DATA 10, 20
+20 READ A
+30 PRINT DATAPOINTER()
+40 RESTORE
+50 READ B
+60 PRINT A;B;DATAPOINTER()</code></pre>
+                <p>Line 30 prints 1. After RESTORE, B receives 10 again, and the final pointer is 1.</p>
             </article>
             <article id="input">
                 <h3>INPUT – read values</h3>
@@ -643,7 +682,16 @@ STOP</code></pre>
         </section>
         <section id="functions">
             <h2>9. Working built-in functions</h2>
-            <p>These are all working built-in functions. Parentheses and one argument are required, except for RND, which can also be written without parentheses. Use numeric arguments. Some older conversion paths accept numeric text, but do not provide consistent type behavior across all functions.</p>
+            <p>These are all working built-in functions. Parentheses and one argument are required, except for RND, which can also be written without parentheses, and DATAPOINTER(), which requires empty parentheses and takes no arguments. Use numeric arguments for functions that take an argument. Some older conversion paths accept numeric text, but do not provide consistent type behavior across all functions.</p>
+            <article id="datapointer">
+                <h3>DATAPOINTER()</h3>
+                <p>Returns the current data pointer as an integer, without consuming a value. The pointer is zero-based: 0 before the first READ, 1 after one successful READ, and the total number of DATA values after all have been read. With no DATA, it starts at 0. The function works in expressions in both numbered programs and direct mode.</p>
+                <p>The position persists after a program ends and between direct commands. RESTORE, RUN and NEW reset it to 0. Parentheses are required and must contain no arguments.</p>
+                <pre><code>PRINT DATAPOINTER()
+RESTORE
+PRINT DATAPOINTER()</code></pre>
+                <p>The first command displays the position left by the last run; the last command displays 0.</p>
+            </article>
             <article id="abs">
                 <h3>ABS(x)</h3>
                 <p>Absolute value. ABS(-7.5) returns 7.5. Numeric result.</p><pre><code>PRINT ABS(-7.5)</code></pre>
@@ -755,6 +803,9 @@ PRINT LOG(100)/LOG(10)</code></pre>
                     <tr><td><code>?Error in line n: ...</code></td><td>Runtime error. n is the most recently executed line label. Errors during preliminary loop matching may be shown at line 0.</td></tr>
                     <tr><td><code>?Error: ...</code></td><td>Equivalent error in direct mode.</td></tr>
                     <tr><td><code>Type mismatch</code></td><td>Wrong type, for example assigning a string to a numeric variable or comparing a string and a number.</td></tr>
+                    <tr><td><code>Out of DATA.</code></td><td>READ has no next DATA value. Add more DATA or use RESTORE to read again from the beginning.</td></tr>
+                    <tr><td><code>Type mismatch: cannot read string ... into numeric variable ...</code></td><td>A READ target is numeric but the DATA string cannot be parsed as a finite number. The target and data pointer remain unchanged.</td></tr>
+                    <tr><td><code>DATA is only allowed in numbered program lines</code> / <code>READ is only allowed in numbered program lines</code></td><td>DATA or READ was entered in direct mode. Store it on a numbered line and execute RUN. RESTORE and DATAPOINTER() are allowed in direct mode.</td></tr>
                     <tr><td><code>Division by zero.</code></td><td>The divisor became 0. Check with IF before dividing.</td></tr>
                     <tr><td><code>Undefined line n.</code></td><td>Jump to a line that does not exist.</td></tr>
                     <tr><td><code>ON GOTO/GOSUB is only allowed in numbered program lines</code></td><td>ON … GOTO or ON … GOSUB was entered in direct mode. Put the statement on a numbered line and start the program with RUN.</td></tr>
@@ -786,7 +837,7 @@ PRINT LOG(100)/LOG(10)</code></pre>
             <p>This reference follows the active parser and interpreter. Older parser files and historical ambitions in the README do not define current support. Bundled game sources are sample material: a bundled file does not guarantee that all its language features are supported.</p>
             <ul>
                 <li>No full Altair BASIC compatibility. INT, RND, string addition and automatic array creation have the deviations described above.</li>
-                <li>DATA, READ and RESTORE have no implemented program statements.</li>
+                <li>DATA and READ require numbered program lines. DATA supports numeric and quoted string literals; RESTORE resets to the beginning and does not accept a line number.</li>
                 <li>WHILE/WEND, DO/LOOP, multiline IF blocks, ELSEIF and SELECT CASE are not supported.</li>
                 <li>LOAD, SAVE, MERGE, DELETE, RENUM, EDIT, CONT, CLEAR and CLS are not implemented terminal commands. Delete a line with a number on its own, or the entire program with NEW. Open files through the menu.</li>
                 <li>No implemented graphics, sound or cursor statements such as PLOT, DRAW, LINE, CIRCLE, SOUND, BEEP or LOCATE. COLOR supports background, text, and border colors. The resolutions' pixel dimensions are display modes, not a BASIC graphics API.</li>
