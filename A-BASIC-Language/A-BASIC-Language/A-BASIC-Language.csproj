@@ -218,316 +218,310 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Games\Data\directoryinfo.txt">
+    <Content Include="Games\23matches.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\23matches.bas">
+    <Content Include="Games\3dplot.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\3dplot.bas">
+    <Content Include="Games\aceyducey.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\aceyducey.bas">
+    <Content Include="Games\amazing.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\amazing.bas">
+    <Content Include="Games\animal.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\animal.bas">
+    <Content Include="Games\awari.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\awari.bas">
+    <Content Include="Games\bagels.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\bagels.bas">
+    <Content Include="Games\banner.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\banner.bas">
+    <Content Include="Games\basketball.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\basketball.bas">
+    <Content Include="Games\batnum.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\batnum.bas">
+    <Content Include="Games\battle.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\battle.bas">
+    <Content Include="Games\blackjack.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\blackjack.bas">
+    <Content Include="Games\bombardment.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\bombardment.bas">
+    <Content Include="Games\bombsaway.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\bombsaway.bas">
+    <Content Include="Games\bounce.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\bounce.bas">
+    <Content Include="Games\bowling.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\bowling.bas">
+    <Content Include="Games\boxing.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\boxing.bas">
+    <Content Include="Games\bug.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\bug.bas">
+    <Content Include="Games\bullfight.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\bullfight.bas">
+    <Content Include="Games\bullseye.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\bullseye.bas">
+    <Content Include="Games\bunny.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\bunny.bas">
+    <Content Include="Games\buzzword.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\buzzword.bas">
+    <Content Include="Games\calendar.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\calendar.bas">
+    <Content Include="Games\change.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\change.bas">
+    <Content Include="Games\checkers.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\checkers.bas">
+    <Content Include="Games\chemist.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\chemist.bas">
+    <Content Include="Games\chief.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\chief.bas">
+    <Content Include="Games\chomp.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\chomp.bas">
+    <Content Include="Games\civilwar.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\civilwar.bas">
+    <Content Include="Games\combat.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\combat.bas">
+    <Content Include="Games\craps.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\craps.bas">
+    <Content Include="Games\cube.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\cube.bas">
+    <Content Include="Games\depthcharge.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\depthcharge.bas">
+    <Content Include="Games\diamond.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\diamond.bas">
+    <Content Include="Games\dice.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\dice.bas">
+    <Content Include="Games\digits.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\digits.bas">
+    <Content Include="Games\evenwins.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\directoryinfo.txt">
+    <Content Include="Games\flipflop.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\evenwins.bas">
+    <Content Include="Games\football.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\flipflop.bas">
+    <Content Include="Games\ftball.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\football.bas">
+    <Content Include="Games\furtrader.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\ftball.bas">
+    <Content Include="Games\gameofevenwins.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\furtrader.bas">
+    <Content Include="Games\golf.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\gameofevenwins.bas">
+    <Content Include="Games\gomoko.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\golf.bas">
+    <Content Include="Games\guess.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\gomoko.bas">
+    <Content Include="Games\gunner.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\guess.bas">
+    <Content Include="Games\hammurabi.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\gunner.bas">
+    <Content Include="Games\hangman.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\hammurabi.bas">
+    <Content Include="Games\hello.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\hangman.bas">
+    <Content Include="Games\hexapawn.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\hello.bas">
+    <Content Include="Games\hi-lo.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\hexapawn.bas">
+    <Content Include="Games\highiq.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\hi-lo.bas">
+    <Content Include="Games\hockey.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\highiq.bas">
+    <Content Include="Games\horserace.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\hockey.bas">
+    <Content Include="Games\hurkle.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\horserace.bas">
+    <Content Include="Games\kinema.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\hurkle.bas">
+    <Content Include="Games\king.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\kinema.bas">
+    <Content Include="Games\lem.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\king.bas">
+    <Content Include="Games\letter.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\lem.bas">
+    <Content Include="Games\life.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\letter.bas">
+    <Content Include="Games\lifefortwo.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\life.bas">
+    <Content Include="Games\litquiz.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\lifefortwo.bas">
+    <Content Include="Games\love.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\litquiz.bas">
+    <Content Include="Games\lunar.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\love.bas">
+    <Content Include="Games\mastermind.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\lunar.bas">
+    <Content Include="Games\mathdice.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\mastermind.bas">
+    <Content Include="Games\mugwump.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\mathdice.bas">
+    <Content Include="Games\name.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\mugwump.bas">
+    <Content Include="Games\nicomachus.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\name.bas">
+    <Content Include="Games\nim.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\nicomachus.bas">
+    <Content Include="Games\number.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\nim.bas">
+    <Content Include="Games\onecheck.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\number.bas">
+    <Content Include="Games\orbit.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\onecheck.bas">
+    <Content Include="Games\pizza.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\orbit.bas">
+    <Content Include="Games\poetry.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\pizza.bas">
+    <Content Include="Games\poker.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\poetry.bas">
+    <Content Include="Games\qubic.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\poker.bas">
+    <Content Include="Games\queen.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\qubic.bas">
+    <Content Include="Games\reverse.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\queen.bas">
+    <Content Include="Games\rocket.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\reverse.bas">
+    <Content Include="Games\rockscissors.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\rocket.bas">
+    <Content Include="Games\roulette.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\rockscissors.bas">
+    <Content Include="Games\russianroulette.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\roulette.bas">
+    <Content Include="Games\salvo.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\russianroulette.bas">
+    <Content Include="Games\sinewave.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\salvo.bas">
+    <Content Include="Games\slalom.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\sinewave.bas">
+    <Content Include="Games\slots.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\slalom.bas">
+    <Content Include="Games\splat.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\slots.bas">
+    <Content Include="Games\stars.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\splat.bas">
+    <Content Include="Games\stockmarket.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\stars.bas">
+    <Content Include="Games\superstartrek.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\stockmarket.bas">
+    <Content Include="Games\superstartrekins.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\superstartrek.bas">
+    <Content Include="Games\synonym.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\superstartrekins.bas">
+    <Content Include="Games\target.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\synonym.bas">
+    <Content Include="Games\tictactoe1.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\target.bas">
+    <Content Include="Games\tictactoe2.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\tictactoe1.bas">
+    <Content Include="Games\tower.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\tictactoe2.bas">
+    <Content Include="Games\train.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\tower.bas">
+    <Content Include="Games\trap.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\train.bas">
+    <Content Include="Games\war.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\trap.bas">
+    <Content Include="Games\weekday.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Games\Source\war.bas">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Games\Source\weekday.bas">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Games\Source\word.bas">
+    <Content Include="Games\word.bas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\debug.png" />

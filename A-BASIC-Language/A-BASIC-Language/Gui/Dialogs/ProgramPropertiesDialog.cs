@@ -8,13 +8,14 @@ namespace A_BASIC_Language.Gui.Dialogs;
 public partial class ProgramPropertiesDialog : Form
 {
     public BasicSession? BasicSession { private get; set; }
+    public bool AutoClose { private get; set; }
 
     public ProgramPropertiesDialog()
     {
         InitializeComponent();
     }
 
-    private void ProgramPropertiesDialog_Load(object sender, System.EventArgs e)
+    private void ProgramPropertiesDialog_Load(object sender, EventArgs e)
     {
         if (BasicSession == null)
             throw new SystemException("BasicSession not initialized.");
@@ -53,5 +54,30 @@ public partial class ProgramPropertiesDialog : Form
 
         foreach (var function in state.Functions)
             lvFunctions.Add(function.Value, function.Key, function.Value.ToString());
+    }
+
+    private void ProgramPropertiesDialog_Shown(object sender, EventArgs e)
+    {
+        if (BasicSession == null)
+            throw new SystemException("BasicSession not initialized.");
+
+        Cursor = Cursors.WaitCursor;
+        Refresh();
+        WriteLine("Ensure that the 101 BASIC Games folder exists...");
+        BasicSession.CreateDataDirectories(WriteLine);
+        Cursor = Cursors.Default;
+        Refresh();
+
+        if (AutoClose)
+            Close();
+    }
+
+    private void WriteLine(string text)
+    {
+        txtStatus.AppendText(Environment.NewLine + text);
+        txtStatus.SelectionStart = txtStatus.Text.Length;
+        txtStatus.SelectionLength = 0;
+        Refresh();
+        Application.DoEvents();
     }
 }

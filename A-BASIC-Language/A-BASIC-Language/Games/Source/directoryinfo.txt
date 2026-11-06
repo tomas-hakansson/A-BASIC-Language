@@ -1,1 +1,0 @@
-Storage for 101 BASIC games.

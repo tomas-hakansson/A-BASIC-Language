@@ -1,6 +1,7 @@
 #nullable enable
-using A_BASIC_Language.Gui.PreProcessor;
 using A_BASIC_Language.Gui.Multimedia;
+using A_BASIC_Language.Gui.PreProcessor;
+using A_BASIC_Language.IO;
 using A_BASIC_Language.Properties;
 using A_BASIC_Language.StringManipulation;
 using A_BASIC_Language.TerminalMatrix;
@@ -8,9 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
-using A_BASIC_Language.IO;
-using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language.MainWindowControllers;
 
@@ -258,9 +258,10 @@ public class PreProcessorController
                 return;
             }
 
-            var fullPath = Path.Combine(gamesDirectory.FullName, $"{gameName}.bas");
-            var source = File.ReadAllText(fullPath);
+            var fullPath = new FileInfo(Path.Combine(gamesDirectory.FullName, $"{gameName}.bas"));
+            var source = File.ReadAllText(fullPath.FullName);
             _owner.LoadProgram(source);
+            _owner.SessionSetFolders(fullPath);
         }
         catch
         {

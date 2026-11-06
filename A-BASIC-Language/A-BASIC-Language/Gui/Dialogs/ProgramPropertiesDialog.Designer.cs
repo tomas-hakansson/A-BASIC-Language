@@ -38,11 +38,13 @@
             this.btnOpenDataFolder = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
-            this.lvVariables = new A_BASIC_Language.Gui.UserControls.TwoColumnListView();
-            this.lvArrays = new A_BASIC_Language.Gui.UserControls.TwoColumnListView();
             this.label5 = new System.Windows.Forms.Label();
-            this.lvFunctions = new A_BASIC_Language.Gui.UserControls.TwoColumnListView();
             this.label6 = new System.Windows.Forms.Label();
+            this.lvArrays = new A_BASIC_Language.Gui.UserControls.TwoColumnListView();
+            this.lvVariables = new A_BASIC_Language.Gui.UserControls.TwoColumnListView();
+            this.lvFunctions = new A_BASIC_Language.Gui.UserControls.TwoColumnListView();
+            this.label7 = new System.Windows.Forms.Label();
+            this.txtStatus = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -116,10 +118,11 @@
             // 
             // btnClose
             // 
-            this.btnClose.Location = new System.Drawing.Point(452, 480);
+            this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnClose.Location = new System.Drawing.Point(452, 604);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
-            this.btnClose.TabIndex = 14;
+            this.btnClose.TabIndex = 16;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
             // 
@@ -132,16 +135,23 @@
             this.label4.TabIndex = 8;
             this.label4.Text = "Variables:";
             // 
-            // lvVariables
+            // label5
             // 
-            this.lvVariables.FullRowSelect = true;
-            this.lvVariables.HideSelection = false;
-            this.lvVariables.Location = new System.Drawing.Point(8, 144);
-            this.lvVariables.Name = "lvVariables";
-            this.lvVariables.Size = new System.Drawing.Size(520, 97);
-            this.lvVariables.TabIndex = 9;
-            this.lvVariables.UseCompatibleStateImageBehavior = false;
-            this.lvVariables.View = System.Windows.Forms.View.Details;
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(8, 244);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(39, 13);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Arrays:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(8, 360);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(56, 13);
+            this.label6.TabIndex = 12;
+            this.label6.Text = "Functions:";
             // 
             // lvArrays
             // 
@@ -154,14 +164,16 @@
             this.lvArrays.UseCompatibleStateImageBehavior = false;
             this.lvArrays.View = System.Windows.Forms.View.Details;
             // 
-            // label5
+            // lvVariables
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(8, 244);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(39, 13);
-            this.label5.TabIndex = 10;
-            this.label5.Text = "Arrays:";
+            this.lvVariables.FullRowSelect = true;
+            this.lvVariables.HideSelection = false;
+            this.lvVariables.Location = new System.Drawing.Point(8, 144);
+            this.lvVariables.Name = "lvVariables";
+            this.lvVariables.Size = new System.Drawing.Size(520, 97);
+            this.lvVariables.TabIndex = 9;
+            this.lvVariables.UseCompatibleStateImageBehavior = false;
+            this.lvVariables.View = System.Windows.Forms.View.Details;
             // 
             // lvFunctions
             // 
@@ -174,14 +186,24 @@
             this.lvFunctions.UseCompatibleStateImageBehavior = false;
             this.lvFunctions.View = System.Windows.Forms.View.Details;
             // 
-            // label6
+            // label7
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(8, 360);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(56, 13);
-            this.label6.TabIndex = 12;
-            this.label6.Text = "Functions:";
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(8, 476);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(40, 13);
+            this.label7.TabIndex = 14;
+            this.label7.Text = "Status:";
+            // 
+            // txtStatus
+            // 
+            this.txtStatus.Location = new System.Drawing.Point(8, 492);
+            this.txtStatus.Multiline = true;
+            this.txtStatus.Name = "txtStatus";
+            this.txtStatus.ReadOnly = true;
+            this.txtStatus.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
+            this.txtStatus.Size = new System.Drawing.Size(520, 104);
+            this.txtStatus.TabIndex = 15;
             // 
             // ProgramPropertiesDialog
             // 
@@ -189,7 +211,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
-            this.ClientSize = new System.Drawing.Size(533, 509);
+            this.ClientSize = new System.Drawing.Size(533, 633);
+            this.Controls.Add(this.txtStatus);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.lvArrays);
             this.Controls.Add(this.label5);
@@ -213,6 +237,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Program properties";
             this.Load += new System.EventHandler(this.ProgramPropertiesDialog_Load);
+            this.Shown += new System.EventHandler(this.ProgramPropertiesDialog_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -235,5 +260,7 @@
         private System.Windows.Forms.Label label5;
         private UserControls.TwoColumnListView lvFunctions;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox txtStatus;
     }
 }

@@ -6,11 +6,11 @@ using A_BASIC_Language.MainWindowControllers;
 using A_BASIC_Language.Properties;
 using A_BASIC_Language.StringManipulation;
 using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using A_BASIC_Language.IO;
 using A_BASIC_Language.TerminalMatrix.Events;
 using TerminalMatrixNetFramework;
 
@@ -18,6 +18,7 @@ namespace A_BASIC_Language;
 
 public partial class MainWindow : Form
 {
+    public const string CantWriteToDisk = "?Permission to write to disk is denied by Windows.";
     private readonly IMsgBox _msgBox;
     private readonly VersionService _versionService;
     private readonly BasicSession _session = new();
@@ -176,6 +177,11 @@ public partial class MainWindow : Form
         terminalMatrixControl1.Focus();
         Refresh();
         CheckResolutionBox();
+
+        using var x = new ProgramPropertiesDialog();
+        x.AutoClose = true;
+        x.BasicSession = _session;
+        x.ShowDialog(this);
     }
 
     private void terminalMatrixControl1_Leave(object sender, EventArgs e) =>
@@ -303,29 +309,34 @@ public partial class MainWindow : Form
         }
     }
 
+    public void SessionSetFolders(FileInfo basicFileInfo)
+    {
+        var success = false;
+
+        try
+        {
+            if (_session.SetFolders(basicFileInfo))
+                success = true;
+        }
+        catch
+        {
+            success = false;
+        }
+
+        if (!success)
+        {
+            lblUserAction.Text = CantWriteToDisk;
+            terminalMatrixControl1.WriteLine(CantWriteToDisk);
+        }
+    }
+
     private void openFrom101BASICComputerGamesToolStripMenuItem_Click(object sender, EventArgs e)
     {
         try
         {
-            var process = Process.GetCurrentProcess();
-
-            if (process.MainModule == null)
-            {
-                _msgBox.Fail(@"Failed to open the BASIC source files from running process.", @"Failed to open BASIC source files");
-                return;
-            }
-
-            var exeFolder = new FileInfo(process.MainModule.FileName).Directory?.FullName ?? "";
-
-            if (string.IsNullOrWhiteSpace(exeFolder))
-            {
-                _msgBox.Fail(@"Failed to open the BASIC source files from directory of running process.", @"Failed to open BASIC source files");
-                return;
-            }
-
-            var fullPath = Path.Combine(exeFolder, "Games\\Source\\");
+            var path = Paths.GetUser101GamesPath();
             using var x = new OpenFileDialog();
-            x.InitialDirectory = fullPath;
+            x.InitialDirectory = path.FullName;
             x.Filter = @"BASIC source files (*.bas)|*.bas|All files (*.*)|*.*";
 
             if (x.ShowDialog(this) != DialogResult.OK)
@@ -334,6 +345,7 @@ public partial class MainWindow : Form
             var fileInfo = new FileInfo(x.FileName);
             var source = File.ReadAllText(fileInfo.FullName);
             LoadProgram(source);
+            SessionSetFolders(fileInfo);
         }
         catch (Exception exception)
         {
@@ -383,6 +395,7 @@ public partial class MainWindow : Form
     private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
     {
         using var x = new ProgramPropertiesDialog();
+        x.AutoClose = false;
         x.BasicSession = _session;
         x.ShowDialog(this);
     }

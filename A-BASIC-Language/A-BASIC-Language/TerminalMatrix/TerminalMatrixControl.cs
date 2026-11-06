@@ -14,7 +14,6 @@ using A_BASIC_Language.TerminalMatrix.PixelMapLibrary;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 using A_BASIC_Language.TerminalMatrix.TerminalColor;
 using A_BASIC_Language.TerminalMatrix.TerminalMatrixControlFeatures;
-using PixelmapLibraryNetFramework;
 using PixelmapLibraryNetFramework.SpriteManagement;
 using TerminalMatrixNetFramework;
 using TerminalMatrixNetFramework.TerminalColor;
@@ -268,6 +267,9 @@ public partial class TerminalMatrixControl : UserControl
 
     public void ClearPixelMap()
     {
+        if (_pixelMap == null)
+            return;
+
         _pixelMap.LockBits();
         try
         {
@@ -289,7 +291,7 @@ public partial class TerminalMatrixControl : UserControl
     public void HorizontalLine(int y, ColorName color)
     {
         for (var x = 0; x < PixelWidth; x++)
-            _pixelMap.RangeSafeSetPixel(x, y, _palette.GetColor(color));
+            _pixelMap?.RangeSafeSetPixel(x, y, _palette.GetColor(color));
     }
 
     public byte[,] LoadPictureFromGif(string filename)
@@ -305,7 +307,7 @@ public partial class TerminalMatrixControl : UserControl
     }
 
     public void SetPixel(int x, int y, ColorName color) =>
-        _pixelMap.SetPixel(x + BorderWidth, y + BorderHeight, _palette.GetColor(color));
+        _pixelMap?.SetPixel(x + BorderWidth, y + BorderHeight, _palette.GetColor(color));
 
     public void SetPixels(int x, int y, byte[,] colors)
     {
@@ -319,7 +321,7 @@ public partial class TerminalMatrixControl : UserControl
             for (var sourceX = 0; sourceX < colors.GetLength(0); sourceX++)
             {
                 if (targetX >= BorderWidth && targetX < limitX && targetY >= BorderHeight && targetY < limitY)
-                    _pixelMap.SetPixel(targetX, targetY, _palette.GetColor(colors[sourceX, sourceY]));
+                    _pixelMap?.SetPixel(targetX, targetY, _palette.GetColor(colors[sourceX, sourceY]));
 
                 targetX++;
             }
@@ -334,7 +336,7 @@ public partial class TerminalMatrixControl : UserControl
         var c = (byte)color;
 
         for (var x = x1; x <= x2; x++)
-            _pixelMap.SetPixel(x, y, _palette.GetColor(c));
+            _pixelMap?.SetPixel(x, y, _palette.GetColor(c));
     }
 
     public void VerticalLine(int x, ColorName color)
@@ -342,7 +344,7 @@ public partial class TerminalMatrixControl : UserControl
         var c = (byte)color;
 
         for (var y = 0; y < PixelHeight; y++)
-            _pixelMap.SetPixel(x, y, _palette.GetColor(c));
+            _pixelMap?.SetPixel(x, y, _palette.GetColor(c));
     }
 
     public void VerticalLine(int x, int y1, int y2, ColorName color)
@@ -350,7 +352,7 @@ public partial class TerminalMatrixControl : UserControl
         var c = (byte)color;
 
         for (var y = y1; y <= y2; y++)
-            _pixelMap.SetPixel(x, y, _palette.GetColor(c));
+            _pixelMap?.SetPixel(x, y, _palette.GetColor(c));
     }
 
     public void Box(ColorName color, int x1, int y1, int x2, int y2)
@@ -359,14 +361,14 @@ public partial class TerminalMatrixControl : UserControl
 
         for (var x = x1; x <= x2; x++)
         {
-            _pixelMap.SetPixel(x, y1, col);
-            _pixelMap.SetPixel(x, y2, col);
+            _pixelMap?.SetPixel(x, y1, col);
+            _pixelMap?.SetPixel(x, y2, col);
         }
 
         for (var y = y1 + 1; y < y2; y++)
         {
-            _pixelMap.SetPixel(x1, y, col);
-            _pixelMap.SetPixel(x2, y, col);
+            _pixelMap?.SetPixel(x1, y, col);
+            _pixelMap?.SetPixel(x2, y, col);
         }
     }
 
@@ -392,7 +394,11 @@ public partial class TerminalMatrixControl : UserControl
             return;
         }
 
+        if (_pixelMap == null)
+            return;
+
         _pixelMap.LockBits();
+
         try
         {
             underText?.Invoke(_pixelMap);
@@ -426,11 +432,16 @@ public partial class TerminalMatrixControl : UserControl
             }
 
             var border = _palette.GetColor(BorderColor);
+
             for (var y = 0; y < _pixelMap.Height; y++)
+            {
                 for (var x = 0; x < _pixelMap.Width; x++)
+                {
                     if (x < BorderWidth || x >= BorderWidth + PixelWidth ||
                         y < BorderHeight || y >= BorderHeight + PixelHeight)
                         _pixelMap.SetPixel(x, y, border);
+                }
+            }
 
             overText?.Invoke(_pixelMap);
         }

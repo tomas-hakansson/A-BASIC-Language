@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using A_BASIC_Language.IO;
 
 namespace A_BASIC_Language.Language;
 
@@ -11,8 +12,56 @@ public sealed class BasicSession
     private readonly RuntimeState _state = new();
     private Interpreter? _interpreter;
     public bool IsRunning { get; private set; }
-    public DirectoryInfo? DataDirectory = null;
-    public FileInfo? ProgramFile = null;
+    public DirectoryInfo? DataDirectory;
+    public FileInfo? ProgramFile;
+
+    public void CreateDataDirectories(Action<string> writeLine)
+    {
+        var games101Path = Paths.GetUser101GamesPath();
+
+        if (games101Path == null)
+        {
+            writeLine("Could not create 101 Games directory.");
+        }
+        else
+        {
+            try
+            {
+                var games101SourcePath = Paths.GetGamesSourceDirectory();
+
+                if (games101SourcePath is not { Exists: true })
+                {
+                    writeLine("Could not find 101 Games source directory.");
+                }
+                else
+                {
+                    foreach (var file in games101SourcePath.GetFiles("*.bas"))
+                    {
+                        var destFile = new FileInfo(Path.Combine(games101Path.FullName, file.Name));
+                        
+                        if (!destFile.Exists)
+                            file.CopyTo(destFile.FullName);
+                    }
+                }
+            }
+            catch
+            {
+                writeLine("Failed to create 101 Games directory.");
+            }
+        }
+
+        try
+        {
+            var userPrograms = Paths.GetUserProgramsPath();
+
+            if (userPrograms is not { Exists: true })
+                writeLine("Could not create user programs directory.");
+        }
+        catch
+        {
+            writeLine("Failed to create user programs directory.");
+        }
+    }
 
     public void Break() =>
         _interpreter?.UserBreak = true;
@@ -72,6 +121,31 @@ public sealed class BasicSession
         _state.Clear();
         terminal.ClearScreen();
         terminal.SetTextRenderLimit(0);
+    }
+
+    public bool SetFolders(FileInfo basicFileInfo)
+    {
+        DataDirectory = Paths.GetProgramDataPath(basicFileInfo);
+        ProgramFile = basicFileInfo;
+
+        try
+        {
+            var programDirectory = ProgramFile.Directory;
+
+            if (programDirectory == null)
+                return false;
+
+            var filename = basicFileInfo.Name.ToLower();
+
+            if (!DataDirectory.Exists)
+                DataDirectory.Create();
+        }
+        catch
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private static bool TryParseListRange(string argument, out int? first, out int? last)
