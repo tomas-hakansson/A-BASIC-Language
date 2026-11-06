@@ -1,18 +1,5 @@
 # A BASIC Language
 
-ABL (A BASIC Language) is (will be) an implementation of Altair BASIC by Microsoft, with some extra commands.
-
-[Read the manual!](https://abl.winsoft.se/)
-
-WINDOW works both as a direct command and in numbered programs. It clears the screen before changing the text window. With no argument it
-restores all 25 text rows. With an argument it uses that many rows at the bottom:
-`WINDOW 10` calls `SetTextRenderLimit(15)`. The argument can be a numeric expression
-and must evaluate to a whole number from 2 to 25. NEW and RUN also clear the screen and restore all 25 text rows when they reset variables.
-GOSUB (also spelled GO SUB) jumps to a line and pushes the next instruction and
-calling line onto a separate subroutine call stack. ON expression GOSUB line1,line2,...
-selects a subroutine using the same rules as ON GOTO. RETURN pops the latest subroutine call and resumes at the instruction after GOSUB. A RETURN with no active subroutine reports RETURN without GOSUB.
-It's currently an interpreter but compilation is a possibility in the future.
-
 The initial goal is to be able to run all games in the book [101 BASIC Computer Games](http://www.bitsavers.org/pdf/dec/_Books/101_BASIC_Computer_Games_Mar75.pdf) (1975).
 
 Of the 101 games, we support the ones followed by a 1:
@@ -68,8 +55,8 @@ Of the 101 games, we support the ones followed by a 1:
 | hammurabi         |     0     |
 | hangman           |     0     |
 | hello             |     1     |
-| hexapawn          |           |
-| hi-lo             |           |
+| hexapawn          |     0     |
+| hi-lo             |     1     |
 | highiq            |           |
 | hockey            |           |
 | horserace         |           |
@@ -108,7 +95,7 @@ Of the 101 games, we support the ones followed by a 1:
 | slots             |           |
 | splat             |           |
 | stars             |           |
-| stockmarket       |           |
+| stockmarket       |     1     |
 | superstartrek     |     0     |
 | superstartrekins  |     0     |
 | synonym           |     0     |
