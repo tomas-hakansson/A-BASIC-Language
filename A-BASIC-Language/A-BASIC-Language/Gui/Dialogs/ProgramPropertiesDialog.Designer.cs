@@ -40,11 +40,11 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.txtStatus = new System.Windows.Forms.TextBox();
             this.lvArrays = new A_BASIC_Language.Gui.UserControls.TwoColumnListView();
             this.lvVariables = new A_BASIC_Language.Gui.UserControls.TwoColumnListView();
             this.lvFunctions = new A_BASIC_Language.Gui.UserControls.TwoColumnListView();
-            this.label7 = new System.Windows.Forms.Label();
-            this.txtStatus = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -106,6 +106,7 @@
             this.btnOpenSourceFolder.TabIndex = 4;
             this.btnOpenSourceFolder.Text = "Open...";
             this.btnOpenSourceFolder.UseVisualStyleBackColor = true;
+            this.btnOpenSourceFolder.Click += new System.EventHandler(this.btnOpenSourceFolder_Click);
             // 
             // btnOpenDataFolder
             // 
@@ -153,6 +154,25 @@
             this.label6.TabIndex = 12;
             this.label6.Text = "Functions:";
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(8, 476);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(40, 13);
+            this.label7.TabIndex = 14;
+            this.label7.Text = "Status:";
+            // 
+            // txtStatus
+            // 
+            this.txtStatus.Location = new System.Drawing.Point(8, 492);
+            this.txtStatus.Multiline = true;
+            this.txtStatus.Name = "txtStatus";
+            this.txtStatus.ReadOnly = true;
+            this.txtStatus.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
+            this.txtStatus.Size = new System.Drawing.Size(520, 104);
+            this.txtStatus.TabIndex = 15;
+            // 
             // lvArrays
             // 
             this.lvArrays.FullRowSelect = true;
@@ -185,25 +205,6 @@
             this.lvFunctions.TabIndex = 13;
             this.lvFunctions.UseCompatibleStateImageBehavior = false;
             this.lvFunctions.View = System.Windows.Forms.View.Details;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(8, 476);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(40, 13);
-            this.label7.TabIndex = 14;
-            this.label7.Text = "Status:";
-            // 
-            // txtStatus
-            // 
-            this.txtStatus.Location = new System.Drawing.Point(8, 492);
-            this.txtStatus.Multiline = true;
-            this.txtStatus.Name = "txtStatus";
-            this.txtStatus.ReadOnly = true;
-            this.txtStatus.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
-            this.txtStatus.Size = new System.Drawing.Size(520, 104);
-            this.txtStatus.TabIndex = 15;
             // 
             // ProgramPropertiesDialog
             // 

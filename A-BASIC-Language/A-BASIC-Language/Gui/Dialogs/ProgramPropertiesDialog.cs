@@ -9,10 +9,12 @@ public partial class ProgramPropertiesDialog : Form
 {
     public BasicSession? BasicSession { private get; set; }
     public bool AutoClose { private get; set; }
+    private readonly MsgBox _msgBox;
 
     public ProgramPropertiesDialog()
     {
         InitializeComponent();
+        _msgBox = new MsgBox(Owner);
     }
 
     private void ProgramPropertiesDialog_Load(object sender, EventArgs e)
@@ -79,5 +81,17 @@ public partial class ProgramPropertiesDialog : Form
         txtStatus.SelectionLength = 0;
         Refresh();
         Application.DoEvents();
+    }
+
+    private void btnOpenSourceFolder_Click(object sender, EventArgs e)
+    {
+        try
+        {
+
+        }
+        catch
+        {
+            _msgBox.Fail("Failed to open the source folder.");
+        }
     }
 }

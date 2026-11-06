@@ -35,12 +35,21 @@ public sealed class BasicSession
                 }
                 else
                 {
+                    writeLine("Found source directory for 101 Games.");
+
                     foreach (var file in games101SourcePath.GetFiles("*.bas"))
                     {
                         var destFile = new FileInfo(Path.Combine(games101Path.FullName, file.Name));
-                        
+
                         if (!destFile.Exists)
+                        {
+                            writeLine($"Copying {file.Name}...");
                             file.CopyTo(destFile.FullName);
+                        }
+                        else
+                        {
+                            writeLine($"No action: {file.Name}");
+                        }
                     }
                 }
             }
@@ -56,6 +65,8 @@ public sealed class BasicSession
 
             if (userPrograms is not { Exists: true })
                 writeLine("Could not create user programs directory.");
+
+            writeLine("User programs path exist.");
         }
         catch
         {
