@@ -526,6 +526,7 @@
     </Content>
     <Content Include="Resources\debug.png" />
     <None Include="Resources\PropertiesHS.png" />
+    <Content Include="Resources\gear_16.png" />
     <Content Include="UserPrograms\Data\directoryinfo.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

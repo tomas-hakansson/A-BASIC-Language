@@ -10,7 +10,6 @@ using System.IO;
 using System.Globalization;
 using A_BASIC_Language.Language.LoopInstructions;
 using A_BASIC_Language.TerminalMatrix;
-using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language.Language;
 
@@ -69,6 +68,7 @@ public class Interpreter
         catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or ArithmeticException or NotImplementedException)
         {
             _log.Write("Error, check terminal window.");
+
             End(_runtime
                 ? $"?Error in line {_currentLineNumber}: {ex.Message}"
                 : $"?Error: {ex.Message}");
@@ -81,13 +81,13 @@ public class Interpreter
     private void Save(string fileName)
     {
         var fi = new FileInfo(Path.Combine(MainWindow.UserDataPath, $"{fileName}.bas"));
-        
     }
 
     void Eval()
     {
         EndMessageDisplayed = false;
         _subroutineCalls.Clear();
+        
         if (_runtime)
             _state.DataPointer = 0;
 
@@ -105,25 +105,28 @@ public class Interpreter
         _terminal.PumpEvents();
 
         var endProgram = false;
-        var matchingNext = MatchLoops();
         var loops = new Stack<LoopFrame>();
 
         var instructions = _parseResult.EvalValues;
         var eventPumpWatch = Stopwatch.StartNew();
         // Switch instruction streams on FN calls; return with one numeric result.
         var calls = new Stack<(List<AblEvalValue> Instructions, int Index, string Parameter, ValueBase Argument, int StackDepth)>();
+        
         for (var i = 0; i < instructions.Count || calls.Count > 0; i++)
         {
             if (i >= instructions.Count)
             {
                 var frame = calls.Pop();
+                
                 if (_data.Count != frame.StackDepth + 1)
                     throw new InvalidOperationException("Invalid FN result stack.");
+                
                 Number(_data.Peek());
                 instructions = frame.Instructions;
                 i = frame.Index;
                 continue;
             }
+
             // Keep the UI responsive without pumping Windows messages for every stack operation.
             if (eventPumpWatch.ElapsedMilliseconds >= 16)
             {
@@ -144,6 +147,7 @@ public class Interpreter
             }
 
             var e = instructions[i];
+
             if (_log.TraceEnabled)
                 _log.Write(e.ToString());
 
@@ -152,17 +156,22 @@ public class Interpreter
                 case AblOnGoto branch:
                 {
                     var selector = Number(_data.Pop());
+                    
                     if (double.IsNaN(selector) || double.IsInfinity(selector) || selector < 0)
                         throw new OverflowException(branch.IsSubroutine ? "ON GOSUB index is out of range." : "ON GOTO index is out of range.");
 
                     var selected = Math.Floor(selector);
+                    
                     if (selected >= 1 && selected <= branch.Targets.Count)
                     {
                         var target = branch.Targets[(int)selected - 1];
+                        
                         if (!_parseResult.LabelIndex.TryGetValue(target, out var targetIndex))
                             throw new InvalidOperationException($"Undefined line {target}.");
+                        
                         if (branch.IsSubroutine)
                             _subroutineCalls.Push((i + 1, _currentLineNumber));
+                        
                         i = targetIndex - 1;
                     }
                     break;
@@ -176,6 +185,7 @@ public class Interpreter
                         throw new InvalidOperationException($"Undefined function FN {call.Name}.");
                     if (calls.Count >= 256)
                         throw new InvalidOperationException("FN call nesting limit exceeded.");
+                    
                     var argument = new FloatValue(Number(_data.Pop()));
                     calls.Push((instructions, i, function.Parameter, argument, _data.Count));
                     instructions = function.Body;
@@ -193,10 +203,18 @@ public class Interpreter
 
                     _variables?[loop.Symbol] = new FloatValue(initial);
 
+                    // Reusing a FOR variable replaces that loop and any inner loops.
+                    if (System.Linq.Enumerable.Any(loops, frame => frame.Symbol == loop.Symbol))
+                    {
+                        while (loops.Pop().Symbol != loop.Symbol)
+                        {
+                        }
+                    }
+
                     if (step > 0 ? initial > limit : initial < limit)
-                        i = matchingNext[i];
+                        i = FindNext(i);
                     else
-                        loops.Push(new LoopFrame(loop.Symbol, limit, step, i, matchingNext[i]));
+                        loops.Push(new LoopFrame(loop.Symbol, limit, step, i));
                     break;
                 }
                 case AblNext next:
@@ -204,11 +222,17 @@ public class Interpreter
                     if (loops.Count == 0)
                         throw new InvalidOperationException("NEXT without FOR.");
                     
+                    // Named NEXT can resume an outer loop, including via a backward GOTO.
+                    if (next.Symbol.Length > 0)
+                    {
+                        while (loops.Count > 0 && loops.Peek().Symbol != next.Symbol)
+                            loops.Pop();
+
+                        if (loops.Count == 0)
+                            throw new InvalidOperationException("NEXT without matching FOR.");
+                    }
+
                     var frame = loops.Peek();
-                    
-                    if (frame.End != i || (next.Symbol.Length > 0 && next.Symbol != frame.Symbol))
-                        throw new InvalidOperationException("NEXT does not match active FOR.");
-                    
                     var value = Number(_variables?[frame.Symbol]!) + frame.Step;
                     _variables?[frame.Symbol] = new FloatValue(value);
                     
@@ -216,6 +240,7 @@ public class Interpreter
                         i = frame.Start;
                     else
                         loops.Pop();
+
                     break;
                 }
                 case AblLabel lbl:
@@ -753,39 +778,41 @@ public class Interpreter
         public double Limit { get; }
         public double Step { get; }
         public int Start { get; }
-        public int End { get; }
 
-        public LoopFrame(string symbol, double limit, double step, int start, int end)
+        public LoopFrame(string symbol, double limit, double step, int start)
         {
             Symbol = symbol;
             Limit = limit;
             Step = step;
             Start = start;
-            End = end;
         }
     }
 
-    private Dictionary<int, int> MatchLoops()
+    // Only an initially empty loop needs a forward NEXT to skip its body.
+    // Other loops are paired dynamically: classic BASIC permits shared NEXTs.
+    private int FindNext(int startIndex)
     {
-        var pending = new PendingSymbolsStack();
-        var result = new Dictionary<int, int>();
-
-        for (var i = 0; i < _parseResult.EvalValues.Count; i++)
+        var pending = new Stack<string>();
+        pending.Push(((AblFor)_parseResult.EvalValues[startIndex]).Symbol);
+        for (var i = startIndex + 1; i < _parseResult.EvalValues.Count; i++)
         {
             if (_parseResult.EvalValues[i] is AblFor start)
-            {
-                pending.Push((i, start.Symbol));
-            }
+                pending.Push(start.Symbol);
             else if (_parseResult.EvalValues[i] is AblNext end)
             {
-                if (!pending.TryPop(out var loop) || (end.Symbol.Length > 0 && end.Symbol != loop.Symbol))
-                    throw new InvalidOperationException("NEXT without matching FOR.");
-
-                result.Add(loop.Index, i);
+                if (end.Symbol.Length > 0)
+                {
+                    if (!pending.Contains(end.Symbol))
+                        continue;
+                    while (pending.Peek() != end.Symbol)
+                        pending.Pop();
+                }
+                pending.Pop();
+                if (pending.Count == 0)
+                    return i;
             }
         }
-
-        return pending.Count > 0 ? throw new InvalidOperationException("FOR without NEXT.") : result;
+        throw new InvalidOperationException("FOR without NEXT.");
     }
 
     private static int StringPosition(ValueBase value, int minimum)
