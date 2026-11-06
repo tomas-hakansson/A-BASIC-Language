@@ -155,6 +155,9 @@ public class BasicParser
 
                 switch (statement)
                 {
+                    case "RESTORE":
+                        Generate(new AblProcedure("RESTORE"));
+                        break;
                     case "READ":
                         Read();
                         break;
@@ -697,7 +700,8 @@ public class BasicParser
     }
 
     //Note: Made negative because all valid BASIC labels are positive so there won't be a conflict.
-    int GetGeneratedLabel() => --_generatedLabel;
+    private int GetGeneratedLabel() =>
+        --_generatedLabel;
 
     //input => INPUT (prompt-string [;])? unset-variable (, unset-variable)*
     private void Input()
@@ -713,6 +717,8 @@ public class BasicParser
             if (!UnsetVariable())
                 return;
         }
+
+        return;
 
         void Prompt()
         {
@@ -1113,7 +1119,7 @@ public class BasicParser
         }
 
         //Note: If function
-        Regex regex = new(@"\G(?<fun>ABS|ASC|ATN|CHR\$|COS|EXP|INT|LEFT\$|LEN|LOG|MID\$|RND|RIGHT\$|SGN|SIN|SQR|STR\$|TAB|TAN|VAL)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        Regex regex = new(@"\G(?<fun>DATAPOINTER|ABS|ASC|ATN|CHR\$|COS|EXP|INT|LEFT\$|LEN|LOG|MID\$|RND|RIGHT\$|SGN|SIN|SQR|STR\$|TAB|TAN|VAL)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         var isFunction = regex.Match(_source, _index);
 
         if (isFunction.Success)
@@ -1141,7 +1147,8 @@ public class BasicParser
                 return;
             }
 
-            Expression();
+            if (functionName != "DATAPOINTER")
+                Expression();
 
             if (functionName == "LEFT$" || functionName == "RIGHT$" || functionName == "MID$")
             {
@@ -1365,7 +1372,7 @@ public class BasicParser
     }
 
     static Regex StatementRegex() =>
-        new(@"\G(?<statement>READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|WINDOW|COLOR|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|WINDOW|COLOR|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

@@ -30,12 +30,13 @@ public class Interpreter
     Random _random;//Note: For the RND function.
     private readonly Stack<(int Index, int LineNumber)> _subroutineCalls = new();
     int _currentLineNumber;
-    int _dataPosition;
+    private readonly RuntimeState _state;
     public bool UserBreak { get; set; }
 
     public Interpreter(string source, bool runtime, Log log, RuntimeState? state = null)
     {
         _log = log;
+        _state = state ?? new RuntimeState();
         _runtime = runtime;
         _empty = string.IsNullOrWhiteSpace(source);
         var parser = new Parser(source, direct: !runtime);
@@ -87,7 +88,8 @@ public class Interpreter
     {
         EndMessageDisplayed = false;
         _subroutineCalls.Clear();
-        _dataPosition = 0;
+        if (_runtime)
+            _state.DataPointer = 0;
 
         if (_terminal == null)
             throw new SystemException("Terminal not initialized.");
@@ -227,10 +229,10 @@ public class Interpreter
                     break;
                 case AblRead read:
                 {
-                    if (_dataPosition >= _parseResult.DataValues.Count)
+                    if (_state.DataPointer >= _parseResult.DataValues.Count)
                         throw new InvalidOperationException("Out of DATA.");
 
-                    var value = _parseResult.DataValues[_dataPosition];
+                    var value = _parseResult.DataValues[_state.DataPointer];
                     // Numeric strings are accepted by READ; assignment still applies
                     // the ordinary integer conversion and overflow rules.
                     if (!read.Symbol.EndsWith("$") && value is StringValue text)
@@ -250,7 +252,7 @@ public class Interpreter
                     else
                         flatVariableExecutor.Write(new AblAssignment(read.Symbol));
                     
-                    _dataPosition++;
+                    _state.DataPointer++;
                     break;
                 }
                 case AblDimCreation dc:
@@ -275,6 +277,12 @@ public class Interpreter
                 case AblProcedure p:
                     switch (p.Name)
                     {
+                        case "RESTORE":
+                            _state.DataPointer = 0;
+                            break;
+                        case "DATAPOINTER":
+                            _data.Push(new IntValue(_state.DataPointer));
+                            break;
                         case "#NEGATE":
                             _data.Push(new FloatValue(-Number(_data.Pop())));
                             break;
