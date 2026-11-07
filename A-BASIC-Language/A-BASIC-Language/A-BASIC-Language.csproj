@@ -151,6 +151,8 @@
     <Compile Include="TerminalMatrix\Events\TypedLineEventArgs.cs" />
     <Compile Include="TerminalMatrix\Events\UserBreakDelegate.cs" />
     <Compile Include="TerminalMatrix\PixelMapLibrary\FontManagement\CharacterPixelMatrix.cs" />
+    <Compile Include="TerminalMatrix\PixelMapLibrary\FontManagement\Fonts\C64TerminalFont.cs" />
+    <Compile Include="TerminalMatrix\PixelMapLibrary\FontManagement\Fonts\PetTerminalFont.cs" />
     <Compile Include="TerminalMatrix\PixelMapLibrary\FontManagement\TerminalCodePage.cs" />
     <Compile Include="TerminalMatrix\PixelMapLibrary\FontManagement\TerminalFont.cs" />
     <Compile Include="TerminalMatrix\PixelMapLibrary\Pixelmap.cs" />

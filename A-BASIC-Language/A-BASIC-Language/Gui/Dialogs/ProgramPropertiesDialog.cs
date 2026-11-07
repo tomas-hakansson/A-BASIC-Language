@@ -1,7 +1,8 @@
 ﻿#nullable enable
-using System;
-using System.Windows.Forms;
 using A_BASIC_Language.Language;
+using System;
+using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace A_BASIC_Language.Gui.Dialogs;
 
@@ -85,9 +86,37 @@ public partial class ProgramPropertiesDialog : Form
 
     private void btnOpenSourceFolder_Click(object sender, EventArgs e)
     {
+        var path = txtSourceFolder.Text;
+
+        if (string.IsNullOrEmpty(path) || path.StartsWith(@"Nothing"))
+        {
+            _msgBox.Tell("No source folder to open.");
+            return;
+        }
+
         try
         {
+            Process.Start("explorer.exe", path);
+        }
+        catch
+        {
+            _msgBox.Fail("Failed to open the source folder.");
+        }
+    }
 
+    private void btnOpenDataFolder_Click(object sender, EventArgs e)
+    {
+        var path = txtDataFolder.Text;
+
+        if (string.IsNullOrEmpty(path) || path.StartsWith(@"Nothing"))
+        {
+            _msgBox.Tell("No data folder to open.");
+            return;
+        }
+
+        try
+        {
+            Process.Start("explorer.exe", path);
         }
         catch
         {

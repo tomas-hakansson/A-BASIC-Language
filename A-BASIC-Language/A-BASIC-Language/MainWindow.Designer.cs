@@ -39,6 +39,8 @@ namespace A_BASIC_Language
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.openFrom101BASICComputerGamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+            this.shellToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fullscreenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,9 +68,10 @@ namespace A_BASIC_Language
             this.lblCursPos = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblUserAction = new System.Windows.Forms.ToolStripStatusLabel();
+            this.programDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gamesDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.userProgramsDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.terminalMatrixControl1 = new A_BASIC_Language.TerminalMatrix.TerminalMatrixControl();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
-            this.shellToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -119,6 +122,21 @@ namespace A_BASIC_Language
             this.openFrom101BASICComputerGamesToolStripMenuItem.Size = new System.Drawing.Size(293, 22);
             this.openFrom101BASICComputerGamesToolStripMenuItem.Text = "Open from 101 BASIC Computer Games...";
             this.openFrom101BASICComputerGamesToolStripMenuItem.Click += new System.EventHandler(this.openFrom101BASICComputerGamesToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(290, 6);
+            // 
+            // shellToolStripMenuItem
+            // 
+            this.shellToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.programDirectoryToolStripMenuItem,
+            this.gamesDirectoryToolStripMenuItem,
+            this.userProgramsDirectoryToolStripMenuItem});
+            this.shellToolStripMenuItem.Name = "shellToolStripMenuItem";
+            this.shellToolStripMenuItem.Size = new System.Drawing.Size(293, 22);
+            this.shellToolStripMenuItem.Text = "Shell";
             // 
             // viewToolStripMenuItem
             // 
@@ -352,6 +370,27 @@ namespace A_BASIC_Language
             this.lblUserAction.Size = new System.Drawing.Size(16, 17);
             this.lblUserAction.Text = "   ";
             // 
+            // programDirectoryToolStripMenuItem
+            // 
+            this.programDirectoryToolStripMenuItem.Name = "programDirectoryToolStripMenuItem";
+            this.programDirectoryToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.programDirectoryToolStripMenuItem.Text = "ABL program directory...";
+            this.programDirectoryToolStripMenuItem.Click += new System.EventHandler(this.programDirectoryToolStripMenuItem_Click);
+            // 
+            // gamesDirectoryToolStripMenuItem
+            // 
+            this.gamesDirectoryToolStripMenuItem.Name = "gamesDirectoryToolStripMenuItem";
+            this.gamesDirectoryToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.gamesDirectoryToolStripMenuItem.Text = "101 games directory...";
+            this.gamesDirectoryToolStripMenuItem.Click += new System.EventHandler(this.gamesDirectoryToolStripMenuItem_Click);
+            // 
+            // userProgramsDirectoryToolStripMenuItem
+            // 
+            this.userProgramsDirectoryToolStripMenuItem.Name = "userProgramsDirectoryToolStripMenuItem";
+            this.userProgramsDirectoryToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.userProgramsDirectoryToolStripMenuItem.Text = "User programs directory...";
+            this.userProgramsDirectoryToolStripMenuItem.Click += new System.EventHandler(this.userProgramsDirectoryToolStripMenuItem_Click);
+            // 
             // terminalMatrixControl1
             // 
             this.terminalMatrixControl1.AutoProgramManagement = true;
@@ -376,17 +415,6 @@ namespace A_BASIC_Language
             this.terminalMatrixControl1.Tick += new A_BASIC_Language.TerminalMatrix.Events.TickDelegate(this.terminalMatrixControl1_Tick);
             this.terminalMatrixControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.terminalMatrixControl1_Paint);
             this.terminalMatrixControl1.Leave += new System.EventHandler(this.terminalMatrixControl1_Leave);
-            // 
-            // toolStripMenuItem3
-            // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(290, 6);
-            // 
-            // shellToolStripMenuItem
-            // 
-            this.shellToolStripMenuItem.Name = "shellToolStripMenuItem";
-            this.shellToolStripMenuItem.Size = new System.Drawing.Size(293, 22);
-            this.shellToolStripMenuItem.Text = "Shell";
             // 
             // MainWindow
             // 
@@ -455,5 +483,8 @@ namespace A_BASIC_Language
         private ToolStripMenuItem propertiesToolStripMenuItem;
         private ToolStripSeparator toolStripMenuItem3;
         private ToolStripMenuItem shellToolStripMenuItem;
+        private ToolStripMenuItem programDirectoryToolStripMenuItem;
+        private ToolStripMenuItem gamesDirectoryToolStripMenuItem;
+        private ToolStripMenuItem userProgramsDirectoryToolStripMenuItem;
     }
 }

@@ -116,6 +116,7 @@
             this.btnOpenDataFolder.TabIndex = 7;
             this.btnOpenDataFolder.Text = "Open...";
             this.btnOpenDataFolder.UseVisualStyleBackColor = true;
+            this.btnOpenDataFolder.Click += new System.EventHandler(this.btnOpenDataFolder_Click);
             // 
             // btnClose
             // 

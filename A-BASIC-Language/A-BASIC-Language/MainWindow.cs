@@ -1,17 +1,18 @@
 using A_BASIC_Language.Gui;
 using A_BASIC_Language.Gui.Dialogs;
 using A_BASIC_Language.Gui.Multimedia;
+using A_BASIC_Language.IO;
 using A_BASIC_Language.Language;
 using A_BASIC_Language.MainWindowControllers;
 using A_BASIC_Language.Properties;
 using A_BASIC_Language.StringManipulation;
+using A_BASIC_Language.TerminalMatrix.Events;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using A_BASIC_Language.IO;
-using A_BASIC_Language.TerminalMatrix.Events;
 using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language;
@@ -398,5 +399,41 @@ public partial class MainWindow : Form
         x.AutoClose = false;
         x.BasicSession = _session;
         x.ShowDialog(this);
+    }
+
+    private void programDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            Process.Start("explorer.exe", Paths.GetProgramBasePath()!.FullName);
+        }
+        catch
+        {
+            _msgBox.Fail("Failed to open the source folder.");
+        }
+    }
+
+    private void gamesDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            Process.Start("explorer.exe", Paths.GetUser101GamesPath()!.FullName);
+        }
+        catch
+        {
+            _msgBox.Fail("Failed to open the source folder.");
+        }
+    }
+
+    private void userProgramsDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            Process.Start("explorer.exe", Paths.GetUserProgramsPath()!.FullName);
+        }
+        catch
+        {
+            _msgBox.Fail("Failed to open the source folder.");
+        }
     }
 }
