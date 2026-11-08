@@ -68,7 +68,7 @@ Of the 101 games, we support the ones followed by a 1:
 | life              |           |
 | lifefortwo        |           |
 | litquiz           |           |
-| love              |           |
+| love              |     0     |
 | lunar             |     1     |
 | mastermind        |     0     |
 | mathdice          |     1     |

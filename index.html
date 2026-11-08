@@ -428,12 +428,14 @@
                     <tr><td>4</td><td><code>*</code>, <code>/</code></td><td>Multiplication/division, left to right. Division by 0 produces an error.</td></tr>
                     <tr><td>5</td><td><code>+</code>, <code>-</code></td><td>Addition/subtraction, left to right. + also concatenates strings.</td></tr>
                     <tr><td>6</td><td><code>=</code>, <code>&lt;&gt;</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code></td><td>Comparisons. True = −1, false = 0. != is equivalent to &lt;&gt;.</td></tr>
+                    <tr><td>7</td><td><code>AND</code></td><td>Bitwise AND on 32-bit integers.</td></tr>
+                    <tr><td>8</td><td><code>OR</code></td><td>Bitwise OR on 32-bit integers.</td></tr>
                 </tbody>
             </table>
             <p>Numeric equality uses a tolerance of 0.00001: A=B is true if the absolute difference is smaller, A&lt;&gt;B if it is larger. At exactly the tolerance boundary, both are false. Other comparisons use ordinary numeric bounds.</p>
             <p>Strings are compared lexicographically using a case-insensitive ordinal comparison. <code>"hello"="HELLO"</code> and <code>"10"&lt;"2"</code> are true. Comparing a string with a number produces a type error.</p>
             <p class="note"><strong>String addition deviation:</strong> + concatenates strings and numbers with text, but the current implementation reverses the operand order. <code>"A"+"B"</code> produces <code>"BA"</code>; <code>"X"+2</code> produces <code>"2X"</code>. Use PRINT expressions separated by semicolons when order matters. Numeric addition is unaffected.</p>
-            <p>AND, OR, NOT, MOD, integer division and bitwise operators are not supported. Use separate IF lines for compound conditions. <code>1&lt;A&lt;10</code> is not a range test: subsequent comparisons use the numeric result of the previous comparison.</p>
+            <p>NOT, XOR, MOD and integer division are not supported. To test a range, use <code>1&lt;A AND A&lt;10</code>. A chained comparison such as <code>1&lt;A&lt;10</code> uses the numeric result of the first comparison as the left operand of the second.</p>
         </section>
         <section id="statements">
             <h2>8. Statement reference</h2>
@@ -691,7 +693,18 @@ STOP</code></pre>
         </section>
         <section id="functions">
             <h2>9. Working built-in functions</h2>
-            <p>These are all working built-in functions. Parentheses and one argument are required, except for RND, which can also be written without parentheses, and DATAPOINTER(), which requires empty parentheses and takes no arguments. Use numeric arguments for functions that take an argument. Some older conversion paths accept numeric text, but do not provide consistent type behavior across all functions.</p>
+            <p>Use parentheses around function arguments. RND can also be written without parentheses, and DATAPOINTER() takes no arguments.</p>
+            <table>
+                <thead><tr><th>Function</th><th>Result</th></tr></thead>
+                <tbody>
+                    <tr><td><code>ASC(text)</code></td><td>PETSCII code of the first character. For example, <code>ASC("A")</code> returns 65. An empty string or an unmapped character produces an error.</td></tr>
+                    <tr><td><code>CHR$(code)</code></td><td>One character for an integer PETSCII code from 0 to 255. Codes without a mapping get a placeholder that <code>ASC</code> can convert back to the original code.</td></tr>
+                    <tr><td><code>LEFT$(text, length)</code></td><td>Up to <var>length</var> characters from the start of the string.</td></tr>
+                    <tr><td><code>MID$(text, start[, length])</code></td><td>Characters from the one-based <var>start</var> position. Omitting <var>length</var> returns the rest of the string.</td></tr>
+                    <tr><td><code>PEEK(address)</code></td><td>Read a byte from <a href="#poke">session memory</a> at an integer address from 0 to 65535.</td></tr>
+                    <tr><td><code>RIGHT$(text, length)</code></td><td>Up to <var>length</var> characters from the end of the string.</td></tr>
+                </tbody>
+            </table>
             <article id="datapointer">
                 <h3>DATAPOINTER()</h3>
                 <p>Returns the current data pointer as an integer, without consuming a value. The pointer is zero-based: 0 before the first READ, 1 after one successful READ, and the total number of DATA values after all have been read. With no DATA, it starts at 0. The function works in expressions in both numbered programs and direct mode.</p>
@@ -743,15 +756,9 @@ PRINT LOG(100)/LOG(10)</code></pre>
             <table>
                 <thead><tr><th>Name</th><th>Usual meaning; not implemented</th></tr></thead>
                 <tbody>
-                    <tr><td><code>ASC</code></td><td>Character code of the first character.</td></tr>
                     <tr><td><code>ATN</code></td><td>Arctangent.</td></tr>
-                    <tr><td><code>CHR$</code></td><td>Character from a character code.</td></tr>
-                    <tr><td><code>PEEK(address)</code></td><td>Read a byte from <a href="#poke">session memory</a> at an integer address from 0 to 65535.</td></tr>
                     <tr><td><code>COS</code></td><td>Cosine.</td></tr>
-                    <tr><td><code>LEFT$</code></td><td>Left part of a string.</td></tr>
                     <tr><td><code>LEN</code></td><td>String length.</td></tr>
-                    <tr><td><code>MID$</code></td><td>Substring from a starting position.</td></tr>
-                    <tr><td><code>RIGHT$</code></td><td>Right part of a string.</td></tr>
                     <tr><td><code>SGN</code></td><td>Sign of a number, normally −1, 0 or 1.</td></tr>
                     <tr><td><code>SIN</code></td><td>Sine.</td></tr>
                     <tr><td><code>STR$</code></td><td>Number to string.</td></tr>
@@ -759,7 +766,6 @@ PRINT LOG(100)/LOG(10)</code></pre>
                     <tr><td><code>VAL</code></td><td>String to number.</td></tr>
                 </tbody>
             </table>
-            <p>The general function syntax reads only one argument. Traditional calls with multiple arguments, such as LEFT$(A$,3) and MID$(A$,2,3), therefore produce syntax errors before execution. Single-argument forms also lack runtime support.</p>
         </section>
         <section id="examples">
             <h2>11. Complete program examples</h2>
