@@ -417,6 +417,25 @@ public class Interpreter
                                 _data.Push(new StringValue(text.Value.Substring(start, length)));
                             }
                             break;
+                        case "ASC":
+                            {
+                                if (_data.Pop() is not StringValue text)
+                                    throw new InvalidOperationException("Type mismatch: expected a string.");
+                                if (text.Value.Length == 0)
+                                    throw new InvalidOperationException("Illegal function call: ASC requires a non-empty string.");
+
+                                _data.Push(new IntValue(Petscii.Encode(text.Value[0])));
+                            }
+                            break;
+                        case "CHR$":
+                            {
+                                var code = Number(_data.Pop());
+                                if (double.IsNaN(code) || code < 0 || code > byte.MaxValue || code != Math.Truncate(code))
+                                    throw new InvalidOperationException("Illegal function call: CHR$ requires an integer from 0 to 255.");
+
+                                _data.Push(new StringValue(Petscii.Decode((int)code).ToString()));
+                            }
+                            break;
                         case "ABS":
                             {
                                 if (_data.Count > 0)

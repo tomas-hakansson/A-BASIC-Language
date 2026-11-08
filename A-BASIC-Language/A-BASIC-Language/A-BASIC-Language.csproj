@@ -94,6 +94,7 @@
     <Compile Include="Language\Dimension.cs" />
     <Compile Include="Language\IBasicTerminal.cs" />
     <Compile Include="Language\Interpreter.cs" />
+    <Compile Include="Language\Petscii.cs" />
     <Compile Include="Language\LanguageParts\AblLabel.cs" />
     <Compile Include="Language\LanguageParts\AblProcedure.cs" />
     <Compile Include="Language\LoopInstructions\AblFor.cs" />
