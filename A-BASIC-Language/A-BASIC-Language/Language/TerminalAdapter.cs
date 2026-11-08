@@ -24,6 +24,8 @@ public sealed class TerminalAdapter(TerminalMatrixControl terminal) : IBasicTerm
     public void SetBorderColor(int color) => terminal.SetBorderColor((byte)(color - 1));
     public void PumpEvents() => Application.DoEvents();
 
+    internal void EnsureGlyph(char character) => terminal.EnsureGlyph(character);
+
     public void Write(string text)
     {
         text = text.Replace("\r\n", "\n").Replace('\r', '\n');

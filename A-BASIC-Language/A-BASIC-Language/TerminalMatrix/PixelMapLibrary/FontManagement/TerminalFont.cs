@@ -9,6 +9,12 @@ public abstract class TerminalFont : IReadOnlyDictionary<char, CharacterPixelMat
 {
     protected abstract Dictionary<char, CharacterPixelMatrix> Data { get; set; }
 
+    internal void EnsureGlyph(char character)
+    {
+        if (!Data.ContainsKey(character))
+            Data.Add(character, new CharacterPixelMatrix(new string(',', 64)));
+    }
+
     public IEnumerator<KeyValuePair<char, CharacterPixelMatrix>> GetEnumerator() =>
         Data.GetEnumerator();
 

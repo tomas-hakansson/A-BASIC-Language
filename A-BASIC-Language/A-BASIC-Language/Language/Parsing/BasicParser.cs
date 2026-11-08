@@ -211,6 +211,9 @@ public class BasicParser
                     case "COLOR":
                         Color();
                         break;
+                    case "POKE":
+                        Poke();
+                        break;
                     case "RANDOMIZE":
                         Generate(new AblProcedure("RANDOMIZE"));
                         break;
@@ -909,6 +912,21 @@ public class BasicParser
         Generate(new AblProcedure("COLOR"));
     }
 
+    void Poke()
+    {
+        Expression();
+
+        if (!Maybe(','))
+        {
+            ParseError("Expected comma between POKE arguments.");
+            SkipStatement();
+            return;
+        }
+
+        Expression();
+        Generate(new AblProcedure("POKE"));
+    }
+
     // WINDOW [expression]: the argument is the number of text rows at the bottom.
     void Window()
     {
@@ -1119,7 +1137,7 @@ public class BasicParser
         }
 
         //Note: If function
-        Regex regex = new(@"\G(?<fun>DATAPOINTER|ABS|ASC|ATN|CHR\$|COS|EXP|INT|LEFT\$|LEN|LOG|MID\$|RND|RIGHT\$|SGN|SIN|SQR|STR\$|TAB|TAN|VAL)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        Regex regex = new(@"\G(?<fun>DATAPOINTER|ABS|ASC|ATN|CHR\$|COS|EXP|INT|LEFT\$|LEN|LOG|MID\$|PEEK(?=[ \t]*\()|RND|RIGHT\$|SGN|SIN|SQR|STR\$|TAB|TAN|VAL)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         var isFunction = regex.Match(_source, _index);
 
         if (isFunction.Success)
@@ -1372,7 +1390,7 @@ public class BasicParser
     }
 
     static Regex StatementRegex() =>
-        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|WINDOW|COLOR|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

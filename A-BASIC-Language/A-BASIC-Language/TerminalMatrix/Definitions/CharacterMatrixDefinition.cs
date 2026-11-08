@@ -7,7 +7,7 @@ public static class CharacterMatrixDefinition
 {
     public static int Width;
     public static int Height;
-    public const int CharacterEmpty = 32;
+    public const char CharacterEmpty = ' ';
     public static int TextRenderLimit { get; set; }
 
     static CharacterMatrixDefinition()

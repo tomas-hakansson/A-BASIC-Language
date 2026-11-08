@@ -34,14 +34,13 @@ public partial class TerminalMatrixControl : UserControl
     private DateTime _tickTime;
     private bool[] _terminations;
     private byte[,] _characterColorMap;
-    private byte[,] _characterMap;
+    private char[,] _characterMap;
     private Pixelmap? _pixelMap;
     private Bitmap? _fastBitmap;
     private bool _cursorVisibleBlink;
     private readonly System.Windows.Forms.Timer _timer = new();
     private string _lastInput;
     private int _inputBreakVersion;
-    private readonly TerminalCodePage _codePage;
     private readonly Palette _palette;
     private TerminalState TerminalState { get; }
     private readonly TerminalMatrixKeypressHandler _keypressHandler;
@@ -98,7 +97,6 @@ public partial class TerminalMatrixControl : UserControl
         _fontMonochromeSprite = FontMonochromeSprite.Create((CurrentFont)Settings.Default.Font);
         _cursorVisibleBlink = false;
         _lastInput = "";
-        _codePage = new TerminalCodePage();
         _palette = new Palette();
         TerminalState = new TerminalState();
         _keypressHandler = new TerminalMatrixKeypressHandler(this);
@@ -120,10 +118,12 @@ public partial class TerminalMatrixControl : UserControl
         set
         {
             Settings.Default.Font = (int)value.Id;
-            _fontMonochromeSprite = FontMonochromeSprite.Create((CurrentFont)Settings.Default.Font);
+            _fontMonochromeSprite = _fontMonochromeSprite.ChangeFont(value.Id);
             Refresh();
         }
     }
+
+    internal void EnsureGlyph(char character) => _fontMonochromeSprite.EnsureGlyph(character);
 
     public bool HasFocus
     {
@@ -237,7 +237,7 @@ public partial class TerminalMatrixControl : UserControl
         TextRenderLimit = Math.Min(TextRenderLimit, CharacterHeight - 2);
         CursorPosition = new Coordinate(0, 0, CharacterWidth, CharacterHeight);
         _characterColorMap = new byte[CharacterWidth, CharacterHeight];
-        _characterMap = new byte[CharacterWidth, CharacterHeight];
+        _characterMap = new char[CharacterWidth, CharacterHeight];
         _terminations = CharacterMatrixDefinition.CreateTerminations(Resolution);
 
         _fastBitmap?.Dispose();
@@ -398,7 +398,7 @@ public partial class TerminalMatrixControl : UserControl
         for (var i = 0; i < text.Length; i++)
         {
             _characterColorMap[x + i, y] = c;
-            _characterMap[x + i, y] = _codePage.Asc[text[i]];
+            _characterMap[x + i, y] = text[i];
         }
     }
 
@@ -541,7 +541,7 @@ public partial class TerminalMatrixControl : UserControl
 
     private void TypeCharacter(char c)
     {
-        _characterMap[CursorPosition.X, CursorPosition.Y] = (byte)c;
+        _characterMap[CursorPosition.X, CursorPosition.Y] = c;
         _characterColorMap[CursorPosition.X, CursorPosition.Y] = CurrentCursorColor;
 
         if (CursorPosition.X < CharacterWidth - 1)
@@ -747,7 +747,7 @@ public partial class TerminalMatrixControl : UserControl
             for (var x = start; x < CharacterWidth; x++)
             {
                 var c = _characterMap[x, y];
-                inputValue.Append(c == 0 ? ' ' : _codePage.Chr[c]);
+                inputValue.Append(c == '\0' ? ' ' : c);
             }
         }
 
@@ -778,7 +778,7 @@ public partial class TerminalMatrixControl : UserControl
             TypedLine?.Invoke(this, eventArgs);
     }
 
-    private void DoInsert(byte[,] map, byte empty) // Accepts the terminations array just in case it is needed.
+    private void DoInsert<T>(T[,] map, T empty) // Accepts the terminations array just in case it is needed.
     {
         if (CursorPosition.X >= CharacterWidth - 1)
         {
@@ -792,7 +792,7 @@ public partial class TerminalMatrixControl : UserControl
         map[CursorPosition.X, CursorPosition.Y] = empty;
     }
 
-    private void DoDelete(byte[,] map, byte empty) // Accepts the terminations array just in case it is needed.
+    private void DoDelete<T>(T[,] map, T empty) // Accepts the terminations array just in case it is needed.
     {
         if (CursorPosition.X >= CharacterWidth - 1)
         {
@@ -872,7 +872,7 @@ public partial class TerminalMatrixControl : UserControl
     private new void Scroll()
     {
         ScrollCharacterMap(_characterColorMap, CurrentCursorColor);
-        ScrollCharacterMap(_characterMap, (byte)' ');
+        ScrollCharacterMap(_characterMap, CharacterMatrixDefinition.CharacterEmpty);
         Array.Copy(_terminations, 1, _terminations, 0, _terminations.Length - 1);
         _terminations[_terminations.Length - 1] = true;
 
@@ -888,7 +888,7 @@ public partial class TerminalMatrixControl : UserControl
         TerminalState.InputStartX = 0;
     }
 
-    private void ScrollCharacterMap(byte[,] characterMap, byte blank)
+    private void ScrollCharacterMap<T>(T[,] characterMap, T blank)
     {
         for (var y = 1; y < CharacterHeight; y++)
             for (var x = 0; x < CharacterWidth; x++)
@@ -936,7 +936,7 @@ public partial class TerminalMatrixControl : UserControl
         Invalidate();
     }
 
-    private void ClearLine(byte[,] map, int y, byte clear)
+    private void ClearLine<T>(T[,] map, int y, T clear)
     {
         for (var x = 0; x < CharacterWidth; x++)
             map[x, y] = clear;
@@ -972,7 +972,7 @@ public partial class TerminalMatrixControl : UserControl
         {
             if (x + xStart >= CharacterWidth)
                 break;
-            _characterMap[x + xStart, y] = (byte)text[x];
+            _characterMap[x + xStart, y] = text[x];
             _characterColorMap[x + xStart, y] = CurrentCursorColor;
         }
 
@@ -989,7 +989,7 @@ public partial class TerminalMatrixControl : UserControl
             if (x >= CharacterWidth)
                 break;
 
-            _characterMap[x, y] = (byte)text[x];
+            _characterMap[x, y] = text[x];
             _characterColorMap[x, y] = CurrentCursorColor;
         }
 

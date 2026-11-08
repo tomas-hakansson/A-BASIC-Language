@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement.Fonts;
@@ -8,11 +9,13 @@ namespace A_BASIC_Language.TerminalMatrix.PixelMapLibrary.SpriteManagement;
 
 public class FontMonochromeSprite : MonochromeSprite
 {
-    private readonly TerminalCodePage _codePage;
+    private const int BlankPlane = 128;
+    private readonly TerminalFont _font;
+    private readonly Dictionary<char, int> _extraPlanes = new();
 
-    private FontMonochromeSprite() : base(8, 8, 128)
+    private FontMonochromeSprite(TerminalFont font) : base(8, 8, BlankPlane + 1 + 256)
     {
-        _codePage = new TerminalCodePage();
+        _font = font;
     }
 
     public static FontMonochromeSprite Create(CurrentFont currentFont)
@@ -24,27 +27,45 @@ public class FontMonochromeSprite : MonochromeSprite
             _ => throw new SystemException("Unsupported font.")
         };  
 
-        var result = new FontMonochromeSprite();
-        result.SetData(terminalFont);
+        var result = new FontMonochromeSprite(terminalFont);
+        foreach (var glyph in terminalFont)
+            result.SetData(glyph.Key, glyph.Value);
         result.CurrentPlane = 0;
         return result;
     }
 
-    private void SetData(TerminalFont terminalFont)
+    internal void EnsureGlyph(char character)
     {
-        foreach (var terminalFontKey in terminalFont.Keys)
-        {
-            SetData(terminalFontKey, terminalFont);
-        }
+        if (character < BlankPlane || _extraPlanes.ContainsKey(character))
+            return;
+
+        _font.EnsureGlyph(character);
+        var plane = BlankPlane + 1 + _extraPlanes.Count;
+        SetData(plane, _font[character]);
+        _extraPlanes.Add(character, plane);
     }
 
-    private void SetData(char c, TerminalFont font)
+    internal FontMonochromeSprite ChangeFont(CurrentFont currentFont)
     {
-        CurrentPlane = c;
+        var result = Create(currentFont);
+        foreach (var character in _extraPlanes.Keys)
+            result.EnsureGlyph(character);
 
-        if (!font.TryGetValue(c, out var character))
-            throw new SystemException();
+        return result;
+    }
 
+    private int GetPlane(char character)
+    {
+        if (character < BlankPlane)
+            return character;
+
+        return _extraPlanes.TryGetValue(character, out var plane) ? plane : BlankPlane;
+    }
+
+    private void SetData(int plane, FontManagement.CharacterPixelMatrix character)
+    {
+        var previousPlane = CurrentPlane;
+        CurrentPlane = plane;
         for (var y = 0; y < 8; y++)
         {
             for (var x = 0; x < 8; x++)
@@ -52,19 +73,20 @@ public class FontMonochromeSprite : MonochromeSprite
                 Set(x, y, character.Pixels[x, y]);
             }
         }
+        CurrentPlane = previousPlane;
     }
 
     public void Draw(Pixelmap p, int plane, int x, int y, Color color) =>
         p.DrawSprite(this, plane, x, y, color);
 
     public void Draw(Pixelmap p, char c, int x, int y, Color color) =>
-        p.DrawSprite(this, _codePage.Asc[c], x, y, color);
+        p.DrawSprite(this, GetPlane(c), x, y, color);
 
     public void Draw(Pixelmap p, string text, int x, int y, Color color)
     {
         foreach (var c in text)
         {
-            p.DrawSprite(this, _codePage.Asc[c], x, y, color);
+            Draw(p, c, x, y, color);
             x += 8;
         }
     }
@@ -73,13 +95,13 @@ public class FontMonochromeSprite : MonochromeSprite
         p.DrawSpriteOpaque(this, plane, x, y, foreColor, backColor);
 
     public void DrawOpaque(Pixelmap p, char c, int x, int y, Color foreColor, Color backColor) =>
-        p.DrawSpriteOpaque(this, _codePage.Asc[c], x, y, foreColor, backColor);
+        p.DrawSpriteOpaque(this, GetPlane(c), x, y, foreColor, backColor);
 
     public void DrawOpaque(Pixelmap p, string text, int x, int y, Color foreColor, Color backColor)
     {
         foreach (var c in text)
         {
-            p.DrawSpriteOpaque(this, _codePage.Asc[c], x, y, foreColor, backColor);
+            DrawOpaque(p, c, x, y, foreColor, backColor);
             x += 8;
         }
     }

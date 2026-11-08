@@ -635,6 +635,12 @@ FN name(argument)</code></pre>
                 <p>The command works both in direct mode and in numbered programs. Every valid WINDOW call clears the screen before changing the text area. NEW and RUN also clear the screen and restore all 25 text rows; RUN does this before the program starts.</p>
                 <p>Values outside the range and fractional values produce <code>WINDOW requires a whole number of text rows from 2 to 25.</code>. String arguments produce type errors. An invalid argument does not change the text window or clear the screen.</p>
             </article>
+            <article id="poke">
+                <h3>POKE</h3>
+                <pre><code>POKE address, value</code></pre>
+                <p>Stores a byte at an address from 0 to 65535. The value must be an integer from 0 to 255. Use <code>PEEK(address)</code> to read it back. For example, <code>POKE 100, 42: PRINT PEEK(100)</code> prints 42.</p>
+                <p>Memory starts at zero for each ABL session. It is shared by direct commands and running programs and survives both <code>RUN</code> and <code>NEW</code>.</p>
+            </article>
             <article id="color">
                 <h3>COLOR – screen colors</h3>
                 <pre><code>COLOR target, color</code></pre>
@@ -739,6 +745,7 @@ PRINT LOG(100)/LOG(10)</code></pre>
                     <tr><td><code>ASC</code></td><td>Character code of the first character.</td></tr>
                     <tr><td><code>ATN</code></td><td>Arctangent.</td></tr>
                     <tr><td><code>CHR$</code></td><td>Character from a character code.</td></tr>
+                    <tr><td><code>PEEK(address)</code></td><td>Read a byte from <a href="#poke">session memory</a> at an integer address from 0 to 65535.</td></tr>
                     <tr><td><code>COS</code></td><td>Cosine.</td></tr>
                     <tr><td><code>LEFT$</code></td><td>Left part of a string.</td></tr>
                     <tr><td><code>LEN</code></td><td>String length.</td></tr>
@@ -844,7 +851,7 @@ PRINT LOG(100)/LOG(10)</code></pre>
                 <li>LOAD, SAVE, MERGE, DELETE, RENUM, EDIT, CONT, CLEAR and CLS are not implemented terminal commands. Delete a line with a number on its own, or the entire program with NEW. Open files through the menu.</li>
                 <li>No implemented graphics, sound or cursor statements such as PLOT, DRAW, LINE, CIRCLE, SOUND, BEEP or LOCATE. COLOR supports background, text, and border colors. The resolutions' pixel dimensions are display modes, not a BASIC graphics API.</li>
                 <li>No BASIC file handling with OPEN, CLOSE, PRINT# or INPUT#.</li>
-                <li>No implemented PEEK/POKE, machine code, networking, process or system commands in the language.</li>
+                <li>No implemented machine code, networking, process or system commands in the language.</li>
                 <li>No implemented INKEY$ or TIMER function.</li>
                 <li>No command-line support for a .bas file, automatic program execution or standalone BASIC compilation. Starting the application opens the Windows interface.</li>
             </ul>

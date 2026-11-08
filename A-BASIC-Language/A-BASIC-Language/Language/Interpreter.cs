@@ -433,7 +433,11 @@ public class Interpreter
                                 if (double.IsNaN(code) || code < 0 || code > byte.MaxValue || code != Math.Truncate(code))
                                     throw new InvalidOperationException("Illegal function call: CHR$ requires an integer from 0 to 255.");
 
-                                _data.Push(new StringValue(Petscii.Decode((int)code).ToString()));
+                                var character = Petscii.Decode((byte)code);
+                                if (_terminal is TerminalAdapter adapter)
+                                    adapter.EnsureGlyph(character);
+
+                                _data.Push(new StringValue(character.ToString()));
                             }
                             break;
                         case "ABS":
@@ -641,6 +645,22 @@ public class Interpreter
                         case "#NEXT-TAB-POSITION":
                             _terminal.Write(new string(' ', 14 - _terminal.OutputColumn % 14));
                             break;
+                        case "PEEK":
+                            {
+                                var address = MemoryAddress(_data.Pop());
+                                _data.Push(new IntValue(_state.Memory[address]));
+                            }
+                            break;
+                        case "POKE":
+                            {
+                                var value = Number(_data.Pop());
+                                var address = MemoryAddress(_data.Pop());
+                                if (double.IsNaN(value) || value < 0 || value > byte.MaxValue || value != Math.Truncate(value))
+                                    throw new InvalidOperationException("POKE requires a whole number from 0 to 255 for the value.");
+
+                                _state.Memory[address] = (byte)value;
+                            }
+                            break;
                         case "COLOR":
                             {
                                 var color = Number(_data.Pop());
@@ -840,6 +860,15 @@ public class Interpreter
         if (double.IsNaN(number) || double.IsInfinity(number) || number < minimum || number > int.MaxValue)
             throw new InvalidOperationException("Illegal function call: string position or length is out of range.");
         return (int)number;
+    }
+
+    private static int MemoryAddress(ValueBase value)
+    {
+        var address = Number(value);
+        if (double.IsNaN(address) || address < 0 || address > ushort.MaxValue || address != Math.Truncate(address))
+            throw new InvalidOperationException("The memory address must be a whole number from 0 to 65535.");
+
+        return (int)address;
     }
 
     private static double Number(ValueBase value)

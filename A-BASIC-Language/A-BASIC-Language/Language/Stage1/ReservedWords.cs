@@ -14,7 +14,7 @@ internal class ReservedWords
         Statements =
         [
             "DATA", "DEF", "DIM", "ELSE", "END", "FN",
-            "FOR", "GOSUB", "GOTO", "GO", "IF", "INPUT", "LET", "NEXT", "ON", "PRINT",
+            "FOR", "GOSUB", "GOTO", "GO", "IF", "INPUT", "LET", "NEXT", "ON", "POKE", "PRINT",
             "READ", "REM", "RESTORE", "RETURN", "STEP", "STOP", "THEN", "TO"
         ];
         
@@ -22,7 +22,7 @@ internal class ReservedWords
         
         Functions =
         [
-            "ABS", "ASC", "ATN", "CHR$", "COS", "EXP", "INT", "LEFT$", "LEN", "LOG", "MID$", "RND", "RIGHT$", "SGN",
+            "ABS", "ASC", "ATN", "CHR$", "COS", "EXP", "INT", "LEFT$", "LEN", "LOG", "MID$", "PEEK", "RND", "RIGHT$", "SGN",
             "SIN", "SQR", "STR$", "TAB", "TAN", "VAL"
         ];
 
