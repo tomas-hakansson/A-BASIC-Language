@@ -84,7 +84,7 @@ public static class Paths
         if (name.EndsWith(".bas"))
             name = name.Substring(0, name.Length - 4);
 
-        var path = Path.Combine(directory.FullName, name);
+        var path = Path.Combine(directory!.FullName, name);
 
         if (!Directory.Exists(path))
             Directory.CreateDirectory(path);

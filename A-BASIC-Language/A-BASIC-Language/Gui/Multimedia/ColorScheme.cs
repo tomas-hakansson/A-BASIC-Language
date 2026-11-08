@@ -12,7 +12,7 @@ public enum ColorScheme
     C16,
 }
 
-public struct ColorSchemeConfiguration
+public readonly struct ColorSchemeConfiguration
 {
     public string Name { get; }
     public string ShortName { get; }

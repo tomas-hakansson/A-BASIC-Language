@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Drawing;
-using A_BASIC_Language.TerminalMatrix.PixelMapLibrary;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
+using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement.Fonts;
+using PixelmapLibraryNetFramework.SpriteManagement;
 
-namespace PixelmapLibraryNetFramework.SpriteManagement;
+namespace A_BASIC_Language.TerminalMatrix.PixelMapLibrary.SpriteManagement;
 
 public class FontMonochromeSprite : MonochromeSprite
 {
@@ -14,9 +15,15 @@ public class FontMonochromeSprite : MonochromeSprite
         _codePage = new TerminalCodePage();
     }
 
-    public static FontMonochromeSprite Create()
+    public static FontMonochromeSprite Create(CurrentFont currentFont)
     {
-        var terminalFont = new TerminalFont();
+        TerminalFont terminalFont = currentFont switch
+        {
+            CurrentFont.C64 => new C64TerminalFont(),
+            CurrentFont.Pet => new PetTerminalFont(),
+            _ => throw new SystemException("Unsupported font.")
+        };  
+
         var result = new FontMonochromeSprite();
         result.SetData(terminalFont);
         result.CurrentPlane = 0;

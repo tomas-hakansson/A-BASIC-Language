@@ -13,6 +13,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language;
@@ -68,7 +69,7 @@ public partial class MainWindow : Form
         highQualityRenderingToolStripMenuItem.Checked = highQualityRendering;
         terminalMatrixControl1.RenderingMode = highQualityRendering ? RenderingMode.HighQuality : RenderingMode.HighSpeed;
         new WindowConfigurator(terminalMatrixControl1, _log).Configure(this, resolutionToolStripMenuItem, Settings.Default.Resolution);
-        ApplyColorScheme(Settings.Default.ColorScheme);
+        ApplyColorScheme((ColorScheme)Settings.Default.ColorScheme);
         
     }
 
@@ -254,8 +255,9 @@ public partial class MainWindow : Form
         using var x = new OptionsDialog();
         x.Resolution = terminalMatrixControl1.Resolution;
         x.HighQualityRendering = highQualityRenderingToolStripMenuItem.Checked;
-        x.ColorScheme = Settings.Default.ColorScheme;
-
+        x.ColorScheme = (ColorScheme)Settings.Default.ColorScheme;
+        x.TerminalFont = (CurrentFont)Settings.Default.Font;
+        
         if (x.ShowDialog(this) != DialogResult.OK)
             return;
 
@@ -268,11 +270,18 @@ public partial class MainWindow : Form
 
         Settings.Default.Resolution = x.Resolution;
 
-        if (Settings.Default.ColorScheme != x.ColorScheme)
+        if ((ColorScheme)Settings.Default.ColorScheme != x.ColorScheme)
         {
-            Settings.Default.ColorScheme = x.ColorScheme;
+            Settings.Default.ColorScheme = (int)x.ColorScheme;
             terminalMatrixControl1.WriteLine("Default color scheme changed.");
             ApplyColorScheme(x.ColorScheme);
+        }
+
+        if ((CurrentFont)Settings.Default.Font != x.TerminalFont)
+        {
+            Settings.Default.Font = (int)x.TerminalFont;
+            terminalMatrixControl1.WriteLine("Font changed.");
+            ApplyTerminalFont(x.TerminalFont);
         }
 
         if (x.HighQualityRendering != highQualityRenderingToolStripMenuItem.Checked)
@@ -281,13 +290,20 @@ public partial class MainWindow : Form
         }
     }
 
-    internal void ApplyColorScheme(ColorScheme scheme)
+    private void ApplyColorScheme(ColorScheme scheme)
     {
         var colors = new ColorSchemeConfigurationList().Get(scheme);
         terminalMatrixControl1.CurrentCursorColor = (byte)colors.Text;
         terminalMatrixControl1.ClearColorMap();
         terminalMatrixControl1.SetBackgroundColor((byte)colors.Background);
         terminalMatrixControl1.SetBorderColor((byte)colors.Border);
+    }
+
+    private void ApplyTerminalFont(CurrentFont font)
+    {
+        var fontConfiguration = new FontConfigurationList().Get(font);
+        var fontConfig = new FontConfigurationList().Get(fontConfiguration);
+        terminalMatrixControl1.CurrentFont = fontConfig;
     }
 
     private void btnOptions_Click(object sender, EventArgs e) =>
@@ -337,7 +353,7 @@ public partial class MainWindow : Form
         {
             var path = Paths.GetUser101GamesPath();
             using var x = new OpenFileDialog();
-            x.InitialDirectory = path.FullName;
+            x.InitialDirectory = path!.FullName;
             x.Filter = @"BASIC source files (*.bas)|*.bas|All files (*.*)|*.*";
 
             if (x.ShowDialog(this) != DialogResult.OK)
@@ -400,6 +416,9 @@ public partial class MainWindow : Form
         x.BasicSession = _session;
         x.ShowDialog(this);
     }
+
+    private void btnProgramProperties_Click(object sender, EventArgs e) =>
+        propertiesToolStripMenuItem_Click(sender, e);
 
     private void programDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
     {

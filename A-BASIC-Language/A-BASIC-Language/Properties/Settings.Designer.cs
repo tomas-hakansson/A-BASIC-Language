@@ -8,8 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System.Globalization;
-
 namespace A_BASIC_Language.Properties {
     
     
@@ -51,13 +49,25 @@ namespace A_BASIC_Language.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Default")]
-        public global::A_BASIC_Language.Gui.Multimedia.ColorScheme ColorScheme {
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int ColorScheme {
             get {
-                return ((global::A_BASIC_Language.Gui.Multimedia.ColorScheme)(this["ColorScheme"]));
+                return ((int)(this["ColorScheme"]));
             }
             set {
                 this["ColorScheme"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int Font {
+            get {
+                return ((int)(this["Font"]));
+            }
+            set {
+                this["Font"] = value;
             }
         }
     }

@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using A_BASIC_Language.Gui.Multimedia;
 using A_BASIC_Language.TerminalMatrix;
-using TerminalMatrixNetFramework;
+using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 
 namespace A_BASIC_Language.Gui.Dialogs;
 
@@ -30,6 +30,12 @@ public partial class OptionsDialog : Form
     {
         get => colorSchemeComboBox1.SelectedColorScheme.Id;
         set => colorSchemeComboBox1.SetSelectedColorScheme(value);
+    }
+
+    public CurrentFont TerminalFont
+    {
+        get => fontComboBox1.SelectedFont;
+        set => fontComboBox1.SelectedFont = value;
     }
 
     private void btnOk_Click(object sender, EventArgs e)

@@ -56,7 +56,7 @@ public class PreProcessorController
                 var themes = new ColorSchemeConfigurationList();
                 if (argument == null)
                 {
-                    _parent.WriteLine(themes.Get(Settings.Default.ColorScheme).ShortName);
+                    _parent.WriteLine(themes.Get((ColorScheme)Settings.Default.ColorScheme).ShortName);
                     break;
                 }
 
@@ -70,8 +70,7 @@ public class PreProcessorController
                 }
 
                 var selectedTheme = matches[0];
-                _owner.ApplyColorScheme(selectedTheme.Id);
-                Settings.Default.ColorScheme = selectedTheme.Id;
+                Settings.Default.ColorScheme = (int)selectedTheme.Id;
                 _parent.WriteLine(selectedTheme.ShortName);
                 break;
             case PreProcessorParserResult.Unknown:

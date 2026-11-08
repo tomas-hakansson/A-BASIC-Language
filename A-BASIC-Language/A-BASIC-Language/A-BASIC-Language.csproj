@@ -74,6 +74,9 @@
     <Compile Include="Gui\UserControls\ColorSchemeComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Gui\UserControls\FontComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Gui\UserControls\TerminalResolutionComboBox.cs" />
     <Compile Include="Gui\UserControls\TwoColumnListView.cs">
       <SubType>Component</SubType>
@@ -151,6 +154,7 @@
     <Compile Include="TerminalMatrix\Events\TypedLineEventArgs.cs" />
     <Compile Include="TerminalMatrix\Events\UserBreakDelegate.cs" />
     <Compile Include="TerminalMatrix\PixelMapLibrary\FontManagement\CharacterPixelMatrix.cs" />
+    <Compile Include="TerminalMatrix\PixelMapLibrary\FontManagement\CurrentFont.cs" />
     <Compile Include="TerminalMatrix\PixelMapLibrary\FontManagement\Fonts\C64TerminalFont.cs" />
     <Compile Include="TerminalMatrix\PixelMapLibrary\FontManagement\Fonts\PetTerminalFont.cs" />
     <Compile Include="TerminalMatrix\PixelMapLibrary\FontManagement\TerminalCodePage.cs" />

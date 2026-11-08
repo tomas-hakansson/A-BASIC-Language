@@ -8,10 +8,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using A_BASIC_Language.Properties;
 using A_BASIC_Language.TerminalMatrix.Definitions;
 using A_BASIC_Language.TerminalMatrix.Events;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
+using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.SpriteManagement;
 using A_BASIC_Language.TerminalMatrix.TerminalColor;
 using A_BASIC_Language.TerminalMatrix.TerminalMatrixControlFeatures;
 using PixelmapLibraryNetFramework.SpriteManagement;
@@ -43,9 +45,10 @@ public partial class TerminalMatrixControl : UserControl
     private readonly Palette _palette;
     private TerminalState TerminalState { get; }
     private readonly TerminalMatrixKeypressHandler _keypressHandler;
-    private readonly FontMonochromeSprite _fontMonochromeSprite;
+    private FontMonochromeSprite _fontMonochromeSprite;
     private Size _border;
     private bool _resolutionIncorrect;
+    private FontConfiguration? _currentFont;
 
     public int CharacterWidth { get; private set; } = 40;
     public int CharacterHeight { get; private set; } = 25;
@@ -92,7 +95,7 @@ public partial class TerminalMatrixControl : UserControl
 #pragma warning restore CS8618
     {
         _resolutionIncorrect = true;
-        _fontMonochromeSprite = FontMonochromeSprite.Create();
+        _fontMonochromeSprite = FontMonochromeSprite.Create((CurrentFont)Settings.Default.Font);
         _cursorVisibleBlink = false;
         _lastInput = "";
         _codePage = new TerminalCodePage();
@@ -104,6 +107,22 @@ public partial class TerminalMatrixControl : UserControl
         QuitFlag = false;
         HasFocus = true;
         InitializeComponent();
+    }
+
+    public FontConfiguration CurrentFont
+    {
+        get
+        {
+            _currentFont ??= FontConfiguration.Default;
+            var list = new FontConfigurationList();
+            return list.Get(_currentFont.Value);
+        }
+        set
+        {
+            Settings.Default.Font = (int)value.Id;
+            _fontMonochromeSprite = FontMonochromeSprite.Create((CurrentFont)Settings.Default.Font);
+            Refresh();
+        }
     }
 
     public bool HasFocus
