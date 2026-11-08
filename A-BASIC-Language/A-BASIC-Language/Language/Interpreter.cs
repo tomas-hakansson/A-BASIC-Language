@@ -695,9 +695,6 @@ public class Interpreter
                             if (_terminal is TerminalAdapter screen)
                                 screen.HomeCursor();
                             _terminal.SetTextRenderLimit(0);
-                            // A trailing CLS in direct mode leaves the cursor at home.
-                            if (!_runtime && i == _parseResult.EvalValues.Count - 1)
-                                End("", showReady: false);
                             break;
                         case "WINDOW":
                             {
