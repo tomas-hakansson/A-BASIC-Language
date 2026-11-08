@@ -212,6 +212,7 @@
                     <tr><td><a href="#new">NEW</a></td><td>Yes</td><td>No</td><td>Delete the program and the session's runtime data.</td></tr>
                     <tr><td><a href="#let">LET / assignment without LET</a></td><td>Yes</td><td>Yes</td><td>Assign a value to a scalar or array element.</td></tr>
                     <tr><td><a href="#print">PRINT</a></td><td>Yes</td><td>Yes</td><td>Print expressions and control padding/line breaks.</td></tr>
+                    <tr><td><a href="#cls">CLS</a></td><td>Yes</td><td>Yes</td><td>Clear the text screen and move the cursor to the upper-left corner.</td></tr>
                     <tr><td><a href="#window">WINDOW</a></td><td>Yes</td><td>Yes</td><td>Clear the screen and select the number of text rows at the bottom. Without an argument, all 25 rows are restored.</td></tr>
                     <tr><td><a href="#color">COLOR</a></td><td>Yes</td><td>Yes</td><td>Set background (0), text (1), or border (2) with COLOR target, color. Color values 1–16 select one of the 16 available colors.</td></tr>
                     <tr><td><a href="#input">INPUT</a></td><td>Yes</td><td>Yes</td><td>Read a separate response for each target variable.</td></tr>
@@ -624,6 +625,11 @@ FN name(argument)</code></pre>
 30 END</code></pre>
                 <p>Produces 10. The definition must have been executed before the call. A new definition replaces the old one. The parameter is local to the call; a global variable with the same name is unchanged. Other variables are read from the current global state at the time of the call. Functions can call one another; at most 256 simultaneous FN calls are allowed. The body is an expression, not program statements. String results and multiple parameters are not supported. Direct definitions persist between commands; RUN/NEW delete them.</p>
             </article>
+            <article id="cls">
+                <h3>CLS – clear the screen</h3>
+                <pre><code>CLS</code></pre>
+                <p>Clears the screen, restores the full text area, and moves the cursor to the upper-left corner. Works in direct mode and in numbered programs.</p>
+            </article>
             <article id="window">
                 <h3>WINDOW – text window</h3>
                 <pre><code>WINDOW [expression]</code></pre>
@@ -855,7 +861,7 @@ PRINT LOG(100)/LOG(10)</code></pre>
                 <li>No full Altair BASIC compatibility. INT, RND, string addition and automatic array creation have the deviations described above.</li>
                 <li>DATA and READ require numbered program lines. DATA supports numeric and quoted string literals; RESTORE resets to the beginning and does not accept a line number.</li>
                 <li>WHILE/WEND, DO/LOOP, multiline IF blocks, ELSEIF and SELECT CASE are not supported.</li>
-                <li>LOAD, SAVE, MERGE, DELETE, RENUM, EDIT, CONT, CLEAR and CLS are not implemented terminal commands. Delete a line with a number on its own, or the entire program with NEW. Open files through the menu.</li>
+                <li>LOAD, SAVE, MERGE, DELETE, RENUM, EDIT, CONT and CLEAR are not implemented terminal commands. Delete a line with a number on its own, or the entire program with NEW. Open files through the menu.</li>
                 <li>No implemented graphics, sound or cursor statements such as PLOT, DRAW, LINE, CIRCLE, SOUND, BEEP or LOCATE. COLOR supports background, text, and border colors. The resolutions' pixel dimensions are display modes, not a BASIC graphics API.</li>
                 <li>No BASIC file handling with OPEN, CLOSE, PRINT# or INPUT#.</li>
                 <li>No implemented machine code, networking, process or system commands in the language.</li>

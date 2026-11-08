@@ -13,9 +13,9 @@ internal class ReservedWords
     {
         Statements =
         [
-            "DATA", "DEF", "DIM", "ELSE", "END", "FN",
+            "CLS", "DATA", "DEF", "DIM", "ELSE", "END", "FN",
             "FOR", "GOSUB", "GOTO", "GO", "IF", "INPUT", "LET", "NEXT", "ON", "POKE", "PRINT",
-            "READ", "REM", "RESTORE", "RETURN", "STEP", "STOP", "THEN", "TO"
+            "READ", "REM", "RESTORE", "RETURN", "SCNCLR", "STEP", "STOP", "THEN", "TO"
         ];
         
         Operators = ["^", "+", "-", "*", "/", "<=", ">=", "<>", "!=", "<", ">", "NOT", "AND", "OR", "XOR"];
