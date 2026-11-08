@@ -57,9 +57,9 @@ Of the 101 games, we support the ones followed by a 1:
 | hello             |     1     |
 | hexapawn          |     0     |
 | hi-lo             |     1     |
-| highiq            |           |
-| hockey            |           |
-| horserace         |           |
+| highiq            |     1     |
+| hockey            |     1     |
+| horserace         |     0     |
 | hurkle            |           |
 | kinema            |           |
 | king              |           |
@@ -94,7 +94,7 @@ Of the 101 games, we support the ones followed by a 1:
 | slalom            |           |
 | slots             |           |
 | splat             |           |
-| stars             |           |
+| stars             |     1     |
 | stockmarket       |     1     |
 | superstartrek     |     0     |
 | superstartrekins  |     0     |
