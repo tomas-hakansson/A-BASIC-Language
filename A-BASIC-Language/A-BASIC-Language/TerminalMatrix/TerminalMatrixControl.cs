@@ -320,7 +320,6 @@ public partial class TerminalMatrixControl : UserControl
         if (_pixelMap == null)
             return;
 
-        _fontPixelsChanged = false;
         _pixelMap.LockBits();
         try
         {
@@ -434,7 +433,10 @@ public partial class TerminalMatrixControl : UserControl
         }
     }
 
-    public void UpdateBitmap(Action<Pixelmap>? underText = null, Action<Pixelmap>? overText = null)
+    public void UpdateBitmap(Action<Pixelmap>? underText = null, Action<Pixelmap>? overText = null) =>
+        RenderBitmap(invalidate: true, underText, overText);
+
+    private void RenderBitmap(bool invalidate, Action<Pixelmap>? underText = null, Action<Pixelmap>? overText = null)
     {
         if (QuitFlag)
             return;
@@ -500,7 +502,10 @@ public partial class TerminalMatrixControl : UserControl
         {
             _pixelMap.UnlockBits();
         }
-        Invalidate();
+
+        _fontPixelsChanged = false;
+        if (invalidate)
+            Invalidate();
     }
 
     protected override void OnResize(EventArgs e)
@@ -515,7 +520,7 @@ public partial class TerminalMatrixControl : UserControl
             return;
 
         if (_fontPixelsChanged)
-            UpdateBitmap();
+            RenderBitmap(invalidate: false);
 
         switch (RenderingMode)
         {
