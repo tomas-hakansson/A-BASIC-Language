@@ -212,6 +212,10 @@ public class BasicParser
                     case "WINDOW":
                         Window();
                         break;
+                    case "SCROLL":
+                        Expression();
+                        Generate(new AblProcedure("SCROLL"));
+                        break;
                     case "COLOR":
                         Color();
                         break;
@@ -1394,7 +1398,7 @@ public class BasicParser
     }
 
     static Regex StatementRegex() =>
-        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|(?:CLS|SCNCLR)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|(?:CLS|SCNCLR|SCROLL)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

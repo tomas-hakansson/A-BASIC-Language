@@ -36,6 +36,7 @@ public partial class TerminalMatrixControl : UserControl
 
     private DateTime _tickTime;
     private bool[] _terminations;
+    private bool _automaticScroll = true;
     private byte[,] _characterColorMap;
     private char[,] _characterMap;
     private Pixelmap? _pixelMap;
@@ -592,17 +593,18 @@ public partial class TerminalMatrixControl : UserControl
         {
             // Only an actual wrap joins two physical rows into one logical line.
             var newContinuation = _terminations[CursorPosition.Y];
+            var wrapsToTop = !_automaticScroll && !CursorPosition.CanMoveDown();
             _terminations[CursorPosition.Y] = false;
-            if (CursorPosition.CanMoveDown())
-                CursorPosition.Y++;
-            else
-                Scroll();
+            AdvanceTextRow();
 
             CursorPosition.X = 0;
             if (newContinuation)
             {
-                ClearLine(_characterMap, CursorPosition.Y, CharacterMatrixDefinition.CharacterEmpty);
-                ClearLine(_characterColorMap, CursorPosition.Y, CurrentCursorColor);
+                if (!wrapsToTop)
+                {
+                    ClearLine(_characterMap, CursorPosition.Y, CharacterMatrixDefinition.CharacterEmpty);
+                    ClearLine(_characterColorMap, CursorPosition.Y, CurrentCursorColor);
+                }
                 _terminations[CursorPosition.Y] = true;
             }
         }
@@ -744,7 +746,7 @@ public partial class TerminalMatrixControl : UserControl
                 ShowEffect();
                 break;
             default:
-                _keypressHandler.HandleKeyDown(e, TerminalState.InputMode, TerminalState.InputStartX, TerminalState.InputStartY, CursorPosition, ShowKeyboardActivity, Scroll);
+                _keypressHandler.HandleKeyDown(e, TerminalState.InputMode, TerminalState.InputStartX, TerminalState.InputStartY, CursorPosition, ShowKeyboardActivity, AdvanceTextRow);
                 break;
         }
 
@@ -768,18 +770,30 @@ public partial class TerminalMatrixControl : UserControl
     internal void HandleEnter(bool shift)
     {
         var firstRow = CursorPosition.Y;
-        while (firstRow > 0 && !_terminations[firstRow - 1])
-            firstRow--;
+        var remainingRows = CharacterHeight - TextRenderLimit - 1;
+        while (remainingRows > 0 && (!_automaticScroll || firstRow > TextRenderLimit))
+        {
+            if (TerminalState.InputMode && firstRow == TerminalState.InputStartY)
+                break;
+            var previousRow = firstRow == TextRenderLimit ? CharacterHeight - 1 : firstRow - 1;
+            if (_terminations[previousRow])
+                break;
+            firstRow = previousRow;
+            remainingRows--;
+        }
 
-        if (TerminalState.InputMode)
+        if (TerminalState.InputMode && _automaticScroll)
             firstRow = Math.Max(firstRow, TerminalState.InputStartY);
 
         var lastRow = CursorPosition.Y;
-        while (lastRow < CharacterHeight - 1 && !_terminations[lastRow])
-            lastRow++;
+        while (remainingRows > 0 && !_terminations[lastRow] && (!_automaticScroll || lastRow < CharacterHeight - 1))
+        {
+            lastRow = NextTextRow(lastRow);
+            remainingRows--;
+        }
 
         var inputValue = new StringBuilder();
-        for (var y = firstRow; y <= lastRow; y++)
+        for (var y = firstRow; !_automaticScroll || y <= lastRow; y = NextTextRow(y))
         {
             var start = TerminalState.InputMode && y == TerminalState.InputStartY
                 ? TerminalState.InputStartX
@@ -789,6 +803,8 @@ public partial class TerminalMatrixControl : UserControl
                 var c = _characterMap[x, y];
                 inputValue.Append(c == '\0' ? ' ' : c);
             }
+            if (y == lastRow)
+                break;
         }
 
         // Trim only the completed logical line, preserving spaces at wrap boundaries.
@@ -803,10 +819,7 @@ public partial class TerminalMatrixControl : UserControl
 
         _terminations[lastRow] = true;
         CursorPosition.Set(0, lastRow);
-        if (CursorPosition.CanMoveDown())
-            CursorPosition.Y++;
-        else
-            Scroll();
+        AdvanceTextRow();
 
         ShowKeyboardActivity();
 
@@ -909,35 +922,78 @@ public partial class TerminalMatrixControl : UserControl
         return SetProgramLine(value);
     }
 
-    private new void Scroll()
+    private int NextTextRow(int row) =>
+        row == CharacterHeight - 1 ? TextRenderLimit : row + 1;
+
+    private void AdvanceTextRow()
     {
-        ScrollCharacterMap(_characterColorMap, CurrentCursorColor);
-        ScrollCharacterMap(_characterMap, CharacterMatrixDefinition.CharacterEmpty);
-        Array.Copy(_terminations, 1, _terminations, 0, _terminations.Length - 1);
-        _terminations[_terminations.Length - 1] = true;
+        if (CursorPosition.CanMoveDown() || !_automaticScroll)
+        {
+            CursorPosition.Y = NextTextRow(CursorPosition.Y);
+            return;
+        }
+
+        ShiftText(0, -1);
 
         if (!TerminalState.InputMode)
             return;
 
         TerminalState.InputStartY--;
 
-        if (TerminalState.InputStartY >= 0)
+        if (TerminalState.InputStartY >= TextRenderLimit)
             return;
 
-        TerminalState.InputStartY = 0;
+        TerminalState.InputStartY = TextRenderLimit;
         TerminalState.InputStartX = 0;
     }
 
-    private void ScrollCharacterMap<T>(T[,] characterMap, T blank)
+    internal void ScrollText(int mode)
     {
-        for (var y = 1; y < CharacterHeight; y++)
-            for (var x = 0; x < CharacterWidth; x++)
-                characterMap[x, y - 1] = characterMap[x, y];
+        if (mode < 2)
+        {
+            _automaticScroll = mode == 1;
+            if (_automaticScroll)
+                _terminations[CharacterHeight - 1] = true;
+            return;
+        }
 
-        var last = CharacterHeight - 1;
+        var (dx, dy) = mode switch
+        {
+            2 => (0, -1),
+            3 => (1, 0),
+            4 => (0, 1),
+            5 => (-1, 0),
+            _ => throw new ArgumentOutOfRangeException(nameof(mode))
+        };
+        ShiftText(dx, dy);
+        UpdateBitmap();
+    }
 
-        for (var x = 0; x < CharacterWidth; x++)
-            characterMap[x, last] = blank;
+    private void ShiftText(int dx, int dy)
+    {
+        var firstX = dx > 0 ? CharacterWidth - 1 : 0;
+        var firstY = dy > 0 ? CharacterHeight - 1 : TextRenderLimit;
+        var stepX = dx > 0 ? -1 : 1;
+        var stepY = dy > 0 ? -1 : 1;
+
+        for (var y = firstY; y >= TextRenderLimit && y < CharacterHeight; y += stepY)
+        {
+            var sourceY = y - dy;
+            var hasSourceRow = sourceY >= TextRenderLimit && sourceY < CharacterHeight;
+            if (dy != 0)
+                _terminations[y] = !hasSourceRow || _terminations[sourceY];
+
+            for (var x = firstX; x >= 0 && x < CharacterWidth; x += stepX)
+            {
+                var sourceX = x - dx;
+                var hasSource = hasSourceRow && sourceX >= 0 && sourceX < CharacterWidth;
+                _characterMap[x, y] = hasSource ? _characterMap[sourceX, sourceY] : CharacterMatrixDefinition.CharacterEmpty;
+                _characterColorMap[x, y] = hasSource ? _characterColorMap[sourceX, sourceY] : CurrentCursorColor;
+            }
+        }
+
+        if (dy != 0)
+            _terminations[CharacterHeight - 1] = true;
     }
 
     public void BeginInput(string prompt) =>
@@ -958,8 +1014,10 @@ public partial class TerminalMatrixControl : UserControl
         ClearLine(_characterColorMap, CursorPosition.Y, CurrentCursorColor);
         _terminations[CursorPosition.Y] = true;
         
-        if (CursorPosition.Y > 0)
+        if (CursorPosition.Y > TextRenderLimit)
             _terminations[CursorPosition.Y - 1] = true;
+        else if (!_automaticScroll)
+            _terminations[CharacterHeight - 1] = true;
         
         CurrentCursorColor = promptColor;
         Write(prompt);
@@ -1036,10 +1094,7 @@ public partial class TerminalMatrixControl : UserControl
         CursorPosition.X = 0;
         _terminations[CursorPosition.Y] = true;
 
-        if (CursorPosition.CanMoveDown())
-            CursorPosition.Y++;
-        else
-            Scroll();
+        AdvanceTextRow();
 
         UpdateBitmap();
         Invalidate();

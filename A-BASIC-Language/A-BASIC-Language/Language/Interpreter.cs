@@ -696,6 +696,16 @@ public class Interpreter
                                 screen.HomeCursor();
                             _terminal.SetTextRenderLimit(0);
                             break;
+                        case "SCROLL":
+                            {
+                                var mode = Number(_data.Pop());
+                                if (double.IsNaN(mode) || mode < 0 || mode > 5 || mode != Math.Truncate(mode))
+                                    throw new InvalidOperationException("SCROLL requires a whole number from 0 to 5.");
+
+                                if (_terminal is TerminalAdapter scrollingTerminal)
+                                    scrollingTerminal.Scroll((int)mode);
+                            }
+                            break;
                         case "WINDOW":
                             {
                                 var rows = Number(_data.Pop());

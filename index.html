@@ -214,6 +214,7 @@
                     <tr><td><a href="#print">PRINT</a></td><td>Yes</td><td>Yes</td><td>Print expressions and control padding/line breaks.</td></tr>
                     <tr><td><a href="#cls">CLS</a></td><td>Yes</td><td>Yes</td><td>Clear the text screen and move the cursor to the upper-left corner.</td></tr>
                     <tr><td><a href="#window">WINDOW</a></td><td>Yes</td><td>Yes</td><td>Clear the screen and select the number of text rows at the bottom. Without an argument, all 25 rows are restored.</td></tr>
+                    <tr><td><a href="#scroll">SCROLL</a></td><td>Yes</td><td>Yes</td><td>Set automatic scrolling or shift the text area by one row or column.</td></tr>
                     <tr><td><a href="#color">COLOR</a></td><td>Yes</td><td>Yes</td><td>Set background (0), text (1), or border (2) with COLOR target, color. Color values 1–16 select one of the 16 available colors.</td></tr>
                     <tr><td><a href="#input">INPUT</a></td><td>Yes</td><td>Yes</td><td>Read a separate response for each target variable.</td></tr>
                     <tr><td><a href="#data">DATA</a></td><td>No</td><td>Yes</td><td>Supply comma-separated numeric and quoted string literals.</td></tr>
@@ -642,6 +643,16 @@ FN name(argument)</code></pre>
 50 PRINT "FULL TEXT AREA AGAIN"</code></pre>
                 <p>The command works both in direct mode and in numbered programs. Every valid WINDOW call clears the screen before changing the text area. NEW and RUN also clear the screen and restore all 25 text rows; RUN does this before the program starts.</p>
                 <p>Values outside the range and fractional values produce <code>WINDOW requires a whole number of text rows from 2 to 25.</code>. String arguments produce type errors. An invalid argument does not change the text window or clear the screen.</p>
+            </article>
+            <article id="scroll">
+                <h3>SCROLL – scroll the text area</h3>
+                <pre><code>SCROLL mode</code></pre>
+                <ul>
+                    <li><code>0</code> disables automatic scrolling. Output wraps from the last row to the first row of the current <a href="#window">WINDOW</a> and can overwrite existing text.</li>
+                    <li><code>1</code> enables automatic upward scrolling when output passes the last row. This is the initial mode.</li>
+                    <li><code>2</code>, <code>3</code>, <code>4</code> and <code>5</code> shift the current text area up, right, down and left, respectively, by one row or column. Text and its colors move together. Text beyond the edge is discarded and the exposed edge is blank. The cursor stays in place during the shift, and the automatic mode stays the same.</li>
+                </ul>
+                <p>The mode must be an integer from 0 to 5. In direct mode, ABL prints the usual <code>Ready.</code> prompt after the command.</p>
             </article>
             <article id="poke">
                 <h3>POKE</h3>
