@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
+using A_BASIC_Language.Language;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement.Fonts;
 using PixelmapLibraryNetFramework.SpriteManagement;
@@ -9,11 +9,12 @@ namespace A_BASIC_Language.TerminalMatrix.PixelMapLibrary.SpriteManagement;
 
 public class FontMonochromeSprite : MonochromeSprite
 {
-    private const int BlankPlane = 128;
+    internal const int GlyphSize = 8;
+    internal const int GlyphCount = 256;
+    private const int BlankPlane = GlyphCount;
     private readonly TerminalFont _font;
-    private readonly Dictionary<char, int> _extraPlanes = new();
 
-    private FontMonochromeSprite(TerminalFont font) : base(8, 8, BlankPlane + 1 + 256)
+    private FontMonochromeSprite(TerminalFont font) : base(GlyphSize, GlyphSize, GlyphCount + 1)
     {
         _font = font;
     }
@@ -36,19 +37,14 @@ public class FontMonochromeSprite : MonochromeSprite
 
     internal void EnsureGlyph(char character)
     {
-        if (character < BlankPlane || _extraPlanes.ContainsKey(character))
-            return;
-
-        _font.EnsureGlyph(character);
-        var plane = BlankPlane + 1 + _extraPlanes.Count;
-        SetData(plane, _font[character]);
-        _extraPlanes.Add(character, plane);
+        if (Petscii.TryGetPlaceholderCode(character, out var code) && !_font.ContainsKey((char)code))
+            _font.EnsureGlyph(character);
     }
 
     internal FontMonochromeSprite ChangeFont(CurrentFont currentFont)
     {
         var result = Create(currentFont);
-        foreach (var character in _extraPlanes.Keys)
+        foreach (var character in _font.Keys)
             result.EnsureGlyph(character);
 
         return result;
@@ -56,19 +52,58 @@ public class FontMonochromeSprite : MonochromeSprite
 
     private int GetPlane(char character)
     {
-        if (character < BlankPlane)
+        if (character < 128)
             return character;
 
-        return _extraPlanes.TryGetValue(character, out var plane) ? plane : BlankPlane;
+        return Petscii.TryGetPlaceholderCode(character, out var code) ? code : BlankPlane;
+    }
+
+    internal void CopyToMemory(byte[] memory, int start)
+    {
+        Array.Clear(memory, start, GlyphCount * GlyphSize);
+        foreach (var glyph in _font)
+        {
+            var code = GetPlane(glyph.Key);
+            for (var y = 0; y < GlyphSize; y++)
+            {
+                byte row = 0;
+                for (var x = 0; x < GlyphSize; x++)
+                    if (glyph.Value.Pixels[x, y])
+                        row |= (byte)(0x80 >> x);
+
+                memory[start + code * GlyphSize + y] = row;
+            }
+        }
+    }
+
+    internal void SetGlyphRow(byte code, int y, byte row)
+    {
+        var character = (char)code;
+        if (!_font.TryGetValue(character, out var glyph))
+        {
+            character = Petscii.Decode(code);
+            _font.EnsureGlyph(character);
+            glyph = _font[character];
+        }
+
+        var previousPlane = CurrentPlane;
+        CurrentPlane = code;
+        for (var x = 0; x < GlyphSize; x++)
+        {
+            var pixel = (row & (0x80 >> x)) != 0;
+            glyph.Pixels[x, y] = pixel;
+            Set(x, y, pixel);
+        }
+        CurrentPlane = previousPlane;
     }
 
     private void SetData(int plane, FontManagement.CharacterPixelMatrix character)
     {
         var previousPlane = CurrentPlane;
         CurrentPlane = plane;
-        for (var y = 0; y < 8; y++)
+        for (var y = 0; y < GlyphSize; y++)
         {
-            for (var x = 0; x < 8; x++)
+            for (var x = 0; x < GlyphSize; x++)
             {
                 Set(x, y, character.Pixels[x, y]);
             }

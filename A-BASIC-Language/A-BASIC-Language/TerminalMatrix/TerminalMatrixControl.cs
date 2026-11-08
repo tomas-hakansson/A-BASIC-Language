@@ -24,6 +24,9 @@ namespace A_BASIC_Language.TerminalMatrix;
 
 public partial class TerminalMatrixControl : UserControl
 {
+    private const int FontMemoryStart = 53248;
+    private const int FontMemorySize = FontMonochromeSprite.GlyphCount * FontMonochromeSprite.GlyphSize;
+
     public event TypedLineDelegate? TypedLine;
     public event InputCompletedDelegate? InputCompleted;
     public event UserBreakDelegate? UserBreak;
@@ -45,6 +48,8 @@ public partial class TerminalMatrixControl : UserControl
     private TerminalState TerminalState { get; }
     private readonly TerminalMatrixKeypressHandler _keypressHandler;
     private FontMonochromeSprite _fontMonochromeSprite;
+    private byte[]? _fontMemory;
+    private bool _fontPixelsChanged;
     private Size _border;
     private bool _resolutionIncorrect;
     private FontConfiguration? _currentFont;
@@ -111,19 +116,45 @@ public partial class TerminalMatrixControl : UserControl
     {
         get
         {
-            _currentFont ??= FontConfiguration.Default;
+            _currentFont ??= new FontConfigurationList().Get((CurrentFont)Settings.Default.Font);
             var list = new FontConfigurationList();
             return list.Get(_currentFont.Value);
         }
         set
         {
-            Settings.Default.Font = (int)value.Id;
             _fontMonochromeSprite = _fontMonochromeSprite.ChangeFont(value.Id);
+            _currentFont = value;
+            Settings.Default.Font = (int)value.Id;
+            if (_fontMemory != null)
+                _fontMonochromeSprite.CopyToMemory(_fontMemory, FontMemoryStart);
+            _fontPixelsChanged = true;
             Refresh();
         }
     }
 
     internal void EnsureGlyph(char character) => _fontMonochromeSprite.EnsureGlyph(character);
+
+    internal void AttachFontMemory(byte[] memory)
+    {
+        if (ReferenceEquals(_fontMemory, memory))
+            return;
+
+        _fontMonochromeSprite.CopyToMemory(memory, FontMemoryStart);
+        _fontMemory = memory;
+    }
+
+    internal void UpdateFontMemory(int address, byte value)
+    {
+        var offset = address - FontMemoryStart;
+        if (offset < 0 || offset >= FontMemorySize)
+            return;
+
+        var code = (byte)(offset / FontMonochromeSprite.GlyphSize);
+        var row = offset % FontMonochromeSprite.GlyphSize;
+        _fontMonochromeSprite.SetGlyphRow(code, row, value);
+        _fontPixelsChanged = true;
+        Invalidate();
+    }
 
     public bool HasFocus
     {
@@ -289,6 +320,7 @@ public partial class TerminalMatrixControl : UserControl
         if (_pixelMap == null)
             return;
 
+        _fontPixelsChanged = false;
         _pixelMap.LockBits();
         try
         {
@@ -481,6 +513,9 @@ public partial class TerminalMatrixControl : UserControl
     {
         if (_pixelMap == null!)
             return;
+
+        if (_fontPixelsChanged)
+            UpdateBitmap();
 
         switch (RenderingMode)
         {

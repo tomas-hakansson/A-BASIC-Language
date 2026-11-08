@@ -26,6 +26,10 @@ public sealed class TerminalAdapter(TerminalMatrixControl terminal) : IBasicTerm
 
     internal void EnsureGlyph(char character) => terminal.EnsureGlyph(character);
 
+    internal void AttachFontMemory(byte[] memory) => terminal.AttachFontMemory(memory);
+
+    internal void UpdateFontMemory(int address, byte value) => terminal.UpdateFontMemory(address, value);
+
     public void Write(string text)
     {
         text = text.Replace("\r\n", "\n").Replace('\r', '\n');

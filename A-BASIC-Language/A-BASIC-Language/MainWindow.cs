@@ -40,6 +40,7 @@ public partial class MainWindow : Form
     public MainWindow()
     {
         InitializeComponent();
+        terminalMatrixControl1.AttachFontMemory(_session.GetRuntimeState().Memory);
 #if !DEBUG
         _promptQuit = true;
 #endif

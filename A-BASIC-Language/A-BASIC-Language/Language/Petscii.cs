@@ -16,11 +16,23 @@ internal static class Petscii
         if (index >= 0)
             return FirstCode + index;
 
-        var code = character - PlaceholderStart;
-        if (code >= 0 && code <= byte.MaxValue && Placeholders.ContainsKey((byte)code))
+        if (TryGetPlaceholderCode(character, out var code))
             return code;
 
         throw new InvalidOperationException("Illegal function call: ASC does not support this character.");
+    }
+
+    internal static bool TryGetPlaceholderCode(char character, out byte code)
+    {
+        var offset = character - PlaceholderStart;
+        if (offset >= 0 && offset <= byte.MaxValue && Placeholders.ContainsKey((byte)offset))
+        {
+            code = (byte)offset;
+            return true;
+        }
+
+        code = 0;
+        return false;
     }
 
     public static char Decode(byte code)

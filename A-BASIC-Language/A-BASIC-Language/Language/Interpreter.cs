@@ -54,6 +54,8 @@ public class Interpreter
     public void Run(IBasicTerminal terminal)
     {
         _terminal = terminal;
+        if (terminal is TerminalAdapter adapter)
+            adapter.AttachFontMemory(_state.Memory);
 
         if (!_parseResult.Success)
         {
@@ -659,6 +661,8 @@ public class Interpreter
                                     throw new InvalidOperationException("POKE requires a whole number from 0 to 255 for the value.");
 
                                 _state.Memory[address] = (byte)value;
+                                if (_terminal is TerminalAdapter adapter)
+                                    adapter.UpdateFontMemory(address, (byte)value);
                             }
                             break;
                         case "COLOR":

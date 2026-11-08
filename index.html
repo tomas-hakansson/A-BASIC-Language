@@ -639,7 +639,8 @@ FN name(argument)</code></pre>
                 <h3>POKE</h3>
                 <pre><code>POKE address, value</code></pre>
                 <p>Stores a byte at an address from 0 to 65535. The value must be an integer from 0 to 255. Use <code>PEEK(address)</code> to read it back. For example, <code>POKE 100, 42: PRINT PEEK(100)</code> prints 42.</p>
-                <p>Memory starts at zero for each ABL session. It is shared by direct commands and running programs and survives both <code>RUN</code> and <code>NEW</code>.</p>
+                <p>Memory is shared by direct commands and running programs and survives both <code>RUN</code> and <code>NEW</code>. At startup ABL loads the selected terminal font into memory and initializes the other addresses to zero.</p>
+                <p>The font occupies addresses 53248 through 55295. The first row of character code <var>n</var> is at <code>53248+8*n</code>, followed by seven more rows. Each byte describes eight pixels, with bit 7 on the left and bit 0 on the right. For example, <code>POKE 53248+8*ASC("A"),255</code> lights up the entire top row of <code>A</code>. Codes without a glyph start with eight zero bytes. Writing to one of their rows creates a glyph that <code>CHR$</code> can display. Selecting a font reloads all 2048 font bytes.</p>
             </article>
             <article id="color">
                 <h3>COLOR – screen colors</h3>
