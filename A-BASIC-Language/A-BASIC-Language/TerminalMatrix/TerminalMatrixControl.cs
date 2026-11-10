@@ -1047,11 +1047,7 @@ public partial class TerminalMatrixControl : UserControl
         foreach (var programLine in lines)
         {
             // TODO: Split lines that are too long to fit on the screen, and display them in multiple lines.
-            WriteLine(programLine.RawString);
-
-            if (i % 4 == 0)
-                Refresh();
-
+            WriteLine(programLine.RawString, i%4 == 0);
             Application.DoEvents();
             i++;
         }
@@ -1094,7 +1090,7 @@ public partial class TerminalMatrixControl : UserControl
         Invalidate();
     }
 
-    public void WriteLine(string text)
+    public void WriteLine(string text, bool refresh = true)
     {
         var y = CursorPosition.Y;
 
@@ -1109,8 +1105,10 @@ public partial class TerminalMatrixControl : UserControl
 
         CursorPosition.X = 0;
         _terminations[CursorPosition.Y] = true;
-
         AdvanceTextRow();
+
+        if (!refresh)
+            return;
 
         UpdateBitmap();
         Invalidate();
