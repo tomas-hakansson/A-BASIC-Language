@@ -52,6 +52,9 @@ public class PreProcessorParser
                     case "LOAD101":
                         message = "Game name required.";
                         return PreProcessorParserResult.QuietError;
+                    case "RUN101":
+                        message = "Game name required.";
+                        return PreProcessorParserResult.QuietError;
                     default:
                         return PreProcessorParserResult.Unknown;
                 }
@@ -123,6 +126,10 @@ public class PreProcessorParser
                         argument = parts[1];
                         message = "Load from the 101 list: " + argument;
                         return PreProcessorParserResult.Load101Games;
+                    case "RUN101":
+                        argument = parts[1];
+                        message = "Run from the 101 list: " + argument;
+                        return PreProcessorParserResult.Run101Games;
                     default:
                         message = "Did not understand that.";
                         return PreProcessorParserResult.Unknown;

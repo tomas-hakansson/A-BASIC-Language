@@ -310,13 +310,16 @@ public partial class MainWindow : Form
     private void btnOptions_Click(object sender, EventArgs e) =>
         optionsToolStripMenuItem_Click(sender, e);
 
-    public bool LoadProgram(string source)
+    public bool LoadProgram(string source, bool list = true)
     {
         try
         {
             terminalMatrixControl1.ProgramLines.Clear();
             terminalMatrixControl1.SetProgramLines(source);
-            terminalMatrixControl1.List();
+
+            if (list)
+                terminalMatrixControl1.List();
+
             terminalMatrixControl1.WriteLine("");
             terminalMatrixControl1.WriteLine("Ready.");
             return true;
@@ -371,11 +374,14 @@ public partial class MainWindow : Form
         }
     }
 
-    private void runToolStripMenuItem_Click(object sender, EventArgs e)
+    internal void RunProgram()
     {
         terminalMatrixControl1.WriteLine("RUN");
-        terminalMatrixControl1_TypedLine(sender, new TypedLineEventArgs("RUN"));
+        terminalMatrixControl1_TypedLine(terminalMatrixControl1, new TypedLineEventArgs("RUN"));
     }
+
+    private void runToolStripMenuItem_Click(object sender, EventArgs e) =>
+        RunProgram();
 
     private void btnPlay_Click(object sender, EventArgs e) =>
         runToolStripMenuItem_Click(sender, e);

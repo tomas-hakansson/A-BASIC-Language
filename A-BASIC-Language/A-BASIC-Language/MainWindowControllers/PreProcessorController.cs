@@ -187,7 +187,10 @@ public class PreProcessorController
                 Show101Games();
                 break;
             case PreProcessorParserResult.Load101Games:
-                Load101Games(argument ?? "");
+                Load101Games(argument ?? "", false);
+                break;
+            case PreProcessorParserResult.Run101Games:
+                Load101Games(argument ?? "", true);
                 break;
             case PreProcessorParserResult.Quit:
                 _owner.DisableQuitPrompt();
@@ -245,7 +248,7 @@ public class PreProcessorController
         }
     }
 
-    private void Load101Games(string gameName)
+    private void Load101Games(string gameName, bool run = false)
     {
         try
         {
@@ -259,8 +262,17 @@ public class PreProcessorController
 
             var fullPath = new FileInfo(Path.Combine(gamesDirectory.FullName, $"{gameName}.bas"));
             var source = File.ReadAllText(fullPath.FullName);
-            _owner.LoadProgram(source);
+
+            if (!_owner.LoadProgram(source, !run))
+            {
+                _parent.WriteLine($"?Failed to load game: {gameName}");
+                return;
+            }
+
             _owner.SessionSetFolders(fullPath);
+
+            if (run)
+                _owner.RunProgram();
         }
         catch
         {

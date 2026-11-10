@@ -11,10 +11,10 @@ Of the 101 games, we support the ones followed by a 1:
 | aceyducey         |     1     |
 | amazing           |     1     |
 | animal            |     0     |
-| awari             |     0     |
+| awari             |     1     |
 | bagels            |     0     |
 | banner            |     0     |
-| basketball        |     0     |
+| basketball        |     1     |
 | batnum            |     1     |
 | battle            |     0     |
 | blackjack         |     0     |
@@ -60,7 +60,7 @@ Of the 101 games, we support the ones followed by a 1:
 | highiq            |     1     |
 | hockey            |     1     |
 | horserace         |     0     |
-| hurkle            |           |
+| hurkle            |     1     |
 | kinema            |           |
 | king              |           |
 | lem               |           |
