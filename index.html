@@ -328,6 +328,7 @@
             <p>Type the commands in the terminal without a line number and press Enter. Use <code>!HQ-RENDER</code> to switch rendering mode between high quality and faster rendering.</p>
             <p>Type <code>!101</code> to display all games from the 1974 book <strong>101 BASIC Computer Games</strong>. Load a game by typing the following, where <code>name</code> is the game's name in the list:</p>
             <pre><code>!LOAD101 name</code></pre>
+            <p>To load and start a game immediately, type <code>!RUN101 name</code>. For example, type <code>!RUN101 AWARI</code> to start Awari.</p>
             <table>
                 <thead><tr><th>Syntax</th><th>Function</th><th>Alternative</th></tr></thead>
                 <tbody>
@@ -344,6 +345,7 @@
                     <tr><td><code>!LIST</code></td><td>List the entire program, without a range.</td><td>LIST.</td></tr>
                     <tr><td><code>!101</code></td><td>Display all games from the 1974 book <strong>101 BASIC Computer Games</strong>.</td><td>—</td></tr>
                     <tr><td><code>!LOAD101 name</code></td><td>Load the game with the specified name from the list displayed by <code>!101</code>.</td><td>File → Open from 101 BASIC Computer Games...</td></tr>
+                    <tr><td><code>!RUN101 name</code></td><td>Load and immediately start the named game.</td><td><code>!LOAD101 name</code> followed by <code>RUN</code>.</td></tr>
                     <tr><td><code>!QUIT</code></td><td>Quit without confirmation.</td><td>File → Exit.</td></tr>
                 </tbody>
             </table>
