@@ -103,7 +103,7 @@ public class BasicParser
 
     private bool ALabel()
     {
-        Regex isLabel = new(@"\G(?<label>\d+)\s*[A-Za-z]", RegexOptions.CultureInvariant);
+        Regex isLabel = new(@"\G(?<label>\d+)\s*[A-Za-z?]", RegexOptions.CultureInvariant);
         var match = isLabel.Match(_source, _index);
 
         if (!match.Success)
@@ -203,6 +203,7 @@ public class BasicParser
                         Let();
                         break;
                     case "PRINT":
+                    case "?":
                         Print();
                         break;
                     case "CLS":
@@ -945,7 +946,7 @@ public class BasicParser
             Expression();
         Generate(new AblProcedure("WINDOW"));
     }
-    //print => PRINT (, | ; | expression)*
+    //print => (PRINT | ?) (, | ; | expression)*
     void Print()
     {//todo: not completely tested.
 
@@ -1398,7 +1399,7 @@ public class BasicParser
     }
 
     static Regex StatementRegex() =>
-        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|(?:CLS|SCNCLR|SCROLL)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|\?|(?:CLS|SCNCLR|SCROLL)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);
