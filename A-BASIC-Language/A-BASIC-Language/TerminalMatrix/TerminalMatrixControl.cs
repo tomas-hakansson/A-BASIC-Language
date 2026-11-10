@@ -15,7 +15,6 @@ using A_BASIC_Language.TerminalMatrix.PixelMapLibrary;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.SpriteManagement;
 using A_BASIC_Language.TerminalMatrix.TerminalColor;
-using A_BASIC_Language.TerminalMatrix.TerminalMatrixControlFeatures;
 using PixelmapLibraryNetFramework.SpriteManagement;
 using TerminalMatrixNetFramework;
 using TerminalMatrixNetFramework.TerminalColor;
@@ -1040,8 +1039,25 @@ public partial class TerminalMatrixControl : UserControl
             map[x, y] = clear;
     }
 
-    public void List() =>
-        DisplayLargeListStrategy.List(WriteLine, Refresh, ProgramLines);
+    public void List()
+    {
+        var lines = new List<ProgramLine>(ProgramLines.Values);
+        var i = 0;
+
+        foreach (var programLine in lines)
+        {
+            // TODO: Split lines that are too long to fit on the screen, and display them in multiple lines.
+            WriteLine(programLine.RawString);
+
+            if (i % 4 == 0)
+                Refresh();
+
+            Application.DoEvents();
+            i++;
+        }
+
+        Refresh();
+    }
 
     public bool GetTerminator(int y)
     {

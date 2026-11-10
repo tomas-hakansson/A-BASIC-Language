@@ -15,13 +15,13 @@ public sealed class BasicSession
     public DirectoryInfo? DataDirectory;
     public FileInfo? ProgramFile;
 
-    public void CreateDataDirectories(Action<string> writeLine)
+    public void CreateDataDirectories(Action<string, bool> writeLine)
     {
         var games101Path = Paths.GetUser101GamesPath();
 
         if (games101Path == null)
         {
-            writeLine("Could not create 101 Games directory.");
+            writeLine("Could not create 101 Games directory.", true);
         }
         else
         {
@@ -31,31 +31,35 @@ public sealed class BasicSession
 
                 if (games101SourcePath is not { Exists: true })
                 {
-                    writeLine("Could not find 101 Games source directory.");
+                    writeLine("Could not find 101 Games source directory.", true);
                 }
                 else
                 {
-                    writeLine("Found source directory for 101 Games.");
+                    writeLine("Found source directory for 101 Games.", true);
+                    var i = 0;
 
                     foreach (var file in games101SourcePath.GetFiles("*.bas"))
                     {
+                        i++;
                         var destFile = new FileInfo(Path.Combine(games101Path.FullName, file.Name));
 
                         if (!destFile.Exists)
                         {
-                            writeLine($"Copying {file.Name}...");
+                            writeLine($"{i}: Copying {file.Name}...", true);
                             file.CopyTo(destFile.FullName);
                         }
                         else
                         {
-                            writeLine($"No action: {file.Name}");
+                            writeLine($"{i}: No action: {file.Name}", i%3 == 0);
                         }
                     }
+
+                    writeLine("All systems go!", true);
                 }
             }
             catch
             {
-                writeLine("Failed to create 101 Games directory.");
+                writeLine("Failed to create 101 Games directory.", true);
             }
         }
 
@@ -64,13 +68,13 @@ public sealed class BasicSession
             var userPrograms = Paths.GetUserProgramsPath();
 
             if (userPrograms is not { Exists: true })
-                writeLine("Could not create user programs directory.");
+                writeLine("Could not create user programs directory.", true);
 
-            writeLine("User programs path exist.");
+            writeLine("User programs path exist.", true);
         }
         catch
         {
-            writeLine("Failed to create user programs directory.");
+            writeLine("Failed to create user programs directory.", true);
         }
     }
 

@@ -75,12 +75,15 @@ public partial class ProgramPropertiesDialog : Form
             Close();
     }
 
-    private void WriteLine(string text)
+    private void WriteLine(string text, bool withRefresh = true)
     {
         txtStatus.AppendText(Environment.NewLine + text);
         txtStatus.SelectionStart = txtStatus.Text.Length;
         txtStatus.SelectionLength = 0;
-        Refresh();
+
+        if (withRefresh)
+            Refresh();
+
         Application.DoEvents();
     }
 
