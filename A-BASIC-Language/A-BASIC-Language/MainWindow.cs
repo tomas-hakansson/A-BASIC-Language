@@ -314,7 +314,7 @@ public partial class MainWindow : Form
     private void btnOptions_Click(object sender, EventArgs e) =>
         optionsToolStripMenuItem_Click(sender, e);
 
-    public bool LoadProgram(string source, bool list = true)
+    public bool LoadProgram(string source, bool list = true, bool showReady = true)
     {
         try
         {
@@ -324,8 +324,11 @@ public partial class MainWindow : Form
             if (list)
                 terminalMatrixControl1.List();
 
-            terminalMatrixControl1.WriteLine("");
-            terminalMatrixControl1.WriteLine("Ready.");
+            if (showReady)
+            {
+                terminalMatrixControl1.WriteLine("");
+                terminalMatrixControl1.WriteLine("Ready.");
+            }
             return true;
         }
         catch
@@ -338,9 +341,8 @@ public partial class MainWindow : Form
     {
         try
         {
-            var path = Paths.GetUserProgramsRootPath();
-            var fullPath = Path.Combine(path.FullName, filename);
-            File.WriteAllText(fullPath, terminalMatrixControl1.GetProgramAsString());
+            var file = Paths.GetUserProgramFile(filename);
+            File.WriteAllText(file.FullName, terminalMatrixControl1.GetProgramAsString());
             return true;
         }
         catch

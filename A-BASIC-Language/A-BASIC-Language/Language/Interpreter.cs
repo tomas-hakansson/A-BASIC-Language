@@ -99,9 +99,7 @@ public class Interpreter
         {
             case 0:
             {
-                var path = Paths.GetUserProgramsRootPath();
-                var fullPath = Path.Combine(path.FullName, fileName);
-                var fileInfo = new FileInfo(fullPath);
+                var fileInfo = Paths.GetUserProgramFile(fileName);
 
                 if (!fileInfo.Exists)
                 {
@@ -120,14 +118,12 @@ public class Interpreter
         }
     }
 
-    private void Save(string fileName, string source)
+    private void Save(string fileName)
     {
         if (_terminal == null)
             throw new SystemException("Terminal not initialized.");
 
-        var path = Paths.GetUserProgramsRootPath();
-        var fullPath = Path.Combine(path.FullName, fileName);
-        var fileInfo = new FileInfo(fullPath);
+        var fileInfo = Paths.GetUserProgramFile(fileName);
         
         if (_terminal.MainWindowSaveProgram(fileName))
             _terminal.MainWindowSessionSetFolders(fileInfo);
@@ -797,8 +793,7 @@ public class Interpreter
                             if (_data.Count == 0 || _data.Pop() is not StringValue fileName)
                                 throw new InvalidOperationException("SAVE requires a string argument.");
 
-                            var sourceCode = _terminal.SourceCode;
-                            Save(fileName.Value, sourceCode);
+                            Save(fileName.Value);
                             break;
                         }
                         case "RND":

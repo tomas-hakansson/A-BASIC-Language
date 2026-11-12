@@ -47,7 +47,7 @@ public sealed class TerminalAdapter : IBasicTerminal
         _terminal.SetBorderColor((byte)(color - 1));
 
     public void MainWindowLoadProgram(string source) =>
-        _owner.LoadProgram(source);
+        _owner.LoadProgram(source, showReady: false);
 
     public bool MainWindowSaveProgram(string source) =>
         _owner.SaveProgram(source);

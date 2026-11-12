@@ -76,13 +76,29 @@ public static class Paths
         }
     }
 
+    internal static FileInfo GetUserProgramFile(string fileName)
+    {
+        if (string.IsNullOrWhiteSpace(fileName) ||
+            fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 ||
+            fileName.EndsWith(".", StringComparison.Ordinal) ||
+            fileName.EndsWith(" ", StringComparison.Ordinal))
+            throw new ArgumentException("Expected a file name in the User Programs folder.");
+
+        if (!Path.HasExtension(fileName))
+            fileName += ".bas";
+
+        if (string.IsNullOrWhiteSpace(Path.GetFileNameWithoutExtension(fileName)))
+            throw new ArgumentException("Expected a file name in the User Programs folder.");
+
+        var directory = GetUserProgramsPath()
+            ?? throw new InvalidOperationException("Could not open the User Programs folder.");
+        return new FileInfo(Path.Combine(directory.FullName, fileName));
+    }
+
     public static DirectoryInfo GetProgramDataPath(FileInfo programFile)
     {
         var directory = programFile.Directory ?? GetUserProgramsPath();
-        var name = programFile.Name.ToLower();
-
-        if (name.EndsWith(".bas"))
-            name = name.Substring(0, name.Length - 4);
+        var name = Path.GetFileNameWithoutExtension(programFile.Name);
 
         var path = Path.Combine(directory!.FullName, name);
 

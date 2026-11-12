@@ -176,6 +176,8 @@
                 <li><a href="#editor">Writing and editing programs</a></li>
                 <li><a href="#terminal">Terminal commands</a></li>
                 <li><a href="#renumber">RENUMBER – renumber program lines</a></li>
+                <li><a href="#load">LOAD – open a saved program</a></li>
+                <li><a href="#save">SAVE – write a program to disk</a></li>
                 <li><a href="#appcommands">Application commands with !</a></li>
                 <li><a href="#interface">Menus and keyboard</a></li>
                 <li><a href="#syntax">Syntax, variables and types</a></li>
@@ -211,6 +213,8 @@
                     <tr><td><a href="#run">RUN</a></td><td>Yes</td><td>No</td><td>Reset runtime data and start the entire stored program.</td></tr>
                     <tr><td><a href="#list">LIST</a></td><td>Yes</td><td>No</td><td>List all program lines or a range of lines.</td></tr>
                     <tr><td><a href="#renumber">RENUMBER</a></td><td>Yes</td><td>No</td><td>Renumber all stored program lines and update explicit jump targets.</td></tr>
+                    <tr><td><a href="#load">LOAD</a></td><td>Yes</td><td>No</td><td>Replace program memory with a source file from the user programs directory.</td></tr>
+                    <tr><td><a href="#save">SAVE</a></td><td>Yes</td><td>No</td><td>Write the program in memory to a source file in the user programs directory.</td></tr>
                     <tr><td><a href="#new">NEW</a></td><td>Yes</td><td>No</td><td>Delete the program and the session's runtime data.</td></tr>
                     <tr><td><a href="#let">LET / assignment without LET</a></td><td>Yes</td><td>Yes</td><td>Assign a value to a scalar or array element.</td></tr>
                     <tr><td><a href="#print">PRINT</a></td><td>Yes</td><td>Yes</td><td>Print expressions and control padding/line breaks.</td></tr>
@@ -257,7 +261,8 @@
                     <tr><td>Add, edit or delete a program line</td><td>The specified line is changed.</td><td>Retained.</td><td>No BASIC execution is started.</td></tr>
                     <tr><td>LIST</td><td>Retained.</td><td>Retained.</td><td>No new BASIC execution.</td></tr>
                     <tr><td>RENUMBER</td><td>Retained.</td><td>Retained.</td><td>Renumbers the stored program without running it.</td></tr>
-                    <tr><td>Open a .bas file</td><td>Replaced by the file's lines.</td><td>Retained until RUN/NEW.</td><td>No BASIC execution is started.</td></tr>
+                    <tr><td>LOAD or open a .bas file</td><td>Replaced by the file's lines.</td><td>Retained until RUN/NEW.</td><td>Lists the loaded program without running it.</td></tr>
+                    <tr><td>SAVE</td><td>Retained and written to disk.</td><td>Retained in the session.</td><td>The file contains the numbered BASIC source.</td></tr>
                     <tr><td>RUN</td><td>Retained.</td><td>Cleared before starting; then created by the program.</td><td>New generator.</td></tr>
                     <tr><td>END, STOP or end of source</td><td>Retained.</td><td>Retained after execution ends.</td><td>The terminated interpreter instance does not continue.</td></tr>
                     <tr><td>Runtime error or Ctrl+C</td><td>Retained.</td><td>Completed assignments are retained; no automatic rollback.</td><td>The next run/direct command gets a new generator.</td></tr>
@@ -280,7 +285,7 @@
             <p>Values persist after execution and can be inspected using, for example, <code>PRINT A</code>. The next RUN resets them again. END and STOP do not delete values. NEW deletes both the program and its state.</p>
         </section>
         <section id="editor">
-            <h2>2. Writing, editing and opening programs</h2>
+            <h2>2. Writing, editing and saving programs</h2>
             <table>
                 <thead><tr><th>Action</th><th>Input</th><th>Result</th></tr></thead>
                 <tbody>
@@ -295,13 +300,16 @@
             </table>
             <p>Lines can be entered in any order. Numbers such as 10, 20, 30 leave room for additions. Colons separate statements on the same line. Move the cursor to a visible line, edit it and press Enter to store it again. Changing the line number creates a new line; delete the old one separately. LIST displays lines that are no longer visible.</p>
             <h3>Opening and saving files</h3>
+            <p>Use <a href="#save"><code>SAVE "hello"</code></a> to write the current program to disk and <a href="#load"><code>LOAD "hello"</code></a> to bring it back into program memory. Save your work before loading a different program, using NEW or closing ABL. Program memory is saved only when you issue SAVE.</p>
+            <p>Both commands use <code>%LOCALAPPDATA%\AblPrograms\UserPrograms</code>. To open this folder in File Explorer, choose <strong>File → Shell → User programs directory...</strong>. Enter a file name in double quotes, without a drive letter or directory path. ABL adds <code>.bas</code> if you omit the extension, so <code>"hello"</code> and <code>"hello.bas"</code> refer to the same file.</p>
+            <p>When you save or load <code>hello.bas</code>, ABL creates or reuses a <code>hello</code> subfolder alongside it for program data. The numbered BASIC source lives in <code>hello.bas</code> at the top level of the user programs directory.</p>
             <p>File → Open from 101 BASIC Computer Games... opens a file dialog in the games' source folder. You can also select your own files. The filter is .bas or all files. The contents replace program memory and are listed; then execute RUN. Opening a file does not reset variables; RUN does so at startup.</p>
             <p>Source files must contain numbered BASIC lines. Blank lines are allowed. Use unique line numbers. The program editor replaces duplicate numbers when loading, whereas the interpreter rejects duplicates if they occur in the source it receives.</p>
-            <p>ABL has no implemented save function. Create and save plain text with the .bas extension in an external text editor, then open it through the menu. Program memory is not saved automatically on exit.</p>
         </section>
         <section id="terminal">
             <h2>3. Terminal commands outside runtime</h2>
             <p>Type without a line number and press Enter. Uppercase and lowercase are equivalent. Enter RUN, LIST, RENUMBER and NEW as standalone direct commands.</p>
+            <p>LOAD and SAVE also require direct mode. Enter them at the <code>Ready.</code> prompt, without a program line number.</p>
             <article id="run">
                 <h3>RUN</h3><pre><code>RUN</code></pre>
                 <p>Resets variables, arrays, user-defined functions and the data pointer, then runs the entire program. Takes no arguments: RUN 100 and filenames after RUN are not supported. The program source is retained. Before the program starts, the screen is cleared and the full text area is restored, as with <a href="#window">WINDOW</a> without an argument. An empty program returns to Ready.</p>
@@ -334,6 +342,27 @@
                 </table>
                 <p>Explicit integer targets that refer to existing lines are updated in <code>GOTO</code>, <code>GOSUB</code>, their spaced forms, <code>ON … GOTO/GOSUB</code> target lists, and numeric <code>THEN</code> and <code>ELSE</code> branches. For example, if line 400 becomes line 20, <code>GOTO 400</code> becomes <code>GOTO 20</code>. Review computed targets such as <code>GOTO X+400</code> and references to missing lines manually.</p>
                 <p>Use a start from 0 to 2147483647 and a step from 1 to 2147483647. Invalid arguments produce <code>?Invalid RENUMBER arguments</code>. The command reports an error before replacing the stored program if the source has a syntax error or the new numbering would exceed 2147483647.</p>
+            </article>
+            <article id="load">
+                <h3>LOAD</h3>
+                <pre><code>LOAD "hello.bas"</code></pre>
+                <p>Reads a plain-text BASIC source file from the user programs directory, replaces the numbered lines currently in memory and displays the loaded listing. Use <a href="#list">LIST</a> to display it again or <a href="#run">RUN</a> when you are ready to execute it. LOAD leaves the session's variables and arrays in memory until you run a program or enter NEW.</p>
+                <p>Use the name under which the program was saved. For example, <code>LOAD "my game"</code> reads <code>my game.bas</code>. If ABL reports <code>?File not found error</code>, open the user programs directory in File Explorer and check the file name and extension.</p>
+            </article>
+            <article id="save">
+                <h3>SAVE</h3>
+                <pre><code>SAVE "hello.bas"</code></pre>
+                <p>Writes the numbered lines currently in memory to a plain-text file in the user programs directory. The file stores the program source, including any DATA statements. Variables, arrays and the current execution position belong to the session.</p>
+                <p>Saving under an existing file name replaces that file without prompting. Use a different name, such as <code>SAVE "hello backup"</code>, to keep a separate copy.</p>
+                <h4>Save, reload and run a program</h4>
+                <p>Save any work already in memory before trying this example. Enter the lines one at a time. The first NEW starts with an empty program. SAVE writes the two numbered lines to <code>hello.bas</code>, and the second NEW clears program memory again. LOAD restores the saved listing and RUN prints <code>HELLO!</code>.</p>
+                <pre><code>NEW
+10 PRINT "HELLO!"
+20 END
+SAVE "hello"
+NEW
+LOAD "hello"
+RUN</code></pre>
             </article>
             <article id="new">
                 <h3>NEW</h3><pre><code>NEW</code></pre>
@@ -857,6 +886,10 @@ PRINT LOG(100)/LOG(10)</code></pre>
                     <tr><td><code>?Syntax error: ...</code></td><td>The source cannot be parsed. Diagnostics normally indicate the line, column and cause. Check parentheses, quotes, statement names and line numbers. The entire source is analyzed before execution, including lines that would later be skipped.</td></tr>
                     <tr><td><code>?Error in line n: ...</code></td><td>Runtime error. n is the most recently executed line label. Errors during preliminary loop matching may be shown at line 0.</td></tr>
                     <tr><td><code>?Error: ...</code></td><td>Equivalent error in direct mode.</td></tr>
+                    <tr><td><code>?File not found error</code></td><td>LOAD could not find the named file in the user programs directory. Check the file name and extension.</td></tr>
+                    <tr><td><code>Expected a file name in the User Programs folder.</code></td><td>Use a valid Windows file name inside double quotes. Leave out the drive letter, directory path and any trailing dots or spaces.</td></tr>
+                    <tr><td><code>?SAVE failed</code></td><td>ABL could not write the program file. Check that the destination is writable and that a folder with the same name as the destination file does not already exist.</td></tr>
+                    <tr><td><code>?Permission to write to disk is denied by Windows.</code></td><td>ABL could not set up the program's data folder. After SAVE, the source file may already be on disk. Check whether a file with the same name as the intended data folder is blocking its creation.</td></tr>
                     <tr><td><code>Type mismatch</code></td><td>Wrong type, for example assigning a string to a numeric variable or comparing a string and a number.</td></tr>
                     <tr><td><code>Out of DATA.</code></td><td>READ has no next DATA value. Add more DATA or use RESTORE to read again from the beginning.</td></tr>
                     <tr><td><code>Type mismatch: cannot read string ... into numeric variable ...</code></td><td>A READ target is numeric but the DATA string cannot be parsed as a finite number. The target and data pointer remain unchanged.</td></tr>
@@ -894,7 +927,7 @@ PRINT LOG(100)/LOG(10)</code></pre>
                 <li>No full Altair BASIC compatibility. INT, RND, string addition and automatic array creation have the deviations described above.</li>
                 <li>DATA and READ require numbered program lines. DATA supports numeric and quoted string literals; RESTORE resets to the beginning and does not accept a line number.</li>
                 <li>WHILE/WEND, DO/LOOP, multiline IF blocks, ELSEIF and SELECT CASE are not supported.</li>
-                <li>LOAD, SAVE, MERGE, DELETE, RENUM, EDIT, CONT and CLEAR are not implemented terminal commands. Delete a line with a number on its own, or the entire program with NEW. Open files through the menu.</li>
+                <li>MERGE, DELETE, RENUM, EDIT, CONT and CLEAR are not implemented terminal commands. Delete a line with a number on its own, clear the entire program with NEW, or renumber it with <a href="#renumber">RENUMBER</a>.</li>
                 <li>No implemented graphics, sound or cursor statements such as PLOT, DRAW, LINE, CIRCLE, SOUND, BEEP or LOCATE. COLOR supports background, text, and border colors. The resolutions' pixel dimensions are display modes, not a BASIC graphics API.</li>
                 <li>No BASIC file handling with OPEN, CLOSE, PRINT# or INPUT#.</li>
                 <li>No implemented machine code, networking, process or system commands in the language.</li>
