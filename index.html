@@ -175,6 +175,7 @@
                 <li><a href="#start">Getting started and execution modes</a></li>
                 <li><a href="#editor">Writing and editing programs</a></li>
                 <li><a href="#terminal">Terminal commands</a></li>
+                <li><a href="#renumber">RENUMBER – renumber program lines</a></li>
                 <li><a href="#appcommands">Application commands with !</a></li>
                 <li><a href="#interface">Menus and keyboard</a></li>
                 <li><a href="#syntax">Syntax, variables and types</a></li>
@@ -209,6 +210,7 @@
                 <tbody>
                     <tr><td><a href="#run">RUN</a></td><td>Yes</td><td>No</td><td>Reset runtime data and start the entire stored program.</td></tr>
                     <tr><td><a href="#list">LIST</a></td><td>Yes</td><td>No</td><td>List all program lines or a range of lines.</td></tr>
+                    <tr><td><a href="#renumber">RENUMBER</a></td><td>Yes</td><td>No</td><td>Renumber all stored program lines and update explicit jump targets.</td></tr>
                     <tr><td><a href="#new">NEW</a></td><td>Yes</td><td>No</td><td>Delete the program and the session's runtime data.</td></tr>
                     <tr><td><a href="#let">LET / assignment without LET</a></td><td>Yes</td><td>Yes</td><td>Assign a value to a scalar or array element.</td></tr>
                     <tr><td><a href="#print">PRINT</a></td><td>Yes</td><td>Yes</td><td>Print expressions and control padding/line breaks.</td></tr>
@@ -254,6 +256,7 @@
                     <tr><td>New direct command</td><td>Retained.</td><td>Retained.</td><td>New generator for the new command.</td></tr>
                     <tr><td>Add, edit or delete a program line</td><td>The specified line is changed.</td><td>Retained.</td><td>No BASIC execution is started.</td></tr>
                     <tr><td>LIST</td><td>Retained.</td><td>Retained.</td><td>No new BASIC execution.</td></tr>
+                    <tr><td>RENUMBER</td><td>Retained.</td><td>Retained.</td><td>Renumbers the stored program without running it.</td></tr>
                     <tr><td>Open a .bas file</td><td>Replaced by the file's lines.</td><td>Retained until RUN/NEW.</td><td>No BASIC execution is started.</td></tr>
                     <tr><td>RUN</td><td>Retained.</td><td>Cleared before starting; then created by the program.</td><td>New generator.</td></tr>
                     <tr><td>END, STOP or end of source</td><td>Retained.</td><td>Retained after execution ends.</td><td>The terminated interpreter instance does not continue.</td></tr>
@@ -286,6 +289,7 @@
                     <tr><td>Delete</td><td><code>10</code></td><td>A number on its own removes the line.</td></tr>
                     <tr><td>Insert between</td><td><code>15 PRINT "BETWEEN"</code></td><td>Comes between 10 and 20.</td></tr>
                     <tr><td>Display</td><td><code>LIST</code></td><td>Lists program memory.</td></tr>
+                    <tr><td>Renumber</td><td><a href="#renumber"><code>RENUMBER</code></a></td><td>Assigns new line numbers and updates explicit jump targets.</td></tr>
                     <tr><td>Clear</td><td><code>NEW</code></td><td>Removes the program and session state.</td></tr>
                 </tbody>
             </table>
@@ -297,7 +301,7 @@
         </section>
         <section id="terminal">
             <h2>3. Terminal commands outside runtime</h2>
-            <p>Type without a line number and press Enter. Uppercase and lowercase are equivalent. RUN, LIST and NEW are session commands, not program statements. They cannot appear on numbered lines or be combined with BASIC statements using colons.</p>
+            <p>Type without a line number and press Enter. Uppercase and lowercase are equivalent. Enter RUN, LIST, RENUMBER and NEW as standalone direct commands.</p>
             <article id="run">
                 <h3>RUN</h3><pre><code>RUN</code></pre>
                 <p>Resets variables, arrays, user-defined functions and the data pointer, then runs the entire program. Takes no arguments: RUN 100 and filenames after RUN are not supported. The program source is retained. Before the program starts, the screen is cleared and the full text area is restored, as with <a href="#window">WINDOW</a> without an argument. An empty program returns to Ready.</p>
@@ -315,6 +319,21 @@
                     </tbody>
                 </table>
                 <p>Bounds are inclusive and need not correspond to existing lines. Spaces around the hyphen are allowed. LIST100 and LIST100-200 also work. Only non-negative 32-bit integers are accepted. A start greater than the end or invalid syntax produces <code>?Invalid LIST range</code>. An empty selection prints no program lines. Values are unchanged.</p>
+            </article>
+            <article id="renumber">
+                <h3>RENUMBER</h3>
+                <pre><code>RENUMBER [start[, step]]</code></pre>
+                <p>Assigns new numbers to all stored lines in their current order. The default start and step are both 10. Enter the command on its own in direct mode.</p>
+                <table>
+                    <thead><tr><th>Command</th><th>New line numbers</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>RENUMBER</code></td><td>10, 20, 30, …</td></tr>
+                        <tr><td><code>RENUMBER 100</code></td><td>100, 110, 120, …</td></tr>
+                        <tr><td><code>RENUMBER 100, 5</code></td><td>100, 105, 110, …</td></tr>
+                    </tbody>
+                </table>
+                <p>Explicit integer targets that refer to existing lines are updated in <code>GOTO</code>, <code>GOSUB</code>, their spaced forms, <code>ON … GOTO/GOSUB</code> target lists, and numeric <code>THEN</code> and <code>ELSE</code> branches. For example, if line 400 becomes line 20, <code>GOTO 400</code> becomes <code>GOTO 20</code>. Review computed targets such as <code>GOTO X+400</code> and references to missing lines manually.</p>
+                <p>Use a start from 0 to 2147483647 and a step from 1 to 2147483647. Invalid arguments produce <code>?Invalid RENUMBER arguments</code>. The command reports an error before replacing the stored program if the source has a syntax error or the new numbering would exceed 2147483647.</p>
             </article>
             <article id="new">
                 <h3>NEW</h3><pre><code>NEW</code></pre>

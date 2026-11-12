@@ -6,6 +6,7 @@ using System.Linq;
 using System.Globalization;
 using A_BASIC_Language.Language.ValueTypes;
 using System.Text.RegularExpressions;
+using System.Text;
 using A_BASIC_Language.Language.LoopInstructions;
 
 namespace A_BASIC_Language.Language.Parsing;
@@ -24,12 +25,18 @@ public class BasicParser
     private bool _parsingIfCondition;
     private int _generatedLabel;
     private List<AblEvalValue>? _expressionTarget;
+    private readonly List<(int Index, int Length, int Number)>? _lineNumbers;
     public ParseResult Result { get; }
 
-    public BasicParser(string source, bool direct = false)
+    public BasicParser(string source, bool direct = false) : this(source, direct, null)
+    {
+    }
+
+    private BasicParser(string source, bool direct, List<(int Index, int Length, int Number)>? lineNumbers)
     {
         Result = new ParseResult();
         _direct = direct;
+        _lineNumbers = lineNumbers;
         //Note: Initialisation:
         // Normalize once: every parser routine sees a single newline convention.
         source = source.Replace("\r\n", "\n").Replace('\r', '\n');
@@ -68,6 +75,43 @@ public class BasicParser
             Result.Success = false;
             Result.Errors.Add(FormatDiagnostic(ex.Message));
         }
+    }
+
+    internal static string Renumber(string source, int start, int step)
+    {
+        var locations = new List<(int Index, int Length, int Number)>();
+        var parser = new BasicParser(source, false, locations);
+
+        if (!parser.Result.Success)
+            throw new InvalidOperationException(parser.Result.Errors.First());
+
+        var newNumbers = new Dictionary<int, int>();
+        long next = start;
+        
+        foreach (var number in parser._lines.Keys)
+        {
+            if (next > int.MaxValue)
+                throw new InvalidOperationException("RENUMBER exceeds the line number range.");
+
+            newNumbers.Add(number, (int)next);
+            next += step;
+        }
+
+        var result = new StringBuilder(parser._source.Length);
+        var position = 0;
+        
+        foreach (var (index, length, number) in locations)
+        {
+            if (!newNumbers.TryGetValue(number, out var replacement))
+                continue;
+
+            result.Append(parser._source, position, index - position);
+            result.Append(replacement.ToString(CultureInfo.InvariantCulture));
+            position = index + length;
+        }
+
+        result.Append(parser._source, position, parser._source.Length - position);
+        return result.ToString();
     }
 
     //program => line*
@@ -118,6 +162,7 @@ public class BasicParser
         matched = true;
         _index += mg.Length;
         _currentLabel = int.Parse(mg.Value);
+        _lineNumbers?.Add((mg.Index, mg.Length, _currentLabel));
         //Note: We prime the next line by adding a new label to _lines.
         _lines.Add(_currentLabel, [new AblLabel(_currentLabel)]);
         SkipWhitespace();
@@ -235,6 +280,10 @@ public class BasicParser
                         }
                         Expression();
                         Generate(new AblProcedure("SAVE"));
+                        break;
+                    case "RENUMBER":
+                        ParseError("RENUMBER must be entered as a standalone direct command");
+                        SkipStatement();
                         break;
                     case "REM":
                         SkipLine();
@@ -474,8 +523,20 @@ public class BasicParser
     private void Goto()
     {
         var gosub = JumpKeyword();
-        Expression();
+        JumpTargetExpression();
         Generate(new AblProcedure(gosub ? "GOSUB" : "GOTO"));
+    }
+
+    private void JumpTargetExpression()
+    {
+        var start = _index;
+        Expression();
+        if (_lineNumbers == null)
+            return;
+
+        var target = _source.Substring(start, _index - start).TrimEnd();
+        if (Regex.IsMatch(target, @"\A[0-9]+\z") && int.TryParse(target, out var number))
+            _lineNumbers.Add((start, target.Length, number));
     }
 
     // Shared by ordinary jumps and ON dispatch, including the spaced spellings.
@@ -532,6 +593,7 @@ public class BasicParser
                 throw new InvalidOperationException("Expected a line number in ON jump list.");
 
             targets.Add(lineNumber);
+            _lineNumbers?.Add((_index, target.Length, lineNumber));
             _index += target.Length;
             SkipWhitespace();
         } while (Maybe(','));
@@ -642,7 +704,7 @@ public class BasicParser
                     if (match.Value.StartsWith("FN", StringComparison.InvariantCultureIgnoreCase))
                     {
                         //Note: this is a user defined function.
-                        Expression();
+                        JumpTargetExpression();
                         Generate(new AblProcedure("GOTO"));
                     }
                     else
@@ -682,7 +744,7 @@ public class BasicParser
                         }
                         else
                         {
-                            Expression();
+                            JumpTargetExpression();
                             Generate(new AblProcedure("GOTO"));
                         }
                     }
@@ -693,7 +755,7 @@ public class BasicParser
                 }
                 else
                 {
-                    Expression();
+                    JumpTargetExpression();
                     Generate(new AblProcedure("GOTO"));
                 }
             }
@@ -1399,7 +1461,7 @@ public class BasicParser
     }
 
     static Regex StatementRegex() =>
-        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|\?|(?:CLS|SCNCLR|SCROLL)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|\?|(?:CLS|SCNCLR|SCROLL|RENUMBER)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

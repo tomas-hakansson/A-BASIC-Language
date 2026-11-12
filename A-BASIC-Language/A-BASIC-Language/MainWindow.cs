@@ -153,7 +153,9 @@ public partial class MainWindow : Form
                 foreach (var line in lines)
                     terminalMatrixControl1.WriteLine(line.Value.RawString);
 
-            }, terminalMatrixControl1.New);
+            },
+            terminalMatrixControl1.New,
+            source => terminalMatrixControl1.SetProgramLines(source));
     }
 
     public void CheckResolutionBox()
