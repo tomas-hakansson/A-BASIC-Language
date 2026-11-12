@@ -190,8 +190,6 @@ public sealed class BasicSession
             if (programDirectory == null)
                 return false;
 
-            var filename = basicFileInfo.Name.ToLower();
-
             if (!DataDirectory.Exists)
                 DataDirectory.Create();
         }

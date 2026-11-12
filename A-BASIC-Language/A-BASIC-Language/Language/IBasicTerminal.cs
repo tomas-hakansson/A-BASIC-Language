@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace A_BASIC_Language.Language;
 
 /// <summary>Text operations needed by BASIC; Write appends at the current output position.</summary>
@@ -14,4 +16,8 @@ public interface IBasicTerminal
     void SetTextColor(int color);
     void SetBackgroundColor(int color);
     void SetBorderColor(int color);
+    void MainWindowLoadProgram(string source);
+    bool MainWindowSaveProgram(string source);
+    void MainWindowSessionSetFolders(FileInfo basicFileInfo);
+    string SourceCode { get; }
 }

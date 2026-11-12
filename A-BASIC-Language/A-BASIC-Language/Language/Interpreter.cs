@@ -1,15 +1,16 @@
 #nullable enable
+using A_BASIC_Language.IO;
 using A_BASIC_Language.Language.LanguageParts;
+using A_BASIC_Language.Language.LoopInstructions;
 using A_BASIC_Language.Language.SpecificExecutors;
 using A_BASIC_Language.Language.ValueTypes;
 using A_BASIC_Language.StringManipulation;
+using A_BASIC_Language.TerminalMatrix;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Globalization;
-using A_BASIC_Language.Language.LoopInstructions;
-using A_BASIC_Language.TerminalMatrix;
+using System.IO;
 
 namespace A_BASIC_Language.Language;
 
@@ -21,12 +22,12 @@ public class Interpreter
     const string TheProgramHasEnded = "The program has ended";
     IBasicTerminal? _terminal;
     readonly ParseResult _parseResult;
-    readonly Dictionary<string, ValueBase>? _variables;//Ponder: do the value need to be nullable?
-    readonly Dictionary<string, Dimension> _dimVariables;
+    private readonly Dictionary<string, ValueBase>? _variables;//Ponder: do the value need to be nullable?
+    private readonly Dictionary<string, Dimension> _dimVariables;
     readonly Stack<ValueBase> _data;
     readonly Dictionary<string, AblFunctionDefinition> _functions;
     bool EndMessageDisplayed { get; set; }
-    Random _random;//Note: For the RND function.
+    private Random _random; //Note: For the RND function.
     private readonly Stack<(int Index, int LineNumber)> _subroutineCalls = new();
     int _currentLineNumber;
     private readonly RuntimeState _state;
@@ -43,13 +44,22 @@ public class Interpreter
         _variables = state == null ? new Dictionary<string, ValueBase>() : state.Variables;
         _dimVariables = state == null ? new Dictionary<string, Dimension>() : state.Arrays;
         _data = new Stack<ValueBase>();
-        _functions = state == null ? new Dictionary<string, AblFunctionDefinition>(StringComparer.OrdinalIgnoreCase) : state.Functions;
         _random = new Random();
         _currentLineNumber = 0;
+
+        _functions = state == null
+            ? new Dictionary<string, AblFunctionDefinition>(StringComparer.OrdinalIgnoreCase)
+            : state.Functions;
     }
 
-    public void Run(TerminalMatrixControl terminal) =>
-        Run(new TerminalAdapter(terminal));
+    public Interpreter(Stack<ValueBase> data, Log log)
+    {
+        _log = log;
+        _data = data;
+    }
+
+    public void Run(MainWindow owner, TerminalMatrixControl terminal) =>
+        Run(new TerminalAdapter(owner, terminal));
 
     public void Run(IBasicTerminal terminal)
     {
@@ -80,9 +90,49 @@ public class Interpreter
     private void Fail(string message) =>
         throw new InvalidOperationException(message);
 
-    private void Save(string fileName)
+    private void Load(string fileName, int fileType)
     {
-        var fi = new FileInfo(Path.Combine(MainWindow.UserDataPath, $"{fileName}.bas"));
+        if (_terminal == null)
+            throw new SystemException("Terminal not initialized.");
+
+        switch (fileType)
+        {
+            case 0:
+            {
+                var path = Paths.GetUserProgramsRootPath();
+                var fullPath = Path.Combine(path.FullName, fileName);
+                var fileInfo = new FileInfo(fullPath);
+
+                if (!fileInfo.Exists)
+                {
+                    _terminal.WriteLine("?File not found error");
+                    return;
+                }
+
+                var source = File.ReadAllText(fileInfo.FullName);
+                _terminal.MainWindowLoadProgram(source);
+                _terminal.MainWindowSessionSetFolders(fileInfo);
+            }
+            break;
+            default:
+                _terminal.WriteLine($"?Invalid file type: {fileType}");
+                break;
+        }
+    }
+
+    private void Save(string fileName, string source)
+    {
+        if (_terminal == null)
+            throw new SystemException("Terminal not initialized.");
+
+        var path = Paths.GetUserProgramsRootPath();
+        var fullPath = Path.Combine(path.FullName, fileName);
+        var fileInfo = new FileInfo(fullPath);
+        
+        if (_terminal.MainWindowSaveProgram(fileName))
+            _terminal.MainWindowSessionSetFolders(fileInfo);
+        else
+            _terminal.WriteLine("?SAVE failed");
     }
 
     void Eval()
@@ -721,15 +771,36 @@ public class Interpreter
                         case "RANDOMIZE":
                             _random = new Random();
                             break;
+                        case "LOAD":
+                        {
+                            if (_runtime)
+                                throw new InvalidOperationException("LOAD is only allowed in direct mode.");
+
+                            if (_data.Count < 2)
+                                throw new InvalidOperationException("LOAD requires an integer file type.");
+
+                            var fileType = Number(_data.Pop());
+                            if (fileType < int.MinValue || fileType > int.MaxValue || Math.Abs(fileType - Math.Truncate(fileType)) > 0.01)
+                                throw new InvalidOperationException("LOAD requires an integer file type.");
+
+                            if (_data.Pop() is not StringValue fileName)
+                                throw new InvalidOperationException("LOAD requires a string file name.");
+
+                            Load(fileName.Value, (int)fileType);
+                            break;
+                        }
                         case "SAVE":
+                        {
                             if (_runtime)
                                 throw new InvalidOperationException("SAVE is only allowed in direct mode.");
                             
                             if (_data.Count == 0 || _data.Pop() is not StringValue fileName)
                                 throw new InvalidOperationException("SAVE requires a string argument.");
-                            
-                            Save(fileName.Value);
+
+                            var sourceCode = _terminal.SourceCode;
+                            Save(fileName.Value, sourceCode);
                             break;
+                        }
                         case "RND":
                             //ToDo: implement this properly.
                             {

@@ -271,15 +271,23 @@ public class BasicParser
                     case "RANDOMIZE":
                         Generate(new AblProcedure("RANDOMIZE"));
                         break;
+                    case "LOAD":
                     case "SAVE":
                         if (!_direct)
                         {
-                            ParseError("SAVE is only allowed in direct mode");
+                            ParseError($"{statement} is only allowed in direct mode");
                             SkipStatement();
                             break;
                         }
                         Expression();
-                        Generate(new AblProcedure("SAVE"));
+                        if (statement == "LOAD")
+                        {
+                            if (Maybe(','))
+                                Expression();
+                            else
+                                Generate(new AblNumber(0));
+                        }
+                        Generate(new AblProcedure(statement));
                         break;
                     case "RENUMBER":
                         ParseError("RENUMBER must be entered as a standalone direct command");
@@ -1461,7 +1469,7 @@ public class BasicParser
     }
 
     static Regex StatementRegex() =>
-        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|\?|(?:CLS|SCNCLR|SCROLL|RENUMBER)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|\?|(?:CLS|SCNCLR|SCROLL|RENUMBER|LOAD)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

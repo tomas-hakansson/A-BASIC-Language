@@ -50,6 +50,8 @@ public partial class MainWindow : Form
         _log = new Log(lblUserAction, new Font(FontFamily.GenericMonospace, 9, FontStyle.Regular));
     }
 
+    
+
     internal void DisableQuitPrompt()
     {
 #if !DEBUG
@@ -136,7 +138,7 @@ public partial class MainWindow : Form
         _session.Execute(
             e.InputValue,
             _log,
-            new TerminalAdapter(terminalMatrixControl1),
+            new TerminalAdapter(this, terminalMatrixControl1),
             terminalMatrixControl1.GetProgramAsString,
             (first, last) =>
             {
@@ -324,6 +326,21 @@ public partial class MainWindow : Form
 
             terminalMatrixControl1.WriteLine("");
             terminalMatrixControl1.WriteLine("Ready.");
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public bool SaveProgram(string filename)
+    {
+        try
+        {
+            var path = Paths.GetUserProgramsRootPath();
+            var fullPath = Path.Combine(path.FullName, filename);
+            File.WriteAllText(fullPath, terminalMatrixControl1.GetProgramAsString());
             return true;
         }
         catch
