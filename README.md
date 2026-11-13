@@ -92,7 +92,7 @@ Of the 101 games, we support the ones followed by a 1:
 | salvo             |           |
 | sinewave          |           |
 | slalom            |           |
-| slots             |           |
+| slots             |     1     |
 | splat             |     1     |
 | stars             |     1     |
 | stockmarket       |     1     |
