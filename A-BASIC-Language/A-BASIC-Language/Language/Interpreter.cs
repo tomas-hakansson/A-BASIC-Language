@@ -534,6 +534,27 @@ public class Interpreter
                                 }
                             }
                             break;
+                        case "ATN":
+                            _data.Push(new FloatValue(Math.Atan(Number(_data.Pop()))));
+                            break;
+                        case "COS":
+                            _data.Push(new FloatValue(Math.Cos(Number(_data.Pop()))));
+                            break;
+                        case "SGN":
+                            {
+                                var argument = Number(_data.Pop());
+                                if (double.IsNaN(argument))
+                                    throw new InvalidOperationException("Illegal function call: SGN requires a number other than NaN.");
+
+                                _data.Push(new IntValue(Math.Sign(argument)));
+                            }
+                            break;
+                        case "SIN":
+                            _data.Push(new FloatValue(Math.Sin(Number(_data.Pop()))));
+                            break;
+                        case "TAN":
+                            _data.Push(new FloatValue(Math.Tan(Number(_data.Pop()))));
+                            break;
                         case "EXP":
                             _data.Push(new FloatValue(Math.Exp(Number(_data.Pop()))));
                             break;

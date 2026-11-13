@@ -194,7 +194,6 @@
                 <li><a href="#read">READ – consume stored values</a></li>
                 <li><a href="#restore">RESTORE – reset the data pointer</a></li>
                 <li><a href="#datapointer">DATAPOINTER() – current data position</a></li>
-                <li><a href="#missing">Function names without runtime support</a></li>
                 <li><a href="#examples">Program examples</a></li>
                 <li><a href="#errors">Errors and troubleshooting</a></li>
                 <li><a href="#limits">Scope and compatibility</a></li>
@@ -251,7 +250,7 @@
                     <tr><td><a href="#appcommands">! commands</a></td><td>Yes, in the terminal</td><td>No</td><td>Commands for display, color themes, rendering mode, diagnostics, listing and quitting.</td></tr>
                 </tbody>
             </table>
-            <p>For all recognized function names without runtime support, see <a href="#missing">the separate list</a>. They are not counted as working functions. The <a href="#operators">operator reference</a> also describes all implemented arithmetic and comparison operators.</p>
+            <p>See the <a href="#functions">built-in function reference</a> and the <a href="#operators">operator reference</a> for more examples.</p>
             <h3>What persists between actions?</h3>
             <p>The data pointer starts at 0, advances after each successful READ, and persists after execution and between direct commands. RESTORE, RUN and NEW reset it to 0. RUN collects all DATA values again from the current program before executing it. Inspect the position with <code>PRINT DATAPOINTER()</code> in direct mode.</p>
             <table>
@@ -774,6 +773,18 @@ STOP</code></pre>
                     <tr><td><code>RIGHT$(text, length)</code></td><td>Up to <var>length</var> characters from the end of the string.</td></tr>
                 </tbody>
             </table>
+            <article id="trigonometry">
+                <h3>ATN(x), COS(x), SIN(x) and TAN(x)</h3>
+                <p>These functions require a numeric argument and return a floating-point value. COS, SIN and TAN take angles in radians. ATN returns the arctangent of <var>x</var> in radians, between −π/2 and π/2.</p>
+                <pre><code>PRINT ATN(1)
+PRINT COS(0);SIN(0);TAN(0)</code></pre>
+                <p>ATN(1) returns π/4 (approximately 0.785398). The other calls return 1, 0 and 0, respectively.</p>
+            </article>
+            <article id="sgn">
+                <h3>SGN(x)</h3>
+                <p>Returns the integer −1 for a negative number, 0 for zero, or 1 for a positive number. A string argument produces a type error and NaN produces a runtime error.</p>
+                <pre><code>PRINT SGN(-2);SGN(0);SGN(2)</code></pre>
+            </article>
             <article id="datapointer">
                 <h3>DATAPOINTER()</h3>
                 <p>Returns the current data pointer as an integer, without consuming a value. The pointer is zero-based: 0 before the first READ, 1 after one successful READ, and the total number of DATA values after all have been read. With no DATA, it starts at 0. The function works in expressions in both numbered programs and direct mode.</p>
@@ -828,22 +839,8 @@ PRINT LOG(100)/LOG(10)</code></pre>
                 <p>Use a decimal point regardless of system locale. Leading and trailing whitespace is allowed. Invalid numeric text such as <code>VAL("44x")</code> produces a runtime error. A numeric argument such as <code>VAL(44)</code> produces a type error.</p>
             </article>
         </section>
-        <section id="missing">
-            <h2>10. Function names without runtime support</h2>
-            <p class="note">The parser recognizes the names below, but the interpreter has no implementation. Accepted calls produce <code>Unsupported BASIC function: name</code> when executed. The meanings below describe their usual BASIC meaning for reference, not working ABL functionality.</p>
-            <table>
-                <thead><tr><th>Name</th><th>Usual meaning; not implemented</th></tr></thead>
-                <tbody>
-                    <tr><td><code>ATN</code></td><td>Arctangent.</td></tr>
-                    <tr><td><code>COS</code></td><td>Cosine.</td></tr>
-                    <tr><td><code>SGN</code></td><td>Sign of a number, normally −1, 0 or 1.</td></tr>
-                    <tr><td><code>SIN</code></td><td>Sine.</td></tr>
-                    <tr><td><code>TAN</code></td><td>Tangent.</td></tr>
-                </tbody>
-            </table>
-        </section>
         <section id="examples">
-            <h2>11. Complete program examples</h2>
+            <h2>10. Complete program examples</h2>
             <p>
                 To paste code into ABL, choose Tools → Text editor.
             </p>
@@ -886,7 +883,7 @@ PRINT LOG(100)/LOG(10)</code></pre>
             <p>Requires about 55 columns; select 60 or 80. The plot has 41 rows and cannot fit within the terminal's 25 rows all at once. The top part scrolls away. More columns/fullscreen do not provide more logical rows.</p>
         </section>
         <section id="errors">
-            <h2>12. Errors and troubleshooting</h2>
+            <h2>11. Errors and troubleshooting</h2>
             <table>
                 <thead><tr><th>Message</th><th>Meaning</th></tr></thead>
                 <tbody>
@@ -928,7 +925,7 @@ PRINT LOG(100)/LOG(10)</code></pre>
             <p>Display intermediate values with PRINT, check lines with LIST and select sufficient screen width. Debug output shows internal operations but has no breakpoints or stepping commands. Floating-point overflow and negative square roots may produce Infinity/NaN instead of BASIC errors. Not all internal resource errors are guaranteed to be caught and presented in the terminal.</p>
         </section>
         <section id="limits">
-            <h2>13. Scope and compatibility</h2>
+            <h2>12. Scope and compatibility</h2>
             <p>This reference follows the active parser and interpreter. Older parser files and historical ambitions in the README do not define current support. Bundled game sources are sample material: a bundled file does not guarantee that all its language features are supported.</p>
             <ul>
                 <li>No full Altair BASIC compatibility. INT, RND, string addition and automatic array creation have the deviations described above.</li>
@@ -943,7 +940,7 @@ PRINT LOG(100)/LOG(10)</code></pre>
             </ul>
         </section>
     <section id="install">
-        <h2>14. Download and install</h2>
+        <h2>13. Download and install</h2>
         <p>An installer will be made available with version 1.0. Until then, please use the <a href="https://github.com/tomas-hakansson/A-BASIC-Language" target="_blank">source code</a> to compile and try it out.</p>
     </section>
     </main><footer><p>ABL – A BASIC Language · developed by Tomas Håkansson and Anders Hesselbom.</p></footer>
