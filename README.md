@@ -12,7 +12,7 @@ Of the 101 games, we support the ones followed by a 1:
 | amazing           |     1     |
 | animal            |     0     |
 | awari             |     1     |
-| bagels            |     0     |
+| bagels            |     1     |
 | banner            |     0     |
 | basketball        |     1     |
 | batnum            |     1     |
@@ -93,7 +93,7 @@ Of the 101 games, we support the ones followed by a 1:
 | sinewave          |           |
 | slalom            |           |
 | slots             |           |
-| splat             |           |
+| splat             |     1     |
 | stars             |     1     |
 | stockmarket       |     1     |
 | superstartrek     |     0     |
