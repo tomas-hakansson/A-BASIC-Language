@@ -325,10 +325,8 @@ public partial class MainWindow : Form
                 terminalMatrixControl1.List();
 
             if (showReady)
-            {
-                terminalMatrixControl1.WriteLine("");
-                terminalMatrixControl1.WriteLine("Ready.");
-            }
+                terminalMatrixControl1.WriteLine(true, "Ready.");
+
             return true;
         }
         catch

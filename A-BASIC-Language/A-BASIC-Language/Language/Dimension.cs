@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using A_BASIC_Language.Language.ValueTypes;
+#if DEBUG
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+#endif
 
 namespace A_BASIC_Language.Language;
 
@@ -99,3 +102,37 @@ public class Dimension
         return offset;
     }
 }
+
+#if DEBUG
+[TestClass]
+public class DimensionTests
+{
+    [TestMethod]
+    public void MultidimensionalArrayStoresValuesInDistinctCells()
+    {
+        var array = new Dimension([1, 2, 3], new StringValue(""));
+        var first = new List<int> { 0, 2, 3 };
+        var second = new List<int> { 1, 0, 0 };
+        var last = new List<int> { 1, 2, 3 };
+
+        array.Add("first", first);
+        array.Add("second", second);
+        array.Add("last", last);
+
+        Assert.AreEqual("first", ((StringValue)array.Get(first)).Value);
+        Assert.AreEqual("second", ((StringValue)array.Get(second)).Value);
+        Assert.AreEqual("last", ((StringValue)array.Get(last)).Value);
+        Assert.AreEqual("", ((StringValue)array.Get(new List<int> { 0, 0, 0 })).Value);
+    }
+
+    [TestMethod]
+    public void RejectsInvalidSubscriptsBeforeAccessingStorage()
+    {
+        var array = new Dimension([1, 2]);
+        Assert.ThrowsExactly<ArgumentException>(() => array.Get(1));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => array.Get(1, -1));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => array.Add(99, 0, 3));
+        Assert.AreEqual(0, array.Get(1, 0));
+    }
+}
+#endif

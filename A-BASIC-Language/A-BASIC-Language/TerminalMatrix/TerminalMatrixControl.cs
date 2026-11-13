@@ -1114,6 +1114,14 @@ public partial class TerminalMatrixControl : UserControl
         Invalidate();
     }
 
+    public void WriteLine(bool blankLineFirst, string text, bool refresh = true)
+    {
+        if (blankLineFirst)
+            WriteLine("", false);
+
+        WriteLine(text, refresh);
+    }
+
     public string InputString(string prompt) =>
         InputString(prompt, "", CurrentCursorColor, CurrentCursorColor);
 

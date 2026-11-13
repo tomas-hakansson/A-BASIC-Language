@@ -93,8 +93,7 @@ public sealed class BasicSession
         if (Regex.IsMatch(command, @"\ARENUMBER(?![A-Z0-9$%])", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
         {
             Renumber(command.Substring("RENUMBER".Length), getProgram, replaceProgram, terminal);
-            terminal.WriteLine("");
-            terminal.WriteLine("Ready.");
+            terminal.WriteLine(true, "Ready.");
             return;
         }
         
@@ -105,8 +104,7 @@ public sealed class BasicSession
             else
                 terminal.WriteLine("?Invalid LIST range");
 
-            terminal.WriteLine("");
-            terminal.WriteLine("Ready.");
+            terminal.WriteLine(true, "Ready.");
             return;
         }
 
@@ -116,8 +114,7 @@ public sealed class BasicSession
             Reset(terminal, clearScreen: true);
             DataDirectory = null;
             ProgramFile = null;
-            terminal.WriteLine("");
-            terminal.WriteLine("Ready.");
+            terminal.WriteLine(true, "Ready.");
             return;
         }
 

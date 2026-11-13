@@ -104,6 +104,14 @@ public sealed class TerminalAdapter : IBasicTerminal
         _line.Clear();
     }
 
+    public void WriteLine(bool blankLineFirst, string text)
+    {
+        if (blankLineFirst)
+            WriteLine("");
+
+        WriteLine(text);
+    }
+
     public string InputString(string prompt)
     {
         if (_line.Length >= _terminal.CharacterWidth - 2)

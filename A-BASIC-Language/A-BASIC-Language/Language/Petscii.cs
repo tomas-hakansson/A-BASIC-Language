@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Concurrent;
+#if DEBUG
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+#endif
 
 namespace A_BASIC_Language.Language;
 
@@ -44,3 +47,24 @@ internal static class Petscii
         return Placeholders.GetOrAdd(code, value => (char)(PlaceholderStart + value));
     }
 }
+
+#if DEBUG
+[TestClass]
+public class PetsciiTests
+{
+    [TestMethod]
+    public void UsesExpectedCodesForMappedCharacters()
+    {
+        Assert.AreEqual(32, Petscii.Encode(' '));
+        Assert.AreEqual(65, Petscii.Encode('A'));
+        Assert.AreEqual('Z', Petscii.Decode(90));
+    }
+
+    [TestMethod]
+    public void AllByteValuesRoundTripThroughCharacters()
+    {
+        for (var code = 0; code <= byte.MaxValue; code++)
+            Assert.AreEqual(code, Petscii.Encode(Petscii.Decode((byte)code)), $"PETSCII code {code}");
+    }
+}
+#endif

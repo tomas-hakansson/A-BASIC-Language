@@ -19,17 +19,17 @@ public class Interpreter
     private readonly Log _log;
     private readonly bool _runtime;
     private readonly bool _empty;
-    const string TheProgramHasEnded = "The program has ended";
-    IBasicTerminal? _terminal;
-    readonly ParseResult _parseResult;
-    private readonly Dictionary<string, ValueBase>? _variables;//Ponder: do the value need to be nullable?
+    private const string TheProgramHasEnded = "The program has ended";
+    private IBasicTerminal? _terminal;
+    private readonly ParseResult _parseResult;
+    private readonly Dictionary<string, ValueBase>? _variables; //Ponder: do the value need to be nullable?
     private readonly Dictionary<string, Dimension> _dimVariables;
-    readonly Stack<ValueBase> _data;
-    readonly Dictionary<string, AblFunctionDefinition> _functions;
-    bool EndMessageDisplayed { get; set; }
+    private readonly Stack<ValueBase> _data;
+    private readonly Dictionary<string, AblFunctionDefinition> _functions;
+    private bool EndMessageDisplayed { get; set; }
     private Random _random; //Note: For the RND function.
     private readonly Stack<(int Index, int LineNumber)> _subroutineCalls = new();
-    int _currentLineNumber;
+    private int _currentLineNumber;
     private readonly RuntimeState _state;
     public bool UserBreak { get; set; }
 
@@ -52,9 +52,10 @@ public class Interpreter
             : state.Functions;
     }
 
-    public Interpreter(Stack<ValueBase> data, Log log)
+    public Interpreter(Stack<ValueBase> data, Log log, ParseResult parseResult)
     {
         _log = log;
+        _parseResult = parseResult;
         _data = data;
     }
 
@@ -205,7 +206,7 @@ public class Interpreter
                 {
                     var selector = Number(_data.Pop());
                     
-                    if (double.IsNaN(selector) || double.IsInfinity(selector) || selector < 0)
+                    if (selector.NanOrInfinityOrNegative())
                         throw new OverflowException(branch.IsSubroutine ? "ON GOSUB index is out of range." : "ON GOTO index is out of range.");
 
                     var selected = Math.Floor(selector);
@@ -310,13 +311,12 @@ public class Interpreter
                     // the ordinary integer conversion and overflow rules.
                     if (!read.Symbol.EndsWith("$") && value is StringValue text)
                     {
-                        if (!double.TryParse(text.Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var number) ||
-                            double.IsNaN(number) || double.IsInfinity(number))
+                        if (!text.Value.ParseDouble(out var number) || number.NanOrInfinityOrNegative())
                             throw new InvalidOperationException($"Type mismatch: cannot read string \"{text.Value}\" into numeric variable {read.Symbol}.");
                         
                         value = ValueBase.GetValueType(number);
                     }
-
+                    
                     value = value.ForVariable(read.Symbol);
                     _data.Push(value);
 
@@ -478,7 +478,7 @@ public class Interpreter
                         case "CHR$":
                             {
                                 var code = Number(_data.Pop());
-                                if (double.IsNaN(code) || code < 0 || code > byte.MaxValue || code != Math.Truncate(code))
+                                if (!code.IsByte())
                                     throw new InvalidOperationException("Illegal function call: CHR$ requires an integer from 0 to 255.");
 
                                 var character = Petscii.Decode((byte)code);
@@ -727,10 +727,12 @@ public class Interpreter
                             {
                                 var value = Number(_data.Pop());
                                 var address = MemoryAddress(_data.Pop());
-                                if (double.IsNaN(value) || value < 0 || value > byte.MaxValue || value != Math.Truncate(value))
+
+                                if (!value.IsByte())
                                     throw new InvalidOperationException("POKE requires a whole number from 0 to 255 for the value.");
 
                                 _state.Memory[address] = (byte)value;
+                                
                                 if (_terminal is TerminalAdapter adapter)
                                     adapter.UpdateFontMemory(address, (byte)value);
                             }
@@ -740,10 +742,10 @@ public class Interpreter
                                 var color = Number(_data.Pop());
                                 var target = Number(_data.Pop());
 
-                                if (double.IsNaN(target) || double.IsInfinity(target) || target < 0 || target > 2 || target != Math.Floor(target))
+                                if (!target.IsInt(0, 2))
                                     throw new InvalidOperationException("COLOR requires a whole number from 0 to 2 for the target.");
                                 
-                                if (double.IsNaN(color) || double.IsInfinity(color) || color < 1 || color > 16 || color != Math.Floor(color))
+                                if (!color.IsInt(1, 16))
                                     throw new InvalidOperationException("COLOR requires a whole number from 1 to 16 for the color.");
 
                                 switch ((int)target)
@@ -762,31 +764,35 @@ public class Interpreter
                             break;
                         case "CLS":
                             _terminal.ClearScreen();
+
                             if (_terminal is TerminalAdapter screen)
                                 screen.HomeCursor();
+
                             _terminal.SetTextRenderLimit(0);
                             break;
                         case "SCROLL":
                             {
                                 var mode = Number(_data.Pop());
-                                if (double.IsNaN(mode) || mode < 0 || mode > 5 || mode != Math.Truncate(mode))
+
+                                if (!mode.IsInt(0, 5))
                                     throw new InvalidOperationException("SCROLL requires a whole number from 0 to 5.");
 
                                 if (_terminal is TerminalAdapter scrollingTerminal)
                                     scrollingTerminal.Scroll((int)mode);
                             }
+
                             break;
                         case "WINDOW":
                             {
                                 var rows = Number(_data.Pop());
 
-                                if (double.IsNaN(rows) || double.IsInfinity(rows) ||
-                                    rows < 2 || rows > 25 || rows != Math.Floor(rows))
+                                if (!rows.IsInt(2, 25))
                                     throw new InvalidOperationException("WINDOW requires a whole number of text rows from 2 to 25.");
                                 
                                 _terminal.ClearScreen();
                                 _terminal.SetTextRenderLimit(25 - (int)rows);
                             }
+
                             break;
                         case "RANDOMIZE":
                             _random = new Random();
@@ -800,6 +806,7 @@ public class Interpreter
                                 throw new InvalidOperationException("LOAD requires an integer file type.");
 
                             var fileType = Number(_data.Pop());
+
                             if (fileType < int.MinValue || fileType > int.MaxValue || Math.Abs(fileType - Math.Truncate(fileType)) > 0.01)
                                 throw new InvalidOperationException("LOAD requires an integer file type.");
 
@@ -847,6 +854,7 @@ public class Interpreter
                                     Fail("The stack is empty");
                                 }
                             }
+
                             break;
                         case "TAB":
                             {
@@ -857,8 +865,10 @@ public class Interpreter
                                     var count = (int)x.GetValueAsType<IntValue>();
                                     // BASIC TAB uses one-based absolute columns.
                                     var targetColumn = Math.Max(0, count - 1);
+
                                     if (targetColumn < _terminal.OutputColumn)
                                         _terminal.WriteLine("");
+                                    
                                     var result = new string(' ', targetColumn - _terminal.OutputColumn);
                                     _data.Push(new StringValue(result));
                                 }
@@ -867,6 +877,7 @@ public class Interpreter
                                     Fail("The stack is empty");
                                 }
                             }
+
                             break;
                         case "#WRITE":
                             {
@@ -914,11 +925,10 @@ public class Interpreter
             }
         }
 
-        if (_empty)
-        {
-            _terminal.WriteLine("");
-            _terminal.WriteLine("Ready.");
-        }
+        if (!_empty)
+            return;
+
+        _terminal.WriteLine(true, "Ready.");
     }
 
     private sealed record LoopFrame
@@ -943,39 +953,48 @@ public class Interpreter
     {
         var pending = new Stack<string>();
         pending.Push(((AblFor)_parseResult.EvalValues[startIndex]).Symbol);
+
         for (var i = startIndex + 1; i < _parseResult.EvalValues.Count; i++)
         {
             if (_parseResult.EvalValues[i] is AblFor start)
                 pending.Push(start.Symbol);
+
             else if (_parseResult.EvalValues[i] is AblNext end)
             {
                 if (end.Symbol.Length > 0)
                 {
                     if (!pending.Contains(end.Symbol))
                         continue;
+
                     while (pending.Peek() != end.Symbol)
                         pending.Pop();
                 }
+
                 pending.Pop();
+                
                 if (pending.Count == 0)
                     return i;
             }
         }
+
         throw new InvalidOperationException("FOR without NEXT.");
     }
 
     private static int StringPosition(ValueBase value, int minimum)
     {
         var number = Number(value);
-        if (double.IsNaN(number) || double.IsInfinity(number) || number < minimum || number > int.MaxValue)
+
+        if (!number.IsInt(minimum, int.MaxValue))
             throw new InvalidOperationException("Illegal function call: string position or length is out of range.");
+
         return (int)number;
     }
 
     private static int MemoryAddress(ValueBase value)
     {
         var address = Number(value);
-        if (double.IsNaN(address) || address < 0 || address > ushort.MaxValue || address != Math.Truncate(address))
+
+        if (!address.IsInt(0, ushort.MaxValue))
             throw new InvalidOperationException("The memory address must be a whole number from 0 to 65535.");
 
         return (int)address;
@@ -997,15 +1016,9 @@ public class Interpreter
             return;
 
         if (!message.IsEmpty())
-        {
-            _terminal.WriteLine("");
-            _terminal.WriteLine(string.IsNullOrWhiteSpace(message) ? TheProgramHasEnded : message);
-        }
+            _terminal.WriteLine(true, string.IsNullOrWhiteSpace(message) ? TheProgramHasEnded : message);
 
         if (showReady)
-        {
-            _terminal.WriteLine("");
-            _terminal.WriteLine("Ready.");
-        }
+            _terminal.WriteLine(true, "Ready.");
     }
 }

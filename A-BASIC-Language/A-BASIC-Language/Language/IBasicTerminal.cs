@@ -9,6 +9,7 @@ public interface IBasicTerminal
     int OutputColumn { get; }
     void Write(string text);
     void WriteLine(string text);
+    void WriteLine(bool blankLineFirst, string text);
     string InputString(string prompt);
     void PumpEvents();
     void ClearScreen();

@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+#if DEBUG
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+#endif
 
 namespace TerminalMatrixNetFramework;
 
@@ -67,3 +70,16 @@ internal static class WordWrapper
         return result;
     }
 }
+
+#if DEBUG
+[TestClass]
+public class WordWrapperTests
+{
+    [TestMethod]
+    public void WrapsAtWordBoundariesAndPreservesBlankLines()
+    {
+        var lines = WordWrapper.WordWrap("ONE TWO THREE\r\n\r\nABCDEFG", 7);
+        CollectionAssert.AreEqual(new[] { "ONE TWO", "THREE", "", "ABCDEFG" }, lines);
+    }
+}
+#endif
