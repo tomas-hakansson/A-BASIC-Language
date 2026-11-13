@@ -811,11 +811,20 @@ PRINT LOG(100)/LOG(10)</code></pre>
                 <h3>SQR(x)</h3>
                 <p>Square root. SQR(9) returns 3. Negative arguments produce .NET's NaN, not a specific BASIC domain error. Check that the argument is non-negative yourself.</p><pre><code>PRINT SQR(9)</code></pre>
             </article>
+            <article id="str">
+                <h3>STR$(number)</h3>
+                <p>Converts an integer or floating-point number to a string. <code>STR$(44)</code> returns <code>"44"</code> and <code>STR$(-4.5)</code> returns <code>"-4.5"</code>. The result uses a decimal point regardless of system locale. A string argument such as <code>STR$("44")</code> produces a type error.</p>
+            </article>
             <article id="tab">
                 <h3>TAB(n)</h3>
                 <p>Intended for PRINT. Absolute one-based column: TAB(1) is the first column. n is converted to an integer by truncation toward zero; values less than 1 are treated as 1. A target before the current position first causes a line break. At the exact target position, no spaces are inserted.</p>
                 <pre><code>10 PRINT TAB(5);"*";TAB(10);"*"</code></pre>
                 <p>Stars in columns 5 and 10. Internally, TAB returns padding spaces and may print a line break while the expression is being evaluated. Use it as a separate PRINT expression with semicolons, not as a general string function. It does not change terminal width; targets beyond the screen wrap through normal output.</p>
+            </article>
+            <article id="val">
+                <h3>VAL(text)</h3>
+                <p>Converts a numeric string to a number. <code>VAL("44")</code> returns the 32-bit integer <code>44</code>. Decimal notation and scientific notation return floating-point values. For example, <code>VAL("-4.5")</code> returns <code>-4.5</code> and <code>VAL("1e3")</code> returns <code>1000</code>. Whole numbers outside the 32-bit integer range also return floating-point values if representable.</p>
+                <p>Use a decimal point regardless of system locale. Leading and trailing whitespace is allowed. Invalid numeric text such as <code>VAL("44x")</code> produces a runtime error. A numeric argument such as <code>VAL(44)</code> produces a type error.</p>
             </article>
         </section>
         <section id="missing">
@@ -829,9 +838,7 @@ PRINT LOG(100)/LOG(10)</code></pre>
                     <tr><td><code>LEN</code></td><td>String length.</td></tr>
                     <tr><td><code>SGN</code></td><td>Sign of a number, normally −1, 0 or 1.</td></tr>
                     <tr><td><code>SIN</code></td><td>Sine.</td></tr>
-                    <tr><td><code>STR$</code></td><td>Number to string.</td></tr>
                     <tr><td><code>TAN</code></td><td>Tangent.</td></tr>
-                    <tr><td><code>VAL</code></td><td>String to number.</td></tr>
                 </tbody>
             </table>
         </section>

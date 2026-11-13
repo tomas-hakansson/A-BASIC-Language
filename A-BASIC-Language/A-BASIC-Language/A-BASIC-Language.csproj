@@ -533,12 +533,6 @@
     <Content Include="Resources\debug.png" />
     <None Include="Resources\PropertiesHS.png" />
     <Content Include="Resources\gear_16.png" />
-    <Content Include="UserPrograms\Data\directoryinfo.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="UserPrograms\Source\directoryinfo.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="Resources\TextboxHS.png" />
     <None Include="Resources\PlayHS.png" />
     <Content Include="Resources\settings.png" />

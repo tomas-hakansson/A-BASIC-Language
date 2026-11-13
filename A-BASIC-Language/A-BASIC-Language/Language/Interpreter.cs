@@ -488,6 +488,30 @@ public class Interpreter
                                 _data.Push(new StringValue(character.ToString()));
                             }
                             break;
+                        case "VAL":
+                            {
+                                if (_data.Pop() is not StringValue text)
+                                    throw new InvalidOperationException("Type mismatch: expected a string.");
+
+                                if (int.TryParse(text.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var integer))
+                                    _data.Push(new IntValue(integer));
+                                else if (double.TryParse(text.Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var number) &&
+                                         !double.IsNaN(number) && !double.IsInfinity(number))
+                                    _data.Push(new FloatValue(number));
+                                else
+                                    throw new InvalidOperationException("Illegal function call: VAL requires a numeric string.");
+                            }
+                            break;
+                        case "STR$":
+                            {
+                                var value = _data.Pop();
+                                if (value is not (IntValue or FloatValue))
+                                    throw new InvalidOperationException("Type mismatch: expected a number.");
+
+                                value.TryGetAsStringValue(out var text);
+                                _data.Push(text);
+                            }
+                            break;
                         case "ABS":
                             {
                                 if (_data.Count > 0)
