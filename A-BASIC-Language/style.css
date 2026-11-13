@@ -1,0 +1,154 @@
+﻿:root {
+    color-scheme: light;
+    --ink: #173044;
+    --accent: #145d79;
+    --line: #d4e1e7
+}
+
+* {
+    box-sizing: border-box
+}
+
+body {
+    margin: 0;
+    background: #edf3f6;
+    color: var(--ink);
+    font: 17px/1.65 system-ui,sans-serif
+}
+
+header, main, footer {
+    max-width: 1100px;
+    margin: auto;
+    padding: 2rem clamp(1rem,4vw,3rem)
+}
+
+header {
+    background: #173b50;
+    color: white
+}
+
+main {
+    background: white
+}
+
+h1, h2, h3 {
+    line-height: 1.25
+}
+
+h1 {
+    font-size: 2.5rem
+}
+
+h2 {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 2px solid var(--line)
+}
+
+h3 {
+    margin-top: 2rem
+}
+
+a {
+    color: var(--accent)
+}
+
+nav {
+    background: #edf5f7;
+    padding: 1rem 1.5rem;
+    border-radius: 8px
+}
+
+    nav ul {
+        columns: 2
+    }
+
+code, kbd, pre {
+    font-family: Consolas,monospace
+}
+
+code {
+    background: #edf3f5;
+    padding: .1em .25em
+}
+
+pre {
+    overflow: auto;
+    background: #edf3f5;
+    border-left: 4px solid var(--accent);
+    padding: 1rem;
+    line-height: 1.5
+}
+
+    pre code {
+        padding: 0
+    }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0
+}
+
+th, td {
+    border: 1px solid var(--line);
+    padding: .65rem;
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere
+}
+
+th {
+    background: #edf3f5
+}
+
+.note {
+    padding: 1rem;
+    background: #fff5dc;
+    border-left: 4px solid #bd831c
+}
+
+article, section {
+    scroll-margin-top: 1rem
+}
+
+@media(max-width:650px) {
+    body {
+        font-size: 16px
+    }
+
+    nav ul {
+        columns: 1
+    }
+
+    th, td {
+        padding: .4rem
+    }
+
+    h1 {
+        font-size: 2rem
+    }
+}
+
+@media print {
+    body, main, header {
+        background: white;
+        color: black
+    }
+
+    nav {
+        display: none
+    }
+
+    pre {
+        white-space: pre-wrap
+    }
+
+    h2, h3 {
+        break-after: avoid
+    }
+
+    tr, pre {
+        break-inside: avoid
+    }
+}
