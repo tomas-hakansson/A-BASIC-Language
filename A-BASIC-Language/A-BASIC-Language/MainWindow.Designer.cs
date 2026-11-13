@@ -181,7 +181,6 @@ namespace A_BASIC_Language
             // 
             // debugOutputToolStripMenuItem
             // 
-            this.debugOutputToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.debug;
             this.debugOutputToolStripMenuItem.Name = "debugOutputToolStripMenuItem";
             this.debugOutputToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.debugOutputToolStripMenuItem.Text = "Debug output";

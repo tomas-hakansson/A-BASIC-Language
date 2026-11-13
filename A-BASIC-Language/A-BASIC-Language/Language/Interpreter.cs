@@ -465,6 +465,14 @@ public class Interpreter
                                 _data.Push(new StringValue(text.Value.Substring(start, length)));
                             }
                             break;
+                        case "LEN":
+                            {
+                                if (_data.Pop() is not StringValue text)
+                                    throw new InvalidOperationException("Type mismatch: expected a string.");
+
+                                _data.Push(new IntValue(text.Value.Length));
+                            }
+                            break;
                         case "ASC":
                             {
                                 if (_data.Pop() is not StringValue text)

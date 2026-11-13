@@ -768,6 +768,7 @@ STOP</code></pre>
                     <tr><td><code>ASC(text)</code></td><td>PETSCII code of the first character. For example, <code>ASC("A")</code> returns 65. An empty string or an unmapped character produces an error.</td></tr>
                     <tr><td><code>CHR$(code)</code></td><td>One character for an integer PETSCII code from 0 to 255. Codes without a mapping get a placeholder that <code>ASC</code> can convert back to the original code.</td></tr>
                     <tr><td><code>LEFT$(text, length)</code></td><td>Up to <var>length</var> characters from the start of the string.</td></tr>
+                    <tr><td><code>LEN(text)</code></td><td>Number of characters in a string, including spaces, returned as an integer. <code>LEN("hej")</code> returns 3 and <code>LEN("")</code> returns 0. A numeric argument produces a type error.</td></tr>
                     <tr><td><code>MID$(text, start[, length])</code></td><td>Characters from the one-based <var>start</var> position. Omitting <var>length</var> returns the rest of the string.</td></tr>
                     <tr><td><code>PEEK(address)</code></td><td>Read a byte from <a href="#poke">session memory</a> at an integer address from 0 to 65535.</td></tr>
                     <tr><td><code>RIGHT$(text, length)</code></td><td>Up to <var>length</var> characters from the end of the string.</td></tr>
@@ -835,7 +836,6 @@ PRINT LOG(100)/LOG(10)</code></pre>
                 <tbody>
                     <tr><td><code>ATN</code></td><td>Arctangent.</td></tr>
                     <tr><td><code>COS</code></td><td>Cosine.</td></tr>
-                    <tr><td><code>LEN</code></td><td>String length.</td></tr>
                     <tr><td><code>SGN</code></td><td>Sign of a number, normally −1, 0 or 1.</td></tr>
                     <tr><td><code>SIN</code></td><td>Sine.</td></tr>
                     <tr><td><code>TAN</code></td><td>Tangent.</td></tr>
