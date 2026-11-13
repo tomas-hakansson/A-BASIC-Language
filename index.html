@@ -682,6 +682,7 @@ PRINT LOG(100)/LOG(10)</code></pre>
                 <h3>VAL(text)</h3>
                 <p>Converts a numeric string to a number. <code>VAL("44")</code> returns the 32-bit integer <code>44</code>. Decimal notation and scientific notation return floating-point values. For example, <code>VAL("-4.5")</code> returns <code>-4.5</code> and <code>VAL("1e3")</code> returns <code>1000</code>. Whole numbers outside the 32-bit integer range also return floating-point values if representable.</p>
                 <p>Use a decimal point regardless of system locale. Leading and trailing whitespace is allowed. Invalid numeric text such as <code>VAL("44x")</code> produces a runtime error. A numeric argument such as <code>VAL(44)</code> produces a type error.</p>
+                <p><a href="manual/val.html">Read the VAL guide and try the examples</a>.</p>
             </article>
         </section>
         <section id="examples">

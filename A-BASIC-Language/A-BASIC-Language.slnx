@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/manual/">
+    <File Path="../manual/val.html" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path="../index.html" />
     <File Path="../README.md" />

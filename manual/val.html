@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>VAL – Convert text to a number | ABL manual</title>
+    <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+    <header>
+        <h1>VAL</h1>
+        <p>Convert numeric text to a number you can use in calculations and comparisons.</p>
+    </header>
+    <main>
+        <p><a href="../index.html#val">Back to the ABL function reference</a></p>
+        <nav aria-label="On this page">
+            <ul>
+                <li><a href="#start">Try VAL at the prompt</a></li>
+                <li><a href="#format">Accepted number formats</a></li>
+                <li><a href="#input">Read a number or a quit command</a></li>
+                <li><a href="#fields">Extract a number from a text record</a></li>
+                <li><a href="#errors">Understand conversion errors</a></li>
+                <li><a href="#str">Convert back to text with STR$</a></li>
+            </ul>
+        </nav>
+
+        <section id="start">
+            <h2>Try VAL at the prompt</h2>
+            <pre><code>VAL(text)</code></pre>
+            <p><var>text</var> can be a quoted string, a string variable such as <code>A$</code>, or a string expression such as <code>MID$(A$,5)</code>. VAL interprets the text as a single number. You can use the result anywhere a numeric expression is accepted.</p>
+            <p>Enter these lines separately at the <code>Ready.</code> prompt.</p>
+            <pre><code>A$="0044"
+PRINT A$
+PRINT VAL(A$)
+PRINT VAL(A$)+6</code></pre>
+            <p>The three PRINT commands display <code>0044</code>, <code>44</code> and <code>50</code>. The conversion leaves <code>A$</code> intact, so you can keep the original spelling for display and use the numeric value for arithmetic. Keep identifiers such as postal codes and serial numbers as strings when their leading zeros matter.</p>
+        </section>
+
+        <section id="format">
+            <h2>Accepted number formats</h2>
+            <table>
+                <thead><tr><th scope="col">Call</th><th scope="col">Value</th><th scope="col">Result type</th></tr></thead>
+                <tbody>
+                    <tr><td><code>VAL("44")</code></td><td>44</td><td>32-bit integer</td></tr>
+                    <tr><td><code>VAL("  +44  ")</code></td><td>44</td><td>32-bit integer</td></tr>
+                    <tr><td><code>VAL("-4.5")</code></td><td>−4.5</td><td>Double-precision floating point</td></tr>
+                    <tr><td><code>VAL("44.0")</code></td><td>44</td><td>Double-precision floating point</td></tr>
+                    <tr><td><code>VAL("1.25e-2")</code></td><td>0.0125</td><td>Double-precision floating point</td></tr>
+                    <tr><td><code>VAL("2147483648")</code></td><td>2147483648</td><td>Double-precision floating point</td></tr>
+                </tbody>
+            </table>
+            <p>Plain signed or unsigned integers from −2147483648 through 2147483647 return a 32-bit integer. Decimal notation, exponent notation and integers outside that range return a floating-point value if the result is finite. Very large integers and many decimal fractions can be rounded to the nearest representable floating-point value.</p>
+            <p>Use a decimal point and omit digit-grouping separators regardless of your system locale. Surrounding spaces are allowed. An exponent begins with <code>E</code> or <code>e</code> and can have a sign. The result type in the table describes VAL itself. Assigning it to a variable follows <a href="../index.html#syntax">ABL's variable rules</a>. For example, <code>N%=VAL("4.9")</code> stores <code>4</code> because a percent-suffixed variable truncates toward zero.</p>
+        </section>
+
+        <section id="input">
+            <h2>Read a number or a quit command</h2>
+            <p>Use <code>INPUT N</code> when every response should be numeric. ABL asks again after invalid numeric input. Use <code>INPUT A$</code> when the same prompt accepts text commands as well as numbers. Check for the text command before converting the remaining response.</p>
+            <pre><code>10 INPUT "ENTER A PRICE OR Q TO QUIT";PRICE$
+20 IF PRICE$="Q" THEN 70
+30 PRICE=VAL(PRICE$)
+40 IF PRICE&lt;0 THEN 80
+50 PRINT "TOTAL WITH 25 PERCENT TAX ";PRICE*1.25
+60 GOTO 10
+70 END
+80 PRINT "PRICE MUST BE ZERO OR MORE"
+90 GOTO 10</code></pre>
+            <p>Enter <code>20</code> to see a total of <code>25</code>, or uppercase <code>Q</code> to exit. Enter the response without quotes. The program checks the allowed price range after conversion. A malformed number such as <code>twenty</code> stops this example at line 30 with a runtime error. Use <a href="../index.html#input">numeric INPUT</a> when you want ABL to handle retries automatically.</p>
+        </section>
+
+        <section id="fields">
+            <h2>Extract a number from a text record</h2>
+            <p>When a string contains a label or a unit, extract the numeric field before calling VAL. For a fixed format such as <code>RPM=1500</code>, <code>MID$</code> can take everything after the four-character prefix <code>RPM=</code>.</p>
+            <pre><code>10 READ RECORD$
+20 RPM=VAL(MID$(RECORD$,5))
+30 PRINT RPM/60;" REVOLUTIONS PER SECOND"
+40 DATA "RPM=1500"</code></pre>
+            <p>This displays <code>25</code> revolutions per second. <code>MID$</code> supplies <code>"1500"</code> to VAL, while <code>RECORD$</code> still holds the full record. This example assumes each record starts with <code>RPM=</code> followed by a numeric field.</p>
+        </section>
+
+        <section id="errors">
+            <h2>Understand conversion errors</h2>
+            <p>VAL expects the entire string to describe one number. An invalid conversion stops the current command or program. In a numbered program, the error identifies the line that called VAL.</p>
+            <table>
+                <thead><tr><th scope="col">Call</th><th scope="col">What to check</th></tr></thead>
+                <tbody>
+                    <tr><td><code>VAL(44)</code></td><td><code>Type mismatch: expected a string.</code> The argument is already numeric, so use it directly.</td></tr>
+                    <tr><td><code>VAL("")</code> or <code>VAL("   ")</code></td><td>A number needs at least one digit. If blank has a meaning in your program, handle it before converting.</td></tr>
+                    <tr><td><code>VAL("3,5")</code> or <code>VAL("1,000")</code></td><td>Use <code>"3.5"</code> for a fraction and <code>"1000"</code> for a thousand.</td></tr>
+                    <tr><td><code>VAL("44kg")</code> or <code>VAL("2+3")</code></td><td>Extract the numeric field from labeled text. Write arithmetic as a BASIC expression outside the string.</td></tr>
+                    <tr><td><code>VAL("NaN")</code>, <code>VAL("Infinity")</code> or <code>VAL("1e400")</code></td><td>The conversion requires a finite number within the floating-point range.</td></tr>
+                </tbody>
+            </table>
+            <p>Invalid numeric strings report <code>Illegal function call: VAL requires a numeric string.</code> A valid zero, such as <code>VAL("0")</code>, returns <code>0</code>.</p>
+        </section>
+
+        <section id="str">
+            <h2>Convert back to text with STR$</h2>
+            <p>Use <a href="../index.html#str">STR$</a> when you need the string representation of a number, for example to build a label. You can place the two conversions on either side of a calculation.</p>
+            <pre><code>TEXT$="0044"
+RESULT$=STR$(VAL(TEXT$)+1)
+PRINT "NEXT VALUE: ";RESULT$</code></pre>
+            <p>This displays <code>NEXT VALUE: 45</code>. <code>STR$(VAL("0044"))</code> returns <code>"44"</code>. Keep the original string if you need to preserve padding, a leading plus sign, or a particular decimal format.</p>
+        </section>
+    </main>
+    <footer><p>ABL – A BASIC Language · developed by Tomas Håkansson and Anders Hesselbom.</p></footer>
+</body>
+</html>
