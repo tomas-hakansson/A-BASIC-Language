@@ -111,7 +111,7 @@ public sealed class BasicSession
         if (command.Equals("NEW", StringComparison.OrdinalIgnoreCase))
         {
             clearProgram();
-            Reset(terminal, clearScreen: true);
+            _state.Clear();
             DataDirectory = null;
             ProgramFile = null;
             terminal.WriteLine(true, "Ready.");
@@ -121,7 +121,10 @@ public sealed class BasicSession
         var runtime = command.Equals("RUN", StringComparison.OrdinalIgnoreCase);
         
         if (runtime)
-            Reset(terminal, clearScreen: false);
+        {
+            _state.Clear();
+            terminal.SetTextRenderLimit(0);
+        }
         
         IsRunning = true;
         
@@ -164,15 +167,6 @@ public sealed class BasicSession
         {
             terminal.WriteLine($"?{ex.Message}");
         }
-    }
-
-    private void Reset(IBasicTerminal terminal, bool clearScreen)
-    {
-        _state.Clear();
-        // RUN resets runtime state while preserving the command and earlier output.
-        if (clearScreen)
-            terminal.ClearScreen();
-        terminal.SetTextRenderLimit(0);
     }
 
     public bool SetFolders(FileInfo basicFileInfo)

@@ -156,7 +156,7 @@
             <p>LOAD and SAVE also require direct mode. Enter them at the <code>Ready.</code> prompt, without a program line number.</p>
             <article id="run">
                 <h3>RUN</h3><pre><code>RUN</code></pre>
-                <p>Resets variables, arrays, user-defined functions and the data pointer, then runs the entire program. Takes no arguments: RUN 100 and filenames after RUN are not supported. The program source is retained. Before the program starts, the screen is cleared and the full text area is restored, as with <a href="#window">WINDOW</a> without an argument. An empty program returns to Ready.</p>
+                <p>Resets variables, arrays, user-defined functions and the data pointer, then runs the entire program. Takes no arguments: RUN 100 and filenames after RUN are not supported. The program source is retained. Before the program starts, RUN restores the full text area and preserves existing screen contents. An empty program returns to Ready.</p>
             </article>
             <article id="list">
                 <h3>LIST</h3>
@@ -210,7 +210,7 @@ RUN</code></pre>
             </article>
             <article id="new">
                 <h3>NEW</h3><pre><code>NEW</code></pre>
-                <p>Removes the entire program and all variables, arrays and user-defined functions without confirmation. The screen is cleared and the full text area is restored, as with <a href="#window">WINDOW</a> without an argument. Takes no arguments. There is no undo function.</p>
+                <p>Removes the entire program and all variables, arrays and user-defined functions without confirmation. It preserves existing text, graphics and the current text area, then displays <code>Ready.</code> using normal terminal output. Takes no arguments. There is no undo function.</p>
             </article>
             <h3>Direct execution</h3>
             <p>Other text without a line number is sent to the BASIC interpreter. A standalone expression is not printed automatically: use <code>PRINT 2+3</code>. Text beginning with digits is normally treated as a program line.</p>
@@ -536,7 +536,7 @@ FN name(argument)</code></pre>
 30 INPUT "PRESS ENTER";A$
 40 WINDOW
 50 PRINT "FULL TEXT AREA AGAIN"</code></pre>
-                <p>The command works both in direct mode and in numbered programs. Every valid WINDOW call clears the screen before changing the text area. NEW and RUN also clear the screen and restore all 25 text rows; RUN does this before the program starts.</p>
+                <p>The command works both in direct mode and in numbered programs. Every valid WINDOW call clears the screen before changing the text area. RUN restores the full text area before the program starts. NEW preserves the current text area.</p>
                 <p>Values outside the range and fractional values produce <code>WINDOW requires a whole number of text rows from 2 to 25.</code>. String arguments produce type errors. An invalid argument does not change the text window or clear the screen.</p>
             </article>
             <article id="scroll">
