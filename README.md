@@ -113,14 +113,12 @@ Of the 101 games, we support the ones followed by a 1:
 
 Documentation is located here: [https://abl.winsoft.se/](https://abl.winsoft.se/)
 
-## Repository
-
-[https://github.com/tomas-hakansson/A-BASIC-Language](https://github.com/tomas-hakansson/A-BASIC-Language)
-
-This program uses the [TerminalPixelMatrixLibrary](https://github.com/Anders-H/TerminalPixelMatrixLibrary).
-
 ## Version history
 
 ### Version 1.0
 
 - Emulates all games listed in the book 101 BASIC Computer Games (1975)
+
+## Install ABL
+
+Not available yet.
