@@ -28,13 +28,13 @@ public class SubtractExecutor : ISubExecutor
 
     // Float rules
 
-    static ValueBase Subtract(int lineNumber, FloatValue x, FloatValue y) =>
+    static ValueBase Subtract(FloatValue x, FloatValue y) =>
         new FloatValue(x.Value - y.Value);
 
-    static ValueBase Subtract(int lineNumber, FloatValue x, IntValue y) =>
+    static ValueBase Subtract(FloatValue x, IntValue y) =>
         new FloatValue(x.Value - y.Value);
 
-    static ValueBase Subtract(int lineNumber, FloatValue x, StringValue y) =>
+    static ValueBase Subtract(FloatValue x, StringValue y) =>
         throw new InvalidOperationException("Subtract in string scope.");
 
     // Int rules

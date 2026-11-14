@@ -1,4 +1,5 @@
-﻿namespace A_BASIC_Language;
+﻿#nullable enable
+namespace A_BASIC_Language;
 
 public class BasicProgram
 {
@@ -14,7 +15,4 @@ public class BasicProgram
         SourceCode = sourceCode;
         Filename = filename;
     }
-
-    public static BasicProgram Empty() =>
-        new();
 }

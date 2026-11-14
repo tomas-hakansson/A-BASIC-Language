@@ -22,9 +22,6 @@ public readonly struct FontConfiguration
         Id = id;
     }
 
-    public static FontConfiguration Default =>
-        new FontConfigurationList().Get(CurrentFont.C64);
-
     public override string ToString() =>
         Name;
 }

@@ -61,12 +61,6 @@ public class Dimension
     public void Add(int atom, params int[] indices) =>
         Add(new IntValue(atom), indices.ToList());
 
-    public void Add(double atom, List<int> indices) =>
-        Add(new FloatValue(atom), indices.ToList());
-
-    public void Add(int atom, List<int> indices) =>
-        Add(new IntValue(atom), indices.ToList());
-
     public void Add(string atom, List<int> indices) =>
         Add(new StringValue(atom), indices.ToList());
 

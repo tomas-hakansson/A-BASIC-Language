@@ -989,15 +989,6 @@ public partial class TerminalMatrixControl : UserControl
             _terminations[CharacterHeight - 1] = true;
     }
 
-    public void BeginInput(string prompt) =>
-        BeginInput(prompt, "", CurrentCursorColor, CurrentCursorColor);
-
-    public void BeginInput(string prompt, string defaultValue) =>
-        BeginInput(prompt, defaultValue, CurrentCursorColor, CurrentCursorColor);
-
-    public void BeginInput(string prompt, byte promptColor, byte valueColor) =>
-        BeginInput(prompt, "", promptColor, valueColor);
-
     public void BeginInput(string prompt, string defaultValue, byte promptColor, byte valueColor)
     {
         if (prompt.Length > CharacterWidth - 2)
@@ -1174,21 +1165,13 @@ public partial class TerminalMatrixControl : UserControl
         } while (true);
     }
 
-    public int InputInteger(string prompt) =>
-        InputInteger(prompt, "", CurrentCursorColor, CurrentCursorColor);
-
-    public int InputInteger(string prompt, string defaultValue) =>
-        InputInteger(prompt, defaultValue, CurrentCursorColor, CurrentCursorColor);
-
-    public int InputInteger(string prompt, byte promptColor, byte valueColor) =>
-        InputInteger(prompt, "", promptColor, valueColor);
-
     public int InputInteger(string prompt, string defaultValue, byte promptColor, byte valueColor)
     {
         do
         {
             var breakVersion = _inputBreakVersion;
             var inputResult = InputString(prompt, defaultValue, promptColor, valueColor);
+
             if (QuitFlag || breakVersion != _inputBreakVersion)
                 return 0;
 

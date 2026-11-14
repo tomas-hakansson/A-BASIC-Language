@@ -15,16 +15,4 @@ public class LoadResult
         Result = result;
         Data = data;
     }
-
-    public bool IsEmpty =>
-        string.IsNullOrWhiteSpace(Data);
-
-    public List<string> DataAsList() =>
-        Data.Split([Environment.NewLine], StringSplitOptions.None).ToList();
-
-    public static LoadResult Fail() =>
-        new(false, "");
-
-    public static LoadResult Success(string source) =>
-        new(true, source);
 }

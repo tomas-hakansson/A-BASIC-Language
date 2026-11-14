@@ -99,7 +99,7 @@ public partial class ProgramPropertiesDialog : Form
 
         if (string.IsNullOrEmpty(path) || path.StartsWith(@"Nothing"))
         {
-            _msgBox.Tell("No source folder to open.");
+            _msgBox.Tell("No source folder to open.", Text);
             return;
         }
 
@@ -119,7 +119,7 @@ public partial class ProgramPropertiesDialog : Form
 
         if (string.IsNullOrEmpty(path) || path.StartsWith(@"Nothing"))
         {
-            _msgBox.Tell("No data folder to open.");
+            _msgBox.Tell("No data folder to open.", Text);
             return;
         }
 

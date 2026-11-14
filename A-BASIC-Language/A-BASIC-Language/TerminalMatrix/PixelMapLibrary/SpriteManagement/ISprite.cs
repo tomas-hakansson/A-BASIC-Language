@@ -1,4 +1,4 @@
-﻿namespace PixelmapLibraryNetFramework.SpriteManagement;
+﻿namespace A_BASIC_Language.TerminalMatrix.PixelMapLibrary.SpriteManagement;
 
 public interface ISprite
 {

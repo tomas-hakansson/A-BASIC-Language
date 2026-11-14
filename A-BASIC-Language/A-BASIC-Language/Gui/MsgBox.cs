@@ -8,7 +8,6 @@ public interface IMsgBox
     bool Ask(string prompt);
     void Fail(string prompt);
     void Fail(string prompt, string text);
-    void Tell(string prompt);
     void Tell(string prompt, string text);
 }
 
@@ -29,9 +28,6 @@ public class MsgBox : IMsgBox
 
     public void Fail(string prompt, string text) =>
         MessageBox.Show(_owner, prompt, text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-    public void Tell(string prompt) =>
-        MessageBox.Show(_owner, prompt, _owner.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
     public void Tell(string prompt, string text) =>
         MessageBox.Show(_owner, prompt, text, MessageBoxButtons.OK, MessageBoxIcon.Information);

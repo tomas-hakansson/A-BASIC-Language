@@ -204,7 +204,6 @@
     <Compile Include="MainWindowControllers\WindowConfigurator.cs" />
     <Compile Include="PendingSymbolsStack.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="ProgramCacheDictionary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringManipulation\StringExtensions.cs" />
     <Compile Include="TerminalMatrix\CharacterPixelMatrix.cs" />
@@ -611,9 +610,7 @@
     <None Include="Resources\saveHS.png" />
     <Content Include="Resources\settings.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="PixelMapLibrary\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Analyzer Include="..\packages\MSTest.Analyzers.4.5.3\analyzers\dotnet\cs\MSTest.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\packages\MSTest.Analyzers.4.5.3\analyzers\dotnet\cs\MSTest.Analyzers.dll" />

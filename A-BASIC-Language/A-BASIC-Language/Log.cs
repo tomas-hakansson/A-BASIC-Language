@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿#nullable enable
+using System.Drawing;
 using A_BASIC_Language.StringManipulation;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
