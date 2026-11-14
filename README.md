@@ -61,8 +61,8 @@ Of the 101 games, we support the ones followed by a 1:
 | hockey            |     1     |
 | horserace         |     0     |
 | hurkle            |     1     |
-| kinema            |           |
-| king              |           |
+| kinema            |     1     |
+| king              |     1     |
 | lem               |           |
 | letter            |           |
 | life              |           |
@@ -91,7 +91,7 @@ Of the 101 games, we support the ones followed by a 1:
 | russianroulette   |           |
 | salvo             |           |
 | sinewave          |           |
-| slalom            |           |
+| slalom            |     1     |
 | slots             |     1     |
 | splat             |     1     |
 | stars             |     1     |
