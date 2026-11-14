@@ -606,6 +606,9 @@
     <Content Include="Resources\gear_16.png" />
     <None Include="Resources\TextboxHS.png" />
     <None Include="Resources\PlayHS.png" />
+    <None Include="Resources\NewDocumentHS.png" />
+    <None Include="Resources\openfolderHS.png" />
+    <None Include="Resources\saveHS.png" />
     <Content Include="Resources\settings.png" />
   </ItemGroup>
   <ItemGroup>

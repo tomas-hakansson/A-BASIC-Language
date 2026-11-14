@@ -36,7 +36,9 @@ namespace A_BASIC_Language
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.openFrom101BASICComputerGamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
@@ -44,6 +46,8 @@ namespace A_BASIC_Language
             this.programDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gamesDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.userProgramsDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fullscreenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,9 +65,14 @@ namespace A_BASIC_Language
             this.versionHistoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.btnNew = new System.Windows.Forms.ToolStripButton();
+            this.btnOpen = new System.Windows.Forms.ToolStripButton();
+            this.btnSave = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.btnDebug = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.btnPlay = new System.Windows.Forms.ToolStripButton();
+            this.btnProgramProperties = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.btnOptions = new System.Windows.Forms.ToolStripButton();
@@ -72,7 +81,6 @@ namespace A_BASIC_Language
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblUserAction = new System.Windows.Forms.ToolStripStatusLabel();
             this.terminalMatrixControl1 = new A_BASIC_Language.TerminalMatrix.TerminalMatrixControl();
-            this.btnProgramProperties = new System.Windows.Forms.ToolStripButton();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -96,21 +104,42 @@ namespace A_BASIC_Language
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exitToolStripMenuItem,
+            this.newToolStripMenuItem,
+            this.openToolStripMenuItem,
+            this.saveToolStripMenuItem,
             this.toolStripMenuItem1,
             this.openFrom101BASICComputerGamesToolStripMenuItem,
             this.toolStripMenuItem3,
-            this.shellToolStripMenuItem});
+            this.shellToolStripMenuItem,
+            this.toolStripMenuItem4,
+            this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "&File";
             // 
-            // exitToolStripMenuItem
+            // newToolStripMenuItem
             // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(293, 22);
-            this.exitToolStripMenuItem.Text = "&Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            this.newToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.NewDocumentHS;
+            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(293, 22);
+            this.newToolStripMenuItem.Text = "New";
+            this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
+            // 
+            // openToolStripMenuItem
+            // 
+            this.openToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.openfolderHS;
+            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(293, 22);
+            this.openToolStripMenuItem.Text = "Open...";
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.saveHS;
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(293, 22);
+            this.saveToolStripMenuItem.Text = "Save...";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -159,6 +188,18 @@ namespace A_BASIC_Language
             this.userProgramsDirectoryToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
             this.userProgramsDirectoryToolStripMenuItem.Text = "User programs directory...";
             this.userProgramsDirectoryToolStripMenuItem.Click += new System.EventHandler(this.userProgramsDirectoryToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(290, 6);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(293, 22);
+            this.exitToolStripMenuItem.Text = "&Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -216,21 +257,21 @@ namespace A_BASIC_Language
             this.runToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.PlayHS;
             this.runToolStripMenuItem.Name = "runToolStripMenuItem";
             this.runToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.runToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.runToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.runToolStripMenuItem.Text = "Run";
             this.runToolStripMenuItem.Click += new System.EventHandler(this.runToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(152, 6);
             // 
             // propertiesToolStripMenuItem
             // 
             this.propertiesToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.PropertiesHS;
             this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
             this.propertiesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
-            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.propertiesToolStripMenuItem.Text = "Properties...";
             this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
             // 
@@ -247,7 +288,7 @@ namespace A_BASIC_Language
             // 
             this.textEditorToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.TextboxHS;
             this.textEditorToolStripMenuItem.Name = "textEditorToolStripMenuItem";
-            this.textEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.textEditorToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.textEditorToolStripMenuItem.Text = "Text editor...";
             this.textEditorToolStripMenuItem.Click += new System.EventHandler(this.textEditorToolStripMenuItem_Click);
             // 
@@ -255,7 +296,7 @@ namespace A_BASIC_Language
             // 
             this.optionsToolStripMenuItem.Image = global::A_BASIC_Language.Properties.Resources.settings;
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.optionsToolStripMenuItem.Text = "Options...";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
@@ -295,6 +336,10 @@ namespace A_BASIC_Language
             // 
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnNew,
+            this.btnOpen,
+            this.btnSave,
+            this.toolStripSeparator3,
             this.btnDebug,
             this.toolStripSeparator2,
             this.btnPlay,
@@ -307,6 +352,41 @@ namespace A_BASIC_Language
             this.toolStrip1.Size = new System.Drawing.Size(786, 25);
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
+            // 
+            // btnNew
+            // 
+            this.btnNew.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnNew.Image = global::A_BASIC_Language.Properties.Resources.NewDocumentHS;
+            this.btnNew.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnNew.Name = "btnNew";
+            this.btnNew.Size = new System.Drawing.Size(23, 22);
+            this.btnNew.Text = "New";
+            this.btnNew.Click += new System.EventHandler(this.btnNew_Click);
+            // 
+            // btnOpen
+            // 
+            this.btnOpen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnOpen.Image = global::A_BASIC_Language.Properties.Resources.openfolderHS;
+            this.btnOpen.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnOpen.Name = "btnOpen";
+            this.btnOpen.Size = new System.Drawing.Size(23, 22);
+            this.btnOpen.Text = "Open...";
+            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
+            // 
+            // btnSave
+            // 
+            this.btnSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnSave.Image = global::A_BASIC_Language.Properties.Resources.saveHS;
+            this.btnSave.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(23, 22);
+            this.btnSave.Text = "Save...";
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
             // 
             // btnDebug
             // 
@@ -332,6 +412,16 @@ namespace A_BASIC_Language
             this.btnPlay.Size = new System.Drawing.Size(23, 22);
             this.btnPlay.Text = "Run";
             this.btnPlay.Click += new System.EventHandler(this.btnPlay_Click);
+            // 
+            // btnProgramProperties
+            // 
+            this.btnProgramProperties.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnProgramProperties.Image = global::A_BASIC_Language.Properties.Resources.PropertiesHS;
+            this.btnProgramProperties.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnProgramProperties.Name = "btnProgramProperties";
+            this.btnProgramProperties.Size = new System.Drawing.Size(23, 22);
+            this.btnProgramProperties.Text = "Program properties...";
+            this.btnProgramProperties.Click += new System.EventHandler(this.btnProgramProperties_Click);
             // 
             // toolStripSeparator1
             // 
@@ -403,7 +493,7 @@ namespace A_BASIC_Language
             this.terminalMatrixControl1.HasFocus = true;
             this.terminalMatrixControl1.Location = new System.Drawing.Point(0, 49);
             this.terminalMatrixControl1.Name = "terminalMatrixControl1";
-            this.terminalMatrixControl1.RenderingMode = RenderingMode.HighQuality;
+            this.terminalMatrixControl1.RenderingMode = A_BASIC_Language.TerminalMatrix.RenderingMode.HighQuality;
             this.terminalMatrixControl1.Size = new System.Drawing.Size(786, 468);
             this.terminalMatrixControl1.TabIndex = 0;
             this.terminalMatrixControl1.UnlimitedInput = false;
@@ -416,16 +506,6 @@ namespace A_BASIC_Language
             this.terminalMatrixControl1.Tick += new A_BASIC_Language.TerminalMatrix.Events.TickDelegate(this.terminalMatrixControl1_Tick);
             this.terminalMatrixControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.terminalMatrixControl1_Paint);
             this.terminalMatrixControl1.Leave += new System.EventHandler(this.terminalMatrixControl1_Leave);
-            // 
-            // btnProgramProperties
-            // 
-            this.btnProgramProperties.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnProgramProperties.Image = global::A_BASIC_Language.Properties.Resources.PropertiesHS;
-            this.btnProgramProperties.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnProgramProperties.Name = "btnProgramProperties";
-            this.btnProgramProperties.Size = new System.Drawing.Size(23, 22);
-            this.btnProgramProperties.Text = "Program properties...";
-            this.btnProgramProperties.Click += new System.EventHandler(this.btnProgramProperties_Click);
             // 
             // MainWindow
             // 
@@ -498,5 +578,13 @@ namespace A_BASIC_Language
         private ToolStripMenuItem gamesDirectoryToolStripMenuItem;
         private ToolStripMenuItem userProgramsDirectoryToolStripMenuItem;
         private ToolStripButton btnProgramProperties;
+        private ToolStripMenuItem newToolStripMenuItem;
+        private ToolStripMenuItem openToolStripMenuItem;
+        private ToolStripMenuItem saveToolStripMenuItem;
+        private ToolStripSeparator toolStripMenuItem4;
+        private ToolStripButton btnNew;
+        private ToolStripButton btnOpen;
+        private ToolStripButton btnSave;
+        private ToolStripSeparator toolStripSeparator3;
     }
 }

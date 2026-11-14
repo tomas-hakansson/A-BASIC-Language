@@ -480,4 +480,69 @@ public partial class MainWindow : Form
             _msgBox.Fail("Failed to open the source folder.");
         }
     }
+
+    private void newToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        if (!_msgBox.Ask("Are you sure you want to clear the current program from memory?"))
+            return;
+
+        terminalMatrixControl1.New();
+    }
+
+    private void btnNew_Click(object sender, EventArgs e) =>
+        newToolStripMenuItem_Click(sender, e);
+
+    private void openToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            var path = Paths.GetUserProgramsPath();
+            using var x = new OpenFileDialog();
+            x.InitialDirectory = path!.FullName;
+            x.Filter = @"BASIC source files (*.bas)|*.bas|All files (*.*)|*.*";
+
+            if (x.ShowDialog(this) != DialogResult.OK)
+                return;
+
+            var fileInfo = new FileInfo(x.FileName);
+            var source = File.ReadAllText(fileInfo.FullName);
+            LoadProgram(source);
+            SessionSetFolders(fileInfo);
+        }
+        catch (Exception exception)
+        {
+            _msgBox.Fail(exception.Message, @"Failed to open BASIC source files");
+        }
+    }
+
+    private void btnOpen_Click(object sender, EventArgs e) =>
+        openToolStripMenuItem_Click(sender, e);
+
+    private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            var path = Paths.GetUserProgramsPath() ?? throw new IOException("Could not open the user programs folder.");
+
+            using var dialog = new SaveFileDialog();
+            dialog.InitialDirectory = path.FullName;
+            dialog.FileName = _session.ProgramFile?.Name ?? string.Empty;
+            dialog.Filter = @"BASIC source files (*.bas)|*.bas|All files (*.*)|*.*";
+            dialog.DefaultExt = "bas";
+
+            if (dialog.ShowDialog(this) != DialogResult.OK)
+                return;
+
+            var file = new FileInfo(dialog.FileName);
+            File.WriteAllText(file.FullName, terminalMatrixControl1.GetProgramAsString());
+            SessionSetFolders(file);
+        }
+        catch (Exception exception)
+        {
+            _msgBox.Fail(exception.Message, @"Failed to save BASIC source file");
+        }
+    }
+
+    private void btnSave_Click(object sender, EventArgs e) =>
+        saveToolStripMenuItem_Click(sender, e);
 }
