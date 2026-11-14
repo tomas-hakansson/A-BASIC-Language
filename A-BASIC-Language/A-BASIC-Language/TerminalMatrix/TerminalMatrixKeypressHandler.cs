@@ -1,9 +1,9 @@
+#nullable enable
 using System;
 using System.Windows.Forms;
-using A_BASIC_Language.TerminalMatrix;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 
-namespace TerminalMatrixNetFramework;
+namespace A_BASIC_Language.TerminalMatrix;
 
 internal class TerminalMatrixKeypressHandler
 {
@@ -60,6 +60,7 @@ internal class TerminalMatrixKeypressHandler
                         showKeyboardActivity();
                     }
                 }
+
                 break;
             case Keys.Up:
                 if (inputMode)
@@ -70,6 +71,7 @@ internal class TerminalMatrixKeypressHandler
                     cursorPosition.Y--;
                     showKeyboardActivity();
                 }
+
                 break;
             case Keys.Right:
                 if (inputMode)
@@ -106,15 +108,11 @@ internal class TerminalMatrixKeypressHandler
                     return;
 
                 if (cursorPosition.Y < _owner.CharacterHeight - 1)
-                {
                     cursorPosition.Y++;
-                    showKeyboardActivity();
-                }
                 else
-                {
                     scroll();
-                    showKeyboardActivity();
-                }
+
+                showKeyboardActivity();
                 break;
         }
     }

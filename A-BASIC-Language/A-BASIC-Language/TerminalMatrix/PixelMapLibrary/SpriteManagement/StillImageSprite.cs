@@ -1,6 +1,8 @@
-﻿using System.Drawing;
+﻿#nullable enable
+using System.Drawing;
+using PixelmapLibraryNetFramework.SpriteManagement;
 
-namespace PixelmapLibraryNetFramework.SpriteManagement;
+namespace A_BASIC_Language.TerminalMatrix.PixelMapLibrary.SpriteManagement;
 
 public class StillImageSprite : ISprite
 {

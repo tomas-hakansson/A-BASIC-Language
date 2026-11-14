@@ -1,6 +1,6 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using A_BASIC_Language.TerminalMatrix;
-using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language.Gui;
 
@@ -27,32 +27,27 @@ public class StartScreen
                 control.WriteLine("                             ABL, A BASIC Language");
                 control.WriteLine("                  ***** Altair Commodore BASIC Emulator *****");
                 control.WriteLine("                    (C)  Tomas Hakansson & Anders Hesselbom");
-                control.WriteLine("");
-                control.WriteLine("Ready.");
                 break;
             case Resolution.Pixels480x200Characters60x25:
                 control.WriteLine("                   ABL, A BASIC Language");
                 control.WriteLine("         **** Altair Commodore BASIC Emulator ****");
                 control.WriteLine("          (C)  Tomas Hakansson & Anders Hesselbom");
-                control.WriteLine("");
-                control.WriteLine("Ready.");
                 break;
             case Resolution.Pixels320x200Characters40x25:
                 control.WriteLine("            A BASIC Language");
                 control.WriteLine("    *** An Altair BASIC Emulator ***");
                 control.WriteLine(" (C) Tomas Hakansson & Anders Hesselbom");
-                control.WriteLine("");
-                control.WriteLine("Ready.");
                 break;
             case Resolution.Pixels160x200Characters20x25:
                 control.WriteLine("  A BASIC Language");
                 control.WriteLine("**Altair BASIC Emu**");
                 control.WriteLine(" T.Hakansson&A.Hbom");
-                control.WriteLine("");
-                control.WriteLine("Ready.");
                 break;
             default:
                 throw new SystemException("Resolution not supported.");
         }
+
+        control.WriteLine("");
+        control.WriteLine("Ready.");
     }
 }

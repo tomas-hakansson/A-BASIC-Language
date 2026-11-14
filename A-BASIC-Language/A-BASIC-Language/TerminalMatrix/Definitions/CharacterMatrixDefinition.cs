@@ -1,5 +1,5 @@
-﻿using System;
-using TerminalMatrixNetFramework;
+﻿#nullable enable
+using System;
 
 namespace A_BASIC_Language.TerminalMatrix.Definitions;
 
@@ -37,10 +37,6 @@ public static class CharacterMatrixDefinition
                 Width = 20;
                 Height = 25;
                 break;
-            case Resolution.LogPixels640x80Characters80x10:
-                Width = 80;
-                Height = 10;
-                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(resolution), resolution, null);
         }
@@ -52,7 +48,6 @@ public static class CharacterMatrixDefinition
         resolution switch
         {
             Resolution.Pixels640x200Characters80x25 or Resolution.Pixels480x200Characters60x25 or Resolution.Pixels320x200Characters40x25 or Resolution.Pixels160x200Characters20x25 => new bool[25],
-            Resolution.LogPixels640x80Characters80x10 => new bool[10],
             _ => throw new ArgumentOutOfRangeException(nameof(resolution), resolution, null)
         };
 }

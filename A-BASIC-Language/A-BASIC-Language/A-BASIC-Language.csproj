@@ -157,14 +157,10 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="IntegerList.cs" />
-    <Compile Include="IO\Dispatcher.cs" />
-    <Compile Include="IO\FileIO.cs" />
-    <Compile Include="IO\IOBase.cs" />
     <Compile Include="IO\LoadResult.cs" />
-    <Compile Include="IO\NetIO.cs" />
     <Compile Include="IO\Paths.cs" />
     <Compile Include="Language\AblEvalValue.cs" />
-    <Compile Include="Language\ABL_Label.cs" />
+    <Compile Include="Language\AblValueTypes.cs" />
     <Compile Include="Language\BasicSession.cs" />
     <Compile Include="Language\Dimension.cs" />
     <Compile Include="Language\IBasicTerminal.cs" />
@@ -216,7 +212,6 @@
     <Compile Include="TerminalMatrix\CoordinateList.cs" />
     <Compile Include="TerminalMatrix\Definitions\CharacterMatrixDefinition.cs" />
     <Compile Include="TerminalMatrix\Definitions\CharacterPosition.cs" />
-    <Compile Include="TerminalMatrix\Definitions\PixelMatrixDefinition.cs" />
     <Compile Include="TerminalMatrix\Events\FunctionKey.cs" />
     <Compile Include="TerminalMatrix\Events\FunctionKeyEventArgs.cs" />
     <Compile Include="TerminalMatrix\Events\FunctionKeyPressedDelegate.cs" />
@@ -615,7 +610,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="PixelMapLibrary\" />
-    <Folder Include="TerminalMatrix\TerminalMatrixControlFeatures\" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\MSTest.Analyzers.4.5.3\analyzers\dotnet\cs\MSTest.Analyzers.CodeFixes.dll" />

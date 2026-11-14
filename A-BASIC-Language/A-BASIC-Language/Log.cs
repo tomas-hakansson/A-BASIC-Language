@@ -68,6 +68,8 @@ public class Log
         g.CompositingMode = CompositingMode.SourceOver;
         g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
         g.SetClip(new RectangleF(x, y, LogWidth, LogHeight));
+        using var background = new SolidBrush(Color.FromArgb(128, 0, 0, 0));
+        g.FillRectangle(background, x, y, LogWidth, LogHeight);
 
         for (var i = 0; i < 10; i++)
         {

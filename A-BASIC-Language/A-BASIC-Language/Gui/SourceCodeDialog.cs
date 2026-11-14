@@ -1,10 +1,11 @@
-﻿using System.Windows.Forms;
+﻿#nullable enable
+using System.Windows.Forms;
 
 namespace A_BASIC_Language.Gui;
 
 public partial class SourceCodeDialog : Form
 {
-    public string SourceCode { get; set; }
+    public string? SourceCode { get; set; }
 
     public SourceCodeDialog()
     {
@@ -13,7 +14,7 @@ public partial class SourceCodeDialog : Form
 
     private void SourceCodeDialog_Load(object sender, System.EventArgs e)
     {
-        textBox1.Text = SourceCode;
+        textBox1.Text = SourceCode ?? "";
         textBox1.SelectionStart = 0;
         textBox1.SelectionLength = 0;
     }

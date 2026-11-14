@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Globalization;
 #if DEBUG
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -8,6 +9,15 @@ namespace A_BASIC_Language;
 
 public static class Extensions
 {
+    extension(int i)
+    {
+        public bool IsByte() =>
+            i.IsIn(0, 255);
+
+        public bool IsIn(int min, int max) =>
+            i >= min && i <= max;
+    }
+
     extension(double n)
     {
         public bool NanOrInfinity() =>

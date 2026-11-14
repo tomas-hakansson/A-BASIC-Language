@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 
 namespace A_BASIC_Language.TerminalMatrix.Events;
 

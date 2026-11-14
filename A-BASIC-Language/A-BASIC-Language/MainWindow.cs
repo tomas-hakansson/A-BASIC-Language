@@ -1,3 +1,4 @@
+#nullable enable
 using A_BASIC_Language.Gui;
 using A_BASIC_Language.Gui.Dialogs;
 using A_BASIC_Language.Gui.Multimedia;
@@ -13,8 +14,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using A_BASIC_Language.TerminalMatrix;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
-using TerminalMatrixNetFramework;
 
 namespace A_BASIC_Language;
 
@@ -49,8 +50,6 @@ public partial class MainWindow : Form
         _logVisible = false;
         _log = new Log(lblUserAction, new Font(FontFamily.GenericMonospace, 9, FontStyle.Regular));
     }
-
-    
 
     internal void DisableQuitPrompt()
     {
@@ -219,16 +218,15 @@ public partial class MainWindow : Form
     {
         if (warn)
         {
-            if (!fullscreenToolStripMenuItem.Checked)
-            {
-                if (_msgBox.Ask("Enter fullscreen mode? Use F11 to exit."))
-                {
-                    new FullScreenController(this, menuStrip1, toolStrip1, statusStrip1).Set(true, terminalMatrixControl1);
-                    fullscreenToolStripMenuItem.Checked = !fullscreenToolStripMenuItem.Checked;
-                    _log.Write("Enter fullscreen (F11 to exit)");
-                }
-            }
+            if (fullscreenToolStripMenuItem.Checked)
+                return;
 
+            if (!_msgBox.Ask("Enter fullscreen mode? Use F11 to exit."))
+                return;
+
+            new FullScreenController(this, menuStrip1, toolStrip1, statusStrip1).Set(true, terminalMatrixControl1);
+            fullscreenToolStripMenuItem.Checked = !fullscreenToolStripMenuItem.Checked;
+            _log.Write("Enter fullscreen (F11 to exit)");
             return;
         }
 

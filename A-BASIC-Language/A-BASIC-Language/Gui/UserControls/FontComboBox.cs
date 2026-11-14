@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using A_BASIC_Language.Gui.Multimedia;
+﻿#nullable enable
+using System.Linq;
 using System.Windows.Forms;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 
@@ -14,14 +14,12 @@ public class FontComboBox : ComboBox
         var items = new FontConfigurationList();
 
         foreach (var item in items)
-        {
             Items.Add(item);
-        }
     }
 
     public CurrentFont SelectedFont
     {
-        get => SelectedItem == null ? new FontConfigurationList().First().Id : (SelectedItem is FontConfiguration configuration ? (FontConfiguration)SelectedItem : default)!.Id;
+        get => SelectedItem == null ? new FontConfigurationList().First().Id : (SelectedItem is FontConfiguration ? (FontConfiguration)SelectedItem : default).Id;
         set
         {
             for (var i = 0; i < Items.Count; i++)

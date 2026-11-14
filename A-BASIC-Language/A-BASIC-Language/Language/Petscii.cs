@@ -16,6 +16,7 @@ internal static class Petscii
     public static int Encode(char character)
     {
         var index = Characters.IndexOf(character);
+
         if (index >= 0)
             return FirstCode + index;
 
@@ -28,7 +29,8 @@ internal static class Petscii
     internal static bool TryGetPlaceholderCode(char character, out byte code)
     {
         var offset = character - PlaceholderStart;
-        if (offset >= 0 && offset <= byte.MaxValue && Placeholders.ContainsKey((byte)offset))
+
+        if (offset.IsByte() && Placeholders.ContainsKey((byte)offset))
         {
             code = (byte)offset;
             return true;
@@ -41,6 +43,7 @@ internal static class Petscii
     public static char Decode(byte code)
     {
         var index = code - FirstCode;
+
         if (index >= 0 && index < Characters.Length)
             return Characters[index];
 

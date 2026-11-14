@@ -403,7 +403,7 @@ namespace A_BASIC_Language
             this.terminalMatrixControl1.HasFocus = true;
             this.terminalMatrixControl1.Location = new System.Drawing.Point(0, 49);
             this.terminalMatrixControl1.Name = "terminalMatrixControl1";
-            this.terminalMatrixControl1.RenderingMode = TerminalMatrixNetFramework.RenderingMode.HighQuality;
+            this.terminalMatrixControl1.RenderingMode = RenderingMode.HighQuality;
             this.terminalMatrixControl1.Size = new System.Drawing.Size(786, 468);
             this.terminalMatrixControl1.TabIndex = 0;
             this.terminalMatrixControl1.UnlimitedInput = false;

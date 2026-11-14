@@ -20,5 +20,4 @@ public interface IBasicTerminal
     void MainWindowLoadProgram(string source);
     bool MainWindowSaveProgram(string source);
     void MainWindowSessionSetFolders(FileInfo basicFileInfo);
-    string SourceCode { get; }
 }

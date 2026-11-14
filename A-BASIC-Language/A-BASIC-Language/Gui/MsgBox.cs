@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿#nullable enable
+using System.Windows.Forms;
 
 namespace A_BASIC_Language.Gui;
 

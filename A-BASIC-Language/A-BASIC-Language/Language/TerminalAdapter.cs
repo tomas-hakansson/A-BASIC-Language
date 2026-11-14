@@ -18,8 +18,11 @@ public sealed class TerminalAdapter : IBasicTerminal
         _owner = owner;
     }
 
-    public int OutputColumn => _line.Length;
-    public bool QuitFlag => _terminal.QuitFlag;
+    public int OutputColumn =>
+        _line.Length;
+
+    public bool QuitFlag =>
+        _terminal.QuitFlag;
 
     public void ClearScreen()
     {

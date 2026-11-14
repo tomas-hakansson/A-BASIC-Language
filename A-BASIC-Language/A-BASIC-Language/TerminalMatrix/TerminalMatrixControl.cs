@@ -15,9 +15,6 @@ using A_BASIC_Language.TerminalMatrix.PixelMapLibrary;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.SpriteManagement;
 using A_BASIC_Language.TerminalMatrix.TerminalColor;
-using PixelmapLibraryNetFramework.SpriteManagement;
-using TerminalMatrixNetFramework;
-using TerminalMatrixNetFramework.TerminalColor;
 
 namespace A_BASIC_Language.TerminalMatrix;
 
@@ -53,13 +50,11 @@ public partial class TerminalMatrixControl : UserControl
     private Size _border;
     private bool _resolutionIncorrect;
     private FontConfiguration? _currentFont;
-
+    private int PixelWidth => CharacterWidth * 8;
+    private int PixelHeight => CharacterHeight * 8;
     public int CharacterWidth { get; private set; } = 40;
     public int CharacterHeight { get; private set; } = 25;
     public int TextRenderLimit { get; private set; }
-    private int PixelWidth => CharacterWidth * 8;
-    private int PixelHeight => CharacterHeight * 8;
-
     public RenderingMode RenderingMode { get; set; }
     public Resolution Resolution { get; private set; }
     public bool QuitFlag { get; private set; }
@@ -67,26 +62,6 @@ public partial class TerminalMatrixControl : UserControl
     public byte CurrentCursorColor { get; set; }
     public byte BackgroundColor { get; private set; }
     public byte BorderColor { get; private set; }
-
-    public void SetBackgroundColor(byte color)
-    {
-        BackgroundColor = color;
-
-        if (_pixelMap != null)
-        {
-            ClearPixelMap();
-            UpdateBitmap();
-        }
-    }
-
-    public void SetBorderColor(byte color)
-    {
-        BorderColor = color;
-
-        if (_pixelMap != null)
-            UpdateBitmap();
-    }
-
     public ProgramLineDictionary ProgramLines { get; } = new();
     public int[,] Background24Bit { get; private set; }
     public bool UseBackground24Bit { get; set; }
@@ -110,6 +85,25 @@ public partial class TerminalMatrixControl : UserControl
         QuitFlag = false;
         HasFocus = true;
         InitializeComponent();
+    }
+
+    public void SetBackgroundColor(byte color)
+    {
+        BackgroundColor = color;
+
+        if (_pixelMap != null)
+        {
+            ClearPixelMap();
+            UpdateBitmap();
+        }
+    }
+
+    public void SetBorderColor(byte color)
+    {
+        BorderColor = color;
+
+        if (_pixelMap != null)
+            UpdateBitmap();
     }
 
     public FontConfiguration CurrentFont

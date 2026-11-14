@@ -5,7 +5,6 @@ using A_BASIC_Language.Language.LoopInstructions;
 using A_BASIC_Language.Language.SpecificExecutors;
 using A_BASIC_Language.Language.ValueTypes;
 using A_BASIC_Language.StringManipulation;
-using A_BASIC_Language.TerminalMatrix;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -57,10 +56,11 @@ public class Interpreter
         _log = log;
         _parseResult = parseResult;
         _data = data;
+        _dimVariables = new Dictionary<string, Dimension>();
+        _functions = new Dictionary<string, AblFunctionDefinition>();
+        _random = new Random();
+        _state = new RuntimeState();
     }
-
-    public void Run(MainWindow owner, TerminalMatrixControl terminal) =>
-        Run(new TerminalAdapter(owner, terminal));
 
     public void Run(IBasicTerminal terminal)
     {
@@ -74,6 +74,7 @@ public class Interpreter
             _log.Write("Syntax error: " + string.Join("; ", _parseResult.Errors));
             return;
         }
+
         try
         {
             Eval();
@@ -88,7 +89,7 @@ public class Interpreter
         }
     }
 
-    private void Fail(string message) =>
+    private static void Fail(string message) =>
         throw new InvalidOperationException(message);
 
     private void Load(string fileName, int fileType)
@@ -913,9 +914,9 @@ public class Interpreter
                                 if (_data.Count > 0)
                                 {
                                     var value = _data.Pop();
-                                    var text = value.ToString() ?? "";
+                                    var text = value.ToString();
                                     
-                                    if (value is IntValue || value is FloatValue)
+                                    if (value is IntValue or FloatValue)
                                         text = (text.StartsWith("-", StringComparison.Ordinal) ? "" : " ") + text + " ";
                                     
                                     _terminal.Write(text);

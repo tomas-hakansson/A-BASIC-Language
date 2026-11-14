@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿#nullable enable
+using System.Linq;
 using System.Windows.Forms;
 using A_BASIC_Language.Gui.Multimedia;
 

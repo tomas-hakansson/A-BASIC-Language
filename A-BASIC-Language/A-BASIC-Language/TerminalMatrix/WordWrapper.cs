@@ -1,11 +1,10 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Text;
-#if DEBUG
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
 
-namespace TerminalMatrixNetFramework;
+namespace A_BASIC_Language.TerminalMatrix;
 
 internal static class WordWrapper
 {

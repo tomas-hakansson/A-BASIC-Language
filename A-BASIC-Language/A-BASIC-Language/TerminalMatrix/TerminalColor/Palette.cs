@@ -1,14 +1,14 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using A_BASIC_Language.TerminalMatrix.TerminalColor;
 
-namespace TerminalMatrixNetFramework.TerminalColor;
+namespace A_BASIC_Language.TerminalMatrix.TerminalColor;
 
 public class Palette : IEnumerable<Color>
 {
-    private Color[] Colors { get; } = new Color[32];
+    private Color[] Colors { get; } = new Color[16];
 
     public Palette()
     {
@@ -28,23 +28,6 @@ public class Palette : IEnumerable<Color>
         Colors[13] = Color.FromArgb(50, 215, 42);
         Colors[14] = Color.FromArgb(0, 136, 255);
         Colors[15] = Color.FromArgb(187, 187, 187);
-        // Extended
-        Colors[16] = Color.FromArgb(80, 165, 148);
-        Colors[17] = Color.FromArgb(215, 215, 215);
-        Colors[18] = Color.FromArgb(96, 0, 0);
-        Colors[19] = Color.FromArgb(130, 215, 198);
-        Colors[20] = Color.FromArgb(164, 28, 164);
-        Colors[21] = Color.FromArgb(0, 144, 0);
-        Colors[22] = Color.FromArgb(0, 0, 130);
-        Colors[23] = Color.FromArgb(198, 198, 79);
-        Colors[24] = Color.FromArgb(181, 96, 45);
-        Colors[25] = Color.FromArgb(62, 28, 0);
-        Colors[26] = Color.FromArgb(232, 0, 0);
-        Colors[27] = Color.FromArgb(21, 21, 21);
-        Colors[28] = Color.FromArgb(79, 79, 79);
-        Colors[29] = Color.FromArgb(0, 75, 0);
-        Colors[30] = Color.FromArgb(0, 96, 215);
-        Colors[31] = Color.FromArgb(37, 57, 40);
     }
 
     public Color GetColor(int index) =>

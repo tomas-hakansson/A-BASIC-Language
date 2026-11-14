@@ -3,6 +3,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.SpriteManagement;
 using PixelmapLibraryNetFramework.SpriteManagement;
 
 namespace A_BASIC_Language.TerminalMatrix.PixelMapLibrary;
@@ -23,7 +24,7 @@ public class Pixelmap
             throw new ArgumentNullException(nameof(bitmap));
 
         if (bitmap.PixelFormat != Format)
-            throw new ArgumentException("Bitmap must use Format24bppRgb. Use CreateCompatibleBitmap to convert images.", nameof(bitmap));
+            throw new ArgumentException(@"Bitmap must use Format24bppRgb. Use CreateCompatibleBitmap to convert images.", nameof(bitmap));
 
         _bitmap = bitmap;
         _pixels = null;

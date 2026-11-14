@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System.Collections.Generic;
 
 namespace A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 

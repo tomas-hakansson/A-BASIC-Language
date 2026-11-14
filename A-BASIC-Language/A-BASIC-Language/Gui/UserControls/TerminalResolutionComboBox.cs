@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿#nullable enable
+using System.Windows.Forms;
 using A_BASIC_Language.TerminalMatrix;
 
 namespace A_BASIC_Language.Gui.UserControls;
@@ -12,9 +13,7 @@ public class TerminalResolutionComboBox : ComboBox
         var items = new TerminalResolutionList();
 
         foreach (var item in items)
-        {
             Items.Add(item);
-        }
     }
 
     public Resolution Resolution

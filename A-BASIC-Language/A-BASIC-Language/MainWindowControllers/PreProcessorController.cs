@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace A_BASIC_Language.MainWindowControllers;
@@ -54,6 +53,7 @@ public class PreProcessorController
         {
             case PreProcessorParserResult.ColorTheme:
                 var themes = new ColorSchemeConfigurationList();
+
                 if (argument == null)
                 {
                     _parent.WriteLine(themes.Get((ColorScheme)Settings.Default.ColorScheme).ShortName);
@@ -62,6 +62,7 @@ public class PreProcessorController
 
                 var matches = themes.Where(theme =>
                     string.Equals(theme.ShortName, argument, StringComparison.OrdinalIgnoreCase)).ToList();
+
                 if (matches.Count == 0)
                 {
                     _parent.WriteLine("Unknown color theme: " + argument);
@@ -88,12 +89,14 @@ public class PreProcessorController
                     _parent.WriteLine("No action required.");
                 else
                     _owner.ToggleFullscreen(false);
+
                 break;
             case PreProcessorParserResult.FullscreenOff:
                 if (!_owner.fullscreenToolStripMenuItem.Checked)
                     _parent.WriteLine("No action required.");
                 else
                     _owner.ToggleFullscreen(false);
+
                 break;
             case PreProcessorParserResult.HighQualityRenderToggle:
                 _owner.highQualityRenderingToolStripMenuItem_Click(this, EventArgs.Empty);
@@ -103,12 +106,14 @@ public class PreProcessorController
                     _parent.WriteLine("No action required.");
                 else
                     _owner.highQualityRenderingToolStripMenuItem_Click(this, EventArgs.Empty);
+
                 break;
             case PreProcessorParserResult.HighQualityRenderOff:
                 if (!_owner.highQualityRenderingToolStripMenuItem.Checked)
                     _parent.WriteLine("No action required.");
                 else
                     _owner.highQualityRenderingToolStripMenuItem_Click(this, EventArgs.Empty);
+
                 break;
             case PreProcessorParserResult.ToggleLog:
                 _owner.debugOutputToolStripMenuItem_Click(this, EventArgs.Empty);
@@ -118,12 +123,14 @@ public class PreProcessorController
                     _parent.WriteLine("No action required.");
                 else
                     _owner.debugOutputToolStripMenuItem_Click(this, EventArgs.Empty);
+
                 break;
             case PreProcessorParserResult.LogOff:
                 if (!_owner.debugOutputToolStripMenuItem.Checked)
                     _parent.WriteLine("No action required.");
                 else
                     _owner.debugOutputToolStripMenuItem_Click(this, EventArgs.Empty);
+
                 break;
             case PreProcessorParserResult.ToggleResolution:
                 switch (_parent.Resolution)
@@ -149,14 +156,10 @@ public class PreProcessorController
                         _parent.WriteLine("Resolution changed. Is now:");
                         _parent.WriteLine("640 * 200 pixels (80 * 25 characters)");
                         break;
-                    case Resolution.LogPixels640x80Characters80x10: // Not in the cycle loop.
-                        _parent.SetResolution(Resolution.Pixels640x200Characters80x25);
-                        _parent.WriteLine("Resolution changed. Is now:");
-                        _parent.WriteLine("640 * 200 pixels (80 * 25 characters)");
-                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+
                 _owner.CheckResolutionBox();
                 break;
             case PreProcessorParserResult.Resolution1:

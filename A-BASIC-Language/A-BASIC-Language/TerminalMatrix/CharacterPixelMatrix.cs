@@ -1,4 +1,5 @@
-﻿namespace A_BASIC_Language.TerminalMatrix;
+﻿#nullable enable
+namespace A_BASIC_Language.TerminalMatrix;
 
 public class CharacterPixelMatrix
 {
