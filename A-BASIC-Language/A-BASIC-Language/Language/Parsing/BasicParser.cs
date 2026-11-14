@@ -13,9 +13,12 @@ namespace A_BASIC_Language.Language.Parsing;
 
 public class BasicParser
 {
+    private static readonly Regex NamedLabelRegex = new(@"\G@[\p{L}\p{Nd}_]+", RegexOptions.CultureInvariant);
     private readonly string _source;
     private readonly bool _direct;
     private readonly SortedDictionary<int, List<AblEvalValue>> _lines;
+    private readonly Dictionary<string, int> _namedLabels = new(StringComparer.OrdinalIgnoreCase);
+    private readonly List<Action> _pendingJumps = [];
     private int _currentLabel;
     private readonly SortedDictionary<int, List<ValueBase>> _dataLines = new();
     private int _index;
@@ -48,6 +51,12 @@ public class BasicParser
         try
         {
             AProgram();
+            if (_parseErrors.Count == 0)
+            {
+                foreach (var resolve in _pendingJumps)
+                    resolve();
+            }
+
             if (_parseErrors.Any())
             {
                 Result.Success = false;
@@ -134,7 +143,8 @@ public class BasicParser
                 continue;
             }
 
-            OneOrMoreStatements();
+            if (!TryDeclareNamedLabel() || Maybe(':'))
+                OneOrMoreStatements();
             SkipWhitespace();
 
             if (_index >= _source.Length || _source[_index] == '\n')
@@ -147,7 +157,7 @@ public class BasicParser
 
     private bool ALabel()
     {
-        Regex isLabel = new(@"\G(?<label>\d+)\s*[A-Za-z?]", RegexOptions.CultureInvariant);
+        Regex isLabel = new(@"\G(?<label>\d+)[^\S\n]*[A-Za-z?@]", RegexOptions.CultureInvariant);
         var match = isLabel.Match(_source, _index);
 
         if (!match.Success)
@@ -167,6 +177,56 @@ public class BasicParser
         _lines.Add(_currentLabel, [new AblLabel(_currentLabel)]);
         SkipWhitespace();
         return matched;
+    }
+
+    private bool TryDeclareNamedLabel()
+    {
+        if (_direct || !TryReadNamedLabel(out var name))
+            return false;
+
+        if (_namedLabels.ContainsKey(name))
+            ParseError($"Duplicate label '{name}'.");
+        else
+            _namedLabels.Add(name, _currentLabel);
+
+        return true;
+    }
+
+    private bool TryReadNamedLabel(out string name)
+    {
+        var match = NamedLabelRegex.Match(_source, _index);
+        name = match.Value;
+        if (!match.Success)
+            return false;
+
+        _index += match.Length;
+        SkipWhitespace();
+        return true;
+    }
+
+    private Func<int>? ReadNamedJumpTarget()
+    {
+        var start = _index;
+        if (!TryReadNamedLabel(out var name))
+            return null;
+
+        var error = FormatDiagnostic($"Undefined label '{name}'.", start);
+        return () =>
+        {
+            if (_namedLabels.TryGetValue(name, out var lineNumber))
+                return lineNumber;
+
+            _parseErrors.Add((start, error));
+            return 0;
+        };
+    }
+
+    private void GeneratePendingJump(Func<AblEvalValue> resolve)
+    {
+        var line = _lines[_currentLabel];
+        var index = line.Count;
+        line.Add(new AblEvalValue());
+        _pendingJumps.Add(() => line[index] = resolve());
     }
 
     //OneOrMoreStatements => aStatementWithParts (: aStatementWithParts)*
@@ -537,6 +597,12 @@ public class BasicParser
 
     private void JumpTargetExpression()
     {
+        if (ReadNamedJumpTarget() is { } resolve)
+        {
+            GeneratePendingJump(() => new AblNumber(resolve()));
+            return;
+        }
+
         var start = _index;
         Expression();
         if (_lineNumbers == null)
@@ -567,7 +633,7 @@ public class BasicParser
         throw new InvalidOperationException("Expected GOTO, GO TO, GOSUB or GO SUB.");
     }
 
-    // ON expression (GOTO | GOSUB) line-number (, line-number)*
+    // ON expression (GOTO | GOSUB) target (, target)*
     private void OnGoto()
     {
         if (_direct)
@@ -591,22 +657,28 @@ public class BasicParser
         }
 
         var gosub = JumpKeyword();
-        var targets = new List<int>();
+        var targets = new List<Func<int>>();
         
         do
         {
+            if (ReadNamedJumpTarget() is { } resolve)
+            {
+                targets.Add(resolve);
+                continue;
+            }
+
             var target = Regex.Match(_source.Substring(_index), @"^[0-9]+");
         
             if (!target.Success || !int.TryParse(target.Value, out var lineNumber))
-                throw new InvalidOperationException("Expected a line number in ON jump list.");
+                throw new InvalidOperationException("Expected a line number or label in ON jump list.");
 
-            targets.Add(lineNumber);
+            targets.Add(() => lineNumber);
             _lineNumbers?.Add((_index, target.Length, lineNumber));
             _index += target.Length;
             SkipWhitespace();
         } while (Maybe(','));
 
-        Generate(new AblOnGoto(targets, gosub));
+        GeneratePendingJump(() => new AblOnGoto(targets.Select(resolve => resolve()), gosub));
     }
 
     private int? FindOnJumpKeyword()
@@ -614,7 +686,7 @@ public class BasicParser
         var depth = 0;
         var inString = false;
 
-        var keyword = new Regex(@"\GGO[ \t]*(?:TO|SUB)(?=[ \t]*[0-9])",
+        var keyword = new Regex(@"\GGO[ \t]*(?:TO|SUB)(?=[ \t]*[0-9@])",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         for (var i = _index; i < _source.Length; i++)
@@ -757,7 +829,7 @@ public class BasicParser
                         }
                     }
                 }
-                else if (char.IsWhiteSpace(_source[_index]))
+                else if (_index >= _source.Length || char.IsWhiteSpace(_source[_index]))
                 {
                     ParseError("Expected an IF body");
                 }
@@ -773,11 +845,12 @@ public class BasicParser
     private void ParseError(string message) =>
         _parseErrors.Add((_index, FormatDiagnostic(message)));
 
-    private string FormatDiagnostic(string message)
+    private string FormatDiagnostic(string message, int? position = null)
     {
         // Direct commands have a synthetic label used only for parsing.
         if (_direct) return message;
-        var column = _index - _source.LastIndexOf('\n', Math.Max(0, _index - 1));
+        var index = position ?? _index;
+        var column = index - _source.LastIndexOf('\n', Math.Max(0, index - 1));
         return $"Line {_currentLabel}, column {column}: {message}";
     }
 

@@ -26,6 +26,7 @@
                 <li><a href="#appcommands">Application commands with !</a></li>
                 <li><a href="#interface">Menus and keyboard</a></li>
                 <li><a href="#syntax">Syntax, variables and types</a></li>
+                <li><a href="#labels">Labels</a></li>
                 <li><a href="#operators">Expressions and operators</a></li>
                 <li><a href="#statements">Statement reference</a></li>
                 <li><a href="#window">WINDOW – text window</a></li>
@@ -294,8 +295,21 @@ RUN</code></pre>
             <pre><code>10 REM EXAMPLE
 20 A=5:PRINT A
 30 END</code></pre>
-            <p>A program line has a non-negative 32-bit line number and at least one statement. Numbers need not be consecutive. Blank physical lines are allowed in source files. A line number on its own in the terminal deletes the line. Colons separate statements.</p>
+            <p>A program line has a non-negative 32-bit line number followed by a statement or a <a href="#labels">label</a>. Numbers need not be consecutive. Blank physical lines are allowed in source files. A line number on its own in the terminal deletes the line. Colons separate statements.</p>
             <p>Keywords and variables are case-insensitive. Spaces can often be omitted, as in FORI=1TO3, but clear spacing is recommended. The parser recognizes keywords and functions as prefixes. Avoid names beginning with PRINT, IF, FOR, FN, INT, ABS or other reserved words.</p>
+            <article id="labels">
+                <h3>Labels</h3>
+                <p>A label gives a numbered program line a name. Write it immediately after the line number. A label starts with <code>@</code> followed by one or more letters, digits or underscores. Names are case-insensitive and must be unique within the program.</p>
+                <pre><code>10 GOSUB @showmenu
+20 ON 2 GOTO 30,@Quit
+30 GOTO @Quit
+100 @ShowMenu
+110 PRINT "MENU"
+120 RETURN
+200 @Quit: END</code></pre>
+                <p>A label can stand alone or share a line with a statement after a colon. In this example, <code>GOSUB @showmenu</code> jumps to line 100 and continues at line 110. A jump can refer to a label defined later in the program.</p>
+                <p>Labels work with <a href="#goto">GOTO</a>, <a href="#gosub">GOSUB</a>, <a href="#on-goto">ON … GOTO</a>, <a href="#on-gosub">ON … GOSUB</a> and <a href="#if">THEN or ELSE branches that jump</a>. An undefined or duplicate label produces a syntax error before the program runs. <a href="#renumber">RENUMBER</a> preserves label names and references.</p>
+            </article>
             <h3>Names and types</h3>
             <table>
                 <thead><tr><th>Example</th><th>Type</th><th>Initial value</th></tr></thead>
@@ -412,8 +426,8 @@ INPUT "prompt";variable[,variable ...]</code></pre>
             <article id="if">
                 <h3>IF … THEN … ELSE – conditions</h3>
                 <pre><code>IF condition THEN statement[:statement ...] [ELSE statement[:statement ...]]
-IF condition THEN lineNumber [ELSE lineNumber]</code></pre>
-                <p>0 is false; other numeric values are true. The THEN branch runs if true, otherwise the optional ELSE branch runs. A numeric expression used as a branch is equivalent to GOTO with a calculated line number.</p>
+IF condition THEN target [ELSE target]</code></pre>
+                <p>0 is false; other numeric values are true. The THEN branch runs if true, otherwise the optional ELSE branch runs. A numeric expression or <a href="#labels">label</a> used as a branch is equivalent to GOTO with that target.</p>
                 <pre><code>10 INPUT A
 20 IF A&gt;0 THEN PRINT "POSITIVE" ELSE PRINT "ZERO OR NEGATIVE"
 30 IF A=0 THEN 100
@@ -423,9 +437,9 @@ IF condition THEN lineNumber [ELSE lineNumber]</code></pre>
             </article>
             <article id="goto">
                 <h3>GOTO and GO TO – jump</h3>
-                <pre><code>GOTO expression
-GO TO expression</code></pre>
-                <p>Continues from the specified program line. The expression is converted to an integer by truncating the fractional part. The line must exist; otherwise Undefined line is reported. Jumping into a FOR body without an active loop may produce a NEXT error. GOTO in direct mode cannot jump into program memory; start with RUN.</p>
+                <pre><code>GOTO target
+GO TO target</code></pre>
+                <p>Continues from the specified program line. The target can be a <a href="#labels">label</a> or a numeric expression. For a numeric target, the fractional part is truncated. The line must exist. Jumping into a FOR body without an active loop may produce a NEXT error. GOTO in direct mode cannot jump into program memory; start with RUN.</p>
                 <pre><code>10 A=A+1
 20 PRINT A
 30 IF A&lt;5 THEN 10
@@ -433,9 +447,9 @@ GO TO expression</code></pre>
             </article>
             <article id="gosub">
                 <h3>GOSUB and GO SUB – call a subroutine</h3>
-                <pre><code>GOSUB expression
-GO SUB expression</code></pre>
-                <p>Jumps to the specified program line and saves the next statement's position on the call stack. Unlike GOTO, this allows a return with <a href="#return">RETURN</a>. The expression must be numeric; the fractional part is truncated to an integer line number. The target must be between 0 and 2147483647, and the line must exist.</p>
+                <pre><code>GOSUB target
+GO SUB target</code></pre>
+                <p>Jumps to the specified program line and saves the next statement's position on the call stack for <a href="#return">RETURN</a>. The target can be a <a href="#labels">label</a> or a numeric expression. A numeric target must be between 0 and 2147483647, and its fractional part is truncated. The line must exist.</p>
                 <p>Calls can be nested, including recursively. Each RETURN returns from the most recent call. Variables are shared with the calling program. GOSUB in direct mode cannot call lines in the stored program; start with RUN.</p>
                 <pre><code>10 GOSUB 100:PRINT "BACK":END
 100 PRINT "SUBROUTINE"
@@ -452,10 +466,10 @@ GO SUB expression</code></pre>
             </article>
             <article id="on-goto">
                 <h3>ON … GOTO – select a jump target</h3>
-                <pre><code>ON expression GOTO lineNumber[,lineNumber ...]
-ON expression GO TO lineNumber[,lineNumber ...]</code></pre>
+                <pre><code>ON expression GOTO target[,target ...]
+ON expression GO TO target[,target ...]</code></pre>
                 <p>May only be used in numbered program lines. The expression can contain numeric constants, variables, array elements and function calls. The value 1 selects the first line, 2 the second, and so on. Fractional values are rounded down. The value 0 or an index greater than the list's length continues with the next statement, including after a colon on the same line.</p>
-                <p>The list must contain at least one line number. Targets must be non-negative integer constants, not variables or calculations. Only the selected line number is checked when jumping: if the line is missing, <code>Undefined line n.</code> is reported. String values produce type errors, and negative or non-finite indices produce <code>ON GOTO index is out of range.</code>.</p>
+                <p>The list must contain at least one target. It can mix non-negative integer constants and <a href="#labels">labels</a>. Every label must be defined before the program can run. A missing numeric line produces <code>Undefined line n.</code> if selected. String indices produce type errors, and negative or non-finite indices produce <code>ON GOTO index is out of range.</code>.</p>
                 <pre><code>10 X=2
 20 ON X GOTO 100,200,300
 30 PRINT "NO JUMP":END
@@ -472,10 +486,10 @@ ON expression GO TO lineNumber[,lineNumber ...]</code></pre>
             </article>
             <article id="on-gosub">
                 <h3>ON … GOSUB – select a subroutine</h3>
-                <pre><code>ON expression GOSUB lineNumber[,lineNumber ...]
-ON expression GO SUB lineNumber[,lineNumber ...]</code></pre>
+                <pre><code>ON expression GOSUB target[,target ...]
+ON expression GO SUB target[,target ...]</code></pre>
                 <p>Selects a target using the same rules as <a href="#on-goto">ON … GOTO</a>: the fractional part of a positive index is truncated, 1 selects the first line and 2 the second. Index 0 or a positive index outside the list continues to the next statement without pushing anything onto the call stack. Negative or non-finite indices produce <code>ON GOSUB index is out of range.</code>; strings produce type errors.</p>
-                <p>The target list must contain at least one non-negative integer constant. Variables and expressions are not allowed as targets in the list. Only the selected target needs to exist in the program. When a jump is selected, the return position is saved; RETURN continues after the entire ON statement. ON … GOSUB requires a numbered program line and cannot be used in direct mode.</p>
+                <p>The target list follows the same rules as ON … GOTO and can mix non-negative integer constants and <a href="#labels">labels</a>. When a jump is selected, the return position is saved for RETURN, which continues after the entire ON statement. ON … GOSUB requires a numbered program line.</p>
                 <pre><code>10 X=2
 20 ON X GO SUB 100,200
 30 PRINT "BACK":END
@@ -682,7 +696,7 @@ PRINT LOG(100)/LOG(10)</code></pre>
                 <h3>VAL(text)</h3>
                 <p>Converts a numeric string to a number. <code>VAL("44")</code> returns the 32-bit integer <code>44</code>. Decimal notation and scientific notation return floating-point values. For example, <code>VAL("-4.5")</code> returns <code>-4.5</code> and <code>VAL("1e3")</code> returns <code>1000</code>. Whole numbers outside the 32-bit integer range also return floating-point values if representable.</p>
                 <p>Use a decimal point regardless of system locale. Leading and trailing whitespace is allowed. Invalid numeric text such as <code>VAL("44x")</code> produces a runtime error. A numeric argument such as <code>VAL(44)</code> produces a type error.</p>
-                <p><a href="manual/val.html">Read the VAL guide and try the examples</a>.</p>
+                <p><a href="./manual/val.html">Read the VAL guide and try the examples</a>.</p>
             </article>
         </section>
         <section id="examples">
