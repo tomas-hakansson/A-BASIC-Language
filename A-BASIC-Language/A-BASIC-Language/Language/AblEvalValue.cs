@@ -33,14 +33,17 @@ public sealed class AblFunctionDefinition : AblEvalValue
 {
     public string Name { get; }
     public string Parameter { get; }
-    public System.Collections.Generic.List<AblEvalValue> Body { get; }
+    public AblEvalValueList Body { get; }
 
-    public AblFunctionDefinition(string name, string parameter, System.Collections.Generic.List<AblEvalValue> body)
+    public AblFunctionDefinition(string name, string parameter, AblEvalValueList body)
     {
         Name = name;
         Parameter = parameter;
         Body = body;
     }
+
+    public override string ToString() =>
+        $"{Name}({Parameter}) {Body}";
 }
 
 public sealed class AblFunctionCall : AblEvalValue

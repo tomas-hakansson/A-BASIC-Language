@@ -13,5 +13,11 @@ public sealed class RuntimeState
     public int DataPointer { get; set; }
     internal byte[] Memory { get; } = new byte[ushort.MaxValue + 1];
 
-    public void Clear() { Variables.Clear(); Arrays.Clear(); Functions.Clear(); DataPointer = 0; }
+    public void Clear()
+    {
+        Variables.Clear();
+        Arrays.Clear();
+        Functions.Clear();
+        DataPointer = 0;
+    }
 }

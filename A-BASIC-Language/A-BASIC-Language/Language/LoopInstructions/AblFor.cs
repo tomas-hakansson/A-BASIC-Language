@@ -3,4 +3,7 @@
 public sealed class AblFor(string symbol) : AblEvalValue
 {
     public string Symbol { get; } = symbol.ToUpperInvariant();
+
+    public override string ToString() =>
+        Symbol;
 }

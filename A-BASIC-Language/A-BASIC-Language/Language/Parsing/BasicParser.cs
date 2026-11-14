@@ -2,6 +2,7 @@
 using A_BASIC_Language.Language.LanguageParts;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Globalization;
 using A_BASIC_Language.Language.ValueTypes;
@@ -77,6 +78,7 @@ public class BasicParser
                 Result.Success = true;
                 Result.EvalValues = evalValues;
                 Result.LabelIndex = labelIndex;
+                Result.NamedLabels = new ReadOnlyDictionary<string, int>(_namedLabels);
             }
         }
         catch (Exception ex) when (ex is ArgumentException or InvalidOperationException or FormatException or OverflowException or IndexOutOfRangeException or NotImplementedException)
@@ -1104,52 +1106,71 @@ public class BasicParser
         while (true)
         {
             var previous = _index;
+
             if (Maybe(','))
             {
                 Generate(new AblProcedure("#NEXT-TAB-POSITION"));
                 shouldPrintNewline = false;
             }
             else if (Maybe(';'))
+            {
                 shouldPrintNewline = false;
-            else if (_parsingIf && Maybe("ELSE", incrementIfFound: false) ||
-                     _index >= _source.Length ||//EOF
-                     _index < _source.Length//EOS
-                        && _source[_index] == '\n'
-                         ||
-                     Maybe(':', false))//EOS
+            }
+            else if (_parsingIf && Maybe("ELSE", incrementIfFound: false) || _index >= _source.Length || _index < _source.Length && _source[_index] == '\n' || Maybe(':', false))
+            {
                 break;
+            }
             else
             {
                 Expression();
                 Generate(new AblProcedure("#WRITE"));
                 shouldPrintNewline = true;
             }
+
             if (_index == previous)
             {
                 ParseError("Expected PRINT expression or separator");
                 SkipStatement();
                 break;
             }
+
             //If the end of the file is a whitespace, this pushes the _index over EOF.
             if (_index == _source.Length - 1 && char.IsWhiteSpace(_source[_index]))
                 _index++;
         }
+
         if (shouldPrintNewline)
             Generate(new AblProcedure("#NEXT-LINE"));
     }
 
-    void DefineFunction()
+    private void DefineFunction()
     {
-        if (!Maybe("FN")) throw new InvalidOperationException("Expected FN after DEF.");
+        if (!Maybe("FN"))
+            throw new InvalidOperationException("Expected FN after DEF.");
+        
         var name = ReadFunctionSymbol();
-        if (!Maybe('(')) throw new InvalidOperationException("Expected function parameter.");
+        
+        if (!Maybe('('))
+            throw new InvalidOperationException("Expected function parameter.");
+        
         var parameter = ReadFunctionSymbol();
-        if (!Maybe(')') || !Maybe('=')) throw new InvalidOperationException("Expected )= in DEF FN.");
-        var body = new List<AblEvalValue>();
+        
+        if (!Maybe(')') || !Maybe('='))
+            throw new InvalidOperationException("Expected )= in DEF FN.");
+
+        var body = new AblEvalValueList();
         // Compile the body once, using the ordinary expression grammar.
         _expressionTarget = body;
-        try { Expression(); }
-        finally { _expressionTarget = null; }
+
+        try
+        {
+            Expression();
+        }
+        finally
+        {
+            _expressionTarget = null;
+        }
+
         Generate(new AblFunctionDefinition(name, parameter, body));
     }
 

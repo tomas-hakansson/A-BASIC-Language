@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using A_BASIC_Language.IO;
@@ -239,4 +240,7 @@ public sealed class BasicSession
 
     public RuntimeState GetRuntimeState() =>
         _state;
+
+    public IReadOnlyDictionary<string, int> GetNamedLabels(string programSource) =>
+        new Parser(programSource).Result.NamedLabels;
 }

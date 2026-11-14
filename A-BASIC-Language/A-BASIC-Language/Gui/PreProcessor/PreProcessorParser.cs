@@ -123,11 +123,21 @@ public class PreProcessorParser
 
                         return PreProcessorParserResult.Unknown;
                     case "LOAD101":
-                        argument = parts[1];
-                        message = "Load from the 101 list: " + argument;
-                        return PreProcessorParserResult.Load101Games;
                     case "RUN101":
-                        argument = parts[1];
+                        var gameName = Regex.Match(parts[1], @"\A(?:""([^""]+)""|([^""]+))\z");
+                        if (!gameName.Success)
+                        {
+                            message = "Expected a game name with optional double quotes.";
+                            return PreProcessorParserResult.QuietError;
+                        }
+
+                        argument = gameName.Groups[1].Success ? gameName.Groups[1].Value : gameName.Groups[2].Value;
+                        if (parts[0] == "LOAD101")
+                        {
+                            message = "Load from the 101 list: " + argument;
+                            return PreProcessorParserResult.Load101Games;
+                        }
+
                         message = "Run from the 101 list: " + argument;
                         return PreProcessorParserResult.Run101Games;
                     default:

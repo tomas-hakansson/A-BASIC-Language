@@ -2,6 +2,7 @@
 using A_BASIC_Language.Language;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace A_BASIC_Language.Gui.Dialogs;
@@ -9,12 +10,14 @@ namespace A_BASIC_Language.Gui.Dialogs;
 public partial class ProgramPropertiesDialog : Form
 {
     public BasicSession? BasicSession { private get; set; }
+    public string ProgramSource { private get; set; } = string.Empty;
     public bool AutoClose { private get; set; }
     private readonly MsgBox _msgBox;
 
     public ProgramPropertiesDialog()
     {
         InitializeComponent();
+        lvLabel.Columns[1].Text = "Line number";
         _msgBox = new MsgBox(Owner);
     }
 
@@ -57,6 +60,9 @@ public partial class ProgramPropertiesDialog : Form
 
         foreach (var function in state.Functions)
             lvFunctions.Add(function.Value, function.Key, function.Value.ToString());
+
+        foreach (var label in BasicSession.GetNamedLabels(ProgramSource).OrderBy(label => label.Value))
+            lvLabel.Add(label.Value, label.Key, label.Value.ToString());
     }
 
     private void ProgramPropertiesDialog_Shown(object sender, EventArgs e)

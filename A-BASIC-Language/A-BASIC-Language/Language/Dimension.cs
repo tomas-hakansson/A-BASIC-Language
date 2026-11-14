@@ -49,6 +49,9 @@ public class Dimension
             array[i] = value;
     }
 
+    public override string ToString() =>
+        $"({_atoms.Length - 1})";
+
     /// <summary>
     /// This method is test only. It is hardcoded to only create IntValues and it has a params parameter.
     /// </summary>

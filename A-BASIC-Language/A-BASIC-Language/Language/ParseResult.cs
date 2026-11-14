@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using A_BASIC_Language.Language.ValueTypes;
 
@@ -12,6 +13,8 @@ public class ParseResult
     public List<AblEvalValue> EvalValues { get; set; } = [];
     public List<ValueBase> DataValues { get; } = [];
     public Dictionary<int, int> LabelIndex { get; set; } = new();
+    public IReadOnlyDictionary<string, int> NamedLabels { get; internal set; } =
+        new ReadOnlyDictionary<string, int>(new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase));
 
     public string ToString(PrintThe selection)
     {

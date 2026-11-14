@@ -440,6 +440,7 @@ public partial class MainWindow : Form
         using var x = new ProgramPropertiesDialog();
         x.AutoClose = false;
         x.BasicSession = _session;
+        x.ProgramSource = terminalMatrixControl1.GetProgramAsString();
         x.ShowDialog(this);
     }
 

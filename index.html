@@ -221,7 +221,8 @@ RUN</code></pre>
             <p>Commands that start with <code>!</code> are shell commands outside the BASIC language. They let you control the ABL application and some features of the physical machine from the terminal.</p>
             <p>Type the commands in the terminal without a line number and press Enter. Use <code>!HQ-RENDER</code> to switch rendering mode between high quality and faster rendering.</p>
             <p>Type <code>!101</code> to display all games from the 1974 book <strong>101 BASIC Computer Games</strong>. Load a game by typing the following, where <code>name</code> is the game's name in the list:</p>
-            <pre><code>!LOAD101 name</code></pre>
+            <pre><code>!LOAD101 "weekday"</code></pre>
+            <p>Both <code>!LOAD101</code> and <code>!RUN101</code> accept game names with or without double quotes.</p>
             <p>To load and start a game immediately, type <code>!RUN101 name</code>. For example, type <code>!RUN101 AWARI</code> to start Awari.</p>
             <table>
                 <thead><tr><th>Syntax</th><th>Function</th><th>Alternative</th></tr></thead>
