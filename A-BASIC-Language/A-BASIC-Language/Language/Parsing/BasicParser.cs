@@ -351,6 +351,7 @@ public class BasicParser
                         }
                         Generate(new AblProcedure(statement));
                         break;
+                    case "RENUM":
                     case "RENUMBER":
                         ParseError("RENUMBER must be entered as a standalone direct command");
                         SkipStatement();

@@ -11,6 +11,7 @@ public class TwoColumnListView : ListView
     public TwoColumnListView()
     {
         _lvwColumnSorter = new ListViewColumnSorter();
+        ListViewItemSorter = _lvwColumnSorter;
         View = View.Details;
         FullRowSelect = true;
         Columns.Add("Name", 130);

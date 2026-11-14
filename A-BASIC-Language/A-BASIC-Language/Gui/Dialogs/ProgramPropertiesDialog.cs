@@ -83,7 +83,7 @@ public partial class ProgramPropertiesDialog : Form
 
     private void WriteLine(string text, bool withRefresh = true)
     {
-        txtStatus.AppendText(Environment.NewLine + text);
+        txtStatus.AppendText(text + Environment.NewLine);
         txtStatus.SelectionStart = txtStatus.Text.Length;
         txtStatus.SelectionLength = 0;
 

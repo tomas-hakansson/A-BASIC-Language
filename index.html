@@ -677,7 +677,7 @@ PRINT LOG(100)/LOG(10)</code></pre>
                 <pre><code>10 FOR I=1 TO 5
 20 PRINT INT(6*RND)+1
 30 NEXT I</code></pre>
-                <p>Five dice rolls from 1–6. The generator's state is shared within a run, not between separate direct commands.</p>
+                <p>Five dice rolls from 1 to 6. The generator's state is shared within a run, not between separate direct commands.</p>
             </article>
             <article id="sqr">
                 <h3>SQR(x)</h3>
@@ -792,7 +792,7 @@ PRINT LOG(100)/LOG(10)</code></pre>
                 <li>No full Altair BASIC compatibility. INT, RND, string addition and automatic array creation have the deviations described above.</li>
                 <li>DATA and READ require numbered program lines. DATA supports numeric and quoted string literals; RESTORE resets to the beginning and does not accept a line number.</li>
                 <li>WHILE/WEND, DO/LOOP, multiline IF blocks, ELSEIF and SELECT CASE are not supported.</li>
-                <li>MERGE, DELETE, RENUM, EDIT, CONT and CLEAR are not implemented terminal commands. Delete a line with a number on its own, clear the entire program with NEW, or renumber it with <a href="#renumber">RENUMBER</a>.</li>
+                <li>MERGE, DELETE, EDIT, CONT and CLEAR are not implemented terminal commands. Delete a line with a number on its own, clear the entire program with NEW, or renumber it with <a href="#renumber">RENUMBER</a>.</li>
                 <li>No implemented graphics, sound or cursor statements such as PLOT, DRAW, LINE, CIRCLE, SOUND, BEEP or LOCATE. COLOR supports background, text, and border colors. The resolutions' pixel dimensions are display modes, not a BASIC graphics API.</li>
                 <li>No BASIC file handling with OPEN, CLOSE, PRINT# or INPUT#.</li>
                 <li>No implemented machine code, networking, process or system commands in the language.</li>

@@ -52,7 +52,7 @@ public sealed class BasicSession
                         }
                         else
                         {
-                            writeLine($"{i}: No action: {file.Name}", i%3 == 0);
+                            writeLine($"{i}: No action: {file.Name}", i%10 == 0);
                         }
                     }
 
@@ -97,7 +97,14 @@ public sealed class BasicSession
             terminal.WriteLine(true, "Ready.");
             return;
         }
-        
+
+        if (Regex.IsMatch(command, @"\ARENUM(?![A-Z0-9$%])", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+            Renumber(command.Substring("RENUM".Length), getProgram, replaceProgram, terminal);
+            terminal.WriteLine(true, "Ready.");
+            return;
+        }
+
         if (command.Equals("LIST", StringComparison.OrdinalIgnoreCase) || (command.StartsWith("LIST", StringComparison.OrdinalIgnoreCase) && command.Length > 4 && (char.IsWhiteSpace(command[4]) || (command[4] >= '0' && command[4] <= '9') || command[4] == '-')))
         {
             if (TryParseListRange(command.Substring(4), out var first, out var last))
