@@ -89,8 +89,8 @@ Of the 101 games, we support the ones followed by a 1:
 | rickscissors      |           |
 | roulette          |           |
 | russianroulette   |           |
-| salvo             |           |
-| sinewave          |           |
+| salvo             |     1     |
+| sinewave          |     1     |
 | slalom            |     1     |
 | slots             |     1     |
 | splat             |     1     |
