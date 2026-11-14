@@ -63,7 +63,7 @@ Of the 101 games, we support the ones followed by a 1:
 | hurkle            |     1     |
 | kinema            |     1     |
 | king              |     1     |
-| lem               |           |
+| lem               |     1     |
 | letter            |           |
 | life              |           |
 | lifefortwo        |           |
@@ -88,7 +88,7 @@ Of the 101 games, we support the ones followed by a 1:
 | rocket            |           |
 | rickscissors      |           |
 | roulette          |           |
-| russianroulette   |           |
+| russianroulette   |     1     |
 | salvo             |     1     |
 | sinewave          |     1     |
 | slalom            |     1     |

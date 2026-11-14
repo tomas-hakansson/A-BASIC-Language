@@ -41,7 +41,7 @@ public class StartScreen
             case Resolution.Pixels160x200Characters20x25:
                 control.WriteLine("  A BASIC Language");
                 control.WriteLine("**Altair BASIC Emu**");
-                control.WriteLine(" T.Hakansson&A.Hbom");
+                control.WriteLine("T.Hakansson & A.Hbom");
                 break;
             default:
                 throw new SystemException("Resolution not supported.");
