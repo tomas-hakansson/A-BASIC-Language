@@ -624,7 +624,7 @@ STOP</code></pre>
             <table>
                 <thead><tr><th>Function</th><th>Result</th></tr></thead>
                 <tbody>
-                    <tr><td><code>ASC(text)</code></td><td>PETSCII code of the first character. For example, <code>ASC("A")</code> returns 65. An empty string or an unmapped character produces an error.</td></tr>
+                    <tr><td><code>ASC(text)</code></td><td>PETSCII code of the first character. Lowercase letters <code>a</code> through <code>z</code> use the same codes as their uppercase equivalents. Both <code>ASC("A")</code> and <code>ASC("a")</code> return 65. An empty string or an unmapped character produces an error.</td></tr>
                     <tr><td><code>CHR$(code)</code></td><td>One character for an integer PETSCII code from 0 to 255. Codes without a mapping get a placeholder that <code>ASC</code> can convert back to the original code.</td></tr>
                     <tr><td><code>LEFT$(text, length)</code></td><td>Up to <var>length</var> characters from the start of the string.</td></tr>
                     <tr><td><code>LEN(text)</code></td><td>Number of characters in a string, including spaces, returned as an integer. <code>LEN("hej")</code> returns 3 and <code>LEN("")</code> returns 0. A numeric argument produces a type error.</td></tr>

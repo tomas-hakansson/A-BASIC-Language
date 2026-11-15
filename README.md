@@ -64,7 +64,7 @@ Of the 101 games, we support the ones followed by a 1:
 | kinema            |     1     |
 | king              |     1     |
 | lem               |     1     |
-| letter            |           |
+| letter            |     1     |
 | life              |           |
 | lifefortwo        |           |
 | litquiz           |           |

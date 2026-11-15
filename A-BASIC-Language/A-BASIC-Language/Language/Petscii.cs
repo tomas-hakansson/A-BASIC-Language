@@ -15,6 +15,9 @@ internal static class Petscii
 
     public static int Encode(char character)
     {
+        if (character >= 'a' && character <= 'z')
+            character = char.ToUpperInvariant(character);
+
         var index = Characters.IndexOf(character);
 
         if (index >= 0)
@@ -61,6 +64,13 @@ public class PetsciiTests
         Assert.AreEqual(32, Petscii.Encode(' '));
         Assert.AreEqual(65, Petscii.Encode('A'));
         Assert.AreEqual('Z', Petscii.Decode(90));
+    }
+
+    [TestMethod]
+    public void LowercaseLettersUseTheSameCodesAsUppercaseLetters()
+    {
+        for (var offset = 0; offset < 26; offset++)
+            Assert.AreEqual(65 + offset, Petscii.Encode((char)('a' + offset)));
     }
 
     [TestMethod]
