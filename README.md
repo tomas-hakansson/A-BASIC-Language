@@ -77,8 +77,8 @@ Of the 101 games, we support the ones followed by a 1:
 | nicomachus        |     1     |
 | nim               |     0     |
 | number            |     1     |
-| onecheck          |           |
-| orbit             |           |
+| onecheck          |     1     |
+| orbit             |     1     |
 | pizza             |           |
 | poetry            |           |
 | poker             |           |
@@ -87,7 +87,7 @@ Of the 101 games, we support the ones followed by a 1:
 | reverse           |           |
 | rocket            |           |
 | rickscissors      |           |
-| roulette          |           |
+| roulette          |     1     |
 | russianroulette   |     1     |
 | salvo             |     1     |
 | sinewave          |     1     |

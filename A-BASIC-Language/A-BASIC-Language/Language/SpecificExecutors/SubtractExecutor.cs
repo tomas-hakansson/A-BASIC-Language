@@ -17,9 +17,10 @@ public class SubtractExecutor : ISubExecutor
     {
         if (_data.Count >= 2)
         {
-            dynamic x = _data.Pop();
-            dynamic y = _data.Pop();
-            _data.Push(Subtract(lineNumber, y, x));
+            dynamic right = _data.Pop();
+            dynamic left = _data.Pop();
+            ValueBase result = Subtract(left, right);
+            _data.Push(result);
         }
         else
             throw new InvalidOperationException("Insufficient items on the stack.");
@@ -39,23 +40,23 @@ public class SubtractExecutor : ISubExecutor
 
     // Int rules
 
-    static ValueBase Subtract(int lineNumber, IntValue x, IntValue y) =>
+    static ValueBase Subtract(IntValue x, IntValue y) =>
         new FloatValue(x.Value - y.Value);
 
-    static ValueBase Subtract(int lineNumber, IntValue x, FloatValue y) =>
+    static ValueBase Subtract(IntValue x, FloatValue y) =>
         new FloatValue(x.Value - y.Value);
 
-    static ValueBase Subtract(int lineNumber, IntValue x, StringValue y) =>
+    static ValueBase Subtract(IntValue x, StringValue y) =>
         throw new InvalidOperationException("Subtract in string scope.");
 
     // String rules
 
-    static ValueBase Subtract(int lineNumber, StringValue x, StringValue y) =>
+    static ValueBase Subtract(StringValue x, StringValue y) =>
         throw new InvalidOperationException("Subtract in string scope.");
 
-    static ValueBase Subtract(int lineNumber, StringValue x, FloatValue y) =>
+    static ValueBase Subtract(StringValue x, FloatValue y) =>
         throw new InvalidOperationException("Subtract in string scope.");
 
-    static ValueBase Subtract(int lineNumber, StringValue x, IntValue y) =>
+    static ValueBase Subtract(StringValue x, IntValue y) =>
         throw new InvalidOperationException("Subtract in string scope.");
 }
