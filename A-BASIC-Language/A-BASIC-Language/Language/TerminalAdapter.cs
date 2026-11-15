@@ -25,6 +25,28 @@ public sealed class TerminalAdapter : IBasicTerminal
     public bool QuitFlag =>
         _terminal.QuitFlag;
 
+    public Resolution ScreenResolution => _terminal.Resolution;
+
+    public void SetScreenResolution(Resolution resolution, bool preserveContents = false)
+    {
+        if (_terminal.Resolution == resolution)
+            return;
+
+        if (preserveContents)
+        {
+            _terminal.ResizePreservingContents(resolution);
+            _line.Length = Math.Min(_line.Length, _terminal.CharacterWidth);
+        }
+        else
+        {
+            _terminal.SetResolution(resolution);
+            _line.Clear();
+            _terminal.Invalidate();
+        }
+
+        _owner.CheckResolutionBox();
+    }
+
     public void ClearScreen()
     {
         _terminal.Clear();

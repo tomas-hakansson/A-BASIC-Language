@@ -65,8 +65,8 @@ Of the 101 games, we support the ones followed by a 1:
 | king              |     1     |
 | lem               |     1     |
 | letter            |     1     |
-| life              |           |
-| lifefortwo        |           |
+| life              |     0?    |
+| lifefortwo        |     0?    |
 | litquiz           |           |
 | love              |     0     |
 | lunar             |     1     |

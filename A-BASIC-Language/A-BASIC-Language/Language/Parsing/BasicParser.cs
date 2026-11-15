@@ -15,6 +15,7 @@ namespace A_BASIC_Language.Language.Parsing;
 public class BasicParser
 {
     private static readonly Regex NamedLabelRegex = new(@"\G@[\p{L}\p{Nd}_]+", RegexOptions.CultureInvariant);
+    private static readonly Regex ScreenColumnsRegex = new(@"\G0*(20|40|60|80)", RegexOptions.CultureInvariant);
     private readonly string _source;
     private readonly bool _direct;
     private readonly SortedDictionary<int, List<AblEvalValue>> _lines;
@@ -315,7 +316,7 @@ public class BasicParser
                         break;
                     case "CLS":
                     case "SCNCLR":
-                        Generate(new AblProcedure("CLS"));
+                        ClearScreen(statement);
                         break;
                     case "WINDOW":
                         Window();
@@ -1091,11 +1092,46 @@ public class BasicParser
         Generate(new AblProcedure("POKE"));
     }
 
+    private void ClearScreen(string statement)
+    {
+        var columns = 0;
+
+        if (!AtStatementEnd())
+        {
+            if (_direct)
+            {
+                ParseError($"{statement} accepts a resolution argument only in numbered program lines.");
+                SkipStatement();
+                return;
+            }
+
+            var width = ScreenColumnsRegex.Match(_source, _index);
+            if (width.Success)
+            {
+                _index += width.Length;
+                SkipWhitespace();
+                columns = int.Parse(width.Groups[1].Value, CultureInfo.InvariantCulture);
+            }
+
+            if (!width.Success || !AtStatementEnd())
+            {
+                ParseError($"{statement} requires 20, 40, 60 or 80 columns.");
+                SkipStatement();
+                return;
+            }
+        }
+
+        Generate(new AblNumber(columns), new AblProcedure("CLS"));
+    }
+
+    private bool AtStatementEnd() =>
+        _index >= _source.Length || _source[_index] == '\n' ||
+        Maybe(':', false) || (_parsingIf && Maybe("ELSE", incrementIfFound: false));
+
     // WINDOW [expression]: the argument is the number of text rows at the bottom.
     private void Window()
     {
-        if (_index >= _source.Length || _source[_index] == '\n' ||
-            Maybe(':', false) || (_parsingIf && Maybe("ELSE", incrementIfFound: false)))
+        if (AtStatementEnd())
             Generate(new AblNumber(25));
         else
             Expression();

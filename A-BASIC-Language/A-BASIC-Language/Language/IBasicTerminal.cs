@@ -1,4 +1,5 @@
 using System.IO;
+using A_BASIC_Language.TerminalMatrix;
 
 namespace A_BASIC_Language.Language;
 
@@ -7,6 +8,8 @@ public interface IBasicTerminal
 {
     bool QuitFlag { get; }
     int OutputColumn { get; }
+    Resolution ScreenResolution { get; }
+    void SetScreenResolution(Resolution resolution, bool preserveContents = false);
     void Write(string text);
     void WriteLine(string text);
     void WriteLine(bool blankLineFirst, string text);

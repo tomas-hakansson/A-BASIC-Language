@@ -276,6 +276,38 @@ public partial class TerminalMatrixControl : UserControl
         Clear();
     }
 
+    internal void ResizePreservingContents(Resolution resolution)
+    {
+        var characters = _characterMap;
+        var colors = _characterColorMap;
+        var terminations = _terminations;
+        var background = Background24Bit;
+        var cursor = CursorPosition;
+
+        SetResolution(resolution);
+
+        var columns = Math.Min(characters.GetLength(0), CharacterWidth);
+        var rows = Math.Min(characters.GetLength(1), CharacterHeight);
+
+        for (var x = 0; x < columns; x++)
+            for (var y = 0; y < rows; y++)
+            {
+                _characterMap[x, y] = characters[x, y];
+                _characterColorMap[x, y] = colors[x, y];
+            }
+
+        Array.Copy(terminations, _terminations, rows);
+
+        var pixelColumns = Math.Min(background.GetLength(0), Background24Bit.GetLength(0)) - BorderWidth;
+        var pixelRows = Math.Min(background.GetLength(1), Background24Bit.GetLength(1)) - BorderHeight;
+        for (var x = BorderWidth; x < pixelColumns; x++)
+            for (var y = BorderHeight; y < pixelRows; y++)
+                Background24Bit[x, y] = background[x, y];
+
+        SetStartPosition(Math.Min(cursor.X, CharacterWidth - 1), Math.Min(cursor.Y, CharacterHeight - 1));
+        UpdateBitmap();
+    }
+
     public Size GetCharacterMapSize() =>
         ResolutionHelper.GetCharacterMapSize(Resolution);
 

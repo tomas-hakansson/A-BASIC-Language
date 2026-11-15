@@ -5,6 +5,7 @@ using A_BASIC_Language.Language.LoopInstructions;
 using A_BASIC_Language.Language.SpecificExecutors;
 using A_BASIC_Language.Language.ValueTypes;
 using A_BASIC_Language.StringManipulation;
+using A_BASIC_Language.TerminalMatrix;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,6 +31,7 @@ public class Interpreter
     private readonly Stack<(int Index, int LineNumber)> _subroutineCalls = new();
     private int _currentLineNumber;
     private readonly RuntimeState _state;
+    private Resolution? _programStartResolution;
     public bool UserBreak { get; set; }
 
     public Interpreter(string source, bool runtime, Log log, RuntimeState? state = null)
@@ -75,6 +77,9 @@ public class Interpreter
             return;
         }
 
+        if (_runtime)
+            _programStartResolution = terminal.ScreenResolution;
+
         try
         {
             Eval();
@@ -86,6 +91,10 @@ public class Interpreter
             End(_runtime
                 ? $"?Error in line {_currentLineNumber}: {ex.Message}"
                 : $"?Error: {ex.Message}");
+        }
+        finally
+        {
+            RestoreScreenResolution();
         }
     }
 
@@ -793,12 +802,7 @@ public class Interpreter
                             }
                             break;
                         case "CLS":
-                            _terminal.ClearScreen();
-
-                            if (_terminal is TerminalAdapter screen)
-                                screen.HomeCursor();
-
-                            _terminal.SetTextRenderLimit(0);
+                            ClearScreen((int)Number(_data.Pop()));
                             break;
                         case "SCROLL":
                             {
@@ -1038,9 +1042,45 @@ public class Interpreter
         return (double)value.GetValueAsType<FloatValue>();
     }
 
+    private void ClearScreen(int columns)
+    {
+        if (_terminal == null)
+            return;
+
+        var resolution = columns switch
+        {
+            20 => Resolution.Pixels160X200Characters20X25,
+            40 => Resolution.Pixels320X200Characters40X25,
+            60 => Resolution.Pixels480X200Characters60X25,
+            80 => Resolution.Pixels640X200Characters80X25,
+            _ => _terminal.ScreenResolution
+        };
+
+        if (_terminal.ScreenResolution == resolution)
+            _terminal.ClearScreen();
+        else
+            _terminal.SetScreenResolution(resolution);
+
+        if (_terminal is TerminalAdapter screen)
+            screen.HomeCursor();
+
+        _terminal.SetTextRenderLimit(0);
+    }
+
+    private void RestoreScreenResolution()
+    {
+        if (_terminal != null && _programStartResolution is Resolution resolution)
+        {
+            _programStartResolution = null;
+            if (_terminal.ScreenResolution != resolution)
+                _terminal.SetScreenResolution(resolution, preserveContents: true);
+        }
+    }
+
     private void End(string message, bool showReady = true)
     {
         EndMessageDisplayed = true;
+        RestoreScreenResolution();
 
         if (_terminal == null)
             return;
