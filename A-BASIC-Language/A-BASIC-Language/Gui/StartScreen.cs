@@ -23,22 +23,22 @@ public class StartScreen
 
         switch (_resolution)
         {
-            case Resolution.Pixels640x200Characters80x25:
+            case Resolution.Pixels640X200Characters80X25:
                 control.WriteLine("                             ABL, A BASIC Language");
                 control.WriteLine("                  ***** Altair Commodore BASIC Emulator *****");
                 control.WriteLine("                    (C)  Tomas Hakansson & Anders Hesselbom");
                 break;
-            case Resolution.Pixels480x200Characters60x25:
+            case Resolution.Pixels480X200Characters60X25:
                 control.WriteLine("                   ABL, A BASIC Language");
                 control.WriteLine("         **** Altair Commodore BASIC Emulator ****");
                 control.WriteLine("          (C)  Tomas Hakansson & Anders Hesselbom");
                 break;
-            case Resolution.Pixels320x200Characters40x25:
+            case Resolution.Pixels320X200Characters40X25:
                 control.WriteLine("            A BASIC Language");
                 control.WriteLine("    *** An Altair BASIC Emulator ***");
                 control.WriteLine(" (C) Tomas Hakansson & Anders Hesselbom");
                 break;
-            case Resolution.Pixels160x200Characters20x25:
+            case Resolution.Pixels160X200Characters20X25:
                 control.WriteLine("  A BASIC Language");
                 control.WriteLine("**Altair BASIC Emu**");
                 control.WriteLine("T.Hakansson & A.Hbom");

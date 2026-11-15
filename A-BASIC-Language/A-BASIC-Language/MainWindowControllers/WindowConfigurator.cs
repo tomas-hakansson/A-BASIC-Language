@@ -21,7 +21,7 @@ public class WindowConfigurator
     {
         _terminalMatrixControl.CurrentCursorColor = 5;
         var resolutions = new TerminalResolutionList();
-        suggestedResolution ??= Resolution.Pixels480x200Characters60x25;
+        suggestedResolution ??= Resolution.Pixels480X200Characters60X25;
         var resolution = resolutions.Get(suggestedResolution.Value);
         _terminalMatrixControl.BorderWidth = resolution.BorderWidth;
         _terminalMatrixControl.BorderHeight = resolution.BorderHeight;
@@ -35,7 +35,7 @@ public class WindowConfigurator
             resItem.Tag = r;
             resolutionToolStripMenuItem.DropDownItems.Add(resItem);
 
-            if (r.Resolution == Resolution.Pixels480x200Characters60x25)
+            if (r.Resolution == Resolution.Pixels480X200Characters60X25)
                 resItem.Checked = true;
 
             resItem.Click += (s, _) =>

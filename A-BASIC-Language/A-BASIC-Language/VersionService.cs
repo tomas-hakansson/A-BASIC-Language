@@ -20,7 +20,7 @@ public class VersionService
     {
         var asm = Assembly.GetExecutingAssembly();
         var vInfo = FileVersionInfo.GetVersionInfo(asm.Location);
-        var v = vInfo.ProductVersion!.Split(['.', '+']);
+        var v = vInfo.ProductVersion!.Split('.', '+');
         return $"{v[0]}.{v[1]}";
     }
 

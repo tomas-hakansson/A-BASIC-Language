@@ -2,8 +2,8 @@
 
 public enum Resolution
 {
-    Pixels640x200Characters80x25,
-    Pixels480x200Characters60x25,
-    Pixels320x200Characters40x25,
-    Pixels160x200Characters20x25
+    Pixels640X200Characters80X25,
+    Pixels480X200Characters60X25,
+    Pixels320X200Characters40X25,
+    Pixels160X200Characters20X25
 }

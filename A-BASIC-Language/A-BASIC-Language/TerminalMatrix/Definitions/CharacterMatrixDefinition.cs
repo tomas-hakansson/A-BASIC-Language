@@ -21,19 +21,19 @@ public static class CharacterMatrixDefinition
     {
         switch (resolution)
         {
-            case Resolution.Pixels640x200Characters80x25:
+            case Resolution.Pixels640X200Characters80X25:
                 Width = 80;
                 Height = 25;
                 break;
-            case Resolution.Pixels480x200Characters60x25:
+            case Resolution.Pixels480X200Characters60X25:
                 Width = 60;
                 Height = 25;
                 break;
-            case Resolution.Pixels320x200Characters40x25:
+            case Resolution.Pixels320X200Characters40X25:
                 Width = 40;
                 Height = 25;
                 break;
-            case Resolution.Pixels160x200Characters20x25:
+            case Resolution.Pixels160X200Characters20X25:
                 Width = 20;
                 Height = 25;
                 break;
@@ -47,7 +47,7 @@ public static class CharacterMatrixDefinition
     public static bool[] CreateTerminations(Resolution resolution) =>
         resolution switch
         {
-            Resolution.Pixels640x200Characters80x25 or Resolution.Pixels480x200Characters60x25 or Resolution.Pixels320x200Characters40x25 or Resolution.Pixels160x200Characters20x25 => new bool[25],
+            Resolution.Pixels640X200Characters80X25 or Resolution.Pixels480X200Characters60X25 or Resolution.Pixels320X200Characters40X25 or Resolution.Pixels160X200Characters20X25 => new bool[25],
             _ => throw new ArgumentOutOfRangeException(nameof(resolution), resolution, null)
         };
 }

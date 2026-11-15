@@ -121,7 +121,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AblEvalValueList.cs" />
-    <Compile Include="BasicProgram.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Gui\Dialogs\OptionsDialog.cs" />
     <Compile Include="Gui\Dialogs\OptionsDialog.Designer.cs">
@@ -157,7 +156,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="IntegerList.cs" />
-    <Compile Include="IO\LoadResult.cs" />
     <Compile Include="IO\Paths.cs" />
     <Compile Include="Language\AblEvalValue.cs" />
     <Compile Include="Language\AblValueTypes.cs" />
@@ -183,12 +181,7 @@
     <Compile Include="Language\SpecificExecutors\ISubExecutor.cs" />
     <Compile Include="Language\SpecificExecutors\SubtractExecutor.cs" />
     <Compile Include="Language\SpecificExecutors\VariableExecutor.cs" />
-    <Compile Include="Language\Stage1\ReservedWords.cs" />
-    <Compile Include="Language\Stage1\Tokenizer.cs" />
-    <Compile Include="Language\Stage1\TokenizeResult.cs" />
     <Compile Include="Language\Stage1\TokenType.cs" />
-    <Compile Include="Language\Stage2\Parser.cs" />
-    <Compile Include="Language\Stage2\ParseResult.cs" />
     <Compile Include="Language\TerminalAdapter.cs" />
     <Compile Include="Language\ValueTypes\FloatValue.cs" />
     <Compile Include="Language\ValueTypes\IntValue.cs" />
@@ -202,11 +195,10 @@
     <Compile Include="MainWindowControllers\FullScreenController.cs" />
     <Compile Include="MainWindowControllers\PreProcessorController.cs" />
     <Compile Include="MainWindowControllers\WindowConfigurator.cs" />
-    <Compile Include="PendingSymbolsStack.cs" />
+    <Compile Include="PendingSymbol.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringManipulation\StringExtensions.cs" />
-    <Compile Include="TerminalMatrix\CharacterPixelMatrix.cs" />
     <Compile Include="TerminalMatrix\Coordinate.cs" />
     <Compile Include="TerminalMatrix\CoordinateList.cs" />
     <Compile Include="TerminalMatrix\Definitions\CharacterMatrixDefinition.cs" />
@@ -215,7 +207,6 @@
     <Compile Include="TerminalMatrix\Events\FunctionKeyEventArgs.cs" />
     <Compile Include="TerminalMatrix\Events\FunctionKeyPressedDelegate.cs" />
     <Compile Include="TerminalMatrix\Events\IntputCompletedDelegate.cs" />
-    <Compile Include="TerminalMatrix\Events\ProgramChangeDelegate.cs" />
     <Compile Include="TerminalMatrix\Events\ProgramChangeEventArgs.cs" />
     <Compile Include="TerminalMatrix\Events\RequestToggleFullscreenDelegate.cs" />
     <Compile Include="TerminalMatrix\Events\TickDelegate.cs" />
@@ -610,7 +601,9 @@
     <None Include="Resources\saveHS.png" />
     <Content Include="Resources\settings.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Language\Stage2\" />
+  </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\MSTest.Analyzers.4.5.3\analyzers\dotnet\cs\MSTest.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\packages\MSTest.Analyzers.4.5.3\analyzers\dotnet\cs\MSTest.Analyzers.dll" />

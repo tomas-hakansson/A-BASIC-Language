@@ -115,7 +115,7 @@ namespace A_BASIC_Language.Gui.Dialogs
             this.terminalResolutionComboBox1.FormattingEnabled = true;
             this.terminalResolutionComboBox1.Location = new System.Drawing.Point(7, 21);
             this.terminalResolutionComboBox1.Name = "terminalResolutionComboBox1";
-            this.terminalResolutionComboBox1.Resolution = A_BASIC_Language.TerminalMatrix.Resolution.Pixels480x200Characters60x25;
+            this.terminalResolutionComboBox1.Resolution = A_BASIC_Language.TerminalMatrix.Resolution.Pixels480X200Characters60X25;
             this.terminalResolutionComboBox1.Size = new System.Drawing.Size(282, 21);
             this.terminalResolutionComboBox1.TabIndex = 1;
             // 

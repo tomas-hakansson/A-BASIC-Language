@@ -18,7 +18,7 @@ public class TerminalResolutionComboBox : ComboBox
 
     public Resolution Resolution
     {
-        get => SelectedItem == null ? Resolution.Pixels480x200Characters60x25 : (SelectedItem as TerminalResolution)!.Resolution;
+        get => SelectedItem == null ? Resolution.Pixels480X200Characters60X25 : (SelectedItem as TerminalResolution)!.Resolution;
         set
         {
             for (var i = 0; i < Items.Count; i++)

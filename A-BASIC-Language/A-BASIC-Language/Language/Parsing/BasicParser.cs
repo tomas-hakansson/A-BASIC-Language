@@ -98,7 +98,7 @@ public class BasicParser
 
         var newNumbers = new Dictionary<int, int>();
         long next = start;
-        
+
         foreach (var number in parser._lines.Keys)
         {
             if (next > int.MaxValue)
@@ -110,7 +110,7 @@ public class BasicParser
 
         var result = new StringBuilder(parser._source.Length);
         var position = 0;
-        
+
         foreach (var (index, length, number) in locations)
         {
             if (!newNumbers.TryGetValue(number, out var replacement))
@@ -232,7 +232,7 @@ public class BasicParser
     }
 
     //OneOrMoreStatements => aStatementWithParts (: aStatementWithParts)*
-    void OneOrMoreStatements(Match? match = null)
+    private void OneOrMoreStatements(Match? match = null)
     {
         AStatementPlusParts(match);
 
@@ -240,7 +240,7 @@ public class BasicParser
             AStatementPlusParts();
     }
 
-    void AStatementPlusParts(Match? isStatement = null)
+    private void AStatementPlusParts(Match? isStatement = null)
     {
         //This is the tricky part.
 
@@ -249,7 +249,7 @@ public class BasicParser
         if (isStatement.Success)
         {
             var match = isStatement.Groups.Cast<Group>().First(g => g.Name == "statement");
-            
+
             if (match != null)
             {
                 var statement = match.Value.ToUpper();
@@ -390,33 +390,33 @@ public class BasicParser
     private bool LooksLikeAssignment()
     {
         var name = VariableRegex().Match(_source, _index);
-        
+
         if (!name.Success)
             return false;
-        
+
         var position = _index + name.Length;
         SkipSpaces();
-        
+
         if (position < _source.Length && (_source[position] == '$' || _source[position] == '%'))
             position++;
-        
+
         SkipSpaces();
 
         if (position < _source.Length && _source[position] == '(')
         {
             var depth = 0;
             var quoted = false;
-            
+
             do
             {
                 var c = _source[position++];
-                
+
                 if (c == '\n')
                     return false;
-                
+
                 if (c == '"')
                     quoted = !quoted;
-                
+
                 if (!quoted)
                 {
                     if (c == ':')
@@ -429,13 +429,13 @@ public class BasicParser
                         depth--;
                 }
             } while (position < _source.Length && depth > 0);
-            
+
             if (depth != 0 || quoted)
                 return false;
-            
+
             SkipSpaces();
         }
-        
+
         return position < _source.Length && _source[position] == '=';
 
         void SkipSpaces()
@@ -457,8 +457,10 @@ public class BasicParser
         do
         {
             var variable = ASetVariable(true);
+
             if (!variable.Success)
                 return;
+
             Generate(new AblRead(variable.FullName, variable.DimVariable));
         } while (Maybe(','));
     }
@@ -480,38 +482,45 @@ public class BasicParser
             {
                 if (!AString(out var text))
                     throw new InvalidOperationException("Unterminated string in DATA.");
+
                 values.Add(new StringValue(text));
             }
             else
             {
                 var negative = Maybe('-');
+
                 if (!negative)
                     Maybe('+');
+
                 var literal = ANumber();
+
                 if (literal.Length == 0)
                     throw new InvalidOperationException("Expected a numeric or quoted string literal in DATA.");
                 var number = double.Parse(literal, NumberStyles.Float, CultureInfo.InvariantCulture);
+
                 if (negative)
                     number = -number;
+
                 if (double.IsInfinity(number) || double.IsNaN(number))
                     throw new InvalidOperationException("Numeric literal in DATA is out of range.");
+
                 values.Add(ValueBase.GetValueType(number));
             }
         } while (Maybe(','));
 
-        if (_index < _source.Length && _source[_index] != '\n' && _source[_index] != ':' &&
-            !(_parsingIf && Maybe("ELSE", incrementIfFound: false)))
+        if (_index < _source.Length && _source[_index] != '\n' && _source[_index] != ':' && !(_parsingIf && Maybe("ELSE", incrementIfFound: false)))
             throw new InvalidOperationException("Expected comma or end of DATA statement.");
 
         if (!_dataLines.TryGetValue(_currentLabel, out var lineValues))
-            _dataLines.Add(_currentLabel, lineValues = new List<ValueBase>());
+            _dataLines.Add(_currentLabel, lineValues = []);
+
         lineValues.AddRange(values);
     }
 
     private void For()
     {
         var variable = ASetVariable(true);
-        
+
         if (!variable.Success || variable.DimVariable || variable.TypeSpecifier == "$")
         {
             ParseError("FOR requires a numeric scalar variable");
@@ -525,7 +534,7 @@ public class BasicParser
             SkipStatement();
             return;
         }
-        
+
         Expression();
 
         if (!Maybe("TO"))
@@ -534,14 +543,14 @@ public class BasicParser
             SkipStatement();
             return;
         }
-        
+
         Expression();
-        
+
         if
             (Maybe("STEP")) Expression();
         else
             Generate(new AblNumber(1));
-        
+
         Generate(new AblFor(variable.FullName));
     }
 
@@ -556,7 +565,7 @@ public class BasicParser
             {
                 name = match.Groups["var"].Value;
                 _index += name.Length;
-                
+
                 if (Maybe('%'))
                     name += "%";
 
@@ -580,10 +589,10 @@ public class BasicParser
         void UnsetVariable()
         {
             var result = ASetVariable(true);
-            
+
             if (!result.Success)
                 return;
-            
+
             if (result.DimVariable)
                 Generate(new AblDimCreation(result.FullName));
             else
@@ -661,7 +670,7 @@ public class BasicParser
 
         var gosub = JumpKeyword();
         var targets = new List<Func<int>>();
-        
+
         do
         {
             if (ReadNamedJumpTarget() is { } resolve)
@@ -671,7 +680,7 @@ public class BasicParser
             }
 
             var target = Regex.Match(_source.Substring(_index), @"^[0-9]+");
-        
+
             if (!target.Success || !int.TryParse(target.Value, out var lineNumber))
                 throw new InvalidOperationException("Expected a line number or label in ON jump list.");
 
@@ -722,7 +731,7 @@ public class BasicParser
     //if         => IF boolean-expr THEN body (ELSE body)?
     //body       => numeric-expr | statements
     //statements => statement (: statement)*
-    void If()
+    private void If()
     {
         /*
             IF expr THEN this ELSE that
@@ -742,9 +751,9 @@ public class BasicParser
         {
             _parsingIfCondition = previousCondition;
         }
-        
+
         Generate(new AblNumber(falseBranchLabel), new AblProcedure("#IF-FALSE-GOTO"));
-        
+
         if (!Maybe("THEN"))
         {
             ParseError("Expected 'THEN' statement in 'IF' statement");
@@ -755,7 +764,7 @@ public class BasicParser
             SkipLine();
             return;
         }
-        
+
         Body();
         var endBranchLabel = GetGeneratedLabel();
         Generate(new AblNumber(endBranchLabel), new AblProcedure("GOTO"));
@@ -779,7 +788,7 @@ public class BasicParser
             else
             {
                 var isVariable = VariableRegex().Match(_source, _index);
-                
+
                 if (isVariable.Success)
                 {
                     var match = isVariable.Groups.Cast<Group>().First(g => g.Name == "var");
@@ -866,10 +875,10 @@ public class BasicParser
     {
         Prompt();
         Generate(new AblString("? "), new AblProcedure("#WRITE"));
-        
+
         if (!UnsetVariable())
             return;
-        
+
         while (Maybe(','))
         {
             if (!UnsetVariable())
@@ -896,12 +905,12 @@ public class BasicParser
         bool UnsetVariable()
         {
             var v = ASetVariable(true);
-            
+
             if (!v.Success)
                 return false;
-            
+
             var assignmentType = ASetVariable_Helper(v);
-            
+
             switch (v.TypeSpecifier)
             {
                 case "$":
@@ -925,7 +934,7 @@ public class BasicParser
 
         if (!v.Success)
             return;
-        
+
         if (!Maybe('='))
         {
             ParseError("Expected equal sign in 'LET' statement");
@@ -937,13 +946,13 @@ public class BasicParser
         Generate(ASetVariable_Helper(v));
     }
 
-    static AblEvalValue ASetVariable_Helper(ParseResultSet r)
+    private static AblEvalValue ASetVariable_Helper(ParseResultSet r)
     {
         var fullName = r.FullName;
 
         if (r.DimVariable)
             return new AblDimAssignment(fullName);
-        
+
         return new AblAssignment(fullName);
     }
 
@@ -978,7 +987,7 @@ public class BasicParser
 
         if (!Name() || !Index())
             return new ParseResultSet(false, "", "", false);
-        
+
         return new ParseResultSet(true, fullName, typeSpecifier, dimVariable);
 
         bool Name()
@@ -998,21 +1007,21 @@ public class BasicParser
                 if (keyword.Success)
                     isVariable = VariableRegex().Match(_source, _index, keyword.Index);
             }
-            
+
             if (!isVariable.Success)
             {
                 ParseError($"Expected variable in {nameof(ASetVariable)}");
                 SkipStatement();
                 return false;
             }
-            
+
             var varMatch = isVariable.Groups.Cast<Group>().First(g => g.Name == "var");
             _index += varMatch.Length;
             SkipWhitespace();
 
             if (OneOf(out var ts, "$", "%"))
                 typeSpecifier = ts;
-            
+
             fullName = varMatch.Value + typeSpecifier;
             SkipWhitespace();
             return true;
@@ -1056,7 +1065,7 @@ public class BasicParser
     }
 
     // COLOR target, color: both arguments are required numeric expressions.
-    void Color()
+    private void Color()
     {
         Expression();
 
@@ -1067,7 +1076,7 @@ public class BasicParser
         Generate(new AblProcedure("COLOR"));
     }
 
-    void Poke()
+    private void Poke()
     {
         Expression();
 
@@ -1083,7 +1092,7 @@ public class BasicParser
     }
 
     // WINDOW [expression]: the argument is the number of text rows at the bottom.
-    void Window()
+    private void Window()
     {
         if (_index >= _source.Length || _source[_index] == '\n' ||
             Maybe(':', false) || (_parsingIf && Maybe("ELSE", incrementIfFound: false)))
@@ -1093,7 +1102,7 @@ public class BasicParser
         Generate(new AblProcedure("WINDOW"));
     }
     //print => (PRINT | ?) (, | ; | expression)*
-    void Print()
+    private void Print()
     {//todo: not completely tested.
 
         /* Examples:
@@ -1148,14 +1157,14 @@ public class BasicParser
     {
         if (!Maybe("FN"))
             throw new InvalidOperationException("Expected FN after DEF.");
-        
+
         var name = ReadFunctionSymbol();
-        
+
         if (!Maybe('('))
             throw new InvalidOperationException("Expected function parameter.");
-        
+
         var parameter = ReadFunctionSymbol();
-        
+
         if (!Maybe(')') || !Maybe('='))
             throw new InvalidOperationException("Expected )= in DEF FN.");
 
@@ -1175,7 +1184,7 @@ public class BasicParser
         Generate(new AblFunctionDefinition(name, parameter, body));
     }
 
-    string ReadFunctionSymbol()
+    private string ReadFunctionSymbol()
     {
         var match = VariableRegex().Match(_source, _index);
         if (!match.Success) throw new InvalidOperationException("Expected numeric function name or parameter.");
@@ -1185,7 +1194,7 @@ public class BasicParser
     }
 
     /// <summary>Calls the operator of the lowest precedence.</summary>
-    void Expression()
+    private void Expression()
     {
         AndExpression();
         while (Maybe("OR"))
@@ -1195,7 +1204,7 @@ public class BasicParser
         }
     }
 
-    void AndExpression()
+    private void AndExpression()
     {
         Precedence_5_Operator();
 
@@ -1206,12 +1215,14 @@ public class BasicParser
         }
     }
 
-    void Precedence_5_Operator()
+    private void Precedence_5_Operator()
     {
         Precedence_4_Operator();
+
         while (OneOf(out var op, "=", "<>", "!=", "<", ">", "<=", ">="))
         {
             Precedence_4_Operator();
+
             if (op == "!=")
                 Generate(new AblProcedure("<>"));
             else
@@ -1219,9 +1230,10 @@ public class BasicParser
         }
     }
 
-    void Precedence_4_Operator()
+    private void Precedence_4_Operator()
     {//Note: This method is Expression in Crenshaw's book.
         Precedence_3_Operator();
+
         while (OneOf(out var op, "+", "-"))
         {
             Precedence_3_Operator();
@@ -1229,9 +1241,10 @@ public class BasicParser
         }
     }
 
-    void Precedence_3_Operator()
+    private void Precedence_3_Operator()
     {//Note: This method is Term in Crenshaw's book.
         Precedence_2_Operator();
+
         while (OneOf(out var op, "*", "/"))
         {
             Precedence_2_Operator();
@@ -1239,7 +1252,7 @@ public class BasicParser
         }
     }
 
-    void Precedence_2_Operator()
+    private void Precedence_2_Operator()
     {
         if (Maybe('-'))
         {
@@ -1247,12 +1260,16 @@ public class BasicParser
             Generate(new AblProcedure("#NEGATE"));
         }
         else if (Maybe('+'))
+        {
             Precedence_2_Operator();
+        }
         else
+        {
             Precedence_1_Operator();
+        }
     }
 
-    void Precedence_1_Operator()
+    private void Precedence_1_Operator()
     {
         Atom();
         while (Maybe('^'))
@@ -1263,7 +1280,7 @@ public class BasicParser
         }
     }
 
-    void Atom()
+    private void Atom()
     {//Note: This method is Factor in Crenshaw's book.
         if (_index >= _source.Length || _source[_index] == '\n')
         {
@@ -1288,9 +1305,14 @@ public class BasicParser
             if (Maybe("FN"))//Note: user defined function.
             {
                 var name = ReadFunctionSymbol();
-                if (!Maybe('(')) throw new InvalidOperationException("Expected ( in FN call.");
+
+                if (!Maybe('('))
+                    throw new InvalidOperationException("Expected ( in FN call.");
                 Expression();
-                if (!Maybe(')')) throw new InvalidOperationException("Expected ) in FN call.");
+
+                if (!Maybe(')'))
+                    throw new InvalidOperationException("Expected ) in FN call.");
+
                 Generate(new AblFunctionCall(name));
                 return;
             }
@@ -1404,13 +1426,13 @@ public class BasicParser
     }
 
     // ANumber => digit* '.'? digit+
-    string ANumber()
+    private string ANumber()
     {
         var match = Regex.Match(_source.Substring(_index, _source.Length - _index), @"^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[Ee][+-]?[0-9]+)?");
-        
+
         if (!match.Success)
             return "";
-        
+
         _index += match.Length;
         SkipWhitespace();
         return match.Value;
@@ -1458,7 +1480,7 @@ public class BasicParser
     /// <summary>
     /// Skips all whitespace but newline.
     /// </summary>
-    void SkipWhitespace()
+    private void SkipWhitespace()
     {
         while (_index < _source.Length && _source[_index] != '\n' && char.IsWhiteSpace(_source[_index]))
             _index++;
@@ -1467,20 +1489,20 @@ public class BasicParser
     private int GetNextNonWhitespaceIndex(int? startAt = null)
     {
         var index = startAt ?? _index;
-        
+
         while (index < _source.Length && _source[index] != '\n' && char.IsWhiteSpace(_source[index]))
             index++;
 
         return index < _source.Length ? index : -1;
     }
 
-    void SkipStatement()
+    private void SkipStatement()
     {
         while (_index < _source.Length && _source[_index] != '\n' && _source[_index] != ':')
             _index++;
     }
 
-    void SkipLine()
+    private void SkipLine()
     {
         while (_index < _source.Length && _source[_index] != '\n')
             _index++;
@@ -1505,7 +1527,7 @@ public class BasicParser
             return false;
 
         var match = isValue.Groups.Cast<Group>().First(g => g.Name == "value");
-            
+
         if (incrementIfFound)
             _index += match.Length;
 
@@ -1563,9 +1585,9 @@ public class BasicParser
         return false;
     }
 
-    static Regex StatementRegex() =>
+    private static Regex StatementRegex() =>
         new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|\?|(?:CLS|SCNCLR|SCROLL|RENUMBER|LOAD)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
-    static Regex VariableRegex() =>
+    private static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);
 }

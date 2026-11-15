@@ -225,7 +225,7 @@ public partial class TerminalMatrixControl : UserControl
     private void UserControl1_Load(object sender, EventArgs e)
     {
         DoubleBuffered = true;
-        SetResolution(Resolution.Pixels320x200Characters40x25);
+        SetResolution(Resolution.Pixels320X200Characters40X25);
         _timer.Tick += Blink;
         _timer.Enabled = true;
         _tickTime = DateTime.Now;

@@ -17,7 +17,7 @@ public partial class ProgramPropertiesDialog : Form
     public ProgramPropertiesDialog()
     {
         InitializeComponent();
-        lvLabel.Columns[1].Text = "Line number";
+        lvLabel.Columns[1].Text = @"Line number";
         _msgBox = new MsgBox(Owner);
     }
 

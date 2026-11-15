@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Concurrent;
-#if DEBUG
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
 
 namespace A_BASIC_Language.Language;
 

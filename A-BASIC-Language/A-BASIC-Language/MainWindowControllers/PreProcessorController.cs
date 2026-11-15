@@ -31,7 +31,7 @@ public class PreProcessorController
 
         if (preProcessor.IsEmpty())
         {
-            if (_parent.Resolution == Resolution.Pixels160x200Characters20x25)
+            if (_parent.Resolution == Resolution.Pixels160X200Characters20X25)
             {
                 _parent.WriteLine("Don't know what to");
                 _parent.WriteLine("do with that.");
@@ -135,24 +135,24 @@ public class PreProcessorController
             case PreProcessorParserResult.ToggleResolution:
                 switch (_parent.Resolution)
                 {
-                    case Resolution.Pixels640x200Characters80x25:
-                        _parent.SetResolution(Resolution.Pixels480x200Characters60x25);
+                    case Resolution.Pixels640X200Characters80X25:
+                        _parent.SetResolution(Resolution.Pixels480X200Characters60X25);
                         _parent.WriteLine("Resolution changed. Is now:");
                         _parent.WriteLine("480 * 200 pixels (60 * 25 characters)");
                         break;
-                    case Resolution.Pixels480x200Characters60x25:
-                        _parent.SetResolution(Resolution.Pixels320x200Characters40x25);
+                    case Resolution.Pixels480X200Characters60X25:
+                        _parent.SetResolution(Resolution.Pixels320X200Characters40X25);
                         _parent.WriteLine("Resolution changed. Is now:");
                         _parent.WriteLine("320 * 200 pixels (40 * 25 characters)");
                         break;
-                    case Resolution.Pixels320x200Characters40x25:
-                        _parent.SetResolution(Resolution.Pixels160x200Characters20x25);
+                    case Resolution.Pixels320X200Characters40X25:
+                        _parent.SetResolution(Resolution.Pixels160X200Characters20X25);
                         _parent.WriteLine("Resolution changed. Is now:");
                         _parent.WriteLine("160 * 200 pixels");
                         _parent.WriteLine("(40 * 25 characters)");
                         break;
-                    case Resolution.Pixels160x200Characters20x25:
-                        _parent.SetResolution(Resolution.Pixels640x200Characters80x25);
+                    case Resolution.Pixels160X200Characters20X25:
+                        _parent.SetResolution(Resolution.Pixels640X200Characters80X25);
                         _parent.WriteLine("Resolution changed. Is now:");
                         _parent.WriteLine("640 * 200 pixels (80 * 25 characters)");
                         break;
@@ -163,22 +163,22 @@ public class PreProcessorController
                 _owner.CheckResolutionBox();
                 break;
             case PreProcessorParserResult.Resolution1:
-                _parent.SetResolution(Resolution.Pixels640x200Characters80x25);
+                _parent.SetResolution(Resolution.Pixels640X200Characters80X25);
                 _parent.WriteLine("Resolution changed. Is now:");
                 _parent.WriteLine("640 * 200 pixels (80 * 25 characters)");
                 break;
             case PreProcessorParserResult.Resolution2:
-                _parent.SetResolution(Resolution.Pixels480x200Characters60x25);
+                _parent.SetResolution(Resolution.Pixels480X200Characters60X25);
                 _parent.WriteLine("Resolution changed. Is now:");
                 _parent.WriteLine("480 * 200 pixels (60 * 25 characters)");
                 break;
             case PreProcessorParserResult.Resolution3:
-                _parent.SetResolution(Resolution.Pixels320x200Characters40x25);
+                _parent.SetResolution(Resolution.Pixels320X200Characters40X25);
                 _parent.WriteLine("Resolution changed. Is now:");
                 _parent.WriteLine("320 * 200 pixels (40 * 25 characters)");
                 break;
             case PreProcessorParserResult.Resolution4:
-                _parent.SetResolution(Resolution.Pixels160x200Characters20x25);
+                _parent.SetResolution(Resolution.Pixels160X200Characters20X25);
                 _parent.WriteLine("Resolution changed. Is now:");
                 _parent.WriteLine("160 * 200 pixels");
                 _parent.WriteLine("(40 * 25 characters)");

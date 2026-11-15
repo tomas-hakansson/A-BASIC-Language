@@ -1,6 +1,4 @@
-﻿using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.SpriteManagement;
-
-namespace PixelmapLibraryNetFramework.SpriteManagement;
+﻿namespace A_BASIC_Language.TerminalMatrix.PixelMapLibrary.SpriteManagement;
 
 public class MonochromeSprite : ISprite
 {

@@ -65,28 +65,32 @@ public class StringValue : ValueBase
     public override bool TryGetAsFloatValue(out FloatValue value)
     {
         value = new FloatValue(-1);
+
         if (double.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double newValue))
         {
             value = new FloatValue(newValue);
             return true;
         }
-        else
-            return false;
+
+        return false;
     }
 
     public override bool TryGetAsIntValue(out IntValue value)
     {
         value = new IntValue(-1);
+        
         if (int.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var newInt))
         {
             value = new IntValue(newInt);
             return true;
         }
-        else if (double.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var newDouble))
+
+        if (double.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var newDouble))
         {
             value = new IntValue((int)newDouble);
             return true;
         }
+
         return false;
     }
 
@@ -107,9 +111,15 @@ public class StringValue : ValueBase
 
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
+        if (ReferenceEquals(null, obj))
+            return false;
+
+        if (ReferenceEquals(this, obj))
+            return true;
+
+        if (obj.GetType() != GetType())
+            return false;
+
         return Equals((StringValue)obj);
     }
 

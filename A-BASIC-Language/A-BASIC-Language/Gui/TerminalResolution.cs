@@ -18,10 +18,10 @@ public class TerminalResolution
 
         BorderWidth = resolution switch
         {
-            Resolution.Pixels640x200Characters80x25 => 10,
-            Resolution.Pixels480x200Characters60x25 => 6,
-            Resolution.Pixels320x200Characters40x25 => 4,
-            Resolution.Pixels160x200Characters20x25 => 2,
+            Resolution.Pixels640X200Characters80X25 => 10,
+            Resolution.Pixels480X200Characters60X25 => 6,
+            Resolution.Pixels320X200Characters40X25 => 4,
+            Resolution.Pixels160X200Characters20X25 => 2,
             _ => throw new SystemException("Unsupported resolution.")
         };
 
