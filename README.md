@@ -5,7 +5,7 @@ The initial goal is to be able to run all games in the book [101 BASIC Computer 
 Of the 101 games, we support the ones followed by a 1:
 
 | Game              | Supported |
-|-------------------|-----------|
+|-------------------|:---------:|
 | 23matches         |     1     |
 | 3dplot            |     1     |
 | aceyducey         |     1     |
@@ -67,7 +67,7 @@ Of the 101 games, we support the ones followed by a 1:
 | letter            |     1     |
 | life              |     0?    |
 | lifefortwo        |     0?    |
-| litquiz           |           |
+| litquiz           |     1     |
 | love              |     0     |
 | lunar             |     1     |
 | mastermind        |     0     |
@@ -79,14 +79,14 @@ Of the 101 games, we support the ones followed by a 1:
 | number            |     1     |
 | onecheck          |     1     |
 | orbit             |     1     |
-| pizza             |           |
-| poetry            |           |
-| poker             |           |
-| qubic             |           |
-| queen             |           |
-| reverse           |           |
-| rocket            |           |
-| rickscissors      |           |
+| pizza             |     0     |
+| poetry            |     1     |
+| poker             |     0     |
+| qubic             |     0?    |
+| queen             |     1?    |
+| reverse           |     1     |
+| rocket            |     1     |
+| rockscissors      |     1     |
 | roulette          |     1     |
 | russianroulette   |     1     |
 | salvo             |     1     |
