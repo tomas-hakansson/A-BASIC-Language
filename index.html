@@ -63,6 +63,7 @@
                     <tr><td><a href="#new">NEW</a></td><td>Yes</td><td>No</td><td>Delete the program and the session's runtime data.</td></tr>
                     <tr><td><a href="#let">LET / assignment without LET</a></td><td>Yes</td><td>Yes</td><td>Assign a value to a scalar or array element.</td></tr>
                     <tr><td><a href="#print">PRINT</a></td><td>Yes</td><td>Yes</td><td>Print expressions and control padding/line breaks.</td></tr>
+                    <tr><td><a href="#printat">PRINTAT</a></td><td>Yes</td><td>Yes</td><td>Replace a character at a screen position while keeping the cursor in place.</td></tr>
                     <tr><td><a href="#cls">CLS / SCNCLR</a></td><td>Yes, without an argument</td><td>Yes</td><td>Clear the screen. Numbered programs can also select the number of columns.</td></tr>
                     <tr><td><a href="#window">WINDOW</a></td><td>Yes</td><td>Yes</td><td>Clear the screen and select the number of text rows at the bottom. Without an argument, all 25 rows are restored.</td></tr>
                     <tr><td><a href="#scroll">SCROLL</a></td><td>Yes</td><td>Yes</td><td>Set automatic scrolling or shift the text area by one row or column.</td></tr>
@@ -383,6 +384,14 @@ PRINT expression[,expression ...]</code></pre>
 30 PRINT "PART 1 ";
 40 PRINT "PART 2"</code></pre>
                 <p>Separators can be mixed. TAB specifies an absolute column. Long lines wrap. A separate direct command receives a new terminal adapter; do not use trailing semicolons to continue output across several separate Ready commands.</p>
+            </article>
+            <article id="printat">
+                <h3>PRINTAT – place a character on the screen</h3>
+                <pre><code>PRINTAT x, y, code</code></pre>
+                <p><code>x</code> and <code>y</code> are whole-number column and row coordinates measured from the top-left cell (0, 0). The command ignores positions outside the current screen dimensions. <code>code</code> is a PETSCII character code from 0 to 255, including codes for symbols defined with <code>POKE</code>.</p>
+                <p>The command replaces the character in that cell and preserves the cell's color and the current output position.</p>
+                <pre><code>10 PRINTAT 5, 3, ASC("A")
+20 PRINTAT 6, 3, ASC("B")</code></pre>
             </article>
             <article id="data">
                 <h3>DATA – stored values</h3>

@@ -11,6 +11,7 @@ public interface IBasicTerminal
     Resolution ScreenResolution { get; }
     void SetScreenResolution(Resolution resolution, bool preserveContents = false);
     void Write(string text);
+    void WriteCharacterAt(int x, int y, char character);
     void WriteLine(string text);
     void WriteLine(bool blankLineFirst, string text);
     string InputString(string prompt);

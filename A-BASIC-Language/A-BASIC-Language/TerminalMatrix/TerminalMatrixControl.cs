@@ -46,7 +46,7 @@ public partial class TerminalMatrixControl : UserControl
     private readonly TerminalMatrixKeypressHandler _keypressHandler;
     private FontMonochromeSprite _fontMonochromeSprite;
     private byte[]? _fontMemory;
-    private bool _fontPixelsChanged;
+    private bool _textPixelsChanged;
     private Size _border;
     private bool _resolutionIncorrect;
     private FontConfiguration? _currentFont;
@@ -121,7 +121,7 @@ public partial class TerminalMatrixControl : UserControl
             Settings.Default.Font = (int)value.Id;
             if (_fontMemory != null)
                 _fontMonochromeSprite.CopyToMemory(_fontMemory, FontMemoryStart);
-            _fontPixelsChanged = true;
+            _textPixelsChanged = true;
             Refresh();
         }
     }
@@ -146,7 +146,7 @@ public partial class TerminalMatrixControl : UserControl
         var code = (byte)(offset / FontMonochromeSprite.GlyphSize);
         var row = offset % FontMonochromeSprite.GlyphSize;
         _fontMonochromeSprite.SetGlyphRow(code, row, value);
-        _fontPixelsChanged = true;
+        _textPixelsChanged = true;
         Invalidate();
     }
 
@@ -459,6 +459,16 @@ public partial class TerminalMatrixControl : UserControl
         }
     }
 
+    internal void WriteCharacterAt(int x, int y, char character)
+    {
+        if (x < 0 || x >= CharacterWidth || y < 0 || y >= CharacterHeight)
+            return;
+
+        _characterMap[x, y] = character;
+        _textPixelsChanged = true;
+        Invalidate();
+    }
+
     public void UpdateBitmap(Action<Pixelmap>? underText = null, Action<Pixelmap>? overText = null) =>
         RenderBitmap(invalidate: true, underText, overText);
 
@@ -529,7 +539,7 @@ public partial class TerminalMatrixControl : UserControl
             _pixelMap.UnlockBits();
         }
 
-        _fontPixelsChanged = false;
+        _textPixelsChanged = false;
         if (invalidate)
             Invalidate();
     }
@@ -545,7 +555,7 @@ public partial class TerminalMatrixControl : UserControl
         if (_pixelMap == null!)
             return;
 
-        if (_fontPixelsChanged)
+        if (_textPixelsChanged)
             RenderBitmap(invalidate: false);
 
         switch (RenderingMode)

@@ -96,6 +96,9 @@ public sealed class TerminalAdapter : IBasicTerminal
     internal void UpdateFontMemory(int address, byte value) =>
         _terminal.UpdateFontMemory(address, value);
 
+    public void WriteCharacterAt(int x, int y, char character) =>
+        _terminal.WriteCharacterAt(x, y, character);
+
     public void Write(string text)
     {
         text = text.Replace("\r\n", "\n").Replace('\r', '\n');

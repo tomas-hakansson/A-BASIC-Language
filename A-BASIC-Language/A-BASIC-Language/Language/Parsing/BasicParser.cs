@@ -314,6 +314,9 @@ public class BasicParser
                     case "?":
                         Print();
                         break;
+                    case "PRINTAT":
+                        PrintAt();
+                        break;
                     case "CLS":
                     case "SCNCLR":
                         ClearScreen(statement);
@@ -1078,6 +1081,23 @@ public class BasicParser
         Generate(new AblProcedure("COLOR"));
     }
 
+    private void PrintAt()
+    {
+        for (var argument = 0; argument < 3; argument++)
+        {
+            if (argument > 0 && !Maybe(','))
+            {
+                ParseError("Expected comma between PRINTAT arguments.");
+                SkipStatement();
+                return;
+            }
+
+            Expression();
+        }
+
+        Generate(new AblProcedure("PRINTAT"));
+    }
+
     private void Poke()
     {
         Expression();
@@ -1623,7 +1643,7 @@ public class BasicParser
     }
 
     private static Regex StatementRegex() =>
-        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINT|\?|(?:CLS|SCNCLR|SCROLL|RENUMBER|LOAD)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINTAT(?![A-Z0-9$%])|PRINT|\?|(?:CLS|SCNCLR|SCROLL|RENUMBER|LOAD)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

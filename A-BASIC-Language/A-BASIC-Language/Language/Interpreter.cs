@@ -756,6 +756,23 @@ public class Interpreter
                         case "#NEXT-TAB-POSITION":
                             _terminal.Write(new string(' ', 14 - _terminal.OutputColumn % 14));
                             break;
+                        case "PRINTAT":
+                            {
+                                var characterCode = _data.Pop();
+                                var y = Number(_data.Pop());
+                                var x = Number(_data.Pop());
+                                var size = ResolutionHelper.GetCharacterMapSize(_terminal.ScreenResolution);
+
+                                if (!x.IsInt(0, size.Width - 1) || !y.IsInt(0, size.Height - 1))
+                                    break;
+
+                                var code = Number(characterCode);
+                                if (!code.IsByte())
+                                    throw new InvalidOperationException("PRINTAT requires a whole number from 0 to 255 for the character code.");
+
+                                _terminal.WriteCharacterAt((int)x, (int)y, Petscii.Decode((byte)code));
+                            }
+                            break;
                         case "PEEK":
                             {
                                 var address = MemoryAddress(_data.Pop());
