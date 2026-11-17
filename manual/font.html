@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Font management | ABL manual</title>
+    <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+    <header>
+        <h1>Font management</h1>
+        <p>Control the terminal font from within your ABL programs.</p>
+    </header>
+    <main>
+        <p><a href="../index.html#terminal-font">Back to the ABL font reference</a></p>
+        <nav aria-label="On this page">
+            <ul>
+                <li><a href="#font-memory">Find a character in memory</a></li>
+                <li><a href="#change-character">Change an existing character</a></li>
+                <li><a href="#custom-symbol">Draw and print a custom symbol</a></li>
+                <li><a href="#restore-font">Keep or restore your changes</a></li>
+            </ul>
+        </nav>
+
+        <section id="font-memory">
+            <h2>Find a character in memory</h2>
+            <p>The terminal font occupies addresses 53248 through 55295 in ABL's session memory. There are 256 character codes, from 0 to 255, and each code gets eight consecutive bytes. Each byte controls one row of an 8 × 8 pixel character. Row 0 is the top row and row 7 is the bottom row.</p>
+            <pre><code>address = 53248 + 8 * code + row</code></pre>
+            <p>Use <code>ASC("A")</code> to get the terminal character code for <code>A</code>. It returns 65, so the bytes for <code>A</code> are at addresses 53768 through 53775. <code>PEEK(address)</code> reads a row and <code>POKE address,value</code> replaces it with an integer from 0 to 255.</p>
+            <p>Each column has a bit weight. Add the weights of the pixels you want to turn on. Pixels with a zero bit show the cell's background color.</p>
+            <table>
+                <thead>
+                    <tr><th scope="col">Pixel column, left to right</th><th scope="col">0</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th></tr>
+                </thead>
+                <tbody>
+                    <tr><th scope="row">Bit weight</th><td>128</td><td>64</td><td>32</td><td>16</td><td>8</td><td>4</td><td>2</td><td>1</td></tr>
+                </tbody>
+            </table>
+            <p>A byte of 0 clears the row and 255 fills it. A byte of 24 lights the two middle pixels because 16 + 8 = 24. Its pattern is <code>...##...</code>, where <code>#</code> is an on pixel and <code>.</code> is an off pixel.</p>
+        </section>
+
+        <section id="change-character">
+            <h2>Change an existing character</h2>
+            <p>Enter these commands one at a time at the ABL prompt. Save the top row of <code>A</code> in <code>OLDROW</code>, then draw a solid line across that row. The other seven rows keep their current pixel patterns.</p>
+            <pre><code>ADDR = 53248 + 8 * ASC("A")
+OLDROW = PEEK(ADDR)
+PRINT "A"
+POKE ADDR,255
+PRINT "A"</code></pre>
+            <p>The terminal redraws existing cells that use the edited character, so both printed copies of <code>A</code> show the solid top row. To change a different row, add its row number to <code>ADDR</code>. For example, <code>ADDR + 7</code> points to the bottom row.</p>
+            <p>Write back the byte you saved to restore the top row.</p>
+            <pre><code>POKE ADDR,OLDROW</code></pre>
+        </section>
+
+        <section id="custom-symbol">
+            <h2>Draw and print a custom symbol</h2>
+            <p>Use a spare character code to add a symbol without replacing a letter. Code 250 starts blank in both built-in fonts and uses addresses 55248 through 55255. If your program already defines a symbol there, pick a different spare code. <code>PEEK</code> lets you inspect the eight bytes before writing them.</p>
+            <p>Sketch the symbol on an 8 × 8 grid and convert each row to a byte. For this heart, row 1 lights columns 1, 2, 5 and 6, so its value is 64 + 32 + 4 + 2 = 102. Read the eight values from top to bottom, including the blank rows.</p>
+            <pre><code>Row  Pixels    Byte
+  0  ........     0
+  1  .##..##.   102
+  2  ########   255
+  3  ########   255
+  4  .######.   126
+  5  ..####..    60
+  6  ...##...    24
+  7  ........     0</code></pre>
+            <p>Enter the numbered lines in an empty program and type <code>RUN</code>. The loop reads one byte per row from <code>DATA</code> and writes it to the corresponding address. <code>CHR$(250)</code> produces the character for code 250. You can store it in a string variable and use it in <code>PRINT</code> like any other character.</p>
+            <pre><code>10 CODE = 250
+20 ADDR = 53248 + 8 * CODE
+30 FOR ROW = 0 TO 7
+40 READ PIXELS
+50 POKE ADDR + ROW,PIXELS
+60 NEXT ROW
+70 HEART$ = CHR$(CODE)
+80 PRINT "LIVES ";HEART$;HEART$;HEART$
+90 DATA 0,102,255,255,126,60,24,0</code></pre>
+        </section>
+
+        <section id="restore-font">
+            <h2>Keep or restore your changes</h2>
+            <p>Font edits are shared by direct commands and running programs. They survive <code>RUN</code> and <code>NEW</code> within the session. Keep the symbol's <code>DATA</code> and <code>POKE</code> loop in your saved BASIC program so it can define the symbol again when run in a new session.</p>
+            <p>To restore an edited character, save each row you plan to change with <code>PEEK</code> and write the saved bytes back with <code>POKE</code>. To clear a symbol you created in a blank slot, write 0 to all eight of its rows. Restarting ABL or switching between Commodore 64 and Commodore PET under <strong>Tools → Options...</strong> reloads the entire font and discards any edits.</p>
+            <p>See the <a href="../index.html#poke">POKE command reference</a> for general memory access.</p>
+        </section>
+    </main>
+    <footer><p>ABL – A BASIC Language · developed by Tomas Håkansson and Anders Hesselbom.</p></footer>
+</body>
+</html>

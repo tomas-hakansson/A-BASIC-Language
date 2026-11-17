@@ -477,6 +477,7 @@ public class BasicParser
         }
 
         var values = new List<ValueBase>();
+
         do
         {
             if (Maybe('"', false))
