@@ -1244,7 +1244,10 @@ public class BasicParser
     private string ReadFunctionSymbol()
     {
         var match = VariableRegex().Match(_source, _index);
-        if (!match.Success) throw new InvalidOperationException("Expected numeric function name or parameter.");
+
+        if (!match.Success)
+            throw new InvalidOperationException("Expected numeric function name or parameter.");
+
         _index += match.Length;
         SkipWhitespace();
         return match.Value.ToUpperInvariant();
@@ -1254,6 +1257,7 @@ public class BasicParser
     private void Expression()
     {
         AndExpression();
+
         while (Maybe("OR"))
         {
             AndExpression();
@@ -1337,16 +1341,18 @@ public class BasicParser
         }
     }
 
-    private void Atom()
-    {//Note: This method is Factor in Crenshaw's book.
+    private void Atom() //Note: This method is Factor in Crenshaw's book.
+    {
         if (_index >= _source.Length || _source[_index] == '\n')
         {
             ParseError("Expected an expression");
             return;
         }
+
         if (Maybe('('))
         {
             Expression();
+
             if (!Maybe(')'))
             {
                 ParseError("Expected closing parenthesis sign in Atom");
@@ -1355,6 +1361,7 @@ public class BasicParser
                 else
                     SkipStatement();
             }
+
             return;
         }
         else
@@ -1390,11 +1397,11 @@ public class BasicParser
         }
 
         //Note: If function
-        Regex regex = new(@"\G(?<fun>DATAPOINTER|ABS|ASC|ATN|CHR\$|COS|EXP|INT|LEFT\$|LEN|LOG|MID\$|PEEK(?=[ \t]*\()|RND|RIGHT\$|SGN|SIN|SQR|STR\$|TAB|TAN|VAL)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        Regex regex = new(@"\G(?<fun>DATAPOINTER|ABS|ASC|ATN|CHR\$|COS|EXP|INT|LEFT\$|LEN|LOG|MID\$|PEEK(?=[ \t]*\()|RND|RIGHT\$|SGN|SIN|SQR|SRND(?=[ \t]*\()|STR\$|TAB|TAN|VAL)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         var isFunction = regex.Match(_source, _index);
 
-        if (isFunction.Success)
-        {//e.g. sqr(n)
+        if (isFunction.Success) //e.g. sqr(n)
+        {
             var match = isFunction.Groups.Cast<Group>().First(g => g.Name == "fun");
             _index += match.Length;
             var functionName = match.Value.ToUpperInvariant();
@@ -1421,11 +1428,13 @@ public class BasicParser
             if (functionName != "DATAPOINTER")
                 Expression();
 
-            if (functionName == "LEFT$" || functionName == "RIGHT$" || functionName == "MID$")
+            if (functionName is "LEFT$" or "RIGHT$" or "MID$" or "SRND")
             {
                 if (!Maybe(','))
                     throw new InvalidOperationException($"Expected a second argument in {functionName}.");
+
                 Expression();
+                
                 if (functionName == "MID$")
                 {
                     if (Maybe(','))

@@ -181,7 +181,6 @@
     <Compile Include="Language\SpecificExecutors\ISubExecutor.cs" />
     <Compile Include="Language\SpecificExecutors\SubtractExecutor.cs" />
     <Compile Include="Language\SpecificExecutors\VariableExecutor.cs" />
-    <Compile Include="Language\Stage1\TokenType.cs" />
     <Compile Include="Language\TerminalAdapter.cs" />
     <Compile Include="Language\ValueTypes\FloatValue.cs" />
     <Compile Include="Language\ValueTypes\IntValue.cs" />
@@ -601,9 +600,7 @@
     <None Include="Resources\saveHS.png" />
     <Content Include="Resources\settings.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Language\Stage2\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Analyzer Include="..\packages\MSTest.Analyzers.4.5.3\analyzers\dotnet\cs\MSTest.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\packages\MSTest.Analyzers.4.5.3\analyzers\dotnet\cs\MSTest.Analyzers.dll" />

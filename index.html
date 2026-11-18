@@ -91,7 +91,7 @@
                     <tr><td><a href="#log">LOG(x)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Natural logarithm, x &gt; 0.</td></tr>
                     <tr><td><a href="#exp">EXP(x)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>e raised to the power x.</td></tr>
                     <tr><td><a href="#int">INT(x)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Truncate toward zero to a 32-bit integer.</td></tr>
-                    <tr><td><a href="#rnd">RND / RND(x)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Random number from 0 inclusive to 1 exclusive.</td></tr>
+                    <tr><td><a href="#rnd">RND / RND(x) / SRND(Min, Max)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Random number from 0 inclusive to 1 exclusive, or a pseudorandom integer from Min inclusive to Max exclusive.</td></tr>
                     <tr><td><a href="#sqr">SQR(x)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Square root.</td></tr>
                     <tr><td><a href="#tab">TAB(n)</a></td><td>Yes, intended for PRINT</td><td>Yes, intended for PRINT</td><td>Position output at an absolute column.</td></tr>
                     <tr><td><a href="#appcommands">! commands</a></td><td>Yes, in the terminal</td><td>No</td><td>Commands for display, color themes, rendering mode, diagnostics, listing and quitting.</td></tr>
@@ -684,12 +684,13 @@ PRINT DATAPOINTER()</code></pre>
 PRINT LOG(100)/LOG(10)</code></pre>
             </article>
             <article id="rnd">
-                <h3>RND and RND(x)</h3>
+                <h3>RND, RND(x) and SRND(Min, Max)</h3>
                 <p>Pseudorandom floating-point number with 0 ≤ value &lt; 1. RND is equivalent to RND(1). The argument is evaluated but its value is ignored: 0 does not reuse the previous value, and negative arguments do not specify a seed.</p>
                 <pre><code>10 FOR I=1 TO 5
 20 PRINT INT(6*RND)+1
 30 NEXT I</code></pre>
                 <p>Five dice rolls from 1 to 6. The generator's state is shared within a run, not between separate direct commands.</p>
+                <p>SRND (scaled random number) returns a pseudorandom integer from Min through Max &minus; 1. Both arguments must be 32-bit signed integers, and Min must be less than Max. For example, SRND(1, 5) returns 1, 2, 3 or 4.</p>
             </article>
             <article id="sqr">
                 <h3>SQR(x)</h3>

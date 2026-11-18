@@ -27,7 +27,7 @@ public class Interpreter
     private readonly Stack<ValueBase> _data;
     private readonly Dictionary<string, AblFunctionDefinition> _functions;
     private bool EndMessageDisplayed { get; set; }
-    private Random _random; //Note: For the RND function.
+    private Random _random; //Note: For RND and SRND.
     private readonly Stack<(int Index, int LineNumber)> _subroutineCalls = new();
     private int _currentLineNumber;
     private readonly RuntimeState _state;
@@ -889,6 +889,21 @@ public class Interpreter
                                 }
                                 else
                                     Fail("The stack is empty");
+                            }
+                            break;
+                        case "SRND":
+                            {
+                                var max = Number(_data.Pop());
+                                var min = Number(_data.Pop());
+
+                                if (min != Math.Truncate(min) || min < int.MinValue || min > int.MaxValue ||
+                                    max != Math.Truncate(max) || max < int.MinValue || max > int.MaxValue)
+                                    throw new InvalidOperationException("Illegal function call: SRND requires two 32-bit integers.");
+
+                                if (min >= max)
+                                    throw new InvalidOperationException("Illegal function call: SRND requires Min to be less than Max.");
+
+                                _data.Push(new IntValue(_random.Next((int)min, (int)max)));
                             }
                             break;
                         case "SQR":
