@@ -786,15 +786,20 @@ public class Interpreter
                             break;
                         case "MOVEBLOCKSPRITE":
                         case "#MOVEBLOCKSPRITE-WITH-CHARACTER":
+                        case "RELMOVEBLOCKSPRITE":
                             {
-                                const string command = "MOVEBLOCKSPRITE";
+                                var relative = p.Name == "RELMOVEBLOCKSPRITE";
+                                var command = relative ? "RELMOVEBLOCKSPRITE" : "MOVEBLOCKSPRITE";
                                 char? character = p.Name == "#MOVEBLOCKSPRITE-WITH-CHARACTER"
                                     ? Petscii.Decode((byte)BlockSpriteInteger(_data.Pop(), command, "asc", 0, 255))
                                     : null;
                                 var y = BlockSpriteInteger(_data.Pop(), command, "y");
                                 var x = BlockSpriteInteger(_data.Pop(), command, "x");
                                 var number = BlockSpriteInteger(_data.Pop(), command, "num");
-                                _terminal.MoveBlockSprite(number, x, y, character);
+                                if (relative)
+                                    _terminal.MoveBlockSpriteRelative(number, x, y);
+                                else
+                                    _terminal.MoveBlockSprite(number, x, y, character);
                             }
                             break;
                         case "PEEK":

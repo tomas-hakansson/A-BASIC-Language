@@ -50,6 +50,30 @@ CREATEBLOCKSPRITE 1, 6, 3, ASC("B")</code></pre>
 130 MOVEBLOCKSPRITE 1, -1, 8
 140 END</code></pre>
         </section>
+        <section>
+            <h2>RELMOVEBLOCKSPRITE</h2>
+            <pre><code>RELMOVEBLOCKSPRITE num, RelativeX, RelativeY</code></pre>
+            <p>Moves an existing block sprite by the given offsets. Positive offsets move it right and down. Negative offsets move it left and up. Its character and color are preserved.</p>
+            <p>Offsets and resulting coordinates must fit in signed 32-bit integers. Sprites can move off-screen and back. An unknown sprite ID or a coordinate overflow produces an error.</p>
+            <pre><code>CREATEBLOCKSPRITE 1, -2, 4, ASC("*")
+RELMOVEBLOCKSPRITE 1, 3, -1</code></pre>
+            <p>The sprite starts off-screen and moves to column 1, row 3.</p>
+            <h3>Example program using relative movement</h3>
+            <p>This version repeats <code>RELMOVEBLOCKSPRITE 1, 1, 0</code> to move one column right each time. The loop counter only counts steps. The sprite carries its own position, so you can move the text and the starting sprite to a different row and use the same movement commands.</p>
+            <pre><code>10 CLS
+20 T$ = "THE TEXT STAYS IN PLACE"
+30 FOR X = 0 TO LEN(T$) - 1
+40 PRINTAT X, 8, ASC(MID$(T$, X + 1, 1))
+50 NEXT X
+60 CREATEBLOCKSPRITE 1, -1, 8, ASC("*")
+70 FOR I = 1 TO LEN(T$)
+80 RELMOVEBLOCKSPRITE 1, 1, 0
+90 SLEEP 80
+100 NEXT I
+110 RELMOVEBLOCKSPRITE 1, -LEN(T$), 0
+120 END</code></pre>
+            <p>The last move returns the sprite to its starting position off-screen and reveals the whole line of text.</p>
+        </section>
     </main>
     <footer><p>ABL – A BASIC Language · developed by Tomas Håkansson and Anders Hesselbom.</p></footer>
 </body>

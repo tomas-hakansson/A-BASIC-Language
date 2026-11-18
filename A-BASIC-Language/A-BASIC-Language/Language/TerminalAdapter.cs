@@ -105,6 +105,9 @@ public sealed class TerminalAdapter : IBasicTerminal
     public void MoveBlockSprite(int number, int x, int y, char? character) =>
         _terminal.MoveBlockSprite(number, x, y, character);
 
+    public void MoveBlockSpriteRelative(int number, int relativeX, int relativeY) =>
+        _terminal.MoveBlockSprite(number, relativeX, relativeY, null, relative: true);
+
     public void Write(string text)
     {
         text = text.Replace("\r\n", "\n").Replace('\r', '\n');

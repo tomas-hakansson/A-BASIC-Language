@@ -477,10 +477,19 @@ public partial class TerminalMatrixControl : UserControl
         Invalidate();
     }
 
-    internal void MoveBlockSprite(int number, int x, int y, char? character)
+    internal void MoveBlockSprite(int number, int x, int y, char? character, bool relative = false)
     {
         if (!_blockSprites.TryGetValue(number, out var sprite))
-            throw new InvalidOperationException($"MOVEBLOCKSPRITE: block sprite {number} does not exist.");
+        {
+            var command = relative ? "RELMOVEBLOCKSPRITE" : "MOVEBLOCKSPRITE";
+            throw new InvalidOperationException($"{command}: block sprite {number} does not exist.");
+        }
+
+        if (relative)
+        {
+            x = checked(sprite.X + x);
+            y = checked(sprite.Y + y);
+        }
 
         _blockSprites[number] = (x, y, character ?? sprite.Character, sprite.Color);
         Invalidate();

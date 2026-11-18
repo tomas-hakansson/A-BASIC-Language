@@ -315,6 +315,7 @@ public class BasicParser
                         Print();
                         break;
                     case "PRINTAT":
+                    case "RELMOVEBLOCKSPRITE":
                         ParseFixedArguments(statement, 3);
                         break;
                     case "CREATEBLOCKSPRITE":
@@ -1666,7 +1667,7 @@ public class BasicParser
     }
 
     private static Regex StatementRegex() =>
-        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|(?:PRINTAT|CREATEBLOCKSPRITE|MOVEBLOCKSPRITE)(?![A-Z0-9$%])|PRINT|\?|(?:CLS|SCNCLR|SCROLL|SLEEP|RENUMBER|LOAD)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|(?:PRINTAT|CREATEBLOCKSPRITE|MOVEBLOCKSPRITE|RELMOVEBLOCKSPRITE)(?![A-Z0-9$%])|PRINT|\?|(?:CLS|SCNCLR|SCROLL|SLEEP|RENUMBER|LOAD)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

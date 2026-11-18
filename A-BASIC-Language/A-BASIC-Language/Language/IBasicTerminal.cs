@@ -14,6 +14,7 @@ public interface IBasicTerminal
     void WriteCharacterAt(int x, int y, char character);
     void CreateBlockSprite(int number, int x, int y, char character);
     void MoveBlockSprite(int number, int x, int y, char? character);
+    void MoveBlockSpriteRelative(int number, int relativeX, int relativeY);
     void WriteLine(string text);
     void WriteLine(bool blankLineFirst, string text);
     string InputString(string prompt);
