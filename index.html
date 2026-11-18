@@ -85,6 +85,7 @@
                     <tr><td><a href="#def">DEF FN</a></td><td>Yes</td><td>Yes</td><td>Define a function with one numeric parameter.</td></tr>
                     <tr><td><a href="#def">FNname(argument)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Call a DEF FN definition that has been executed.</td></tr>
                     <tr><td><a href="#randomize">RANDOMIZE</a></td><td>Yes</td><td>Yes</td><td>Create a new random number generator without a seed argument.</td></tr>
+                    <tr><td><a href="#sleep">SLEEP</a></td><td>Yes</td><td>Yes</td><td>Wait for the remaining time in a millisecond interval.</td></tr>
                     <tr><td><a href="#rem">REM</a></td><td>Yes</td><td>Yes</td><td>Ignore the rest of the physical source line.</td></tr>
                     <tr><td><a href="#end">END / STOP</a></td><td>Yes</td><td>Yes</td><td>End the current execution with no option to resume.</td></tr>
                     <tr><td><a href="#abs">ABS(x)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Absolute value.</td></tr>
@@ -392,6 +393,7 @@ PRINT expression[,expression ...]</code></pre>
                 <p>The command replaces the character in that cell and preserves the cell's color and the current output position.</p>
                 <pre><code>10 PRINTAT 5, 3, ASC("A")
 20 PRINTAT 6, 3, ASC("B")</code></pre>
+                <p>For more advanced concepts, see <a href="manual/blocksprites.html">Block sprites</a>.</p>
             </article>
             <article id="data">
                 <h3>DATA – stored values</h3>
@@ -612,6 +614,12 @@ SCNCLR [columns]</code></pre>
 50 COLOR 1,2</code></pre>
                 <p>Works in direct mode and numbered programs, including IF branches. Text color changes affect subsequent output and input; existing text retains its foreground color. Background and border changes apply immediately to the screen. COLOR does not clear the screen or move the output position. The initial text color is White (2); background and border start as Black (1). The selected colors persist between direct commands and after program termination, and through RUN, NEW and WINDOW, until another COLOR changes it. COLOR 1,2 restores white text. COLOR 0,7 selects a blue background; COLOR 2,3 selects a red border.</p>
                 <p>A fractional, non-finite or out-of-range target produces <code>COLOR requires a whole number from 0 to 2 for the target.</code>. A fractional, non-finite or out-of-range color produces <code>COLOR requires a whole number from 1 to 16 for the color.</code>. String arguments produce type errors. Invalid arguments leave the current color unchanged.</p>
+            </article>
+            <article id="sleep">
+                <h3>SLEEP</h3>
+                <pre><code>SLEEP milliseconds</code></pre>
+                <p>Waits until the requested interval has elapsed. The first call measures from the start of the program or direct command. Later calls measure from when the previous SLEEP finished. If the interval has already elapsed, execution continues immediately and starts measuring a new interval.</p>
+                <p>The argument must be a whole number from 0 to 2147483647. SLEEP 0 starts a new interval immediately.</p>
             </article>
             <article id="randomize">
                 <h3>RANDOMIZE – random number generator</h3><pre><code>RANDOMIZE</code></pre>

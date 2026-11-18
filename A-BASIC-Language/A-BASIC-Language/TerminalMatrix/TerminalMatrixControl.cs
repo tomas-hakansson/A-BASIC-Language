@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -35,6 +36,7 @@ public partial class TerminalMatrixControl : UserControl
     private bool _automaticScroll = true;
     private byte[,] _characterColorMap;
     private char[,] _characterMap;
+    private readonly SortedDictionary<int, (int X, int Y, char Character, byte Color)> _blockSprites = new();
     private Pixelmap? _pixelMap;
     private Bitmap? _fastBitmap;
     private bool _cursorVisibleBlink;
@@ -469,6 +471,21 @@ public partial class TerminalMatrixControl : UserControl
         Invalidate();
     }
 
+    internal void CreateBlockSprite(int number, int x, int y, char character)
+    {
+        _blockSprites[number] = (x, y, character, CurrentCursorColor);
+        Invalidate();
+    }
+
+    internal void MoveBlockSprite(int number, int x, int y, char? character)
+    {
+        if (!_blockSprites.TryGetValue(number, out var sprite))
+            throw new InvalidOperationException($"MOVEBLOCKSPRITE: block sprite {number} does not exist.");
+
+        _blockSprites[number] = (x, y, character ?? sprite.Character, sprite.Color);
+        Invalidate();
+    }
+
     public void UpdateBitmap(Action<Pixelmap>? underText = null, Action<Pixelmap>? overText = null) =>
         RenderBitmap(invalidate: true, underText, overText);
 
@@ -579,7 +596,7 @@ public partial class TerminalMatrixControl : UserControl
         e.Graphics.Clear(_palette.GetColor(BorderColor));
 
         if (_fastBitmap != null)
-            e.Graphics.DrawImage(_fastBitmap, 0, 0, Width, Height);
+            PaintScreen(e.Graphics, _fastBitmap);
 
         ControlOverlayPainter?.Invoke(e.Graphics);
 
@@ -604,6 +621,42 @@ public partial class TerminalMatrixControl : UserControl
         }
 
         base.OnPaint(e);
+    }
+
+    private void PaintScreen(Graphics graphics, Bitmap screen)
+    {
+        var visibleSprites = _blockSprites.Values
+            .Where(sprite => sprite.X >= 0 && sprite.X < CharacterWidth &&
+                             sprite.Y >= 0 && sprite.Y < CharacterHeight)
+            .ToArray();
+
+        if (visibleSprites.Length == 0)
+        {
+            graphics.DrawImage(screen, 0, 0, Width, Height);
+            return;
+        }
+
+        // Composite onto a copy so the text and graphics underneath each sprite stay intact.
+        using var frame = (Bitmap)screen.Clone();
+        var pixels = new Pixelmap(frame);
+        pixels.LockBits();
+
+        try
+        {
+            var background = _palette.GetColor(BackgroundColor);
+            foreach (var sprite in visibleSprites)
+            {
+                _fontMonochromeSprite.DrawOpaque(pixels, sprite.Character,
+                    sprite.X * 8 + BorderWidth, sprite.Y * 8 + BorderHeight,
+                    _palette.GetColor(sprite.Color), background);
+            }
+        }
+        finally
+        {
+            pixels.UnlockBits();
+        }
+
+        graphics.DrawImage(frame, 0, 0, Width, Height);
     }
 
     private void ShowKeyboardActivity()

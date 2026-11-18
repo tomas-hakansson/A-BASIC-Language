@@ -315,7 +315,13 @@ public class BasicParser
                         Print();
                         break;
                     case "PRINTAT":
-                        PrintAt();
+                        ParseFixedArguments(statement, 3);
+                        break;
+                    case "CREATEBLOCKSPRITE":
+                        ParseFixedArguments(statement, 4);
+                        break;
+                    case "MOVEBLOCKSPRITE":
+                        ParseFixedArguments(statement, 3, "#MOVEBLOCKSPRITE-WITH-CHARACTER");
                         break;
                     case "CLS":
                     case "SCNCLR":
@@ -325,8 +331,9 @@ public class BasicParser
                         Window();
                         break;
                     case "SCROLL":
+                    case "SLEEP":
                         Expression();
-                        Generate(new AblProcedure("SCROLL"));
+                        Generate(new AblProcedure(statement));
                         break;
                     case "COLOR":
                         Color();
@@ -1081,13 +1088,13 @@ public class BasicParser
         Generate(new AblProcedure("COLOR"));
     }
 
-    private void PrintAt()
+    private void ParseFixedArguments(string statement, int argumentCount, string? procedureWithOptionalArgument = null)
     {
-        for (var argument = 0; argument < 3; argument++)
+        for (var argument = 0; argument < argumentCount; argument++)
         {
             if (argument > 0 && !Maybe(','))
             {
-                ParseError("Expected comma between PRINTAT arguments.");
+                ParseError($"Expected comma between {statement} arguments.");
                 SkipStatement();
                 return;
             }
@@ -1095,7 +1102,14 @@ public class BasicParser
             Expression();
         }
 
-        Generate(new AblProcedure("PRINTAT"));
+        if (procedureWithOptionalArgument != null && Maybe(','))
+        {
+            Expression();
+            Generate(new AblProcedure(procedureWithOptionalArgument));
+            return;
+        }
+
+        Generate(new AblProcedure(statement));
     }
 
     private void Poke()
@@ -1652,7 +1666,7 @@ public class BasicParser
     }
 
     private static Regex StatementRegex() =>
-        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|PRINTAT(?![A-Z0-9$%])|PRINT|\?|(?:CLS|SCNCLR|SCROLL|RENUMBER|LOAD)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|(?:PRINTAT|CREATEBLOCKSPRITE|MOVEBLOCKSPRITE)(?![A-Z0-9$%])|PRINT|\?|(?:CLS|SCNCLR|SCROLL|SLEEP|RENUMBER|LOAD)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

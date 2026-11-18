@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Threading;
 
 namespace A_BASIC_Language.Language;
 
@@ -144,6 +145,7 @@ public class Interpreter
 
     void Eval()
     {
+        var sleepClock = Stopwatch.StartNew();
         EndMessageDisplayed = false;
         _subroutineCalls.Clear();
         
@@ -773,6 +775,28 @@ public class Interpreter
                                 _terminal.WriteCharacterAt((int)x, (int)y, Petscii.Decode((byte)code));
                             }
                             break;
+                        case "CREATEBLOCKSPRITE":
+                            {
+                                var code = BlockSpriteInteger(_data.Pop(), "CREATEBLOCKSPRITE", "asc", 0, 255);
+                                var y = BlockSpriteInteger(_data.Pop(), "CREATEBLOCKSPRITE", "y");
+                                var x = BlockSpriteInteger(_data.Pop(), "CREATEBLOCKSPRITE", "x");
+                                var number = BlockSpriteInteger(_data.Pop(), "CREATEBLOCKSPRITE", "num");
+                                _terminal.CreateBlockSprite(number, x, y, Petscii.Decode((byte)code));
+                            }
+                            break;
+                        case "MOVEBLOCKSPRITE":
+                        case "#MOVEBLOCKSPRITE-WITH-CHARACTER":
+                            {
+                                const string command = "MOVEBLOCKSPRITE";
+                                char? character = p.Name == "#MOVEBLOCKSPRITE-WITH-CHARACTER"
+                                    ? Petscii.Decode((byte)BlockSpriteInteger(_data.Pop(), command, "asc", 0, 255))
+                                    : null;
+                                var y = BlockSpriteInteger(_data.Pop(), command, "y");
+                                var x = BlockSpriteInteger(_data.Pop(), command, "x");
+                                var number = BlockSpriteInteger(_data.Pop(), command, "num");
+                                _terminal.MoveBlockSprite(number, x, y, character);
+                            }
+                            break;
                         case "PEEK":
                             {
                                 var address = MemoryAddress(_data.Pop());
@@ -844,6 +868,26 @@ public class Interpreter
                                 _terminal.SetTextRenderLimit(25 - (int)rows);
                             }
 
+                            break;
+                        case "SLEEP":
+                            {
+                                var milliseconds = Number(_data.Pop());
+                                if (milliseconds != Math.Truncate(milliseconds) || milliseconds < 0 || milliseconds > int.MaxValue)
+                                    throw new InvalidOperationException("SLEEP requires a whole number from 0 to 2147483647 milliseconds.");
+
+                                while (!UserBreak && !_terminal.QuitFlag && sleepClock.Elapsed.TotalMilliseconds < milliseconds)
+                                {
+                                    _terminal.PumpEvents();
+                                    if (UserBreak || _terminal.QuitFlag)
+                                        break;
+
+                                    var remaining = milliseconds - sleepClock.Elapsed.TotalMilliseconds;
+                                    if (remaining > 0)
+                                        Thread.Sleep((int)Math.Ceiling(Math.Min(remaining, 10)));
+                                }
+
+                                sleepClock.Restart();
+                            }
                             break;
                         case "RANDOMIZE":
                             _random = new Random();
@@ -1064,6 +1108,15 @@ public class Interpreter
             throw new InvalidOperationException("The memory address must be a whole number from 0 to 65535.");
 
         return (int)address;
+    }
+
+    private static int BlockSpriteInteger(ValueBase value, string command, string argument, int min = int.MinValue, int max = int.MaxValue)
+    {
+        var number = Number(value);
+        if (number != Math.Truncate(number) || number < min || number > max)
+            throw new InvalidOperationException($"{command} requires {argument} to be a whole number from {min} to {max}.");
+
+        return (int)number;
     }
 
     private static double Number(ValueBase value)

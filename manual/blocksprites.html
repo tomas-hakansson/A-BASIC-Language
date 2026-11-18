@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Block sprites | ABL manual</title>
+    <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+    <header>
+        <h1>Block sprites</h1>
+        <p>The ability to use terminal characters as sprites.</p>
+    </header>
+    <main>
+        <p><a href="../index.html#printat">Back to the language reference</a></p>
+        <section>
+            <h2>CREATEBLOCKSPRITE</h2>
+            <pre><code>CREATEBLOCKSPRITE num, x, y, asc</code></pre>
+            <dl>
+                <dt><code>num</code></dt>
+                <dd>The sprite's ID, a signed 32-bit integer. Use the same ID again to update its position and character. If sprites overlap, the highest ID is drawn on top.</dd>
+                <dt><code>x</code>, <code>y</code></dt>
+                <dd>The column and row, starting at (0, 0) in the top-left corner. Both coordinates accept any signed 32-bit integer. Sprites outside the current screen are hidden.</dd>
+                <dt><code>asc</code></dt>
+                <dd>A PETSCII character code from 0 to 255, such as <code>ASC("A")</code>. The sprite uses the current text color when you issue the command.</dd>
+            </dl>
+            <p>A block sprite covers one screen cell. Moving it reveals the character underneath in its original color.</p>
+            <p>Try these commands one at a time in direct mode. The last command moves sprite 1, changes its character to B, and reveals the dot.</p>
+            <pre><code>PRINTAT 5, 3, ASC(".")
+CREATEBLOCKSPRITE 1, 5, 3, ASC("A")
+CREATEBLOCKSPRITE 1, 6, 3, ASC("B")</code></pre>
+        </section>
+        <section>
+            <h2>MOVEBLOCKSPRITE</h2>
+            <pre><code>MOVEBLOCKSPRITE num, x, y[, asc]</code></pre>
+            <p>Moves an existing sprite to the given column and row, revealing the screen cell it previously covered. Supply <code>asc</code> to change the sprite's character, or omit it to keep the current character. The sprite keeps its color. An unknown sprite ID produces an error.</p>
+            <h3>Example program</h3>
+            <p>The sprite travels across a line of text and then moves off-screen, leaving the whole line visible. SLEEP on line 100 sets an 80-millisecond interval between steps.</p>
+            <pre><code>10 CLS
+20 T$ = "THE TEXT STAYS IN PLACE"
+30 FOR X = 0 TO LEN(T$) - 1
+40 PRINTAT X, 8, ASC(MID$(T$, X + 1, 1))
+50 NEXT X
+60 CREATEBLOCKSPRITE 1, -1, 8, ASC("*")
+70 FOR X = 0 TO LEN(T$) - 1
+80 MOVEBLOCKSPRITE 1, X, 8
+90 IF X = 10 THEN MOVEBLOCKSPRITE 1, X, 8
+100 SLEEP 80
+120 NEXT X
+130 MOVEBLOCKSPRITE 1, -1, 8
+140 END</code></pre>
+        </section>
+    </main>
+    <footer><p>ABL – A BASIC Language · developed by Tomas Håkansson and Anders Hesselbom.</p></footer>
+</body>
+</html>

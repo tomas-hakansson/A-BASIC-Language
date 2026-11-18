@@ -99,6 +99,12 @@ public sealed class TerminalAdapter : IBasicTerminal
     public void WriteCharacterAt(int x, int y, char character) =>
         _terminal.WriteCharacterAt(x, y, character);
 
+    public void CreateBlockSprite(int number, int x, int y, char character) =>
+        _terminal.CreateBlockSprite(number, x, y, character);
+
+    public void MoveBlockSprite(int number, int x, int y, char? character) =>
+        _terminal.MoveBlockSprite(number, x, y, character);
+
     public void Write(string text)
     {
         text = text.Replace("\r\n", "\n").Replace('\r', '\n');

@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/manual/">
+    <File Path="../manual/blocksprites.html" />
     <File Path="../manual/font.html" />
     <File Path="../manual/val.html" />
   </Folder>
