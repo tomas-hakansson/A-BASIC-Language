@@ -26,9 +26,9 @@ Of the 101 games, we support the ones followed by a 1:
 | bug               |     1     |
 | bullfight         |     1     |
 | bullseye          |     1     |
-| bunny             |     0     |
+| bunny             |     1     |
 | buzzword          |     1     |
-| calendar          |     0     |
+| calendar          |     0?    |
 | change            |     1     |
 | checkers          |     0     |
 | chemist           |     1     |

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using A_BASIC_Language.Language.ValueTypes;
 
 namespace A_BASIC_Language.Language.SpecificExecutors;
@@ -50,15 +51,7 @@ public class DimExecutor : VariableExecutor
                 index.Add(indexDigit);
             }
 
-            if (_dimVariables.TryGetValue(dv.Symbol, out var dim))
-            {
-                Data.Push(dim.Get(index));
-            }
-            else
-            {
-                // Variable is probably not declared, get the default value for the variable.
-                Data.Push(ValueBase.GetDefaultValueFor(dv.Symbol));
-            }
+            Data.Push(GetOrCreateImplicitArray(dv.Symbol, indexCount).Get(index));
         }
         else
         {
@@ -84,18 +77,24 @@ public class DimExecutor : VariableExecutor
                 index.Add(indexDigit);
             }
 
-            if (!_dimVariables.TryGetValue(symbol, out var dim))
-            {
-                var defaultValue = ValueBase.GetDefaultValueFor(symbol);
-                dim = new(index, defaultValue);
-            }
-
+            var dim = GetOrCreateImplicitArray(symbol, indexCount);
             dim.Add(value, index);
-            _dimVariables[symbol] = dim;
         }
         else
         {
             End("Insufficient items on the stack");
         }
+    }
+
+    private Dimension GetOrCreateImplicitArray(string symbol, int indexCount)
+    {
+        if (!_dimVariables.TryGetValue(symbol, out var dim))
+        {
+            // Arrays used without DIM have fixed bounds 0..10 in each dimension.
+            dim = new Dimension(Enumerable.Repeat(10, indexCount), ValueBase.GetDefaultValueFor(symbol));
+            _dimVariables[symbol] = dim;
+        }
+
+        return dim;
     }
 }
