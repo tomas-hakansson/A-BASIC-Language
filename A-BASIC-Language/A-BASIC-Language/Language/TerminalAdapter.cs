@@ -96,8 +96,8 @@ public sealed class TerminalAdapter : IBasicTerminal
     internal void UpdateFontMemory(int address, byte value) =>
         _terminal.UpdateFontMemory(address, value);
 
-    public void WriteCharacterAt(int x, int y, char character) =>
-        _terminal.WriteCharacterAt(x, y, character);
+    public void WriteCharacterAt(int x, int y, char character, int? color = null) =>
+        _terminal.WriteCharacterAt(x, y, character, color.HasValue ? (byte?)(color.Value - 1) : null);
 
     public void CreateBlockSprite(int number, int x, int y, char character, int color) =>
         _terminal.CreateBlockSprite(number, x, y, character, (byte)(color - 1));

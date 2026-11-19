@@ -795,7 +795,16 @@ public class Interpreter
                             _terminal.Write(new string(' ', 14 - _terminal.OutputColumn % 14));
                             break;
                         case "PRINTAT":
+                        case "#PRINTAT-WITH-COLOR":
                             {
+                                int? cellColor = null;
+                                if (p.Name == "#PRINTAT-WITH-COLOR")
+                                {
+                                    var color = Number(_data.Pop());
+                                    if (!color.IsInt(1, 16))
+                                        throw new InvalidOperationException("PRINTAT requires a whole number from 1 to 16 for the color.");
+                                    cellColor = (int)color;
+                                }
                                 var characterCode = _data.Pop();
                                 var y = Number(_data.Pop());
                                 var x = Number(_data.Pop());
@@ -808,7 +817,7 @@ public class Interpreter
                                 if (!code.IsByte())
                                     throw new InvalidOperationException("PRINTAT requires a whole number from 0 to 255 for the character code.");
 
-                                _terminal.WriteCharacterAt((int)x, (int)y, Petscii.Decode((byte)code));
+                                _terminal.WriteCharacterAt((int)x, (int)y, Petscii.Decode((byte)code), cellColor);
                             }
                             break;
                         case "CREATEBLOCKSPRITE":

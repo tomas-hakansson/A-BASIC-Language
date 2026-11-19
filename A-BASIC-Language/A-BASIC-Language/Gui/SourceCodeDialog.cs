@@ -14,7 +14,8 @@ public partial class SourceCodeDialog : Form
 
     private void SourceCodeDialog_Load(object sender, System.EventArgs e)
     {
-        textBox1.Text = SourceCode ?? "";
+        // The native multiline TextBox requires Windows (CRLF) line endings.
+        textBox1.Text = (SourceCode ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Replace("\n", "\r\n");
         textBox1.SelectionStart = 0;
         textBox1.SelectionLength = 0;
     }

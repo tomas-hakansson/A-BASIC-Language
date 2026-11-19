@@ -388,9 +388,9 @@ PRINT expression[,expression ...]</code></pre>
             </article>
             <article id="printat">
                 <h3>PRINTAT – place a character on the screen</h3>
-                <pre><code>PRINTAT x, y, code</code></pre>
+                <pre><code>PRINTAT x, y, code[, color]</code></pre>
                 <p><code>x</code> and <code>y</code> are whole-number column and row coordinates measured from the top-left cell (0, 0). The command ignores positions outside the current screen dimensions. <code>code</code> is a PETSCII character code from 0 to 255, including codes for symbols defined with <code>POKE</code>.</p>
-                <p>The command replaces the character in that cell and preserves the cell's color and the current output position.</p>
+                <p>The command replaces the character in that cell and preserves the current output position. With three arguments, it preserves the cell's color. Supply an optional fourth argument, a whole number from 1 to 16 in the COLOR palette, to set that cell's foreground color. This does not change the current text color.</p>
                 <pre><code>10 PRINTAT 5, 3, ASC("A")
 20 PRINTAT 6, 3, ASC("B")</code></pre>
                 <p>For more advanced concepts, see <a href="manual/blocksprites.html">Block sprites</a>.</p>

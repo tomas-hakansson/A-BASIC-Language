@@ -461,12 +461,14 @@ public partial class TerminalMatrixControl : UserControl
         }
     }
 
-    internal void WriteCharacterAt(int x, int y, char character)
+    internal void WriteCharacterAt(int x, int y, char character, byte? color = null)
     {
         if (x < 0 || x >= CharacterWidth || y < 0 || y >= CharacterHeight)
             return;
 
         _characterMap[x, y] = character;
+        if (color.HasValue)
+            _characterColorMap[x, y] = color.Value;
         _textPixelsChanged = true;
         Invalidate();
     }

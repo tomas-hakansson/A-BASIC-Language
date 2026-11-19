@@ -11,7 +11,7 @@ public interface IBasicTerminal
     Resolution ScreenResolution { get; }
     void SetScreenResolution(Resolution resolution, bool preserveContents = false);
     void Write(string text);
-    void WriteCharacterAt(int x, int y, char character);
+    void WriteCharacterAt(int x, int y, char character, int? color = null);
     void CreateBlockSprite(int number, int x, int y, char character, int color);
     void MoveBlockSprite(int number, int x, int y, char? character);
     void MoveBlockSpriteRelative(int number, int relativeX, int relativeY);

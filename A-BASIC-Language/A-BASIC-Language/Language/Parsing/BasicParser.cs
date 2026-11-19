@@ -315,6 +315,8 @@ public class BasicParser
                         Print();
                         break;
                     case "PRINTAT":
+                        ParseFixedArguments(statement, 3, "#PRINTAT-WITH-COLOR");
+                        break;
                     case "RELMOVEBLOCKSPRITE":
                         ParseFixedArguments(statement, 3);
                         break;
