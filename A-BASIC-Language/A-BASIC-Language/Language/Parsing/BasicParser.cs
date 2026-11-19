@@ -1421,7 +1421,7 @@ public class BasicParser
         }
 
         //Note: If function
-        Regex regex = new(@"\G(?<fun>DATAPOINTER|ABS|ASC|ATN|CHR\$|COS|EXP|INT|LEFT\$|LEN|LOG|MID\$|PEEK(?=[ \t]*\()|RND|RIGHT\$|SGN|SIN|SQR|SRND(?=[ \t]*\()|STR\$|TAB|TAN|VAL)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        Regex regex = new(@"\G(?<fun>BLOCKSPRITECOLLIDE(?=[ \t]*\()|BLOCKSPRITEX(?=[ \t]*\()|BLOCKSPRITEY(?=[ \t]*\()|DATAPOINTER|ABS|ASC|ATN|CHR\$|COS|EXP|INT|LEFT\$|LEN|LOG|MID\$|PEEK(?=[ \t]*\()|RND|RIGHT\$|SGN|SIN|SQR|SRND(?=[ \t]*\()|STR\$|TAB|TAN|VAL)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         var isFunction = regex.Match(_source, _index);
 
         if (isFunction.Success) //e.g. sqr(n)
@@ -1452,7 +1452,7 @@ public class BasicParser
             if (functionName != "DATAPOINTER")
                 Expression();
 
-            if (functionName is "LEFT$" or "RIGHT$" or "MID$" or "SRND")
+            if (functionName is "LEFT$" or "RIGHT$" or "MID$" or "SRND" or "BLOCKSPRITECOLLIDE")
             {
                 if (!Maybe(','))
                     throw new InvalidOperationException($"Expected a second argument in {functionName}.");

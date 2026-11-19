@@ -784,8 +784,24 @@ public class Interpreter
                                 _terminal.CreateBlockSprite(number, x, y, Petscii.Decode((byte)code));
                             }
                             break;
+                        case "BLOCKSPRITEX":
+                        case "BLOCKSPRITEY":
+                            {
+                                var position = _terminal.GetBlockSpritePosition(BlockSpriteInteger(_data.Pop(), p.Name, "num"));
+                                _data.Push(new IntValue(p.Name == "BLOCKSPRITEX" ? position?.X ?? -1 : position?.Y ?? -1));
+                            }
+                            break;
                         case "DELETEBLOCKSPRITE":
                             _terminal.DeleteBlockSprite(BlockSpriteInteger(_data.Pop(), p.Name, "num"));
+                            break;
+                        case "BLOCKSPRITECOLLIDE":
+                            {
+                                var secondNumber = BlockSpriteInteger(_data.Pop(), p.Name, "second sprite number");
+                                var firstNumber = BlockSpriteInteger(_data.Pop(), p.Name, "first sprite number");
+                                var first = _terminal.GetBlockSpritePosition(firstNumber);
+                                var second = _terminal.GetBlockSpritePosition(secondNumber);
+                                _data.Push(new IntValue(first.HasValue && second.HasValue && first.Value == second.Value ? -1 : 0));
+                            }
                             break;
                         case "#DELETE-ALL-BLOCKSPRITES":
                             _terminal.DeleteBlockSprite(null);

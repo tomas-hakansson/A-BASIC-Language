@@ -81,6 +81,24 @@ RELMOVEBLOCKSPRITE 1, 3, -1</code></pre>
             <pre><code>DELETEBLOCKSPRITE 1
 DELETEBLOCKSPRITE</code></pre>
         </section>
+        <section>
+            <h2>BLOCKSPRITEX and BLOCKSPRITEY</h2>
+            <pre><code>BLOCKSPRITEX(num)
+BLOCKSPRITEY(num)</code></pre>
+            <p>Return the sprite's current column and row, including positions outside the screen. Each function returns -1 if the sprite does not exist.</p>
+        </section>
+        <section>
+            <h2>BLOCKSPRITECOLLIDE</h2>
+            <pre><code>BLOCKSPRITECOLLIDE(first, second)</code></pre>
+            <p>Returns -1 when both sprites exist and share the same column and row, including positions outside the screen. Returns 0 when their positions differ or either sprite does not exist.</p>
+            <pre><code>10 CREATEBLOCKSPRITE 1, 5, 8, ASC("*")
+20 CREATEBLOCKSPRITE 2, 6, 8, ASC("@")
+30 PRINT BLOCKSPRITEX(1); BLOCKSPRITEY(1)
+40 PRINT BLOCKSPRITECOLLIDE(1, 2)
+50 RELMOVEBLOCKSPRITE 2, -1, 0
+60 PRINT BLOCKSPRITECOLLIDE(1, 2)</code></pre>
+            <p>The position is (5, 8). The collision results are 0 before the move and -1 afterwards.</p>
+        </section>
     </main>
     <footer><p>ABL – A BASIC Language · developed by Tomas Håkansson and Anders Hesselbom.</p></footer>
 </body>

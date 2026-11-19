@@ -505,6 +505,9 @@ public partial class TerminalMatrixControl : UserControl
         Invalidate();
     }
 
+    internal (int X, int Y)? GetBlockSpritePosition(int number) =>
+        _blockSprites.TryGetValue(number, out var sprite) ? (sprite.X, sprite.Y) : null;
+
     public void UpdateBitmap(Action<Pixelmap>? underText = null, Action<Pixelmap>? overText = null) =>
         RenderBitmap(invalidate: true, underText, overText);
 

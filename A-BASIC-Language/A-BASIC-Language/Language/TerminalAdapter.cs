@@ -111,6 +111,9 @@ public sealed class TerminalAdapter : IBasicTerminal
     public void DeleteBlockSprite(int? number) =>
         _terminal.DeleteBlockSprite(number);
 
+    public (int X, int Y)? GetBlockSpritePosition(int number) =>
+        _terminal.GetBlockSpritePosition(number);
+
     public void Write(string text)
     {
         text = text.Replace("\r\n", "\n").Replace('\r', '\n');
