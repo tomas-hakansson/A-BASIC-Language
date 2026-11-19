@@ -12,7 +12,7 @@ public interface IBasicTerminal
     void SetScreenResolution(Resolution resolution, bool preserveContents = false);
     void Write(string text);
     void WriteCharacterAt(int x, int y, char character);
-    void CreateBlockSprite(int number, int x, int y, char character);
+    void CreateBlockSprite(int number, int x, int y, char character, int color);
     void MoveBlockSprite(int number, int x, int y, char? character);
     void MoveBlockSpriteRelative(int number, int relativeX, int relativeY);
     void DeleteBlockSprite(int? number);

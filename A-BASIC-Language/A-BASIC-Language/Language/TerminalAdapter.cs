@@ -99,8 +99,8 @@ public sealed class TerminalAdapter : IBasicTerminal
     public void WriteCharacterAt(int x, int y, char character) =>
         _terminal.WriteCharacterAt(x, y, character);
 
-    public void CreateBlockSprite(int number, int x, int y, char character) =>
-        _terminal.CreateBlockSprite(number, x, y, character);
+    public void CreateBlockSprite(int number, int x, int y, char character, int color) =>
+        _terminal.CreateBlockSprite(number, x, y, character, (byte)(color - 1));
 
     public void MoveBlockSprite(int number, int x, int y, char? character) =>
         _terminal.MoveBlockSprite(number, x, y, character);

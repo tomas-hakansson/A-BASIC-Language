@@ -471,9 +471,9 @@ public partial class TerminalMatrixControl : UserControl
         Invalidate();
     }
 
-    internal void CreateBlockSprite(int number, int x, int y, char character)
+    internal void CreateBlockSprite(int number, int x, int y, char character, byte color)
     {
-        _blockSprites[number] = (x, y, character, CurrentCursorColor);
+        _blockSprites[number] = (x, y, character, color);
         Invalidate();
     }
 

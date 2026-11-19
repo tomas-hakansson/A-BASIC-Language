@@ -15,20 +15,22 @@
         <p><a href="../index.html#printat">Back to the language reference</a></p>
         <section>
             <h2>CREATEBLOCKSPRITE</h2>
-            <pre><code>CREATEBLOCKSPRITE num, x, y, asc</code></pre>
+            <pre><code>CREATEBLOCKSPRITE num, x, y, asc, color</code></pre>
             <dl>
                 <dt><code>num</code></dt>
                 <dd>The sprite's ID, a signed 32-bit integer. Use the same ID again to update its position and character. If sprites overlap, the highest ID is drawn on top.</dd>
                 <dt><code>x</code>, <code>y</code></dt>
                 <dd>The column and row, starting at (0, 0) in the top-left corner. Both coordinates accept any signed 32-bit integer. Sprites outside the current screen are hidden.</dd>
                 <dt><code>asc</code></dt>
-                <dd>A PETSCII character code from 0 to 255, such as <code>ASC("A")</code>. The sprite uses the current text color when you issue the command.</dd>
+                <dd>A PETSCII character code from 0 to 255, such as <code>ASC("A")</code>.</dd>
+                <dt><code>color</code></dt>
+                <dd>A whole number from 1 to 16, using the <a href="../index.html#color">COLOR palette</a>. The sprite keeps this foreground color when it moves.</dd>
             </dl>
             <p>A block sprite covers one screen cell. Moving it reveals the character underneath in its original color.</p>
             <p>Try these commands one at a time in direct mode. The last command moves sprite 1, changes its character to B, and reveals the dot.</p>
             <pre><code>PRINTAT 5, 3, ASC(".")
-CREATEBLOCKSPRITE 1, 5, 3, ASC("A")
-CREATEBLOCKSPRITE 1, 6, 3, ASC("B")</code></pre>
+CREATEBLOCKSPRITE 1, 5, 3, ASC("A"), 2
+CREATEBLOCKSPRITE 1, 6, 3, ASC("B"), 2</code></pre>
         </section>
         <section>
             <h2>MOVEBLOCKSPRITE</h2>
@@ -41,7 +43,7 @@ CREATEBLOCKSPRITE 1, 6, 3, ASC("B")</code></pre>
 30 FOR X = 0 TO LEN(T$) - 1
 40 PRINTAT X, 8, ASC(MID$(T$, X + 1, 1))
 50 NEXT X
-60 CREATEBLOCKSPRITE 1, -1, 8, ASC("*")
+60 CREATEBLOCKSPRITE 1, -1, 8, ASC("*"), 2
 70 FOR X = 0 TO LEN(T$) - 1
 80 MOVEBLOCKSPRITE 1, X, 8
 90 IF X = 10 THEN MOVEBLOCKSPRITE 1, X, 8
@@ -55,7 +57,7 @@ CREATEBLOCKSPRITE 1, 6, 3, ASC("B")</code></pre>
             <pre><code>RELMOVEBLOCKSPRITE num, RelativeX, RelativeY</code></pre>
             <p>Moves an existing block sprite by the given offsets. Positive offsets move it right and down. Negative offsets move it left and up. Its character and color are preserved.</p>
             <p>Offsets and resulting coordinates must fit in signed 32-bit integers. Sprites can move off-screen and back. An unknown sprite ID or a coordinate overflow produces an error.</p>
-            <pre><code>CREATEBLOCKSPRITE 1, -2, 4, ASC("*")
+            <pre><code>CREATEBLOCKSPRITE 1, -2, 4, ASC("*"), 2
 RELMOVEBLOCKSPRITE 1, 3, -1</code></pre>
             <p>The sprite starts off-screen and moves to column 1, row 3.</p>
             <h3>Example program using relative movement</h3>
@@ -65,7 +67,7 @@ RELMOVEBLOCKSPRITE 1, 3, -1</code></pre>
 30 FOR X = 0 TO LEN(T$) - 1
 40 PRINTAT X, 8, ASC(MID$(T$, X + 1, 1))
 50 NEXT X
-60 CREATEBLOCKSPRITE 1, -1, 8, ASC("*")
+60 CREATEBLOCKSPRITE 1, -1, 8, ASC("*"), 2
 70 FOR I = 1 TO LEN(T$)
 80 RELMOVEBLOCKSPRITE 1, 1, 0
 90 SLEEP 80
@@ -91,8 +93,8 @@ BLOCKSPRITEY(num)</code></pre>
             <h2>BLOCKSPRITECOLLIDE</h2>
             <pre><code>BLOCKSPRITECOLLIDE(first, second)</code></pre>
             <p>Returns -1 when both sprites exist and share the same column and row, including positions outside the screen. Returns 0 when their positions differ or either sprite does not exist.</p>
-            <pre><code>10 CREATEBLOCKSPRITE 1, 5, 8, ASC("*")
-20 CREATEBLOCKSPRITE 2, 6, 8, ASC("@")
+            <pre><code>10 CREATEBLOCKSPRITE 1, 5, 8, ASC("*"), 2
+20 CREATEBLOCKSPRITE 2, 6, 8, ASC("@"), 2
 30 PRINT BLOCKSPRITEX(1); BLOCKSPRITEY(1)
 40 PRINT BLOCKSPRITECOLLIDE(1, 2)
 50 RELMOVEBLOCKSPRITE 2, -1, 0

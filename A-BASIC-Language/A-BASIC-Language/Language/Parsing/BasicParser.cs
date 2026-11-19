@@ -319,7 +319,7 @@ public class BasicParser
                         ParseFixedArguments(statement, 3);
                         break;
                     case "CREATEBLOCKSPRITE":
-                        ParseFixedArguments(statement, 4);
+                        ParseFixedArguments(statement, 5);
                         break;
                     case "MOVEBLOCKSPRITE":
                         ParseFixedArguments(statement, 3, "#MOVEBLOCKSPRITE-WITH-CHARACTER");

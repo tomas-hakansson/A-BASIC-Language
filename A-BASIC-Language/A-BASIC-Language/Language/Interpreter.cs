@@ -777,11 +777,12 @@ public class Interpreter
                             break;
                         case "CREATEBLOCKSPRITE":
                             {
+                                var color = BlockSpriteInteger(_data.Pop(), "CREATEBLOCKSPRITE", "color", 1, 16);
                                 var code = BlockSpriteInteger(_data.Pop(), "CREATEBLOCKSPRITE", "asc", 0, 255);
                                 var y = BlockSpriteInteger(_data.Pop(), "CREATEBLOCKSPRITE", "y");
                                 var x = BlockSpriteInteger(_data.Pop(), "CREATEBLOCKSPRITE", "x");
                                 var number = BlockSpriteInteger(_data.Pop(), "CREATEBLOCKSPRITE", "num");
-                                _terminal.CreateBlockSprite(number, x, y, Petscii.Decode((byte)code));
+                                _terminal.CreateBlockSprite(number, x, y, Petscii.Decode((byte)code), color);
                             }
                             break;
                         case "BLOCKSPRITEX":
