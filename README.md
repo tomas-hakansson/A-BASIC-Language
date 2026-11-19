@@ -106,7 +106,7 @@ Of the 101 games, we support the ones followed by a 1:
 | train             |     1     |
 | trap              |     0     |
 | war               |     0     |
-| weekday           |     0     |
+| weekday           |     1     |
 | word              |     1?    |
 
 ## Documentation
