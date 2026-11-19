@@ -27,6 +27,7 @@
                 <dd>A whole number from 1 to 16, using the <a href="../index.html#color">COLOR palette</a>. The sprite keeps this foreground color when it moves.</dd>
             </dl>
             <p>A block sprite covers one screen cell. Moving it reveals the character underneath in its original color.</p>
+            <p>You can draw your own game characters with <code>POKE</code> and use their codes as <code>asc</code>. The <a href="font.html#spare-characters">font manual lists spare character codes</a> and explains how to edit all 256 characters.</p>
             <p>Try these commands one at a time in direct mode. The last command moves sprite 1, changes its character to B, and reveals the dot.</p>
             <pre><code>PRINTAT 5, 3, ASC(".")
 CREATEBLOCKSPRITE 1, 5, 3, ASC("A"), 2

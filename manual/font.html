@@ -16,6 +16,7 @@
         <nav aria-label="On this page">
             <ul>
                 <li><a href="#font-memory">Find a character in memory</a></li>
+                <li><a href="#spare-characters">Choose characters for games</a></li>
                 <li><a href="#change-character">Change an existing character</a></li>
                 <li><a href="#custom-symbol">Draw and print a custom symbol</a></li>
                 <li><a href="#restore-font">Keep or restore your changes</a></li>
@@ -37,6 +38,11 @@
                 </tbody>
             </table>
             <p>A byte of 0 clears the row and 255 fills it. A byte of 24 lights the two middle pixels because 16 + 8 = 24. Its pattern is <code>...##...</code>, where <code>#</code> is an on pixel and <code>.</code> is an off pixel.</p>
+        </section>
+
+        <section id="spare-characters">
+            <h2>Choose characters for games</h2>
+            <p>All 256 character codes, from 0 to 255, can be edited with <code>POKE</code>, including letters, numbers, punctuation and the space character. In both built-in fonts, codes <strong>0–31, 91, 93–96 and 123–255</strong> start blank and are available for your own game characters and animation frames. Code 250 in the example below is one of these spare slots. Codes 97–122 contain lowercase letter shapes. Choose spare slots your program has not already used, and pass their codes to <code>CHR$</code>, <code>PRINTAT</code> or <code>CREATEBLOCKSPRITE</code> to display them. Editing a code changes its appearance everywhere it is used, including existing text and sprites.</p>
         </section>
 
         <section id="change-character">
