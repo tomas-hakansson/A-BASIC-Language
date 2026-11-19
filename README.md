@@ -59,7 +59,7 @@ Of the 101 games, we support the ones followed by a 1:
 | hi-lo             |     1     |
 | highiq            |     1     |
 | hockey            |     1     |
-| horserace         |     0     |
+| horserace         |     1     |
 | hurkle            |     1     |
 | kinema            |     1     |
 | king              |     1     |
@@ -107,7 +107,7 @@ Of the 101 games, we support the ones followed by a 1:
 | trap              |     0     |
 | war               |     0     |
 | weekday           |     0     |
-| word              |     0     |
+| word              |     1?    |
 
 ## Documentation
 

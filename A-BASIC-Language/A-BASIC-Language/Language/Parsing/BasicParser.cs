@@ -897,6 +897,9 @@ public class BasicParser
     {
         Prompt();
         Generate(new AblString("? "), new AblProcedure("#WRITE"));
+        var inputInstructions = _expressionTarget ?? _lines[_currentLabel];
+        var inputStart = inputInstructions.Count;
+        var inputTypes = new StringBuilder();
 
         if (!UnsetVariable())
             return;
@@ -907,6 +910,8 @@ public class BasicParser
                 return;
         }
 
+        inputInstructions.InsertRange(inputStart,
+            [new AblString(inputTypes.ToString()), new AblProcedure("#INPUT-BEGIN")]);
         return;
 
         void Prompt()
@@ -932,6 +937,7 @@ public class BasicParser
                 return false;
 
             var assignmentType = ASetVariable_Helper(v);
+            inputTypes.Append(v.TypeSpecifier == "$" ? '$' : v.TypeSpecifier == "%" ? '%' : 'F');
 
             switch (v.TypeSpecifier)
             {

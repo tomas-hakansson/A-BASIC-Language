@@ -143,6 +143,122 @@ public class Interpreter
             _terminal.WriteLine("?SAVE failed");
     }
 
+    private Queue<ValueBase> ReadInputValues(string types)
+    {
+        var values = new Queue<ValueBase>();
+        while (!_terminal!.QuitFlag && !UserBreak)
+        {
+            var line = _terminal.InputString("");
+            if (_terminal.QuitFlag || UserBreak)
+                return values;
+
+            var valid = TrySplitInput(line, out var fields);
+            if (valid)
+            {
+                foreach (var field in fields)
+                {
+                    if (values.Count == types.Length)
+                    {
+                        _terminal.WriteLine("?Extra ignored");
+                        break;
+                    }
+
+                    var type = types[values.Count];
+                    if (type == '$')
+                    {
+                        values.Enqueue(new StringValue(field.Text));
+                        continue;
+                    }
+
+                    var text = field.Text.Length == 0 ? "0" : field.Text;
+                    if (field.Quoted || !double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var number) ||
+                        double.IsNaN(number) || double.IsInfinity(number))
+                    {
+                        valid = false;
+                        break;
+                    }
+
+                    if (type == '%')
+                    {
+                        if (Math.Truncate(number) < int.MinValue || Math.Truncate(number) > int.MaxValue)
+                        {
+                            valid = false;
+                            break;
+                        }
+                        values.Enqueue(new IntValue((int)number));
+                    }
+                    else
+                        values.Enqueue(new FloatValue(number));
+                }
+            }
+
+            if (!valid)
+            {
+                values.Clear();
+                _terminal.WriteLine("?Redo from start");
+                _terminal.Write("? ");
+            }
+            else if (values.Count == types.Length)
+                return values;
+            else
+                _terminal.Write("?? ");
+        }
+        return values;
+    }
+
+    private static bool TrySplitInput(string line, out List<(string Text, bool Quoted)> fields)
+    {
+        fields = [];
+        var position = 0;
+        while (true)
+        {
+            while (position < line.Length && char.IsWhiteSpace(line[position]))
+                position++;
+            var quoted = position < line.Length && line[position] == '"';
+            string text;
+            if (quoted)
+            {
+                position++;
+                var value = new System.Text.StringBuilder();
+                var closed = false;
+                while (position < line.Length)
+                {
+                    var c = line[position++];
+                    if (c != '"')
+                        value.Append(c);
+                    else if (position < line.Length && line[position] == '"')
+                    {
+                        value.Append('"');
+                        position++;
+                    }
+                    else
+                    {
+                        closed = true;
+                        break;
+                    }
+                }
+                if (!closed)
+                    return false;
+                text = value.ToString();
+                while (position < line.Length && char.IsWhiteSpace(line[position]))
+                    position++;
+                if (position < line.Length && line[position] != ',')
+                    return false;
+            }
+            else
+            {
+                var start = position;
+                while (position < line.Length && line[position] != ',')
+                    position++;
+                text = line.Substring(start, position - start).Trim();
+            }
+            fields.Add((text, quoted));
+            if (position == line.Length)
+                return true;
+            position++;
+        }
+    }
+
     void Eval()
     {
         var sleepClock = Stopwatch.StartNew();
@@ -167,6 +283,7 @@ public class Interpreter
 
         var endProgram = false;
         var loops = new Stack<LoopFrame>();
+        var inputValues = new Queue<ValueBase>();
 
         var instructions = _parseResult.EvalValues;
         var eventPumpWatch = Stopwatch.StartNew();
@@ -654,96 +771,15 @@ public class Interpreter
                                 }
                             }
                             break;
+                        case "#INPUT-BEGIN":
+                            inputValues = ReadInputValues(((StringValue)_data.Pop()).Value);
+                            if (_terminal.QuitFlag || UserBreak)
+                                return;
+                            break;
                         case "#INPUT-INT":
-                            {
-                                bool happy;
-                                do
-                                {
-                                    if (_terminal.QuitFlag || UserBreak)
-                                        break;
-
-                                    happy = false;
-                                    var input = _terminal.InputString("");
-                                    if (_terminal.QuitFlag || UserBreak)
-                                        break;
-
-                                    var value = ValueBase.GetValueType(input);
-
-                                    if (value.CanGetAsType<IntValue>())
-                                    {
-                                        var intValue = new IntValue((int)value.GetValueAsType<IntValue>());
-
-                                        if (!_terminal.QuitFlag && !UserBreak)
-                                            _data.Push(intValue);
-
-                                        happy = true;
-                                    }
-                                    else
-                                    {
-                                        if (!_terminal.QuitFlag && !UserBreak)
-                                        {
-                                            _terminal.WriteLine("?Redo from start"); // TODO await?
-                                            _terminal.Write("Enter a numeric value: "); // TODO await?
-                                        }
-                                        else
-                                        {
-                                            break;
-                                        }
-                                    }
-
-                                } while (!happy);
-                            }
-                            break;
                         case "#INPUT-FLOAT":
-                            {
-                                bool happy;
-
-                                do
-                                {
-                                    if (_terminal.QuitFlag || UserBreak)
-                                        break;
-
-                                    happy = false;
-                                    var input = _terminal.InputString("");
-
-                                    if (_terminal.QuitFlag || UserBreak)
-                                        break;
-
-                                    var value = ValueBase.GetValueType(input);
-
-                                    if (value.CanGetAsType<FloatValue>())
-                                    {
-                                        var floatValue = new FloatValue((double)value.GetValueAsType<FloatValue>());
-
-                                        if (!_terminal.QuitFlag && !UserBreak)
-                                            _data.Push(floatValue);
-
-                                        happy = true;
-                                    }
-                                    else
-                                    {
-                                        if (!_terminal.QuitFlag && !UserBreak)
-                                        {
-                                            _terminal.WriteLine("?Redo from start"); // TODO: Await?
-                                            _terminal.Write("Enter a numeric value: "); // TODO: Await?
-                                        }
-                                        else
-                                            break;
-                                    }
-
-                                } while (!happy);
-                            }
-                            break;
                         case "#INPUT-STRING":
-                            {
-                                if (_terminal.QuitFlag || UserBreak)
-                                    return;
-
-                                var value = new StringValue(_terminal.InputString(""));
-
-                                if (!_terminal.QuitFlag && !UserBreak)
-                                    _data.Push(value);
-                            }
+                            _data.Push(inputValues.Dequeue());
                             break;
                         case "INT":
                             {
