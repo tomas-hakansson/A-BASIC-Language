@@ -74,6 +74,13 @@ RELMOVEBLOCKSPRITE 1, 3, -1</code></pre>
 120 END</code></pre>
             <p>The last move returns the sprite to its starting position off-screen and reveals the whole line of text.</p>
         </section>
+        <section>
+            <h2>DELETEBLOCKSPRITE</h2>
+            <pre><code>DELETEBLOCKSPRITE [num]</code></pre>
+            <p>Deletes the sprite with the given ID. Omit the argument to delete all block sprites, including sprites outside the screen. The underlying screen contents become visible again. Deleting an unknown ID has no effect.</p>
+            <pre><code>DELETEBLOCKSPRITE 1
+DELETEBLOCKSPRITE</code></pre>
+        </section>
     </main>
     <footer><p>ABL – A BASIC Language · developed by Tomas Håkansson and Anders Hesselbom.</p></footer>
 </body>

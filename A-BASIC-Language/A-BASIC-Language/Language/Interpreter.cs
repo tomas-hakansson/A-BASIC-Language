@@ -784,6 +784,12 @@ public class Interpreter
                                 _terminal.CreateBlockSprite(number, x, y, Petscii.Decode((byte)code));
                             }
                             break;
+                        case "DELETEBLOCKSPRITE":
+                            _terminal.DeleteBlockSprite(BlockSpriteInteger(_data.Pop(), p.Name, "num"));
+                            break;
+                        case "#DELETE-ALL-BLOCKSPRITES":
+                            _terminal.DeleteBlockSprite(null);
+                            break;
                         case "MOVEBLOCKSPRITE":
                         case "#MOVEBLOCKSPRITE-WITH-CHARACTER":
                         case "RELMOVEBLOCKSPRITE":

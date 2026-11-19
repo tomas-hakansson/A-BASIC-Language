@@ -324,6 +324,15 @@ public class BasicParser
                     case "MOVEBLOCKSPRITE":
                         ParseFixedArguments(statement, 3, "#MOVEBLOCKSPRITE-WITH-CHARACTER");
                         break;
+                    case "DELETEBLOCKSPRITE":
+                        if (AtStatementEnd())
+                            Generate(new AblProcedure("#DELETE-ALL-BLOCKSPRITES"));
+                        else
+                        {
+                            Expression();
+                            Generate(new AblProcedure(statement));
+                        }
+                        break;
                     case "CLS":
                     case "SCNCLR":
                         ClearScreen(statement);
@@ -1667,7 +1676,7 @@ public class BasicParser
     }
 
     private static Regex StatementRegex() =>
-        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|(?:PRINTAT|CREATEBLOCKSPRITE|MOVEBLOCKSPRITE|RELMOVEBLOCKSPRITE)(?![A-Z0-9$%])|PRINT|\?|(?:CLS|SCNCLR|SCROLL|SLEEP|RENUMBER|LOAD)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|(?:PRINTAT|CREATEBLOCKSPRITE|MOVEBLOCKSPRITE|RELMOVEBLOCKSPRITE|DELETEBLOCKSPRITE)(?![A-Z0-9$%])|PRINT|\?|(?:CLS|SCNCLR|SCROLL|SLEEP|RENUMBER|LOAD)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

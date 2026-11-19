@@ -495,6 +495,16 @@ public partial class TerminalMatrixControl : UserControl
         Invalidate();
     }
 
+    internal void DeleteBlockSprite(int? number)
+    {
+        if (number.HasValue)
+            _blockSprites.Remove(number.Value);
+        else
+            _blockSprites.Clear();
+
+        Invalidate();
+    }
+
     public void UpdateBitmap(Action<Pixelmap>? underText = null, Action<Pixelmap>? overText = null) =>
         RenderBitmap(invalidate: true, underText, overText);
 
