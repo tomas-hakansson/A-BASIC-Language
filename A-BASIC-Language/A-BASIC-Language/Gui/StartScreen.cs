@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using A_BASIC_Language.TerminalMatrix;
 
 namespace A_BASIC_Language.Gui;

@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using A_BASIC_Language.TerminalMatrix.TerminalColor;
 
 namespace A_BASIC_Language.Gui.Multimedia;

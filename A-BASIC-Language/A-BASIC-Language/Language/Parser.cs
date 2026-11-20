@@ -1,4 +1,3 @@
-#nullable enable
 using A_BASIC_Language.Language.Parsing;
 
 namespace A_BASIC_Language.Language;

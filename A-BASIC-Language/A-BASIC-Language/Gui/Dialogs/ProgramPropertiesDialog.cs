@@ -1,5 +1,4 @@
-﻿#nullable enable
-using A_BASIC_Language.Language;
+﻿using A_BASIC_Language.Language;
 using System;
 using System.Diagnostics;
 using System.Linq;

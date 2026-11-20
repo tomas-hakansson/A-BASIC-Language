@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using A_BASIC_Language.StringManipulation;
 
 namespace A_BASIC_Language.Gui.PreProcessor;

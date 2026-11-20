@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System.Collections;
+﻿using System.Collections;
 using System.Windows.Forms;
 
 namespace A_BASIC_Language.Gui.UserControls;

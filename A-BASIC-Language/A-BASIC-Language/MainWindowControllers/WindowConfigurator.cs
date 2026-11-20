@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using A_BASIC_Language.Gui;
 using A_BASIC_Language.Properties;
 using A_BASIC_Language.TerminalMatrix;

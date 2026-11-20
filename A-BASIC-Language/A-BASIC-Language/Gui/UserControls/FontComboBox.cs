@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System.Linq;
+﻿using System.Linq;
 using System.Windows.Forms;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 

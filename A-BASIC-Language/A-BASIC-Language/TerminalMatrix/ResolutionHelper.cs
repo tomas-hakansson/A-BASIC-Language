@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Drawing;
 
 namespace A_BASIC_Language.TerminalMatrix;

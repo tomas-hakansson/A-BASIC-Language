@@ -1,4 +1,3 @@
-#nullable enable
 using A_BASIC_Language.Language.LanguageParts;
 using System;
 using System.Collections.Generic;

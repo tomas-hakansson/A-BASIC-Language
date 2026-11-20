@@ -1,4 +1,3 @@
-#nullable enable
 using A_BASIC_Language.Gui;
 using A_BASIC_Language.Gui.Dialogs;
 using A_BASIC_Language.Gui.Multimedia;

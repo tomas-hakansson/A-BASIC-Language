@@ -1,4 +1,3 @@
-#nullable enable
 namespace A_BASIC_Language.Language;
 
 public class AblEvalValue

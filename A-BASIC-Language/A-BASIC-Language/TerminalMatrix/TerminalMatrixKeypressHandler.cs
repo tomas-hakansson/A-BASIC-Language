@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Windows.Forms;
 using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;

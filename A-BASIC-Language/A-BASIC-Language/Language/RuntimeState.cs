@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using A_BASIC_Language.Language.ValueTypes;

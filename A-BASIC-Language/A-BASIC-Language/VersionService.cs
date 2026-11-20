@@ -1,5 +1,4 @@
-﻿#nullable  enable
-using A_BASIC_Language.Gui;
+﻿using A_BASIC_Language.Gui;
 using System;
 using System.Diagnostics;
 using System.Reflection;

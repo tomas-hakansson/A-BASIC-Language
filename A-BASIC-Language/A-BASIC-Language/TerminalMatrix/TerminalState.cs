@@ -1,5 +1,4 @@
-﻿#nullable enable
-namespace A_BASIC_Language.TerminalMatrix;
+﻿namespace A_BASIC_Language.TerminalMatrix;
 
 public class TerminalState
 {

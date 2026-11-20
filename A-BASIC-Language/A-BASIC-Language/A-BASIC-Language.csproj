@@ -22,6 +22,7 @@
     </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Nullable>enable</Nullable>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -197,6 +198,7 @@
     <Compile Include="PendingSymbol.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SamplePrograms\SampleProgramConstants.cs" />
     <Compile Include="StringManipulation\StringExtensions.cs" />
     <Compile Include="TerminalMatrix\Coordinate.cs" />
     <Compile Include="TerminalMatrix\CoordinateList.cs" />

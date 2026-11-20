@@ -1,4 +1,3 @@
-#nullable enable
 using A_BASIC_Language.IO;
 using A_BASIC_Language.Language.LanguageParts;
 using A_BASIC_Language.Language.LoopInstructions;

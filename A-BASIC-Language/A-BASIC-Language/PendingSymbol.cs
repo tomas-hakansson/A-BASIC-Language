@@ -1,5 +1,4 @@
-﻿#nullable enable
-namespace A_BASIC_Language;
+﻿namespace A_BASIC_Language;
 
 public class PendingSymbol
 {

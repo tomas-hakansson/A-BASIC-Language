@@ -1,4 +1,3 @@
-#nullable enable
 using A_BASIC_Language.Gui.Multimedia;
 using A_BASIC_Language.Gui.PreProcessor;
 using A_BASIC_Language.IO;
