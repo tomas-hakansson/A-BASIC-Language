@@ -454,17 +454,8 @@ public partial class MainWindow : Form
     private void btnProgramProperties_Click(object sender, EventArgs e) =>
         propertiesToolStripMenuItem_Click(sender, e);
 
-    private void programDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-        try
-        {
-            Process.Start("explorer.exe", Paths.GetProgramBasePath()!.FullName);
-        }
-        catch
-        {
-            _msgBox.Fail("Failed to open the source folder.");
-        }
-    }
+    private void programDirectoryToolStripMenuItem_Click(object sender, EventArgs e) =>
+        Paths.OpenProgramDirectory(_msgBox);
 
     private void gamesDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
     {

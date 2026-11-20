@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using A_BASIC_Language.Gui;
 
 namespace A_BASIC_Language.IO;
 
@@ -121,6 +123,18 @@ public static class Paths
         catch
         {
             return null;
+        }
+    }
+
+    public static void OpenProgramDirectory(IMsgBox msgBox)
+    {
+        try
+        {
+            Process.Start("explorer.exe", Paths.GetProgramBasePath()!.FullName);
+        }
+        catch
+        {
+            msgBox.Fail("Failed to open the source folder.");
         }
     }
 }
