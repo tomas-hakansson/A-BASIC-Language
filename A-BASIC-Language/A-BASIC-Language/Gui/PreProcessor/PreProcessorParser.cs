@@ -42,6 +42,9 @@ public class PreProcessorParser
                     case "LIST":
                         message = "List source code.";
                         return PreProcessorParserResult.List;
+                    case "COPYSOURCE":
+                        message = "";
+                        return PreProcessorParserResult.CopySource;
                     case "HQ-RENDER":
                         message = "Toggle high quality render.";
                         return PreProcessorParserResult.HighQualityRenderToggle;

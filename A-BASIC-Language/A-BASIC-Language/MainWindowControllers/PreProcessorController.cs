@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace A_BASIC_Language.MainWindowControllers;
 
@@ -185,6 +187,9 @@ public class PreProcessorController
             case PreProcessorParserResult.List:
                 _parent.List();
                 break;
+            case PreProcessorParserResult.CopySource:
+                CopySource();
+                break;
             case PreProcessorParserResult.Show101Games:
                 Show101Games();
                 break;
@@ -200,6 +205,24 @@ public class PreProcessorController
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private void CopySource()
+    {
+        try
+        {
+            var source = _parent.GetProgramAsString();
+            if (source.Length == 0)
+                Clipboard.Clear();
+            else
+                Clipboard.SetDataObject(source, true, 5, 100);
+
+            _parent.WriteLine("Program copied to Windows clipboard.");
+        }
+        catch (ExternalException)
+        {
+            _parent.WriteLine("?Could not copy program to Windows clipboard.");
         }
     }
 

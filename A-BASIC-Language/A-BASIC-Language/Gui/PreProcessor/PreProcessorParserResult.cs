@@ -23,5 +23,6 @@ public enum PreProcessorParserResult
     Load101Games,
     Run101Games,
     Quit,
-    ColorTheme
+    ColorTheme,
+    CopySource
 }
