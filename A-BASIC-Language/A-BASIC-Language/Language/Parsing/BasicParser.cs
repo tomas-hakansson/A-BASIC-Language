@@ -341,6 +341,12 @@ public class BasicParser
                     case "WINDOW":
                         Window();
                         break;
+                    case "CURSOR":
+                        Cursor();
+                        break;
+                    case "RESET":
+                        Reset();
+                        break;
                     case "SCROLL":
                     case "SLEEP":
                         Expression();
@@ -1134,6 +1140,35 @@ public class BasicParser
         Generate(new AblProcedure(statement));
     }
 
+    private void Reset()
+    {
+        var hard = Maybe("HARD");
+        if (!hard)
+            Maybe("SOFT");
+
+        if (!AtStatementEnd())
+        {
+            ParseError("RESET accepts SOFT or HARD.");
+            SkipStatement();
+            return;
+        }
+
+        Generate(new AblNumber(hard ? 1 : 0), new AblProcedure("RESET"));
+    }
+
+    private void Cursor()
+    {
+        var visible = Maybe("ON");
+        if ((!visible && !Maybe("OFF")) || !AtStatementEnd())
+        {
+            ParseError("CURSOR requires ON or OFF.");
+            SkipStatement();
+            return;
+        }
+
+        Generate(new AblNumber(visible ? 1 : 0), new AblProcedure("CURSOR"));
+    }
+
     private void Poke()
     {
         Expression();
@@ -1688,7 +1723,7 @@ public class BasicParser
     }
 
     private static Regex StatementRegex() =>
-        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|(?:PRINTAT|CREATEBLOCKSPRITE|MOVEBLOCKSPRITE|RELMOVEBLOCKSPRITE|DELETEBLOCKSPRITE)(?![A-Z0-9$%])|PRINT|\?|(?:CLS|SCNCLR|SCROLL|SLEEP|RENUMBER|LOAD)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|(?:PRINTAT|CREATEBLOCKSPRITE|MOVEBLOCKSPRITE|RELMOVEBLOCKSPRITE|DELETEBLOCKSPRITE)(?![A-Z0-9$%])|PRINT|\?|(?:CLS|SCNCLR|SCROLL|SLEEP|CURSOR|RESET|RENUMBER|LOAD)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

@@ -33,6 +33,7 @@ public class Interpreter
     private readonly RuntimeState _state;
     private Resolution? _programStartResolution;
     public bool UserBreak { get; set; }
+    public bool? ResetHardRequested { get; private set; }
 
     public Interpreter(string source, bool runtime, Log log, RuntimeState? state = null)
     {
@@ -94,6 +95,8 @@ public class Interpreter
         }
         finally
         {
+            if (_runtime)
+                terminal.SetCursorVisible(true);
             RestoreScreenResolution();
         }
     }
@@ -917,6 +920,16 @@ public class Interpreter
                         case "CLS":
                             ClearScreen((int)Number(_data.Pop()));
                             break;
+                        case "RESET":
+                            ResetHardRequested = Number(_data.Pop()) != 0;
+                            return;
+                        case "CURSOR":
+                            {
+                                var visible = Number(_data.Pop()) != 0;
+                                if (_runtime)
+                                    _terminal.SetCursorVisible(visible);
+                            }
+                            break;
                         case "SCROLL":
                             {
                                 var mode = Number(_data.Pop());
@@ -1237,6 +1250,8 @@ public class Interpreter
     private void End(string message, bool showReady = true)
     {
         EndMessageDisplayed = true;
+        if (_runtime)
+            _terminal?.SetCursorVisible(true);
         RestoreScreenResolution();
 
         if (_terminal == null)

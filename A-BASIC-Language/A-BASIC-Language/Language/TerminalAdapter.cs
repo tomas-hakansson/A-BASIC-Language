@@ -56,6 +56,12 @@ public sealed class TerminalAdapter : IBasicTerminal
     public void SetTextRenderLimit(int limit) =>
         _terminal.SetTextRenderLimit(limit);
 
+    public void SetCursorVisible(bool visible) =>
+        _terminal.SetCursorVisible(visible);
+
+    public void ResetAppearance() =>
+        _owner.ResetTerminalAppearance();
+
     internal void HomeCursor() =>
         _terminal.SetStartPosition(0, 0);
 

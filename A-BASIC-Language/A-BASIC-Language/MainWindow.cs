@@ -5,16 +5,17 @@ using A_BASIC_Language.IO;
 using A_BASIC_Language.Language;
 using A_BASIC_Language.MainWindowControllers;
 using A_BASIC_Language.Properties;
+using A_BASIC_Language.SamplePrograms;
 using A_BASIC_Language.StringManipulation;
+using A_BASIC_Language.TerminalMatrix;
 using A_BASIC_Language.TerminalMatrix.Events;
+using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using A_BASIC_Language.TerminalMatrix;
-using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 
 namespace A_BASIC_Language;
 
@@ -301,6 +302,15 @@ public partial class MainWindow : Form
         terminalMatrixControl1.SetBorderColor((byte)colors.Border);
     }
 
+    internal void ResetTerminalAppearance()
+    {
+        terminalMatrixControl1.ScrollText(1);
+        ApplyTerminalFont((CurrentFont)Settings.Default.Font);
+        ApplyColorScheme((ColorScheme)Settings.Default.ColorScheme);
+        terminalMatrixControl1.DeleteBlockSprite(null);
+        terminalMatrixControl1.SetCursorVisible(true);
+    }
+
     private void ApplyTerminalFont(CurrentFont font)
     {
         var fontConfiguration = new FontConfigurationList().Get(font);
@@ -548,84 +558,7 @@ public partial class MainWindow : Form
     private void spaceFlightToolStripMenuItem_Click(object sender, EventArgs e)
     {
         using var x = new SourceCodeDialog();
-        x.SourceCode = @"10 REM SPACEFLIGHT - SCROLL AND BLOCKSPRITE DEMO
-20 REM WHITE SHIP, STARFIELD AND GREEN SCROLLING TERRAIN
-30 REM RUNS FOR ABOUT 30 SECONDS; CHANGE FRAMES OR DELAY
-40 FRAMES=600:DELAY=50
-50 DIM OLD(7,7),DX(4),DY(4)
-60 COLOR 0,1:COLOR 1,2:COLOR 2,1
-70 WINDOW:CLS 40:SCROLL 0:DELETEBLOCKSPRITE
-80 RANDOMIZE
-90 REM SAVE EIGHT GLYPHS; DEFINE SHIP, FLAME AND GROUND
-100 FOR G=0 TO 7
-110 FOR R=0 TO 7
-120 A=53248+8*(240+G)+R
-130 OLD(G,R)=PEEK(A):READ B:POKE A,B
-140 NEXT R,G
-150 FOR N=0 TO 4:READ DX(N),DY(N):NEXT N
-160 REM GENERATE THE INITIAL LANDSCAPE, ONE COLUMN AT A TIME
-165 H=3
-170 FOR X=0 TO 39
-180 GOSUB 1200
-200 NEXT X
-210 REM FIVE WHITE TILES FORM A SHIP POINTING RIGHT
-220 X=8:Y=11
-230 FOR N=0 TO 4
-240 CREATEBLOCKSPRITE N+1,X+DX(N),Y+DY(N),240+N,2
-250 NEXT N
-260 CREATEBLOCKSPRITE 6,X-1,Y+1,245,8
-270 REM SCROLL ONLY THE BACKGROUND; SPRITES KEEP THEIR POSITIONS
-280 FOR T=1 TO FRAMES
-290 SCROLL 5
-300 X=39
-310 GOSUB 1200
-320 REM A GENTLE FLIGHT PATH, INDEPENDENT OF THE STARFIELD
-330 X=8+INT(3*SIN(T/45))
-340 Y=10+INT(4*SIN(T/65))
-350 FOR N=0 TO 4
-360 MOVEBLOCKSPRITE N+1,X+DX(N),Y+DY(N)
-370 NEXT N
-380 F=T-2*INT(T/2)
-390 MOVEBLOCKSPRITE 6,X-1,Y+1,245+F
-400 SLEEP DELAY
-410 NEXT T
-420 REM RESTORE THE GLYPHS AFTER NORMAL COMPLETION
-430 DELETEBLOCKSPRITE
-440 FOR G=0 TO 7
-450 FOR R=0 TO 7
-460 POKE 53248+8*(240+G)+R,OLD(G,R)
-470 NEXT R,G
-480 SCROLL 1:COLOR 1,2:CLS
-490 PRINT ""SPACEFLIGHT COMPLETE""
-500 END
-1000 REM ADD A STAR TO ONE BACKGROUND CELL
-1010 IF RND(1)>.07 THEN RETURN
-1020 C=13:S=ASC(""."")
-1030 IF RND(1)<.25 THEN C=16:S=ASC(""+"")
-1040 IF RND(1)<.08 THEN C=2:S=ASC(""*"")
-1050 PRINTAT X,Y,S,C
-1060 RETURN
-1200 REM GROUND HEIGHT CHANGES GENTLY BETWEEN 1 AND 5 ROWS
-1210 H=H+SRND(-1,2)
-1220 IF H<1 THEN H=1
-1230 IF H>5 THEN H=5
-1240 FOR Y=0 TO 24-H:GOSUB 1000:NEXT Y
-1250 REM EXPLICIT CELL COLORS KEEP THE GROUND GREEN
-1260 FOR Y=25-H TO 24:PRINTAT X,Y,247,6:NEXT Y
-1270 RETURN
-2000 REM SHIP: TOP FIN, REAR HULL, CENTRE, NOSE, BOTTOM FIN
-2010 DATA 0,192,224,240,248,252,254,255
-2020 DATA 63,127,255,255,255,127,63,0
-2030 DATA 255,255,255,255,255,255,255,255
-2040 DATA 128,224,248,254,248,224,128,0
-2050 DATA 254,252,248,240,224,192,0,0
-2060 REM TWO ENGINE FLAME FRAMES
-2070 DATA 0,3,15,63,15,3,0,0
-2080 DATA 0,7,31,255,31,7,0,0
-2085 DATA 255,255,255,255,255,255,255,255
-2090 REM SHIP TILE OFFSETS X,Y
-2100 DATA 1,0,0,1,1,1,2,1,1,2
-";
+        x.SourceCode = SampleProgramConstants.SpaceFlight;
 
         if (x.ShowDialog(this) == DialogResult.OK)
             terminalMatrixControl1.SetProgramLines(x.SourceCode);

@@ -23,6 +23,8 @@ public interface IBasicTerminal
     void PumpEvents();
     void ClearScreen();
     void SetTextRenderLimit(int limit);
+    void SetCursorVisible(bool visible);
+    void ResetAppearance();
     void SetTextColor(int color);
     void SetBackgroundColor(int color);
     void SetBorderColor(int color);

@@ -39,6 +39,7 @@ public partial class TerminalMatrixControl : UserControl
     private Pixelmap? _pixelMap;
     private Bitmap? _fastBitmap;
     private bool _cursorVisibleBlink;
+    private bool _cursorVisible = true;
     private readonly System.Windows.Forms.Timer _timer = new();
     private string _lastInput;
     private int _inputBreakVersion;
@@ -312,6 +313,12 @@ public partial class TerminalMatrixControl : UserControl
     public Size GetCharacterMapSize() =>
         ResolutionHelper.GetCharacterMapSize(Resolution);
 
+    internal void SetCursorVisible(bool visible)
+    {
+        _cursorVisible = visible;
+        UpdateBitmap();
+    }
+
     private void Blink(object? sender, EventArgs e)
     {
         _cursorVisibleBlink = !_cursorVisibleBlink;
@@ -546,7 +553,7 @@ public partial class TerminalMatrixControl : UserControl
                     var pixelX = x * 8 + BorderWidth;
                     var pixelY = y * 8 + BorderHeight;
 
-                    if (CursorPosition.IsSame(x, y))
+                    if (_cursorVisible && CursorPosition.IsSame(x, y))
                     {
                         if (_cursorVisibleBlink)
                             _fontMonochromeSprite.DrawOpaque(_pixelMap, _characterMap[x, y], pixelX, pixelY, _palette.GetColor(CurrentCursorColor), _palette.GetColor(BackgroundColor));
