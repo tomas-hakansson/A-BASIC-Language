@@ -13,7 +13,7 @@ Of the 101 games, we support the ones followed by a 1:
 | animal            |     1     |
 | awari             |     1     |
 | bagels            |     1     |
-| banner            |     0     |
+| banner            |     1     |
 | basketball        |     1     |
 | batnum            |     1     |
 | battle            |     0     |
