@@ -17,13 +17,14 @@ public class AddExecutor : ISubExecutor
     {
         if (_data.Count >= 2)
         {
-            dynamic x = _data.Pop();
-            dynamic y = _data.Pop();
-            _data.Push(Add(x, y));
+            dynamic right = _data.Pop();
+            dynamic left = _data.Pop();
+            _data.Push(Add(left, right));
         }
         else
+        {
             throw new InvalidOperationException("Insufficient items on the stack.");
-
+        }
     }
 
     // Float rules

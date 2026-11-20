@@ -825,7 +825,12 @@ public class BasicParser
                     }
                     else
                     {
-                        var index = GetNextNonWhitespaceIndex(startAt: _index + match.Length);
+                        var variableEnd = _index + match.Length;
+
+                        if (variableEnd < _source.Length && _source[variableEnd] is '$' or '%')
+                            variableEnd++;
+
+                        var index = GetNextNonWhitespaceIndex(startAt: variableEnd);
 
                         if (index == -1)
                         {

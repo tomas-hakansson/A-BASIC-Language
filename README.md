@@ -10,7 +10,7 @@ Of the 101 games, we support the ones followed by a 1:
 | 3dplot            |     1     |
 | aceyducey         |     1     |
 | amazing           |     1     |
-| animal            |     0     |
+| animal            |     1     |
 | awari             |     1     |
 | bagels            |     1     |
 | banner            |     0     |
