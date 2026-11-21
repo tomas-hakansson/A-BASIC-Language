@@ -588,8 +588,8 @@ public class BasicParser
 
         Expression();
 
-        if
-            (Maybe("STEP")) Expression();
+        if (Maybe("STEP"))
+            Expression();
         else
             Generate(new AblNumber(1));
 
