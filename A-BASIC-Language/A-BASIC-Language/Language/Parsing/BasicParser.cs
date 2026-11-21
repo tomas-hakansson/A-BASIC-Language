@@ -358,6 +358,19 @@ public class BasicParser
                     case "POKE":
                         Poke();
                         break;
+                    case "BSAVE":
+                        BinarySave();
+                        break;
+                    case "BLOAD":
+                        Expression();
+                        if (Maybe(','))
+                        {
+                            Expression();
+                            Generate(new AblProcedure("BLOADAT"));
+                        }
+                        else
+                            Generate(new AblProcedure("BLOAD"));
+                        break;
                     case "RANDOMIZE":
                         Generate(new AblProcedure("RANDOMIZE"));
                         break;
@@ -1169,6 +1182,22 @@ public class BasicParser
         Generate(new AblNumber(visible ? 1 : 0), new AblProcedure("CURSOR"));
     }
 
+    private void BinarySave()
+    {
+        Expression();
+        for (var argument = 0; argument < 2; argument++)
+        {
+            if (!Maybe(','))
+            {
+                ParseError("Expected comma between BSAVE arguments.");
+                SkipStatement();
+                return;
+            }
+            Expression();
+        }
+        Generate(new AblProcedure("BSAVE"));
+    }
+
     private void Poke()
     {
         Expression();
@@ -1723,7 +1752,7 @@ public class BasicParser
     }
 
     private static Regex StatementRegex() =>
-        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|(?:PRINTAT|CREATEBLOCKSPRITE|MOVEBLOCKSPRITE|RELMOVEBLOCKSPRITE|DELETEBLOCKSPRITE)(?![A-Z0-9$%])|PRINT|\?|(?:CLS|SCNCLR|SCROLL|SLEEP|CURSOR|RESET|RENUMBER|LOAD)(?![A-Z0-9$%])|WINDOW|COLOR|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        new(@"\G(?<statement>RESTORE|READ|DATA|DEF|FOR|NEXT|DIM|END|GO|ON|IF|INPUT|LET|(?:PRINTAT|CREATEBLOCKSPRITE|MOVEBLOCKSPRITE|RELMOVEBLOCKSPRITE|DELETEBLOCKSPRITE)(?![A-Z0-9$%])|PRINT|\?|(?:CLS|SCNCLR|SCROLL|SLEEP|CURSOR|RESET|RENUMBER|LOAD)(?![A-Z0-9$%])|WINDOW|COLOR|BLOAD(?![A-Z0-9$%])|BSAVE(?![A-Z0-9$%])|POKE(?![A-Z0-9$%])|RANDOMIZE|RETURN|REM|SAVE|STOP)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private static Regex VariableRegex() =>
         new(@"\G(?<var>[A-Za-z][A-Za-z0-9]*)", RegexOptions.CultureInvariant);

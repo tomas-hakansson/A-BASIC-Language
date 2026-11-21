@@ -523,7 +523,6 @@ public partial class MainWindow : Form
         try
         {
             var path = Paths.GetUserProgramsPath() ?? throw new IOException("Could not open the user programs folder.");
-
             using var dialog = new SaveFileDialog();
             dialog.InitialDirectory = path.FullName;
             dialog.FileName = _session.ProgramFile?.Name ?? string.Empty;

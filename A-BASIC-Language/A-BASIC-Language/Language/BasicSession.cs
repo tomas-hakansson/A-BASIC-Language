@@ -138,12 +138,16 @@ public sealed class BasicSession
         try
         {
             _interpreter = new Interpreter(runtime ? getProgram() : command, runtime, log, _state);
+            _interpreter.GetProgramFile = () => ProgramFile;
             _interpreter.Run(terminal);
+
             if (_interpreter.ResetHardRequested is bool hard)
             {
                 terminal.ResetAppearance();
+                
                 if (hard)
                     clearProgram();
+                
                 _state.Clear();
                 DataDirectory = null;
                 ProgramFile = null;

@@ -610,6 +610,17 @@ CURSOR OFF</code></pre>
                 <p>The mode must be an integer from 0 to 5. In direct mode, ABL prints the usual <code>Ready.</code> prompt after the command.</p>
             </article>
             <article id="poke">
+                <h3 id="bload">BLOAD</h3>
+                <pre><code>BLOAD "data"
+BLOAD "data", 200</code></pre>
+                <p>Loads a binary file from the current program's data folder, with <code>.bin</code> appended to the file name. Save or load a program first. By default, the first two bytes give the start address in little-endian order. An optional whole-number start address from 0 to 65535 overrides that address; the two header bytes are still skipped.</p>
+                <p>Available in direct mode and numbered programs. The entire payload must fit in session memory through address 65535. If it does not fit, or the file cannot be read, BLOAD reports an error and leaves memory unchanged. Loading font memory also updates the displayed characters.</p>
+                <h3 id="bsave">BSAVE</h3>
+                <pre><code>BSAVE "data", 100, 101</code></pre>
+                <p>Saves session memory from the start address through the end address, inclusive. The file begins with the start address as two little-endian bytes, followed by the memory bytes. The start address must be a whole number from 0 to 65534; the end address must be a whole number greater than the start and at most 65535.</p>
+                <p>Available in direct mode and numbered programs. Save or load a program first. The file is written to that program's data folder with <code>.bin</code> appended to the file name. An existing file is replaced.</p>
+                <p>For example, save the current font, including any changes made with <code>POKE</code>, by saving all 2048 font bytes from address 53248 through 55295. This creates <code>font.bin</code> in the program's data folder:</p>
+                <pre><code>BSAVE "font", 53248, 55295</code></pre>
                 <h3>POKE</h3>
                 <pre><code>POKE address, value</code></pre>
                 <p>Stores a byte at an address from 0 to 65535. The value must be an integer from 0 to 255. Use <code>PEEK(address)</code> to read it back. For example, <code>POKE 100, 42: PRINT PEEK(100)</code> prints 42.</p>

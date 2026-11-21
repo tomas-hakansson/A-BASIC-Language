@@ -31,6 +31,7 @@ public class Interpreter
     private readonly Stack<(int Index, int LineNumber)> _subroutineCalls = new();
     private int _currentLineNumber;
     private readonly RuntimeState _state;
+    internal Func<FileInfo?>? GetProgramFile { get; set; }
     private Resolution? _programStartResolution;
     public bool UserBreak { get; set; }
     public bool? ResetHardRequested { get; private set; }
@@ -878,6 +879,30 @@ public class Interpreter
                                 _data.Push(new IntValue(_state.Memory[address]));
                             }
                             break;
+                        case "BLOAD":
+                        case "BLOADAT":
+                            {
+                                int? start = null;
+                                if (p.Name == "BLOADAT")
+                                    start = MemoryAddress(_data.Pop());
+                                var name = _data.Pop() as StringValue
+                                    ?? throw new InvalidOperationException("BLOAD requires a string file name.");
+                                BinaryLoad(name.Value, start);
+                            }
+                            break;
+                        case "BSAVE":
+                            {
+                                var end = Number(_data.Pop());
+                                var start = Number(_data.Pop());
+                                var name = _data.Pop() as StringValue
+                                    ?? throw new InvalidOperationException("BSAVE requires a string file name.");
+                                if (!start.IsInt(0, ushort.MaxValue - 1))
+                                    throw new InvalidOperationException("BSAVE requires a whole start address from 0 to 65534.");
+                                if (!end.IsInt((int)start + 1, ushort.MaxValue))
+                                    throw new InvalidOperationException("BSAVE requires a whole end address greater than the start address and at most 65535.");
+                                BinarySave(name.Value, (int)start, (int)end);
+                            }
+                            break;
                         case "POKE":
                             {
                                 var value = Number(_data.Pop());
@@ -1185,6 +1210,78 @@ public class Interpreter
         return (int)number;
     }
 
+    private void BinaryLoad(string fileName, int? start)
+    {
+        if (string.IsNullOrWhiteSpace(fileName) || fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || fileName.EndsWith(".", StringComparison.Ordinal) || fileName.EndsWith(" ", StringComparison.Ordinal))
+            throw new InvalidOperationException("BLOAD requires a valid file name.");
+
+        var programFile = GetProgramFile?.Invoke() ?? throw new InvalidOperationException("Save or load a program before using BLOAD.");
+        try
+        {
+            var directory = Paths.GetProgramDataPath(programFile);
+            using var file = File.OpenRead(Path.Combine(directory.FullName, fileName + ".bin"));
+
+            if (file.Length < 2)
+                throw new InvalidOperationException("BLOAD requires a binary file with a two-byte address header.");
+
+            var low = file.ReadByte();
+            var high = file.ReadByte();
+            var address = start ?? (low | (high << 8));
+            var length = file.Length - 2;
+            
+            if (length > _state.Memory.Length - address)
+                throw new InvalidOperationException("BLOAD data does not fit in memory at the start address.");
+
+            // Read everything before changing memory, including when disk reads fail.
+            var bytes = new byte[(int)length];
+            var read = 0;
+            
+            while (read < bytes.Length)
+            {
+                var count = file.Read(bytes, read, bytes.Length - read);
+
+                if (count == 0)
+                    throw new IOException("Unexpected end of binary file.");
+                
+                read += count;
+            }
+
+            Array.Copy(bytes, 0, _state.Memory, address, bytes.Length);
+            
+            if (_terminal is TerminalAdapter adapter)
+            {
+                for (var i = 0; i < bytes.Length; i++)
+                    adapter.UpdateFontMemory(address + i, bytes[i]);
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException)
+        {
+            throw new InvalidOperationException("BLOAD failed: " + ex.Message, ex);
+        }
+    }
+
+    private void BinarySave(string fileName, int start, int end)
+    {
+        if (string.IsNullOrWhiteSpace(fileName) || fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || fileName.EndsWith(".", StringComparison.Ordinal) || fileName.EndsWith(" ", StringComparison.Ordinal))
+            throw new InvalidOperationException("BSAVE requires a valid file name.");
+
+        var programFile = GetProgramFile?.Invoke() ?? throw new InvalidOperationException("Save or load a program before using BSAVE.");
+        
+        try
+        {
+            var directory = Paths.GetProgramDataPath(programFile);
+            var bytes = new byte[end - start + 3];
+            bytes[0] = (byte)start;
+            bytes[1] = (byte)(start >> 8);
+            Array.Copy(_state.Memory, start, bytes, 2, end - start + 1);
+            File.WriteAllBytes(Path.Combine(directory.FullName, fileName + ".bin"), bytes);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException)
+        {
+            throw new InvalidOperationException("BSAVE failed: " + ex.Message, ex);
+        }
+    }
+
     private static int MemoryAddress(ValueBase value)
     {
         var address = Number(value);
@@ -1198,7 +1295,8 @@ public class Interpreter
     private static int BlockSpriteInteger(ValueBase value, string command, string argument, int min = int.MinValue, int max = int.MaxValue)
     {
         var number = Number(value);
-        if (number != Math.Truncate(number) || number < min || number > max)
+
+        if (Math.Abs(number - Math.Truncate(number)) > 0.001 || number < min || number > max)
             throw new InvalidOperationException($"{command} requires {argument} to be a whole number from {min} to {max}.");
 
         return (int)number;
@@ -1242,6 +1340,7 @@ public class Interpreter
         if (_terminal != null && _programStartResolution is Resolution resolution)
         {
             _programStartResolution = null;
+
             if (_terminal.ScreenResolution != resolution)
                 _terminal.SetScreenResolution(resolution, preserveContents: true);
         }
@@ -1250,8 +1349,10 @@ public class Interpreter
     private void End(string message, bool showReady = true)
     {
         EndMessageDisplayed = true;
+
         if (_runtime)
             _terminal?.SetCursorVisible(true);
+        
         RestoreScreenResolution();
 
         if (_terminal == null)
