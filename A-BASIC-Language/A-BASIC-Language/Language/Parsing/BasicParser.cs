@@ -659,10 +659,12 @@ public class BasicParser
 
         var start = _index;
         Expression();
+
         if (_lineNumbers == null)
             return;
 
         var target = _source.Substring(start, _index - start).TrimEnd();
+        
         if (Regex.IsMatch(target, @"\A[0-9]+\z") && int.TryParse(target, out var number))
             _lineNumbers.Add((start, target.Length, number));
     }
@@ -680,6 +682,7 @@ public class BasicParser
         {
             if (Maybe("SUB"))
                 return true;
+
             if (Maybe("TO"))
                 return false;
         }
@@ -861,14 +864,19 @@ public class BasicParser
                         {
                             var depth = 0;
                             var inString = false;
+
                             for (var i = index; i < _source.Length && _source[i] != '\n'; i++)
                             {
                                 if (_source[i] == '"')
                                     inString = !inString;
+
                                 if (inString)
                                     continue;
+
                                 if (_source[i] == '(')
+                                {
                                     depth++;
+                                }
                                 else if (_source[i] == ')' && --depth == 0)
                                 {
                                     index = GetNextNonWhitespaceIndex(i + 1);
@@ -907,7 +915,9 @@ public class BasicParser
     private string FormatDiagnostic(string message, int? position = null)
     {
         // Direct commands have a synthetic label used only for parsing.
-        if (_direct) return message;
+        if (_direct)
+            return message;
+
         var index = position ?? _index;
         var column = index - _source.LastIndexOf('\n', Math.Max(0, index - 1));
         return $"Line {_currentLabel}, column {column}: {message}";
@@ -935,8 +945,7 @@ public class BasicParser
                 return;
         }
 
-        inputInstructions.InsertRange(inputStart,
-            [new AblString(inputTypes.ToString()), new AblProcedure("#INPUT-BEGIN")]);
+        inputInstructions.InsertRange(inputStart, [new AblString(inputTypes.ToString()), new AblProcedure("#INPUT-BEGIN")]);
         return;
 
         void Prompt()
@@ -1086,18 +1095,23 @@ public class BasicParser
             {
                 if (!assignmentMode)
                     Generate(new AblVariable(fullName));
+
                 return true;
             }
+
             dimVariable = true;
             IndexValue();
+            
             if (!Maybe(')'))
             {
                 ParseError($"Expected closing parenthesis sign in {nameof(ASetVariable)}");
                 SkipStatement();
                 return false;
             }
+            
             if (assignmentMode)
                 return true;
+            
             Generate(new AblDimVariable(fullName));
             return true;
 
@@ -1156,6 +1170,7 @@ public class BasicParser
     private void Reset()
     {
         var hard = Maybe("HARD");
+        
         if (!hard)
             Maybe("SOFT");
 
@@ -1172,6 +1187,7 @@ public class BasicParser
     private void Cursor()
     {
         var visible = Maybe("ON");
+        
         if ((!visible && !Maybe("OFF")) || !AtStatementEnd())
         {
             ParseError("CURSOR requires ON or OFF.");
@@ -1185,6 +1201,7 @@ public class BasicParser
     private void BinarySave()
     {
         Expression();
+        
         for (var argument = 0; argument < 2; argument++)
         {
             if (!Maybe(','))
@@ -1193,8 +1210,10 @@ public class BasicParser
                 SkipStatement();
                 return;
             }
+
             Expression();
         }
+
         Generate(new AblProcedure("BSAVE"));
     }
 
@@ -1227,6 +1246,7 @@ public class BasicParser
             }
 
             var width = ScreenColumnsRegex.Match(_source, _index);
+            
             if (width.Success)
             {
                 _index += width.Length;
@@ -1256,11 +1276,14 @@ public class BasicParser
             Generate(new AblNumber(25));
         else
             Expression();
+
         Generate(new AblProcedure("WINDOW"));
     }
+
     //print => (PRINT | ?) (, | ; | expression)*
     private void Print()
-    {//todo: not completely tested.
+    {
+        //todo: not completely tested.
 
         /* Examples:
          * PRINT "IS IT A ";RIGHT$(A$(K),LEN(A$(K))-2);
@@ -1270,6 +1293,7 @@ public class BasicParser
          */
 
         var shouldPrintNewline = true;
+        
         while (true)
         {
             var previous = _index;
@@ -1433,6 +1457,7 @@ public class BasicParser
     private void Precedence_1_Operator()
     {
         Atom();
+
         while (Maybe('^'))
         {
             // Exponentiation binds more tightly than unary minus.
@@ -1456,6 +1481,7 @@ public class BasicParser
             if (!Maybe(')'))
             {
                 ParseError("Expected closing parenthesis sign in Atom");
+
                 if (_parsingIf)
                     SkipLine();
                 else
@@ -1472,6 +1498,7 @@ public class BasicParser
 
                 if (!Maybe('('))
                     throw new InvalidOperationException("Expected ( in FN call.");
+
                 Expression();
 
                 if (!Maybe(')'))
@@ -1547,6 +1574,7 @@ public class BasicParser
             if (!Maybe(')'))
             {
                 ParseError("Expected closing parenthesis sign in Atom");
+
                 if (_parsingIf)
                     SkipLine();
                 else
@@ -1732,6 +1760,7 @@ public class BasicParser
     {
         outValue = string.Empty;
         var orderedValues = values.OrderByDescending(v => v.Length);
+
         foreach (var value in orderedValues)
         {
             if (value.Length == 1)
@@ -1748,6 +1777,7 @@ public class BasicParser
                 return true;
             }
         }
+
         return false;
     }
 

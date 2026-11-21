@@ -208,7 +208,6 @@
     <Compile Include="TerminalMatrix\Events\FunctionKeyEventArgs.cs" />
     <Compile Include="TerminalMatrix\Events\FunctionKeyPressedDelegate.cs" />
     <Compile Include="TerminalMatrix\Events\IntputCompletedDelegate.cs" />
-    <Compile Include="TerminalMatrix\Events\ProgramChangeEventArgs.cs" />
     <Compile Include="TerminalMatrix\Events\RequestToggleFullscreenDelegate.cs" />
     <Compile Include="TerminalMatrix\Events\TickDelegate.cs" />
     <Compile Include="TerminalMatrix\Events\TickEventArgs.cs" />
