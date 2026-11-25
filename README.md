@@ -1,6 +1,6 @@
 # A BASIC Language
 
-The initial goal is to be able to run all games in the book [101 BASIC Computer Games](http://www.bitsavers.org/pdf/dec/_Books/101_BASIC_Computer_Games_Mar75.pdf) (1975).
+The initial goal is to be able to run all games in the book [101 BASIC Computer Games](http://www.bitsavers.org/pdf/dec/_Books/101_BASIC_Computer_Games_Mar75.pdf) (1975). However, we do not support **bounce.bas**.
 
 Of the 101 games, we support the ones followed by a 1:
 
@@ -16,11 +16,11 @@ Of the 101 games, we support the ones followed by a 1:
 | banner            |     1     |
 | basketball        |     1     |
 | batnum            |     1     |
-| battle            |     0     |
-| blackjack         |     0     |
+| battle            |     1     |
+| blackjack         |     1     |
 | bombardment       |     1     |
 | bombsaway         |     1     |
-| bounce            |     0     |
+| ~~bounce~~        |   ~~0~~   |
 | bowling           |     1     |
 | boxing            |     1     |
 | bug               |     1     |
@@ -28,7 +28,7 @@ Of the 101 games, we support the ones followed by a 1:
 | bullseye          |     1     |
 | bunny             |     1     |
 | buzzword          |     1     |
-| calendar          |     0?    |
+| calendar          |     1     |
 | change            |     1     |
 | checkers          |     0     |
 | chemist           |     1     |

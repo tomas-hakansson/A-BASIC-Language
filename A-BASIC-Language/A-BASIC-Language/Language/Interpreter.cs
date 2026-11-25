@@ -776,8 +776,7 @@ public class Interpreter
                             break;
                         case "#INPUT-BEGIN":
                             inputValues = ReadInputValues(((StringValue)_data.Pop()).Value);
-                            if (_terminal.QuitFlag || UserBreak)
-                                return;
+                            // Let the execution loop handle cancellation and display the normal break message.
                             break;
                         case "#INPUT-INT":
                         case "#INPUT-FLOAT":
