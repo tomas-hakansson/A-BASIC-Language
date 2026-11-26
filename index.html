@@ -10,7 +10,7 @@
     <header>
         <h1>ABL</h1>
         <p>User manual and language reference for A BASIC Language, by Tomas Håkansson and Anders Hesselbom.</p>
-        <p>Describes the project's implementation as of November 6, 2026. ABL is a Windows-based BASIC interpreter supporting a subset of Altair BASIC syntax. Limitations and deviations are stated explicitly.</p>
+        <p>Describes the project's implementation as of November 26, 2026. ABL is a Windows-based BASIC interpreter supporting a subset of Altair BASIC syntax. Limitations and deviations are stated explicitly.</p>
     </header>
     <main>
         <nav aria-label="Contents">
@@ -20,6 +20,7 @@
                 <li><a href="#start">Getting started and execution modes</a></li>
                 <li><a href="#editor">Writing and editing programs</a></li>
                 <li><a href="#terminal">Terminal commands</a></li>
+                <li><a href="#cont">CONT – resume a paused program</a></li>
                 <li><a href="#renumber">RENUMBER – renumber program lines</a></li>
                 <li><a href="#load">LOAD – open a saved program</a></li>
                 <li><a href="#save">SAVE – write a program to disk</a></li>
@@ -56,6 +57,7 @@
                 <thead><tr><th>Name</th><th>Direct mode</th><th>Runtime</th><th>Definition</th></tr></thead>
                 <tbody>
                     <tr><td><a href="#run">RUN</a></td><td>Yes</td><td>No</td><td>Reset runtime data and start the entire stored program.</td></tr>
+                    <tr><td><a href="#cont">CONT</a></td><td>Yes</td><td>No</td><td>Resume a numbered program paused by STOP or Ctrl+C without resetting its state.</td></tr>
                     <tr><td><a href="#list">LIST</a></td><td>Yes</td><td>No</td><td>List all program lines or a range of lines.</td></tr>
                     <tr><td><a href="#renumber">RENUMBER</a></td><td>Yes</td><td>No</td><td>Renumber all stored program lines and update explicit jump targets.</td></tr>
                     <tr><td><a href="#load">LOAD</a></td><td>Yes</td><td>No</td><td>Replace program memory with a source file from the user programs directory.</td></tr>
@@ -89,7 +91,8 @@
                     <tr><td><a href="#randomize">RANDOMIZE</a></td><td>Yes</td><td>Yes</td><td>Create a new random number generator without a seed argument.</td></tr>
                     <tr><td><a href="#sleep">SLEEP</a></td><td>Yes</td><td>Yes</td><td>Wait for the remaining time in a millisecond interval.</td></tr>
                     <tr><td><a href="#rem">REM</a></td><td>Yes</td><td>Yes</td><td>Ignore the rest of the physical source line.</td></tr>
-                    <tr><td><a href="#end">END / STOP</a></td><td>Yes</td><td>Yes</td><td>End the current execution with no option to resume.</td></tr>
+                    <tr><td><a href="#end">END</a></td><td>Yes</td><td>Yes</td><td>End execution without retaining a continuation.</td></tr>
+                    <tr><td><a href="#end">STOP</a></td><td>Yes</td><td>Yes</td><td>Stop execution; a numbered program can be resumed with CONT.</td></tr>
                     <tr><td><a href="#abs">ABS(x)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Absolute value.</td></tr>
                     <tr><td><a href="#log">LOG(x)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>Natural logarithm, x &gt; 0.</td></tr>
                     <tr><td><a href="#exp">EXP(x)</a></td><td>Yes, in expressions</td><td>Yes, in expressions</td><td>e raised to the power x.</td></tr>
@@ -113,8 +116,9 @@
                     <tr><td>LOAD or open a .bas file</td><td>Replaced by the file's lines.</td><td>Retained until RUN/NEW.</td><td>Lists the loaded program without running it.</td></tr>
                     <tr><td>SAVE</td><td>Retained and written to disk.</td><td>Retained in the session.</td><td>The file contains the numbered BASIC source.</td></tr>
                     <tr><td>RUN</td><td>Retained.</td><td>Cleared before starting; then created by the program.</td><td>New generator.</td></tr>
-                    <tr><td>END, STOP or end of source</td><td>Retained.</td><td>Retained after execution ends.</td><td>The terminated interpreter instance does not continue.</td></tr>
-                    <tr><td>Runtime error or Ctrl+C</td><td>Retained.</td><td>Completed assignments are retained; no automatic rollback.</td><td>The next run/direct command gets a new generator.</td></tr>
+                    <tr><td>STOP or Ctrl+C in a numbered program</td><td>Retained.</td><td>Retained, together with the execution position and stacks.</td><td>Retained for CONT.</td></tr>
+                    <tr><td>CONT</td><td>Retained.</td><td>Resumed with the current values and DATA position.</td><td>Continues with the paused program's generator.</td></tr>
+                    <tr><td>END, end of source or runtime error</td><td>Retained.</td><td>Completed assignments are retained; no automatic rollback.</td><td>No continuation; the next run/direct command gets a new generator.</td></tr>
                     <tr><td>NEW</td><td>Deleted.</td><td>Deleted.</td><td>No BASIC execution is started.</td></tr>
                     <tr><td>Close ABL</td><td>Not saved automatically.</td><td>Lost with the session.</td><td>Lost.</td></tr>
                 </tbody>
@@ -130,7 +134,7 @@
             <p>However, <a href="#on-goto">ON … GOTO</a>, <a href="#on-gosub">ON … GOSUB</a>, <a href="#data">DATA</a> and <a href="#read">READ</a> require a numbered program line and are executed with RUN. These statements are not allowed in direct mode, including after a colon or in an IF branch. RESTORE and DATAPOINTER() work in both modes.</p>
             <h3>Program memory and runtime</h3>
             <p>Lines with line numbers are stored rather than executed. RUN starts at the lowest line number and continues in numerical order unless a control statement changes the flow. Variables, arrays and user-defined functions are reset before every RUN.</p>
-            <p>During execution, INPUT accepts responses as data, not terminal commands. Ctrl+C interrupts execution. Normal termination displays <code>Program has run through.</code>. Direct commands, errors and interruptions normally end with <code>Ready.</code>.</p>
+            <p>During execution, INPUT accepts responses as data, not terminal commands. Ctrl+C interrupts execution; use <a href="#cont">CONT</a> to resume a paused numbered program. STOP displays <code>Stopped.</code> and Ctrl+C displays <code>User break.</code>, followed by <code>Ready.</code>. Normal termination displays <code>Program has run through.</code>. Direct commands and errors normally end with <code>Ready.</code>.</p>
             <p>Values persist after execution and can be inspected using, for example, <code>PRINT A</code>. The next RUN resets them again. END and STOP do not delete values. NEW deletes both the program and its state.</p>
         </section>
         <section id="editor">
@@ -157,11 +161,22 @@
         </section>
         <section id="terminal">
             <h2>3. Terminal commands outside runtime</h2>
-            <p>Type without a line number and press Enter. Uppercase and lowercase are equivalent. Enter RUN, LIST, RENUMBER and NEW as standalone direct commands.</p>
+            <p>Type without a line number and press Enter. Uppercase and lowercase are equivalent. Enter RUN, CONT, LIST, RENUMBER and NEW as standalone direct commands.</p>
             <p>LOAD and SAVE also require direct mode. Enter them at the <code>Ready.</code> prompt, without a program line number.</p>
             <article id="run">
                 <h3>RUN</h3><pre><code>RUN</code></pre>
                 <p>Resets variables, arrays, user-defined functions and the data pointer, then runs the entire program. Takes no arguments: RUN 100 and filenames after RUN are not supported. The program source is retained. Before the program starts, RUN restores the full text area and preserves existing screen contents. An empty program returns to Ready.</p>
+            </article>
+            <article id="cont">
+                <h3>CONT – resume a paused program</h3>
+                <pre><code>CONT</code></pre>
+                <p>Resumes a numbered program paused by STOP or Ctrl+C. Enter CONT as a standalone direct command at the Ready prompt, without arguments or a line number. Unlike RUN, CONT does not restart the program or reset variables, arrays, user-defined functions, the DATA position or the random number generator. FOR/NEXT loops, GOSUB return positions, pending calculations and function calls are retained.</p>
+                <p>After STOP, execution continues immediately after that statement, including statements following a colon on the same line. After Ctrl+C, execution resumes at the next instruction that has not yet run. If Ctrl+C interrupts INPUT, CONT restarts the entire INPUT statement, including its prompt; enter the responses again.</p>
+                <p>While paused, use direct commands such as PRINT A or LIST to inspect the program. Assignments such as A=5 change the values used when execution resumes.</p>
+                <pre><code>10 A=1:PRINT "BEFORE":STOP:PRINT "AFTER";A
+20 END</code></pre>
+                <p>Enter RUN: the program prints BEFORE and pauses. Enter PRINT A to inspect the value, then A=5 and CONT. The program prints AFTER followed by 5, without repeating the earlier statements.</p>
+                <p>Editing, adding or deleting a program line, replacing the program, NEW, LOAD, RENUMBER, RESET or a fresh RUN discards the saved continuation. END, normal completion and runtime errors do not leave a continuation. CONT then reports <code>?Can't continue.</code>. STOP or Ctrl+C in a direct command does not create a resumable program.</p>
             </article>
             <article id="list">
                 <h3>LIST</h3>
@@ -305,7 +320,7 @@ LIST</code></pre>
                     <tr><td>Page Up / Page Down</td><td>Move the cursor to the top/bottom editable screen row; do not scroll through history. Disabled during INPUT.</td></tr>
                     <tr><td>Insert</td><td>Inserts an empty character position on the screen row and shifts characters to the right. Does not toggle typing mode.</td></tr>
                     <tr><td>Delete / Backspace</td><td>Deletes at/before the cursor and closes the gap in the screen row's text. Backspace does not move to the previous row at the left edge.</td></tr>
-                    <tr><td>Ctrl+C</td><td>Interrupts execution and INPUT. Does not copy. Returns to Ready; CONT is unavailable.</td></tr>
+                    <tr><td>Ctrl+C</td><td>Interrupts execution and INPUT. Does not copy. Returns to Ready; use CONT to resume a numbered program. Interrupted INPUT restarts with its prompt.</td></tr>
                     <tr><td>F5</td><td>Runs the program.</td></tr>
                     <tr><td>F11</td><td>Switches to or from fullscreen mode.</td></tr>
                 </tbody>
@@ -453,6 +468,7 @@ INPUT "prompt";variable[,variable ...]</code></pre>
 30 PRINT NAME$;": ";A+B</code></pre>
                 <p><strong>Each variable is read as a separate response followed by Enter.</strong> Enter A and press Enter, then B and Enter. Do not enter a comma-separated list. The statement prints the prompt and question mark once. Array elements may also be targets, for example INPUT A(2).</p>
                 <p>String responses do not require quotes; any quotes entered become part of the text. The terminal removes leading/trailing spaces. Use a decimal point; a comma is not treated as a Swedish decimal separator here. Numeric input uses culture-invariant .NET conversion and may accept exponent notation. Ctrl+C interrupts without assigning the interrupted response. Earlier assignments in the same INPUT list are not rolled back.</p>
+                <p>After Ctrl+C in a numbered program, <a href="#cont">CONT</a> restarts this entire INPUT statement, including its prompt. Enter all responses for the statement again.</p>
             </article>
             <article id="if">
                 <h3>IF … THEN … ELSE – conditions</h3>
@@ -493,7 +509,7 @@ GO SUB target</code></pre>
                 <h3>RETURN – return from a subroutine</h3>
                 <pre><code>RETURN</code></pre>
                 <p>Removes the most recent GOSUB call from the call stack and continues at the statement immediately after the call. That statement may follow a colon on the same line or be on the next program line. This also applies to calls through ON … GOSUB and the GO SUB spelling.</p>
-                <p>RETURN takes no arguments. If there is no active call, <code>RETURN without GOSUB.</code> is reported. RETURN ends a subroutine; use END or STOP to end the entire program.</p>
+                <p>RETURN takes no arguments. If there is no active call, <code>RETURN without GOSUB.</code> is reported. RETURN ends a subroutine; use END to terminate the entire program or STOP to pause it for CONT.</p>
             </article>
             <article id="on-goto">
                 <h3>ON … GOTO – select a jump target</h3>
@@ -674,10 +690,10 @@ BLOAD "data", 200</code></pre>
                 <p>Everything after REM on the same physical source line is ignored, including colons. An apostrophe as a comment marker is not supported.</p>
             </article>
             <article id="end">
-                <h3>END and STOP – terminate</h3>
+                <h3>END and STOP – terminate or pause</h3>
                 <pre><code>END
 STOP</code></pre>
-                <p>Both terminate with the same behavior. STOP is not a resumable pause; CONT is unavailable. Variables are not deleted. Reaching the end of the last line also terminates execution, so END is optional.</p>
+                <p>END terminates execution without retaining a continuation. Reaching the end of the last line has the same effect, so END is optional. STOP pauses a numbered program and displays <code>Stopped.</code> followed by <code>Ready.</code>; use <a href="#cont">CONT</a> to resume immediately after STOP, even on the same line. In direct mode STOP ends the command without creating a continuation. Neither statement deletes variables.</p>
             </article>
         </section>
         <section id="functions">
@@ -841,8 +857,10 @@ PRINT LOG(100)/LOG(10)</code></pre>
                     <tr><td><code>FN call nesting limit exceeded.</code></td><td>More than 256 simultaneous function calls, for example recursion without a stopping condition.</td></tr>
                     <tr><td><code>Unsupported BASIC function: ...</code></td><td>The function name is recognized but lacks runtime support.</td></tr>
                     <tr><td><code>?Redo from start</code></td><td>Invalid numeric INPUT response. Enter a new value. Earlier assignments are not rolled back.</td></tr>
-                    <tr><td><code>User break.</code></td><td>User interruption. Restart with RUN; resuming is not supported.</td></tr>
-                    <tr><td><code>Program has run through.</code></td><td>Normal termination, including through END/STOP.</td></tr>
+                    <tr><td><code>User break.</code></td><td>User interruption. Resume a numbered program with CONT, or restart with RUN. Interrupted INPUT restarts when resumed.</td></tr>
+                    <tr><td><code>Stopped.</code></td><td>A numbered program reached STOP. Use CONT to resume after it.</td></tr>
+                    <tr><td><code>?Can't continue.</code></td><td>No saved continuation exists, or an action such as editing the program has discarded it. Start with RUN.</td></tr>
+                    <tr><td><code>Program has run through.</code></td><td>Normal termination, including through END. No continuation is retained.</td></tr>
                     <tr><td><code>Ready.</code></td><td>Ready for the next command. Does not mean the program or variables have been deleted.</td></tr>
                 </tbody>
             </table>
@@ -855,7 +873,7 @@ PRINT LOG(100)/LOG(10)</code></pre>
                 <li>No full Altair BASIC compatibility. INT, RND, string addition and automatic array creation have the deviations described above.</li>
                 <li>DATA and READ require numbered program lines. DATA supports numeric and quoted string literals; RESTORE resets to the beginning and does not accept a line number.</li>
                 <li>WHILE/WEND, DO/LOOP, multiline IF blocks, ELSEIF and SELECT CASE are not supported.</li>
-                <li>MERGE, DELETE, EDIT, CONT and CLEAR are not implemented terminal commands. Delete a line with a number on its own, clear the entire program with NEW, or renumber it with <a href="#renumber">RENUMBER</a>.</li>
+                <li>MERGE, DELETE, EDIT and CLEAR are not implemented terminal commands. Delete a line with a number on its own, clear the entire program with NEW, or renumber it with <a href="#renumber">RENUMBER</a>. Use <a href="#cont">CONT</a> to resume a program paused by STOP or Ctrl+C.</li>
                 <li>No implemented graphics, sound or cursor statements such as PLOT, DRAW, LINE, CIRCLE, SOUND, BEEP or LOCATE. COLOR supports background, text, and border colors. The resolutions' pixel dimensions are display modes, not a BASIC graphics API.</li>
                 <li>No BASIC file handling with OPEN, CLOSE, PRINT# or INPUT#.</li>
                 <li>No implemented machine code, networking, process or system commands in the language.</li>
