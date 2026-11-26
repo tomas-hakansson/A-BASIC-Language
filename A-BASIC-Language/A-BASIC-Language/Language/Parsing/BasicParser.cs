@@ -15,6 +15,7 @@ public class BasicParser
 {
     private static readonly Regex NamedLabelRegex = new(@"\G@[\p{L}\p{Nd}_]+", RegexOptions.CultureInvariant);
     private static readonly Regex ScreenColumnsRegex = new(@"\G0*(20|40|60|80)", RegexOptions.CultureInvariant);
+    private static readonly Regex NotKeywordRegex = new(@"\GNOT(?![A-Z0-9$%])", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     private readonly string _source;
     private readonly bool _direct;
     private readonly SortedDictionary<int, List<AblEvalValue>> _lines;
@@ -1393,12 +1394,27 @@ public class BasicParser
 
     private void AndExpression()
     {
-        Precedence_5_Operator();
+        NotExpression();
 
         while (Maybe("AND"))
         {
-            Precedence_5_Operator();
+            NotExpression();
             Generate(new AblProcedure("AND"));
+        }
+    }
+
+    private void NotExpression()
+    {
+        // Both spellings bind below comparisons and above AND/OR. Keep != intact.
+        if ((NotKeywordRegex.IsMatch(_source, _index) && Maybe("NOT")) ||
+            (!Maybe("!=", incrementIfFound: false) && Maybe('!')))
+        {
+            NotExpression();
+            Generate(new AblProcedure("NOT"));
+        }
+        else
+        {
+            Precedence_5_Operator();
         }
     }
 

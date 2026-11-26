@@ -604,6 +604,15 @@ public class Interpreter
                         case "<>":
                             comparisonExecutor.Run(_currentLineNumber, (a, b) => Math.Abs(a - b) > 0.00001);
                             break;
+                        case "NOT":
+                            {
+                                var operand = Math.Truncate(Number(_data.Pop()));
+                                if (double.IsNaN(operand) || double.IsInfinity(operand) ||
+                                    operand < int.MinValue || operand > int.MaxValue)
+                                    throw new ArithmeticException("NOT requires a number in the 32-bit integer range.");
+                                _data.Push(new IntValue(~(int)operand));
+                            }
+                            break;
                         case "OR":
                             {
                                 var right = (int)Number(_data.Pop());

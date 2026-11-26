@@ -15,6 +15,54 @@ namespace A_BASIC_Language.Language;
 public class ContinuationTests
 {
     [TestMethod]
+    public void NotAndExclamationComplementIntegersWithBasicPrecedence()
+    {
+        var host = new Host("");
+        foreach (var (expression, expected) in new (string, double)[]
+        {
+            ("NOT 0", -1), ("!0", -1), ("NOT -1", 0), ("!-1", 0),
+            ("NOT 1", -2), ("!5", -6), ("NOT 1.9", -2), ("NOT -1.9", 0),
+            ("NOT NOT 5", 5), ("!!5", 5), ("NOT !5", 5),
+            ("NOT 2=1", -1), ("!2=1", -1), ("NOT 1=1", 0),
+            ("NOT 1 AND 2", 2), ("!1 AND 2", 2), ("NOT 1 OR 2", -2),
+            ("NOT (1 AND 2)", -1), ("NOT 1+2*3", -8),
+            ("1!=2", -1), ("1!=1", 0), ("1<>2", -1),
+            ("NOT 2147483647", -2147483648d), ("NOT (-2147483648)", 2147483647),
+            ("not 0", -1)
+        })
+        {
+            host.Execute("RESULT=" + expression);
+            Assert.AreEqual(expected, host.Number("RESULT"), expression);
+        }
+        host.Execute("NOTABLE=7:RESULT=NOTABLE");
+        Assert.AreEqual(7d, host.Number("RESULT"));
+        Assert.IsFalse(host.Terminal.Output.ToString().Contains("?"));
+    }
+
+    [TestMethod]
+    public void NotWorksInConditionsFunctionsAndNumberedPrograms()
+    {
+        var host = new Host("10 DEF FNF(X)=!X\n20 IF NOT 2=1 THEN A=FNF(0)\n30 IF !(3=3) THEN B=1 ELSE B=2\n40 C=NOT (\"A\"=\"B\")");
+        host.Execute("RUN");
+        Assert.AreEqual(-1d, host.Number("A"));
+        Assert.AreEqual(2d, host.Number("B"));
+        Assert.AreEqual(-1d, host.Number("C"));
+        Assert.IsFalse(host.Terminal.Output.ToString().Contains("?Error"));
+    }
+
+    [TestMethod]
+    public void NotRejectsInvalidOperandsAndMissingExpressions()
+    {
+        foreach (var expression in new[] { "NOT \"1\"", "!\"text\"", "NOT 2147483648", "NOT (-2147483649)", "NOT SQR(-1)", "NOT", "!", "!!", "!=1" })
+        {
+            var host = new Host("");
+            host.Execute("RESULT=" + expression);
+            StringAssert.Contains(host.Terminal.Output.ToString(), "?", expression);
+            Assert.IsFalse(host.Session.GetRuntimeState().Variables.ContainsKey("RESULT"), expression);
+        }
+    }
+
+    [TestMethod]
     public void StopResumesWithinLineAndPreservesLoopsSubroutinesAndData()
     {
         var host = new Host("10 DATA 7,8\n20 FOR I=1 TO 2\n30 GOSUB 100\n40 NEXT I\n50 END\n100 READ A:PRINT A:STOP:PRINT I:RETURN");

@@ -49,6 +49,7 @@
         <section id="register">
             <h2>Links</h2>
             <ul>
+                <li><a href="./manual/index.html">Keyword index</a></li>
                 <li><a href="https://github.com/tomas-hakansson/A-BASIC-Language" target="_blank">Source code</a></li>
             </ul>
             <h2>Command index and usage</h2>
@@ -376,10 +377,19 @@ LIST</code></pre>
                     <tr><td>4</td><td><code>*</code>, <code>/</code></td><td>Multiplication/division, left to right. Division by 0 produces an error.</td></tr>
                     <tr><td>5</td><td><code>+</code>, <code>-</code></td><td>Addition/subtraction, left to right. + also concatenates strings.</td></tr>
                     <tr><td>6</td><td><code>=</code>, <code>&lt;&gt;</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code></td><td>Comparisons. True = −1, false = 0. != is equivalent to &lt;&gt;.</td></tr>
-                    <tr><td>7</td><td><code>AND</code></td><td>Bitwise AND on 32-bit integers.</td></tr>
-                    <tr><td>8</td><td><code>OR</code></td><td>Bitwise OR on 32-bit integers.</td></tr>
+                    <tr><td>7</td><td><code>NOT</code>, <code>!</code></td><td>Unary bitwise complement on a 32-bit integer. Both spellings have the same precedence.</td></tr>
+                    <tr><td>8</td><td><code>AND</code></td><td>Bitwise AND on 32-bit integers.</td></tr>
+                    <tr><td>9</td><td><code>OR</code></td><td>Bitwise OR on 32-bit integers.</td></tr>
                 </tbody>
             </table>
+            <p><code>NOT expression</code> and <code>!expression</code> invert every bit of a signed 32-bit integer. Fractional values are truncated toward zero before inversion; strings, non-finite values and results of truncation outside the integer range produce an error. NOT 0 is −1, NOT −1 is 0, and NOT 1 is −2. This is bitwise complement, not a zero/nonzero test.</p>
+            <p>Comparisons bind more tightly than NOT, which binds more tightly than AND and OR: <code>NOT A=B</code> means <code>NOT (A=B)</code>, and <code>!A=B</code> means the same thing. Use parentheses for a different grouping. The keyword must be separated from a following variable name: write <code>NOT A</code>, not <code>NOTA</code>. Repeated operators such as <code>NOT NOT A</code> or <code>!!A</code> are allowed. The existing <code>!=</code> comparison is unchanged.</p>
+            <pre><code>PRINT NOT 0
+PRINT !0
+10 A=3
+20 IF !(A=5) THEN PRINT "A IS NOT FIVE"
+30 PRINT NOT A AND 7</code></pre>
+            <p>Both direct PRINT commands above print −1. The numbered program prints the message and then 4. Use ! inside a BASIC expression, such as PRINT !A or IF !A THEN ... . A terminal line beginning with ! is still an application command, for example !LOAD101, rather than a BASIC expression.</p>
             <p>Numeric equality uses a tolerance of 0.00001: A=B is true if the absolute difference is smaller, A&lt;&gt;B if it is larger. At exactly the tolerance boundary, both are false. Other comparisons use ordinary numeric bounds.</p>
             <p>Strings are compared lexicographically using a case-insensitive ordinal comparison. <code>"hello"="HELLO"</code> and <code>"10"&lt;"2"</code> are true. Comparing a string with a number produces a type error.</p>
             <p class="note"><strong>String addition deviation:</strong> + concatenates strings and numbers with text, but the current implementation reverses the operand order. <code>"A"+"B"</code> produces <code>"BA"</code>; <code>"X"+2</code> produces <code>"2X"</code>. Use PRINT expressions separated by semicolons when order matters. Numeric addition is unaffected.</p>
