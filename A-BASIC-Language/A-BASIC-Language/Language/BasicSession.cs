@@ -12,6 +12,18 @@ public sealed class BasicSession
 {
     private readonly RuntimeState _state = new();
     private Interpreter? _interpreter;
+    private Interpreter? _pausedInterpreter;
+    private string? _pausedSource;
+    private int _continuationVersion;
+    public bool CanContinue => _pausedInterpreter?.CanContinue == true;
+
+    public void InvalidateContinuation()
+    {
+        _continuationVersion++;
+        _pausedInterpreter = null;
+        _pausedSource = null;
+    }
+
     public bool IsRunning { get; private set; }
     public DirectoryInfo? DataDirectory;
     public FileInfo? ProgramFile;
@@ -89,9 +101,12 @@ public sealed class BasicSession
             return;
 
         command = command.Trim();
+        if (_pausedInterpreter != null && !string.Equals(_pausedSource, getProgram(), StringComparison.Ordinal))
+            InvalidateContinuation();
 
         if (Regex.IsMatch(command, @"\ARENUMBER(?![A-Z0-9$%])", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
         {
+            InvalidateContinuation();
             Renumber(command.Substring("RENUMBER".Length), getProgram, replaceProgram, terminal);
             terminal.WriteLine(true, "Ready.");
             return;
@@ -99,6 +114,7 @@ public sealed class BasicSession
 
         if (Regex.IsMatch(command, @"\ARENUM(?![A-Z0-9$%])", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
         {
+            InvalidateContinuation();
             Renumber(command.Substring("RENUM".Length), getProgram, replaceProgram, terminal);
             terminal.WriteLine(true, "Ready.");
             return;
@@ -117,6 +133,7 @@ public sealed class BasicSession
 
         if (command.Equals("NEW", StringComparison.OrdinalIgnoreCase))
         {
+            InvalidateContinuation();
             clearProgram();
             _state.Clear();
             DataDirectory = null;
@@ -126,9 +143,20 @@ public sealed class BasicSession
         }
 
         var runtime = command.Equals("RUN", StringComparison.OrdinalIgnoreCase);
+        var resume = command.Equals("CONT", StringComparison.OrdinalIgnoreCase);
+        if (resume && !CanContinue)
+        {
+            terminal.WriteLine("?Can't continue.");
+            terminal.WriteLine(true, "Ready.");
+            return;
+        }
+
+        if (Regex.IsMatch(command, @"\ALOAD(?![A-Z0-9$%])", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+            InvalidateContinuation();
         
         if (runtime)
         {
+            InvalidateContinuation();
             _state.Clear();
             terminal.SetTextRenderLimit(0);
         }
@@ -137,12 +165,32 @@ public sealed class BasicSession
         
         try
         {
-            _interpreter = new Interpreter(runtime ? getProgram() : command, runtime, log, _state);
+            var source = runtime ? getProgram() : command;
+            var runningSource = resume ? _pausedSource : source;
+            _interpreter = resume ? _pausedInterpreter! : new Interpreter(source, runtime, log, _state);
             _interpreter.GetProgramFile = () => ProgramFile;
-            _interpreter.Run(terminal);
+            if (resume)
+                InvalidateContinuation();
+            var continuationVersion = _continuationVersion;
+            if (resume)
+            {
+                _interpreter.Continue(terminal);
+            }
+            else
+            {
+                _interpreter.Run(terminal);
+            }
+
+            if (_interpreter.CanContinue && continuationVersion == _continuationVersion &&
+                string.Equals(runningSource, getProgram(), StringComparison.Ordinal))
+            {
+                _pausedInterpreter = _interpreter;
+                _pausedSource = runningSource;
+            }
 
             if (_interpreter.ResetHardRequested is bool hard)
             {
+                InvalidateContinuation();
                 terminal.ResetAppearance();
                 
                 if (hard)

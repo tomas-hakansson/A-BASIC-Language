@@ -161,6 +161,7 @@
     <Compile Include="Language\AblEvalValue.cs" />
     <Compile Include="Language\AblValueTypes.cs" />
     <Compile Include="Language\BasicSession.cs" />
+    <Compile Include="Language\ContinuationTests.cs" />
     <Compile Include="Language\Dimension.cs" />
     <Compile Include="Language\IBasicTerminal.cs" />
     <Compile Include="Language\Interpreter.cs" />

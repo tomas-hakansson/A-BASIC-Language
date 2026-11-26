@@ -35,6 +35,33 @@ public class Interpreter
     private Resolution? _programStartResolution;
     public bool UserBreak { get; set; }
     public bool? ResetHardRequested { get; private set; }
+    public bool CanContinue { get; private set; }
+    private bool _resuming;
+    private int _nextInstruction;
+    private List<AblEvalValue>? _instructions;
+    private readonly Stack<LoopFrame> _loops = new();
+    private readonly Stack<(List<AblEvalValue> Instructions, int Index, string Parameter, ValueBase Argument, int StackDepth)> _calls = new();
+    private Queue<ValueBase> _inputValues = new();
+    private int _inputStart = -1;
+    private ValueBase[]? _inputStack;
+
+    public void Continue(IBasicTerminal terminal)
+    {
+        if (!CanContinue)
+            throw new InvalidOperationException("Can't continue.");
+
+        _resuming = true;
+        UserBreak = false;
+
+        try
+        {
+            Run(terminal);
+        }
+        finally
+        {
+            _resuming = false;
+        }
+    }
 
     public Interpreter(string source, bool runtime, Log log, RuntimeState? state = null)
     {
@@ -68,6 +95,7 @@ public class Interpreter
 
     public void Run(IBasicTerminal terminal)
     {
+        CanContinue = false;
         _terminal = terminal;
         if (terminal is TerminalAdapter adapter)
             adapter.AttachFontMemory(_state.Memory);
@@ -88,6 +116,7 @@ public class Interpreter
         }
         catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or ArithmeticException or NotImplementedException)
         {
+            CanContinue = false;
             _log.Write("Error, check terminal window.");
 
             End(_runtime
@@ -266,10 +295,19 @@ public class Interpreter
     {
         var sleepClock = Stopwatch.StartNew();
         EndMessageDisplayed = false;
-        _subroutineCalls.Clear();
-        
-        if (_runtime)
-            _state.DataPointer = 0;
+        if (!_resuming)
+        {
+            _subroutineCalls.Clear();
+            _loops.Clear();
+            _calls.Clear();
+            _inputValues.Clear();
+            _inputStart = -1;
+            _inputStack = null;
+            _nextInstruction = 0;
+            _instructions = _parseResult.EvalValues;
+            if (_runtime)
+                _state.DataPointer = 0;
+        }
 
         if (_terminal == null)
             throw new SystemException("Terminal not initialized.");
@@ -285,15 +323,15 @@ public class Interpreter
         _terminal.PumpEvents();
 
         var endProgram = false;
-        var loops = new Stack<LoopFrame>();
-        var inputValues = new Queue<ValueBase>();
+        var loops = _loops;
+        var inputValues = _inputValues;
 
-        var instructions = _parseResult.EvalValues;
+        var instructions = _instructions!;
         var eventPumpWatch = Stopwatch.StartNew();
         // Switch instruction streams on FN calls; return with one numeric result.
-        var calls = new Stack<(List<AblEvalValue> Instructions, int Index, string Parameter, ValueBase Argument, int StackDepth)>();
+        var calls = _calls;
         
-        for (var i = 0; i < instructions.Count || calls.Count > 0; i++)
+        for (var i = _nextInstruction; i < instructions.Count || calls.Count > 0; i++)
         {
             if (i >= instructions.Count)
             {
@@ -323,6 +361,7 @@ public class Interpreter
 
             if (UserBreak)
             {
+                Pause(instructions, i);
                 _log.Write("User break.");
                 break;
             }
@@ -701,6 +740,10 @@ public class Interpreter
                         case "#END-PROGRAM":
                             endProgram = true;
                             break;
+                        case "#STOP-PROGRAM":
+                            Pause(instructions, i + 1);
+                            endProgram = true;
+                            break;
                         case "RETURN":
                             {
                                 if (_subroutineCalls.Count == 0)
@@ -773,6 +816,14 @@ public class Interpreter
                                     Fail("The stack is empty");
                                 }
                             }
+                            break;
+                        case "#INPUT-START":
+                            _inputStart = i;
+                            _inputStack = _data.ToArray();
+                            break;
+                        case "#INPUT-END":
+                            _inputStart = -1;
+                            _inputStack = null;
                             break;
                         case "#INPUT-BEGIN":
                             inputValues = ReadInputValues(((StringValue)_data.Pop()).Value);
@@ -1127,12 +1178,21 @@ public class Interpreter
             }
         }
 
+        // A break inside the final blocking instruction must also leave a continuation.
+        if (UserBreak && !CanContinue && !_terminal.QuitFlag)
+            Pause(instructions, instructions.Count);
+
+        _inputValues = inputValues;
         if (!EndMessageDisplayed && !_empty && !_terminal.QuitFlag)
         {
             if (UserBreak)
             {
                 UserBreak = false;
                 End("User break.");
+            }
+            else if (CanContinue)
+            {
+                End("Stopped.");
             }
             else if (_runtime)
             {
@@ -1148,6 +1208,26 @@ public class Interpreter
             return;
 
         _terminal.WriteLine(true, "Ready.");
+    }
+
+    private void Pause(List<AblEvalValue> instructions, int nextInstruction)
+    {
+        if (!_runtime)
+            return;
+
+        CanContinue = true;
+        _instructions = instructions;
+        _nextInstruction = nextInstruction;
+        if (_inputStart >= 0)
+        {
+            _instructions = _parseResult.EvalValues;
+            _nextInstruction = _inputStart;
+            _calls.Clear();
+            _data.Clear();
+            for (var i = _inputStack!.Length - 1; i >= 0; i--)
+                _data.Push(_inputStack[i]);
+            _inputValues.Clear();
+        }
     }
 
     private sealed record LoopFrame

@@ -200,7 +200,6 @@ public class PreProcessorController
                 Load101Games(argument ?? "", true);
                 break;
             case PreProcessorParserResult.Quit:
-                _owner.DisableQuitPrompt();
                 quitFlag = true;
                 break;
             default:
@@ -273,7 +272,7 @@ public class PreProcessorController
         }
     }
 
-    private void Load101Games(string gameName, bool run = false)
+    private void Load101Games(string gameName, bool run)
     {
         try
         {

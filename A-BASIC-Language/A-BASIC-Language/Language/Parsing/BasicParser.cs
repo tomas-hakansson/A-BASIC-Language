@@ -401,7 +401,7 @@ public class BasicParser
                         SkipLine();
                         break;
                     case "STOP":
-                        Generate(new AblProcedure("#END-PROGRAM"));
+                        Generate(new AblProcedure("#STOP-PROGRAM"));
                         break;
                     default:
                         throw new NotImplementedException("the given statement has not been implemented yet.");
@@ -930,6 +930,7 @@ public class BasicParser
     //input => INPUT (prompt-string [;])? unset-variable (, unset-variable)*
     private void Input()
     {
+        Generate(new AblProcedure("#INPUT-START"));
         Prompt();
         Generate(new AblString("? "), new AblProcedure("#WRITE"));
         var inputInstructions = _expressionTarget ?? _lines[_currentLabel];
@@ -946,6 +947,7 @@ public class BasicParser
         }
 
         inputInstructions.InsertRange(inputStart, [new AblString(inputTypes.ToString()), new AblProcedure("#INPUT-BEGIN")]);
+        Generate(new AblProcedure("#INPUT-END"));
         return;
 
         void Prompt()

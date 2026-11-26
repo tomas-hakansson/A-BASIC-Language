@@ -41,21 +41,12 @@ public partial class MainWindow : Form
     public MainWindow()
     {
         InitializeComponent();
+        terminalMatrixControl1.ProgramLines.Changed += (_, _) => _session.InvalidateContinuation();
         terminalMatrixControl1.AttachFontMemory(_session.GetRuntimeState().Memory);
-#if !DEBUG
-        _promptQuit = true;
-#endif
         _msgBox = new MsgBox(this);
         _versionService = new VersionService(this);
         _logVisible = false;
         _log = new Log(lblUserAction, new Font(FontFamily.GenericMonospace, 9, FontStyle.Regular));
-    }
-
-    internal void DisableQuitPrompt()
-    {
-#if !DEBUG
-        _promptQuit = false;
-#endif
     }
 
     protected override void OnFormClosed(FormClosedEventArgs e)
