@@ -33,9 +33,9 @@ public sealed class AblFunctionDefinition : AblEvalValue
 {
     public string Name { get; }
     public string Parameter { get; }
-    public AblEvalValueList Body { get; }
+    public InstructionList Body { get; }
 
-    public AblFunctionDefinition(string name, string parameter, AblEvalValueList body)
+    public AblFunctionDefinition(string name, string parameter, InstructionList body)
     {
         Name = name;
         Parameter = parameter;

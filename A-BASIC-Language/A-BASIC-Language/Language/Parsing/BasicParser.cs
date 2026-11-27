@@ -77,7 +77,7 @@ public class BasicParser
 
                 Result.DataValues.AddRange(_dataLines.SelectMany(line => line.Value));
                 Result.Success = true;
-                Result.EvalValues = evalValues;
+                Result.EvalValues = new InstructionList(evalValues);
                 Result.LabelIndex = labelIndex;
                 Result.NamedLabels = new ReadOnlyDictionary<string, int>(_namedLabels);
             }
@@ -1352,7 +1352,7 @@ public class BasicParser
         if (!Maybe(')') || !Maybe('='))
             throw new InvalidOperationException("Expected )= in DEF FN.");
 
-        var body = new AblEvalValueList();
+        var body = new InstructionList();
         // Compile the body once, using the ordinary expression grammar.
         _expressionTarget = body;
 

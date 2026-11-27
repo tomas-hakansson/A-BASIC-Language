@@ -37,10 +37,9 @@ public class Interpreter
     public bool? ResetHardRequested { get; private set; }
     public bool CanContinue { get; private set; }
     private bool _resuming;
-    private int _nextInstruction;
-    private List<AblEvalValue>? _instructions;
+    private InstructionList? _instructions;
     private readonly Stack<LoopFrame> _loops = new();
-    private readonly Stack<(List<AblEvalValue> Instructions, int Index, string Parameter, ValueBase Argument, int StackDepth)> _calls = new();
+    private readonly CallStack _calls = new();
     private Queue<ValueBase> _inputValues = new();
     private int _inputStart = -1;
     private ValueBase[]? _inputStack;
@@ -303,8 +302,9 @@ public class Interpreter
             _inputValues.Clear();
             _inputStart = -1;
             _inputStack = null;
-            _nextInstruction = 0;
             _instructions = _parseResult.EvalValues;
+            _instructions.NextInstruction = 0;
+
             if (_runtime)
                 _state.DataPointer = 0;
         }
@@ -331,7 +331,7 @@ public class Interpreter
         // Switch instruction streams on FN calls; return with one numeric result.
         var calls = _calls;
         
-        for (var i = _nextInstruction; i < instructions.Count || calls.Count > 0; i++)
+        for (var i = instructions.NextInstruction; i < instructions.Count || calls.Count > 0; i++)
         {
             if (i >= instructions.Count)
             {
@@ -341,7 +341,7 @@ public class Interpreter
                     throw new InvalidOperationException("Invalid FN result stack.");
                 
                 Number(_data.Peek());
-                instructions = frame.Instructions;
+                instructions = new(frame.Instructions);
                 i = frame.Index;
                 continue;
             }
@@ -1225,16 +1225,19 @@ public class Interpreter
             return;
 
         CanContinue = true;
-        _instructions = instructions;
-        _nextInstruction = nextInstruction;
+        _instructions = new(instructions);
+        _instructions.NextInstruction = nextInstruction;
+        
         if (_inputStart >= 0)
         {
             _instructions = _parseResult.EvalValues;
-            _nextInstruction = _inputStart;
+            _instructions.NextInstruction = _inputStart;
             _calls.Clear();
             _data.Clear();
+
             for (var i = _inputStack!.Length - 1; i >= 0; i--)
                 _data.Push(_inputStack[i]);
+            
             _inputValues.Clear();
         }
     }
@@ -1425,7 +1428,7 @@ public class Interpreter
 
     private void RestoreScreenResolution()
     {
-        if (_terminal != null && _programStartResolution is Resolution resolution)
+        if (_terminal != null && _programStartResolution is { } resolution)
         {
             _programStartResolution = null;
 

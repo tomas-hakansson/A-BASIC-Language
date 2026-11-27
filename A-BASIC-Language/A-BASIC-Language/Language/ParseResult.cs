@@ -10,7 +10,7 @@ public class ParseResult
 {
     public List<string> Errors { get; } = [];
     public bool Success { get; set; } = false;
-    public List<AblEvalValue> EvalValues { get; set; } = [];
+    public InstructionList EvalValues { get; set; } = [];
     public List<ValueBase> DataValues { get; } = [];
     public Dictionary<int, int> LabelIndex { get; set; } = new();
     public IReadOnlyDictionary<string, int> NamedLabels { get; internal set; } =

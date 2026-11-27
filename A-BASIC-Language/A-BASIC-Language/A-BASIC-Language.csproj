@@ -159,6 +159,8 @@
     <Compile Include="IntegerList.cs" />
     <Compile Include="IO\Paths.cs" />
     <Compile Include="Language\AblEvalValue.cs" />
+    <Compile Include="Language\CallStack.cs" />
+    <Compile Include="Language\InstructionList.cs" />
     <Compile Include="Language\AblValueTypes.cs" />
     <Compile Include="Language\BasicSession.cs" />
     <Compile Include="Language\ContinuationTests.cs" />
