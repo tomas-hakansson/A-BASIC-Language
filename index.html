@@ -375,11 +375,12 @@ LIST</code></pre>
                     <tr><td>2</td><td><code>^</code></td><td>Exponentiation, grouped from the right: 2^3^2 = 2^(3^2) = 512.</td></tr>
                     <tr><td>3</td><td>Unary <code>+</code>, <code>-</code></td><td>Sign. -2^2 = −4; (-2)^2 = 4. 2^-2 is allowed.</td></tr>
                     <tr><td>4</td><td><code>*</code>, <code>/</code></td><td>Multiplication/division, left to right. Division by 0 produces an error.</td></tr>
-                    <tr><td>5</td><td><code>+</code>, <code>-</code></td><td>Addition/subtraction, left to right. + also concatenates strings.</td></tr>
-                    <tr><td>6</td><td><code>=</code>, <code>&lt;&gt;</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code></td><td>Comparisons. True = −1, false = 0. != is equivalent to &lt;&gt;.</td></tr>
-                    <tr><td>7</td><td><code>NOT</code>, <code>!</code></td><td>Unary bitwise complement on a 32-bit integer. Both spellings have the same precedence.</td></tr>
-                    <tr><td>8</td><td><code>AND</code></td><td>Bitwise AND on 32-bit integers.</td></tr>
-                    <tr><td>9</td><td><code>OR</code></td><td>Bitwise OR on 32-bit integers.</td></tr>
+                    <tr><td>5</td><td><a href="#integer-division"><code>\</code></a></td><td>Integer division, left to right, after multiplication and ordinary division.</td></tr>
+                    <tr><td>6</td><td><code>+</code>, <code>-</code></td><td>Addition/subtraction, left to right. + also concatenates strings.</td></tr>
+                    <tr><td>7</td><td><code>=</code>, <code>&lt;&gt;</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code></td><td>Comparisons. True = −1, false = 0. != is equivalent to &lt;&gt;.</td></tr>
+                    <tr><td>8</td><td><code>NOT</code>, <code>!</code></td><td>Unary bitwise complement on a 32-bit integer. Both spellings have the same precedence.</td></tr>
+                    <tr><td>9</td><td><code>AND</code></td><td>Bitwise AND on 32-bit integers.</td></tr>
+                    <tr><td>10</td><td><code>OR</code></td><td>Bitwise OR on 32-bit integers.</td></tr>
                 </tbody>
             </table>
             <p><code>NOT expression</code> and <code>!expression</code> invert every bit of a signed 32-bit integer. Fractional values are truncated toward zero before inversion; strings, non-finite values and results of truncation outside the integer range produce an error. NOT 0 is −1, NOT −1 is 0, and NOT 1 is −2. This is bitwise complement, not a zero/nonzero test.</p>
@@ -393,7 +394,20 @@ PRINT !0
             <p>Numeric equality uses a tolerance of 0.00001: A=B is true if the absolute difference is smaller, A&lt;&gt;B if it is larger. At exactly the tolerance boundary, both are false. Other comparisons use ordinary numeric bounds.</p>
             <p>Strings are compared lexicographically using a case-insensitive ordinal comparison. <code>"hello"="HELLO"</code> and <code>"10"&lt;"2"</code> are true. Comparing a string with a number produces a type error.</p>
             <p class="note"><strong>String addition deviation:</strong> + concatenates strings and numbers with text, but the current implementation reverses the operand order. <code>"A"+"B"</code> produces <code>"BA"</code>; <code>"X"+2</code> produces <code>"2X"</code>. Use PRINT expressions separated by semicolons when order matters. Numeric addition is unaffected.</p>
-            <p>NOT, XOR, MOD and integer division are not supported. To test a range, use <code>1&lt;A AND A&lt;10</code>. A chained comparison such as <code>1&lt;A&lt;10</code> uses the numeric result of the first comparison as the left operand of the second.</p>
+            <p>XOR and MOD are not supported. To test a range, use <code>1&lt;A AND A&lt;10</code>. A chained comparison such as <code>1&lt;A&lt;10</code> uses the numeric result of the first comparison as the left operand of the second.</p>
+            <article id="integer-division">
+                <h3>\ – integer division</h3>
+                <pre><code>left \ right</code></pre>
+                <p>Truncates both numeric operands toward zero to signed 32-bit integers, divides them and truncates the quotient toward zero. This follows ABL's existing integer conversion; BASIC dialects that round operands before division can give different results for fractional operands. The result is an integer. Ordinary division with / is unchanged.</p>
+                <p>Integer division binds less tightly than * and / but more tightly than + and −. Repeated integer divisions are evaluated from left to right. Parentheses override this ordering.</p>
+                <pre><code>PRINT 7 \ 2
+PRINT -7 \ 2
+PRINT 7.9 \ 2.9
+PRINT 20 \ 3 * 2
+PRINT (20 \ 3) * 2</code></pre>
+                <p>These expressions print 3, −3, 3, 3 and 12, respectively. In the fourth expression multiplication happens first, giving 20 \ 6.</p>
+                <p>Strings are rejected. Non-finite operands or truncated operands outside −2147483648 through 2147483647 produce an error. A divisor that becomes zero after truncation produces <code>Division by zero.</code>; −2147483648 \ −1 produces <code>Integer division overflow.</code>. The operator works in direct commands and numbered programs wherever numeric expressions are accepted.</p>
+            </article>
         </section>
         <section id="statements">
             <h2>8. Statement reference</h2>

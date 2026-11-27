@@ -15,6 +15,50 @@ namespace A_BASIC_Language.Language;
 public class ContinuationTests
 {
     [TestMethod]
+    public void IntegerDivisionTruncatesAndHasItsOwnPrecedence()
+    {
+        var host = new Host("");
+        foreach (var (expression, expected) in new (string, double)[]
+        {
+            (@"7\2", 3), (@"-7\2", -3), (@"7\-2", -3), (@"-7\-2", 3),
+            (@"7.9\2.9", 3), (@"-7.9\2.9", -3), (@"1\2", 0),
+            (@"20\3\2", 3), (@"20\3*2", 3), (@"20\4/2", 10),
+            (@"2+9\2", 6), (@"9\2+2", 6), (@"2^3\3", 2),
+            (@"(20\3)*2", 12), (@"NOT 7\2", -4), (@"7\2=3", -1),
+            (@"2147483647\1", 2147483647), (@"(-2147483648)\1", -2147483648d),
+            (@"7/2", 3.5)
+        })
+        {
+            host.Execute("RESULT=" + expression);
+            Assert.AreEqual(expected, host.Number("RESULT"), expression);
+        }
+        Assert.IsFalse(host.Terminal.Output.ToString().Contains("?"));
+    }
+
+    [TestMethod]
+    public void IntegerDivisionWorksInProgramsFunctionsAndArraySubscripts()
+    {
+        var host = new Host("10 DIM A(3)\n20 DEF FNF(X)=X\\2\n30 A(7\\2)=FNF(9)\n40 IF A(3)=4 THEN B=1\n50 PRINT \"A\\B\"");
+        host.Execute("RUN");
+        Assert.AreEqual(4, host.Session.GetRuntimeState().Arrays["A"].Get(3));
+        Assert.AreEqual(1d, host.Number("B"));
+        StringAssert.Contains(host.Terminal.Output.ToString(), @"A\B");
+        Assert.IsFalse(host.Terminal.Output.ToString().Contains("?Error"));
+    }
+
+    [TestMethod]
+    public void IntegerDivisionRejectsZeroOverflowAndInvalidOperands()
+    {
+        foreach (var expression in new[] { @"1\0", @"1\0.9", @"1\-0.9", @"2147483648\1", @"1\2147483648", @"(-2147483648)\-1", @"SQR(-1)\1", "\"7\"\\2", @"7\", @"\2" })
+        {
+            var host = new Host("");
+            host.Execute("RESULT=" + expression);
+            StringAssert.Contains(host.Terminal.Output.ToString(), "?", expression);
+            Assert.IsFalse(host.Session.GetRuntimeState().Variables.ContainsKey("RESULT"), expression);
+        }
+    }
+
+    [TestMethod]
     public void NotAndExclamationComplementIntegersWithBasicPrecedence()
     {
         var host = new Host("");

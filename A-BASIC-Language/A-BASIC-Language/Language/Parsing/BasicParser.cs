@@ -1435,12 +1435,22 @@ public class BasicParser
 
     private void Precedence_4_Operator()
     {//Note: This method is Expression in Crenshaw's book.
-        Precedence_3_Operator();
+        IntegerDivisionExpression();
 
         while (OneOf(out var op, "+", "-"))
         {
-            Precedence_3_Operator();
+            IntegerDivisionExpression();
             Generate(new AblProcedure(op));
+        }
+    }
+
+    private void IntegerDivisionExpression()
+    {
+        Precedence_3_Operator();
+        while (Maybe('\\'))
+        {
+            Precedence_3_Operator();
+            Generate(new AblProcedure("\\"));
         }
     }
 

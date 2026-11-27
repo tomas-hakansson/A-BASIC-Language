@@ -76,7 +76,7 @@ public partial class TerminalMatrixControl : UserControl
 #pragma warning restore CS8618
     {
         _resolutionIncorrect = true;
-        _fontMonochromeSprite = FontMonochromeSprite.Create((CurrentFont)Settings.Default.Font);
+        _fontMonochromeSprite = FontMonochromeSprite.Create(Settings.Default.Font);
         _cursorVisibleBlink = false;
         _lastInput = "";
         _palette = new Palette();
@@ -660,8 +660,7 @@ public partial class TerminalMatrixControl : UserControl
     private void PaintScreen(Graphics graphics, Bitmap screen)
     {
         var visibleSprites = _blockSprites.Values
-            .Where(sprite => sprite.X >= 0 && sprite.X < CharacterWidth &&
-                             sprite.Y >= 0 && sprite.Y < CharacterHeight)
+            .Where(sprite => sprite.X >= 0 && sprite.X < CharacterWidth && sprite.Y >= 0 && sprite.Y < CharacterHeight)
             .ToArray();
 
         if (visibleSprites.Length == 0)

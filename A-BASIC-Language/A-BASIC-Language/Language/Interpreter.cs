@@ -579,6 +579,18 @@ public class Interpreter
                                 }
                             }
                             break;
+                        case "\\":
+                            {
+                                var right = IntegerDivisionOperand(_data.Pop());
+                                var left = IntegerDivisionOperand(_data.Pop());
+                                if (right == 0)
+                                    throw new DivideByZeroException("Division by zero.");
+                                // The one overflowing signed division must report a BASIC error.
+                                if (left == int.MinValue && right == -1)
+                                    throw new OverflowException("Integer division overflow.");
+                                _data.Push(new IntValue(left / right));
+                            }
+                            break;
                         case "+":
                             addExecutor.Run(_currentLineNumber);
                             break;
@@ -1390,6 +1402,15 @@ public class Interpreter
         if (Math.Abs(number - Math.Truncate(number)) > 0.001 || number < min || number > max)
             throw new InvalidOperationException($"{command} requires {argument} to be a whole number from {min} to {max}.");
 
+        return (int)number;
+    }
+
+    private static int IntegerDivisionOperand(ValueBase value)
+    {
+        var number = Math.Truncate(Number(value));
+        if (double.IsNaN(number) || double.IsInfinity(number) ||
+            number < int.MinValue || number > int.MaxValue)
+            throw new OverflowException("Integer division requires operands in the 32-bit integer range.");
         return (int)number;
     }
 
