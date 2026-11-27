@@ -188,7 +188,7 @@ public sealed class BasicSession
                 _pausedSource = runningSource;
             }
 
-            if (_interpreter.ResetHardRequested is bool hard)
+            if (_interpreter.ResetHardRequested is { } hard)
             {
                 InvalidateContinuation();
                 terminal.ResetAppearance();
@@ -215,9 +215,7 @@ public sealed class BasicSession
         var start = 10;
         var step = 10;
 
-        if (!match.Success ||
-            (match.Groups[1].Success && !int.TryParse(match.Groups[1].Value, out start)) ||
-            (match.Groups[2].Success && (!int.TryParse(match.Groups[2].Value, out step) || step == 0)))
+        if (!match.Success || (match.Groups[1].Success && !int.TryParse(match.Groups[1].Value, out start)) || (match.Groups[2].Success && (!int.TryParse(match.Groups[2].Value, out step) || step == 0)))
         {
             terminal.WriteLine("?Invalid RENUMBER arguments");
             return;

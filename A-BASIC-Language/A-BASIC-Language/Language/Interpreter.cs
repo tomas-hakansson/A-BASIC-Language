@@ -1041,7 +1041,8 @@ public class Interpreter
                         case "SLEEP":
                             {
                                 var milliseconds = Number(_data.Pop());
-                                if (milliseconds != Math.Truncate(milliseconds) || milliseconds < 0 || milliseconds > int.MaxValue)
+
+                                if (Math.Abs(milliseconds - Math.Truncate(milliseconds)) > 0.002 || milliseconds < 0 || milliseconds > int.MaxValue)
                                     throw new InvalidOperationException("SLEEP requires a whole number from 0 to 2147483647 milliseconds.");
 
                                 while (!UserBreak && !_terminal.QuitFlag && sleepClock.Elapsed.TotalMilliseconds < milliseconds)
@@ -1109,8 +1110,7 @@ public class Interpreter
                                 var max = Number(_data.Pop());
                                 var min = Number(_data.Pop());
 
-                                if (min != Math.Truncate(min) || min < int.MinValue || min > int.MaxValue ||
-                                    max != Math.Truncate(max) || max < int.MinValue || max > int.MaxValue)
+                                if (Math.Abs(min - Math.Truncate(min)) > 0.002 || min < int.MinValue || min > int.MaxValue || Math.Abs(max - Math.Truncate(max)) > 0.002 || max < int.MinValue || max > int.MaxValue)
                                     throw new InvalidOperationException("Illegal function call: SRND requires two 32-bit integers.");
 
                                 if (min >= max)
@@ -1428,13 +1428,13 @@ public class Interpreter
 
     private void RestoreScreenResolution()
     {
-        if (_terminal != null && _programStartResolution is { } resolution)
-        {
-            _programStartResolution = null;
+        if (_terminal == null || _programStartResolution is not { } resolution)
+            return;
 
-            if (_terminal.ScreenResolution != resolution)
-                _terminal.SetScreenResolution(resolution, preserveContents: true);
-        }
+        _programStartResolution = null;
+
+        if (_terminal.ScreenResolution != resolution)
+            _terminal.SetScreenResolution(resolution, preserveContents: true);
     }
 
     private void End(string message, bool showReady = true)
