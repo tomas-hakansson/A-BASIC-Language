@@ -17,6 +17,7 @@
         <nav aria-label="On this page">
             <ul>
                 <li><a href="#font-memory">Find a character in memory</a></li>
+                <li><a href="#swedish-characters">Swedish characters and codes</a></li>
                 <li><a href="#spare-characters">Choose characters for games</a></li>
                 <li><a href="#change-character">Change an existing character</a></li>
                 <li><a href="#custom-symbol">Draw and print a custom symbol</a></li>
@@ -41,9 +42,31 @@
             <p>A byte of 0 clears the row and 255 fills it. A byte of 24 lights the two middle pixels because 16 + 8 = 24. Its pattern is <code>...##...</code>, where <code>#</code> is an on pixel and <code>.</code> is an off pixel.</p>
         </section>
 
+        <section id="swedish-characters">
+            <h2>Swedish characters and codes</h2>
+            <p>Both built-in fonts support Å, Ä, Ö, å, ä and ö in typed and printed text. ABL reserves codes 128–133 for these characters as its own extension to the PETSCII-style character mapping; these are not standard Commodore PETSCII assignments. Each uppercase and lowercase form has its own code and eight-byte font slot.</p>
+            <table>
+                <thead><tr><th>Character</th><th>ASC / CHR$ code</th><th>Font memory addresses</th></tr></thead>
+                <tbody>
+                    <tr><td>Å</td><td>128</td><td>54272–54279</td></tr>
+                    <tr><td>Ä</td><td>129</td><td>54280–54287</td></tr>
+                    <tr><td>Ö</td><td>130</td><td>54288–54295</td></tr>
+                    <tr><td>å</td><td>131</td><td>54296–54303</td></tr>
+                    <tr><td>ä</td><td>132</td><td>54304–54311</td></tr>
+                    <tr><td>ö</td><td>133</td><td>54312–54319</td></tr>
+                </tbody>
+            </table>
+            <p>Unlike a–z, the Swedish lowercase letters retain their own codes: <code>ASC("å")</code> returns 131 and <code>CHR$(131)</code> produces å. Use the same codes with PRINTAT and block sprites, and the same address formula with PEEK and POKE. Editing the uppercase shape does not change its lowercase counterpart.</p>
+            <pre><code>PRINT "ÅÄÖ åäö"
+PRINT CHR$(128);CHR$(129);CHR$(130)
+PRINT ASC("å")
+ADDR = 53248 + 8 * ASC("ö")
+PRINT PEEK(ADDR)</code></pre>
+        </section>
+
         <section id="spare-characters">
             <h2>Choose characters for games</h2>
-            <p>All 256 character codes, from 0 to 255, can be edited with <code>POKE</code>, including letters, numbers, punctuation and the space character. In both built-in fonts, codes <strong>0–31, 91, 93–96 and 123–255</strong> start blank and are available for your own game characters and animation frames. Code 250 in the example below is one of these spare slots. Codes 97–122 contain lowercase letter shapes. Choose spare slots your program has not already used, and pass their codes to <code>CHR$</code>, <code>PRINTAT</code> or <code>CREATEBLOCKSPRITE</code> to display them. Editing a code changes its appearance everywhere it is used, including existing text and sprites.</p>
+            <p>All 256 character codes, from 0 to 255, can be edited with <code>POKE</code>, including letters, numbers, punctuation and the space character. In both built-in fonts, codes <strong>0–31, 91, 93–96, 123–127 and 134–255</strong> start blank and are available for your own game characters and animation frames. Code 250 in the example below is one of these spare slots. Codes 97–122 contain lowercase letter shapes, and 128–133 contain the Swedish letters. Choose spare slots your program has not already used, and pass their codes to <code>CHR$</code>, <code>PRINTAT</code> or <code>CREATEBLOCKSPRITE</code> to display them. Editing a code changes its appearance everywhere it is used, including existing text and sprites.</p>
         </section>
 
         <section id="change-character">

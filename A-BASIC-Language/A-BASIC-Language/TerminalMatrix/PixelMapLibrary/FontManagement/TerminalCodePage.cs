@@ -2,9 +2,11 @@
 
 namespace A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 
+using A_BASIC_Language.Language;
+
 public class TerminalCodePage
 {
-    public const string Characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ,.;:!?\"@#$%&/\\*-+'()<>=";
+    public const string Characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ,.;:!?\"@#$%&/\\*-+'()<>=ÅÄÖåäö";
     public Dictionary<byte, char> Chr { get; }
     public Dictionary<char, byte> Asc { get; }
     public Dictionary<char, int> Index { get; }
@@ -14,7 +16,7 @@ public class TerminalCodePage
         Chr = new Dictionary<byte, char>();
 
         foreach (var character in Characters)
-            Chr.Add((byte)character, character);
+            Chr.Add(Petscii.TryGetSwedishCode(character, out var code) ? code : (byte)character, character);
 
         Asc = new Dictionary<char, byte>();
 
