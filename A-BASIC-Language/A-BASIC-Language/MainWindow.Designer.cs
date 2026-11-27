@@ -41,6 +41,8 @@ namespace A_BASIC_Language
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.openFrom101BASICComputerGamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sampleProgramsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.spaceFlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.shellToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.programDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -81,8 +83,6 @@ namespace A_BASIC_Language
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblUserAction = new System.Windows.Forms.ToolStripStatusLabel();
             this.terminalMatrixControl1 = new A_BASIC_Language.TerminalMatrix.TerminalMatrixControl();
-            this.sampleProgramsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.spaceFlightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -99,7 +99,7 @@ namespace A_BASIC_Language
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(786, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(824, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -155,6 +155,21 @@ namespace A_BASIC_Language
             this.openFrom101BASICComputerGamesToolStripMenuItem.Size = new System.Drawing.Size(293, 22);
             this.openFrom101BASICComputerGamesToolStripMenuItem.Text = "Open from 101 BASIC Computer Games...";
             this.openFrom101BASICComputerGamesToolStripMenuItem.Click += new System.EventHandler(this.openFrom101BASICComputerGamesToolStripMenuItem_Click);
+            // 
+            // sampleProgramsToolStripMenuItem
+            // 
+            this.sampleProgramsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.spaceFlightToolStripMenuItem});
+            this.sampleProgramsToolStripMenuItem.Name = "sampleProgramsToolStripMenuItem";
+            this.sampleProgramsToolStripMenuItem.Size = new System.Drawing.Size(293, 22);
+            this.sampleProgramsToolStripMenuItem.Text = "Sample programs";
+            // 
+            // spaceFlightToolStripMenuItem
+            // 
+            this.spaceFlightToolStripMenuItem.Name = "spaceFlightToolStripMenuItem";
+            this.spaceFlightToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.spaceFlightToolStripMenuItem.Text = "Space flight";
+            this.spaceFlightToolStripMenuItem.Click += new System.EventHandler(this.spaceFlightToolStripMenuItem_Click);
             // 
             // toolStripMenuItem3
             // 
@@ -352,7 +367,7 @@ namespace A_BASIC_Language
             this.btnOptions});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(786, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(824, 25);
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -457,10 +472,10 @@ namespace A_BASIC_Language
             this.lblCursPos,
             this.toolStripStatusLabel1,
             this.lblUserAction});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 517);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 599);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 12, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(786, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(824, 22);
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -497,7 +512,7 @@ namespace A_BASIC_Language
             this.terminalMatrixControl1.Location = new System.Drawing.Point(0, 49);
             this.terminalMatrixControl1.Name = "terminalMatrixControl1";
             this.terminalMatrixControl1.RenderingMode = A_BASIC_Language.TerminalMatrix.RenderingMode.HighQuality;
-            this.terminalMatrixControl1.Size = new System.Drawing.Size(786, 468);
+            this.terminalMatrixControl1.Size = new System.Drawing.Size(824, 550);
             this.terminalMatrixControl1.TabIndex = 0;
             this.terminalMatrixControl1.UnlimitedInput = false;
             this.terminalMatrixControl1.Use32BitForeground = false;
@@ -510,26 +525,11 @@ namespace A_BASIC_Language
             this.terminalMatrixControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.terminalMatrixControl1_Paint);
             this.terminalMatrixControl1.Leave += new System.EventHandler(this.terminalMatrixControl1_Leave);
             // 
-            // sampleProgramsToolStripMenuItem
-            // 
-            this.sampleProgramsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.spaceFlightToolStripMenuItem});
-            this.sampleProgramsToolStripMenuItem.Name = "sampleProgramsToolStripMenuItem";
-            this.sampleProgramsToolStripMenuItem.Size = new System.Drawing.Size(293, 22);
-            this.sampleProgramsToolStripMenuItem.Text = "Sample programs";
-            // 
-            // spaceFlightToolStripMenuItem
-            // 
-            this.spaceFlightToolStripMenuItem.Name = "spaceFlightToolStripMenuItem";
-            this.spaceFlightToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.spaceFlightToolStripMenuItem.Text = "Space flight";
-            this.spaceFlightToolStripMenuItem.Click += new System.EventHandler(this.spaceFlightToolStripMenuItem_Click);
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(786, 539);
+            this.ClientSize = new System.Drawing.Size(824, 621);
             this.Controls.Add(this.terminalMatrixControl1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.toolStrip1);

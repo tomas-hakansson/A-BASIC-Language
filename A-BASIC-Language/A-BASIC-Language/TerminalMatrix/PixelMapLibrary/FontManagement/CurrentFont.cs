@@ -4,8 +4,8 @@ namespace A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
 
 public enum CurrentFont
 {
-    C64,
-    Pet
+    Pet,
+    C64
 }
 
 public readonly struct FontConfiguration
@@ -29,8 +29,8 @@ public class FontConfigurationList : List<FontConfiguration>
 {
     public FontConfigurationList()
     {
-        Add(new FontConfiguration("Commodore 64", "C64", CurrentFont.C64));
         Add(new FontConfiguration("Commodore PET", "PET", CurrentFont.Pet));
+        Add(new FontConfiguration("Commodore 64", "C64", CurrentFont.C64));
     }
 
     public FontConfiguration Get(FontConfiguration font) =>

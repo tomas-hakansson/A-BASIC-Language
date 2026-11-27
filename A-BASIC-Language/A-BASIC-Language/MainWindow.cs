@@ -61,6 +61,7 @@ public partial class MainWindow : Form
         var highQualityRendering = Settings.Default.HighQualityRendering;
         highQualityRenderingToolStripMenuItem.Checked = highQualityRendering;
         terminalMatrixControl1.RenderingMode = highQualityRendering ? RenderingMode.HighQuality : RenderingMode.HighSpeed;
+        terminalMatrixControl1.CurrentFont = new FontConfigurationList().Get(Settings.Default.Font);
         new WindowConfigurator(terminalMatrixControl1, _log).Configure(this, resolutionToolStripMenuItem, Settings.Default.Resolution);
         ApplyColorScheme((ColorScheme)Settings.Default.ColorScheme);
         
@@ -271,9 +272,9 @@ public partial class MainWindow : Form
             ApplyColorScheme(x.ColorScheme);
         }
 
-        if ((CurrentFont)Settings.Default.Font != x.TerminalFont)
+        if (Settings.Default.Font != x.TerminalFont)
         {
-            Settings.Default.Font = (int)x.TerminalFont;
+            Settings.Default.Font = x.TerminalFont;
             terminalMatrixControl1.WriteLine("Font changed.");
             ApplyTerminalFont(x.TerminalFont);
         }

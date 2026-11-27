@@ -8,6 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using A_BASIC_Language.TerminalMatrix.PixelMapLibrary.FontManagement;
+
 namespace A_BASIC_Language.Properties {
     
     
@@ -61,10 +63,10 @@ namespace A_BASIC_Language.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int Font {
+        [global::System.Configuration.DefaultSettingValueAttribute("Pet")]
+        public CurrentFont Font {
             get {
-                return ((int)(this["Font"]));
+                return ((CurrentFont)(this["Font"]));
             }
             set {
                 this["Font"] = value;

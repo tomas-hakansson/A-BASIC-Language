@@ -112,7 +112,7 @@ public partial class TerminalMatrixControl : UserControl
     {
         get
         {
-            _currentFont ??= new FontConfigurationList().Get((CurrentFont)Settings.Default.Font);
+            _currentFont ??= new FontConfigurationList().Get(Settings.Default.Font);
             var list = new FontConfigurationList();
             return list.Get(_currentFont.Value);
         }
@@ -120,15 +120,18 @@ public partial class TerminalMatrixControl : UserControl
         {
             _fontMonochromeSprite = _fontMonochromeSprite.ChangeFont(value.Id);
             _currentFont = value;
-            Settings.Default.Font = (int)value.Id;
+            Settings.Default.Font = value.Id;
+
             if (_fontMemory != null)
                 _fontMonochromeSprite.CopyToMemory(_fontMemory, FontMemoryStart);
+            
             _textPixelsChanged = true;
             Refresh();
         }
     }
 
-    internal void EnsureGlyph(char character) => _fontMonochromeSprite.EnsureGlyph(character);
+    internal void EnsureGlyph(char character) =>
+        _fontMonochromeSprite.EnsureGlyph(character);
 
     internal void AttachFontMemory(byte[] memory)
     {
@@ -142,6 +145,7 @@ public partial class TerminalMatrixControl : UserControl
     internal void UpdateFontMemory(int address, byte value)
     {
         var offset = address - FontMemoryStart;
+
         if (offset < 0 || offset >= FontMemorySize)
             return;
 

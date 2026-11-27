@@ -6,6 +6,7 @@ namespace A_BASIC_Language.Gui.Multimedia;
 public enum ColorScheme
 {
     Default,
+    Green,
     C64,
     C128,
     Vic20,
@@ -39,7 +40,8 @@ public class ColorSchemeConfigurationList : List<ColorSchemeConfiguration>
 {
     public ColorSchemeConfigurationList()
     {
-        Add(new ColorSchemeConfiguration("DEFAULT", "DEFAULT", ColorScheme.Default, ColorName.Black, ColorName.Green, ColorName.Black));
+        Add(new ColorSchemeConfiguration("DEFAULT", "DEFAULT", ColorScheme.Default, ColorName.Black, ColorName.Orange, ColorName.Black));
+        Add(new ColorSchemeConfiguration("GREEN", "GREEN", ColorScheme.Green, ColorName.Black, ColorName.Green, ColorName.Black));
         Add(new ColorSchemeConfiguration("COMMODORE 64", "C64", ColorScheme.C64, ColorName.Blue, ColorName.LightBlue, ColorName.LightBlue));
         Add(new ColorSchemeConfiguration("COMMODORE 128", "C128", ColorScheme.C128, ColorName.DarkGrey, ColorName.LightGreen, ColorName.LightGreen));
         Add(new ColorSchemeConfiguration("VIC-20", "VIC20", ColorScheme.Vic20, ColorName.White, ColorName.Blue, ColorName.Cyan));
