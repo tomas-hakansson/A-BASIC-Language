@@ -72,7 +72,8 @@ public class ContinuationTests
             ("NOT (1 AND 2)", -1), ("NOT 1+2*3", -8),
             ("1!=2", -1), ("1!=1", 0), ("1<>2", -1),
             ("NOT 2147483647", -2147483648d), ("NOT (-2147483648)", 2147483647),
-            ("not 0", -1)
+            ("not 0", -1), ("NOT0", -1), ("NOT123", -124),
+            ("not0", -1), ("NOT0.5", -1), ("NOT1E2", -101), ("NOT0=1", -1)
         })
         {
             host.Execute("RESULT=" + expression);
@@ -80,6 +81,10 @@ public class ContinuationTests
         }
         host.Execute("NOTABLE=7:RESULT=NOTABLE");
         Assert.AreEqual(7d, host.Number("RESULT"));
+        host.Execute("NOTABLE4EVER=42:RESULT=NOTABLE4EVER");
+        Assert.AreEqual(42d, host.Number("RESULT"));
+        host.Execute("A1=9:RESULT=A1");
+        Assert.AreEqual(9d, host.Number("RESULT"));
         Assert.IsFalse(host.Terminal.Output.ToString().Contains("?"));
     }
 

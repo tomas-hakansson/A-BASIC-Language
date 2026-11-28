@@ -677,11 +677,10 @@ public partial class TerminalMatrixControl : UserControl
         try
         {
             var background = _palette.GetColor(BackgroundColor);
+
             foreach (var sprite in visibleSprites)
             {
-                _fontMonochromeSprite.DrawOpaque(pixels, sprite.Character,
-                    sprite.X * 8 + BorderWidth, sprite.Y * 8 + BorderHeight,
-                    _palette.GetColor(sprite.Color), background);
+                _fontMonochromeSprite.DrawOpaque(pixels, sprite.Character, sprite.X * 8 + BorderWidth, sprite.Y * 8 + BorderHeight, _palette.GetColor(sprite.Color), background);
             }
         }
         finally

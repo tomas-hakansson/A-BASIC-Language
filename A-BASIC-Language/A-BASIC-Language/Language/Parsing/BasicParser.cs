@@ -15,7 +15,7 @@ public class BasicParser
 {
     private static readonly Regex NamedLabelRegex = new(@"\G@[\p{L}\p{Nd}_]+", RegexOptions.CultureInvariant);
     private static readonly Regex ScreenColumnsRegex = new(@"\G0*(20|40|60|80)", RegexOptions.CultureInvariant);
-    private static readonly Regex NotKeywordRegex = new(@"\GNOT(?![A-Z0-9$%])", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    private static readonly Regex NotKeywordRegex = new(@"\GNOT(?![A-Z$%])", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     private readonly string _source;
     private readonly bool _direct;
     private readonly SortedDictionary<int, List<AblEvalValue>> _lines;
